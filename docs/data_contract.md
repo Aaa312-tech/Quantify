@@ -17,4 +17,4 @@
 
 `market.legal_label`处理合法可成交标签，`ledger.causal_price_index`处理因果价格调整。原始来源清单在 `docs/references/data_lineage`；公司行为公告、赛事材料及PDF保留在 `docs/references`。这些记录中的历史路径不参与当前文件定位。
 
-新数据需要新日期目录，核查交易日、重复记录、OHLC、流动性、公司行为和历史可用性，再登记配置与完整性清单。修改路径不会自动采集行情。`configs/experiment_v6.json`是冻结实验协议，不是可任意修改的调参配置。
+新数据需要新日期目录，核查交易日、重复记录、OHLC、流动性、公司行为和历史可用性，再登记配置与完整性清单。修改路径不会自动采集行情。`configs/project.toml`的`protocol`指向冻结实验协议，不是可任意修改的调参配置。

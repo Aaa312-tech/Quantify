@@ -32,7 +32,7 @@ def test_invalid_nav_is_rejected(nav):
         RiskState().update(nav, False)
 
 
-def test_recovery_strategy_is_not_an_active_version():
+def test_recovery_mode_is_rejected():
     with pytest.raises(ValueError):
         RiskState(mode="recovery").update(1_000_000, True)
 
@@ -40,7 +40,7 @@ def test_recovery_strategy_is_not_an_active_version():
 def test_new_outputs_cannot_overwrite_frozen_artifacts(tmp_path):
     paths = Paths(tmp_path)
     with pytest.raises(ValueError):
-        paths.output_path("artifacts/v6_2026-11-19", "experiments")
+        paths.output_path("artifacts/reference_run", "experiments")
     with pytest.raises(ValueError):
         paths.output_path("artifacts/experiments/../../outside", "experiments")
     first = paths.output_path("artifacts/experiments/new_run", "experiments")

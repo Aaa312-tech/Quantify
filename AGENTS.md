@@ -20,8 +20,10 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
 
 ## Research constraints
 
-- Maintain the active `quantfolio` package and V6 unless a research task changes the strategy.
+- Maintain the active `quantfolio` package and walk-forward momentum strategy unless a research task changes it.
   Balanced attack, the 8% alert and non-recovering risk remain in force.
+- Name strategies by behavior, not iteration numbers. Keep old identifiers only where required
+  to read or trace frozen evidence; use semantic software versions for package releases.
 - The superiority gate is false. Engineering parity does not prove outperformance; data ends
   on 2026-11-18 until a verified new snapshot is added.
 - Do not operate a trading app, broker account or WeChat.

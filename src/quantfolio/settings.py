@@ -57,6 +57,14 @@ class Paths:
         return self._configured_path("reference")
 
     @property
+    def protocol(self) -> Path:
+        return self._configured_path("protocol")
+
+    @property
+    def benchmark(self) -> Path:
+        return self._configured_path("benchmark")
+
+    @property
     def manifest(self) -> Path:
         return self._configured_path("manifest")
 

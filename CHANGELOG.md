@@ -1,5 +1,11 @@
 # 维护记录
 
+## 0.7.1 — 2026-11-19
+
+- 当前策略改用方法名称“滚动选型动量”，统一命令、日志、文档和报告；软件版本单独维护。
+- 新评估使用`selected_strategy`，通过历史结果的`primary_policy`读取旧账本。冻结文件、模型特征名及研究参数不变。
+- `status`分别输出软件版本、策略标识和名称。主策略及动量基准的账本重放记录见`artifacts/replays/policy_names_2026-11-19/verification.json`。
+
 ## 0.7.0 — 2026-11-19
 
 - 接通`train → evaluate → report --run`，支持部分窗口、成本选择、实验来源及预测覆盖校验。`replay`负责冻结重放，兼容旧命令`backtest`。

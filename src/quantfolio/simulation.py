@@ -219,7 +219,7 @@ def simulate(
 ):
     """Replay next-open executions with prior-close signals and non-recovering risk control."""
     if mode != "latched":
-        raise ValueError("V6 supports only non-recovering risk (latched)")
+        raise ValueError("Only non-recovering risk (latched) is supported")
     if not 1 <= start <= end < len(bundle["calendar"]):
         raise ValueError("Execution range needs a prior signal day and available market bars")
     if not np.isfinite(slippage) or slippage < 0:

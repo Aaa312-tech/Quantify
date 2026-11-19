@@ -2,11 +2,11 @@
 
 [![Checks](https://github.com/Aaa312-tech/Quantify/actions/workflows/ci.yml/badge.svg)](https://github.com/Aaa312-tech/Quantify/actions/workflows/ci.yml)
 
-A股模拟投资研究项目，Python包与命令名为`quantfolio`。当前策略为V6：动量候选池、行业残差模型、滚动验证选型、次日开盘模拟。使用均衡进攻和8%回撤预警；仓位降级后不恢复。
+A股模拟投资研究项目，Python包与命令名为`quantfolio`。当前采用**滚动选型动量**策略：动量候选池、行业残差模型、滚动验证选型、次日开盘模拟。使用均衡进攻和8%回撤预警；仓位降级后不恢复。
 
-**收益优势验证未通过。** V6与同风控动量的主策略结果相同，新增选股模型尚未证明有稳定增益。
+**收益优势验证未通过。** 主策略与同风控动量的结果相同，新增选股模型尚未证明有稳定增益。
 
-| 每边10bp滑点，另计交易费 | V6 | 同风控动量 | 冻结V4不恢复版 |
+| 每边10bp滑点，另计交易费 | 滚动选型动量 | 同风控动量 | 历史基准（不恢复仓位） |
 | --- | ---: | ---: | ---: |
 | 连续账户净收益 | 8.11% | 8.11% | 7.78% |
 | 最大回撤 | -6.55% | -6.55% | -6.73% |
@@ -14,7 +14,7 @@ A股模拟投资研究项目，Python包与命令名为`quantfolio`。当前策�
 
 回测区间2025-11-18至2026-11-02，数据截止2026-11-18。共有23个完整10日账户；30bp成本档连续净收益为-4.85%。8%是预警和退出目标，不能保证实际回撤不超过8%。
 
-![保留V6与基准的历史净值](reports/latest/equity_curve.png)
+![滚动选型动量与基准的历史净值](reports/latest/equity_curve.png)
 
 ## 运行
 
@@ -54,7 +54,7 @@ python -m venv .venv
 | `tests/` | 合成数据上的交易规则与因果性测试 |
 | `configs/` | 项目路径、实验协议和冻结文件SHA-256清单 |
 | `data/processed/2026-11-18/` | 行情、公司行为、特征与标签快照 |
-| `artifacts/v6_2026-11-19/` | 冻结训练、预测和回测账本 |
+| `artifacts/`下由`configs/project.toml`指定的参考目录 | 冻结训练、预测和回测账本 |
 | `artifacts/experiments/`、`artifacts/evaluations/` | 新训练及对应评估；每次使用新名称 |
 | `artifacts/checks/`、`artifacts/replays/` | 模型验证和账本重放结果 |
 | `artifacts/maintenance/` | 工程验证摘要 |

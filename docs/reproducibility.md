@@ -14,11 +14,11 @@ python -m quantfolio report --run artifacts/evaluations/example_run
 
 `evaluate`检查训练状态、协议身份、数据哈希、实际预测行和时间覆盖，然后分别回测所选策略与同风控动量。默认包含10/20/30bp每边滑点，可用 `--cost 10`选择单档，用 `--all-policies`运行19项规则比较。部分窗口不会冒充完整回测，新实验也不会自动替换主策略。
 
-评估目录包含 `evaluation_summary.json`及逐笔、逐日压缩账本。报告读取同一评估目录的成本、区间和样本数，校验所用账本哈希。部分窗口不展示跨区间的冻结V4收益对比。
+评估目录包含 `evaluation_summary.json`及逐笔、逐日压缩账本。报告读取同一评估目录的成本、区间和样本数，校验所用账本哈希。部分窗口不展示跨区间的历史基准收益对比。
 
 每次训练或评估使用新目录。目录已存在时命令会拒绝覆盖；缺少完成状态的训练不能进入评估。运行失败时保留已写出的诊断材料，修复原因后使用新名称。
 
-## 验证保留的V6
+## 验证冻结参考结果
 
 ```powershell
 python -m quantfolio verify
@@ -31,7 +31,7 @@ python -m quantfolio report
 
 `replay`重放19项策略×3档成本×25个账户，共1425个账户，并比较完整摘要和账本；差异会导致非零退出码。可加 `--primary-only`或 `--cost 10`缩小检查范围。旧命令 `backtest`是`replay`的兼容别名。
 
-不带`--run`的`report`生成保留V6的 `reports/latest/index.html`。工程复现通过不增加独立市场样本，也不改变收益优势检验的结论。
+不带`--run`的`report`从冻结参考结果生成 `reports/latest/index.html`。工程复现通过不增加独立市场样本，也不改变收益优势检验的结论。
 
 ## 环境与错误
 

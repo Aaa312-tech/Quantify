@@ -1,4 +1,4 @@
-"""Non-recovering V6 drawdown states; the original account high-water mark never resets."""
+"""Non-recovering drawdown states; the original account high-water mark never resets."""
 
 from __future__ import annotations
 

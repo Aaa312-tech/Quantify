@@ -21,12 +21,12 @@ def main(argv: list[str] | None = None) -> None:
     verification.add_argument("--output", help="New directory under artifacts/checks")
     verification.add_argument("--refit", action="store_true", help="Refit fold 1's two estimators")
     replay = commands.add_parser(
-        "replay", aliases=["backtest"], help="Compare the frozen V6 accounts exactly"
+        "replay", aliases=["backtest"], help="Compare the frozen reference accounts exactly"
     )
     replay.add_argument("--output", required=True, help="New directory under artifacts/replays")
     replay.add_argument("--cost", type=int, choices=[10, 20, 30], action="append")
     replay.add_argument("--primary-only", action="store_true")
-    training = commands.add_parser("train", help="Train a new run using the fixed V6 protocol")
+    training = commands.add_parser("train", help="Train a new run using the registered protocol")
     training.add_argument(
         "--output", required=True, help="New directory under artifacts/experiments"
     )
@@ -74,7 +74,9 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
             raise ValueError("Retained evaluation summary hash mismatch")
         result = read(path)
         return {
-            "version": paths.config["strategy"],
+            "software_version": __version__,
+            "strategy": paths.config["strategy"],
+            "strategy_name": paths.config["strategy_name"],
             "decision": result["decision"],
             "data_cutoff": paths.config["data_cutoff"],
             "test_start": result["trade_start"],
@@ -82,7 +84,7 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
             "gates": result["gates"],
             "continuous": {
                 key: {
-                    name: values["v6_selected"]["summary"][name]
+                    name: values[result["primary_policy"]]["summary"][name]
                     for name in ("return", "max_drawdown", "trades", "fees")
                 }
                 for key, values in result["continuous"].items()
@@ -97,7 +99,7 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .evaluation import POLICIES, replay
 
         output = paths.output_path(args.output, "replays")
-        policies = ["v6_selected", "matched_momentum"] if args.primary_only else POLICIES
+        policies = ["selected_strategy", "matched_momentum"] if args.primary_only else POLICIES
         return replay(paths, output, sorted(set(args.cost or [10, 20, 30])), policies)
     if args.command == "train":
         from .training import run_training

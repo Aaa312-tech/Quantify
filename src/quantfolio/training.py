@@ -24,7 +24,7 @@ from .validation import execution_audit, reconcile
 
 @pd.option_context("compute.use_numexpr", False)
 def run_training(paths, output, first=1, last=11, include_latest=False):
-    """Train the unchanged V6 protocol in a new experiment, preserving all reference files.
+    """Train the registered protocol in a new experiment, preserving all reference files.
 
     Model and rule selection uses only the validation segment. Partial fold runs
     are explicitly marked PARTIAL and must not be presented as a full backtest.
@@ -43,7 +43,7 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
     if not 1 <= first <= last <= len(folds):
         raise ValueError(f"Require 1 <= first <= last <= {len(folds)}")
     specification = {
-        "plan_sha256": sha(paths.root / "configs/experiment_v6.json"),
+        "plan_sha256": sha(paths.protocol),
         "data_sha256": sha(paths.bundle),
         "source_sha256": {
             path.name: sha(path) for path in sorted(Path(__file__).parent.glob("*.py"))
@@ -203,7 +203,7 @@ def run_window(bundle, fold, folder, identity, final=False):
             bundle, fold, forecasts, config, folder / "inner_rules" / config, identity
         )
     selected_rules = select_rules(rules)
-    log("V6 rules selected from past validation", window=fold["fold"], config=selected_rules)
+    log("Rules selected from past validation", window=fold["fold"], config=selected_rules)
     factors = {
         name: factor_check(
             table,
@@ -295,5 +295,5 @@ def run_window(bundle, fold, folder, identity, final=False):
         "source_selection": "Validation only; continuous outcomes also constrain adoption.",
     }
     save(folder / "result.json", result, immutable=True)
-    log("V6 window complete", window=fold["fold"], rules=selected_rules, model=selected)
+    log("Training window complete", window=fold["fold"], rules=selected_rules, model=selected)
     return result

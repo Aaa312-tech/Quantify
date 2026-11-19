@@ -45,14 +45,16 @@ def experiment(tmp_path, monkeypatch):
         '[project]\nname = "quantfolio-research"\n', encoding="utf-8"
     )
     (tmp_path / "configs/project.toml").write_text(
-        f'bundle = "bundle.joblib"\ndata_cutoff = "{bundle["cutoff"]}"\n', encoding="utf-8"
+        f'bundle = "bundle.joblib"\ndata_cutoff = "{bundle["cutoff"]}"\n'
+        'protocol = "configs/experiment.json"\n',
+        encoding="utf-8",
     )
     (tmp_path / "bundle.joblib").write_bytes(b"synthetic dataset: loader replaced by fixture")
-    save(tmp_path / "configs/experiment_v6.json", {"name": "synthetic protocol"})
+    save(tmp_path / "configs/experiment.json", {"name": "synthetic protocol"})
     run = tmp_path / "artifacts/experiments/partial_run"
     specification = {
         "data_sha256": sha(tmp_path / "bundle.joblib"),
-        "plan_sha256": sha(tmp_path / "configs/experiment_v6.json"),
+        "plan_sha256": sha(tmp_path / "configs/experiment.json"),
         "folds": folds,
         "selected_folds": [1, 1],
     }
@@ -96,7 +98,8 @@ def experiment(tmp_path, monkeypatch):
     return Paths(tmp_path), bundle, run, folds
 
 
-def test_evaluate_and_report_use_actual_window_and_cost(experiment, capsys):
+@pytest.mark.parametrize("stored_policy", ["selected_strategy", "v6_selected"])
+def test_evaluate_and_report_use_actual_window_cost_and_policy(experiment, capsys, stored_policy):
     paths, _, run, _ = experiment
     output = paths.root / "artifacts/evaluations/partial_run"
     cli.main(
@@ -117,13 +120,27 @@ def test_evaluate_and_report_use_actual_window_and_cost(experiment, capsys):
     assert result["folds"] == 1
     assert result["accounts"] == 4
     assert result["superiority_assessment"] == "NOT_PERFORMED"
-    assert result["results"]["20bps"]["v6_selected"]["aggregate"]["complete_episodes"] == 1
+    assert result["primary_policy"] == "selected_strategy"
+    assert result["results"]["20bps"]["selected_strategy"]["aggregate"]["complete_episodes"] == 1
     assert len(result["artifacts"]) == 4
+    if stored_policy != "selected_strategy":
+        # Archived evaluations use their original policy in both keys and filenames.
+        for section in ("results", "continuous"):
+            policies = result[section]["20bps"]
+            policies[stored_policy] = policies.pop("selected_strategy")
+        for relative, checksum in list(result["artifacts"].items()):
+            if "selected_strategy" in relative:
+                renamed = relative.replace("selected_strategy", stored_policy)
+                (output / relative).rename(output / renamed)
+                del result["artifacts"][relative]
+                result["artifacts"][renamed] = checksum
+        result["primary_policy"] = stored_policy
+        save(output / "evaluation_summary.json", result)
     cli.main(["--project", str(paths.root), "report", "--run", str(output)])
     report = Path(json.loads(capsys.readouterr().out)["report"]).read_text("utf-8")
     assert "部分窗口回测" in report
     assert "20bp" in report and "1 / 1" in report
-    assert "冻结V4" not in report
+    assert "历史基准" not in report
     assert result["trade_start"] in report and result["trade_end"] in report
     assert "$title" not in report
 
@@ -209,7 +226,7 @@ def test_report_rejects_changed_evaluation_ledger(experiment):
     paths, _, run, _ = experiment
     output = paths.root / "artifacts/evaluations/changed"
     evaluation.evaluate(paths, run, output, [10])
-    (output / "evaluation/continuous/10bps/v6_selected.json.gz").write_bytes(b"changed")
+    (output / "evaluation/continuous/10bps/selected_strategy.json.gz").write_bytes(b"changed")
     with pytest.raises(ValueError, match="ledger hash mismatch"):
         reporting.build_report(paths, output)
 

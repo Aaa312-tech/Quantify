@@ -25,8 +25,8 @@ rules / allocation / risk → simulation → ledger → validation
 
 模型只读取信号日已知数据，订单在下一交易日开盘处理。`_Execution`的价格映射包含同一开盘时段较早的成交，后续买单按更新后的净值检查上限。`validation`不复用`Ledger`的金额计算，保留独立核对能力。
 
-`recovery`、`v4_rank_*`、`selected_legacy`等名称属于冻结数据协议，不表示维护旧策略。风险控制仅支持 `latched`，历史记录中的这些字段继续保留以便逐项比对。
+风险控制仅支持 `latched`。数据中的`v4_rank_*`特征名和原实验标识属于冻结协议，保留它们才能重载旧模型并逐项核对账本。当前评估使用`selected_strategy`标识主策略；读取历史结果时从其`primary_policy`字段取得原标识，不要求改写旧文件。
 
 行情与实验在包外，报告模板在包内。新行情遵循[数据契约](data_contract.md)，新实验写入独立目录；[冻结参考文件](../configs/integrity_manifest.json)不随工程整理改写。
 
-`train → evaluate → report --run`按实验目录传递结果；`replay`独立负责冻结V6的数值回归。项目路径和截止日期由`configs/project.toml`提供，运行时校验与输入一致。包导入不修改全局pandas设置。
+`train → evaluate → report --run`按实验目录传递结果；`replay`独立负责冻结参考结果的数值回归。项目路径和截止日期由`configs/project.toml`提供，运行时校验与输入一致。包导入不修改全局pandas设置。

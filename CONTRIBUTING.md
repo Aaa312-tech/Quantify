@@ -1,6 +1,6 @@
 # 开发约定
 
-代码放在 `src/quantfolio`，按职责组织，不按V1、V2拆包。Python使用UTF-8、LF、4空格缩进和100列；格式及导入顺序交给Ruff。
+代码放在 `src/quantfolio`，按职责组织，不按迭代编号拆包。Python使用UTF-8、LF、4空格缩进和100列；格式及导入顺序交给Ruff。
 
 ## 代码
 

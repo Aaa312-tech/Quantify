@@ -52,7 +52,7 @@ def digest(value: Any) -> str:
 
 
 def array_sha(value: np.ndarray) -> str:
-    """Preserve the original V6 array identity convention."""
+    """Hash arrays using the identity convention recorded in frozen experiments."""
     return hashlib.sha256(value.tobytes()).hexdigest()
 
 

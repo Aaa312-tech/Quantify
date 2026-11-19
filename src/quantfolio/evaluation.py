@@ -1,4 +1,4 @@
-"""Replay frozen forecasts and compare complete ledgers against the retained V6 evidence."""
+"""Evaluate trained forecasts and compare complete ledgers against frozen evidence."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from .simulation import episodes, simulate
 from .storage import digest, dump_gzip, log, now, read, save, sha
 from .validation import execution_audit, reconcile
 
-POLICIES = ["v6_selected", "matched_momentum", "selected_legacy"] + [
+POLICIES = ["selected_strategy", "matched_momentum", "selected_legacy"] + [
     "fixed_" + name for name in CONFIGS
 ]
 
@@ -94,7 +94,7 @@ def experiment_folds(paths: Paths, bundle: dict, run: Path) -> tuple[dict, list]
     if protocol["identity"] != identity or status["identity"] != identity:
         raise ValueError("Training protocol identity mismatch")
     if specification["data_sha256"] != sha(paths.bundle) or specification["plan_sha256"] != sha(
-        paths.root / "configs/experiment_v6.json"
+        paths.protocol
     ):
         raise ValueError("Training used a different dataset or experiment protocol")
     available = walk_forward_folds(bundle["calendar"])
@@ -123,7 +123,7 @@ def evaluate(
     bundle = load_bundle(paths)
     status, folds = experiment_folds(paths, bundle, run)
     maps, schedule, choices, start, end = load_predictions(bundle, run, folds, status["identity"])
-    policies = POLICIES if all_policies else ["v6_selected", "matched_momentum"]
+    policies = POLICIES if all_policies else ["selected_strategy", "matched_momentum"]
     results, continuous, artifacts = {}, {}, {}
     reconciliation_checks = execution_checks = accounts = 0
     for cost in sorted(set(costs)):
@@ -173,7 +173,7 @@ def evaluate(
         "source_run": run.relative_to(paths.root).as_posix(),
         "identity": status["identity"],
         "data_cutoff": paths.config["data_cutoff"],
-        "primary_policy": "v6_selected",
+        "primary_policy": "selected_strategy",
         "trade_start": str(bundle["calendar"][start + 1].date()),
         "trade_end": str(bundle["calendar"][end + 1].date()),
         "outer_signal_sessions": end - start + 1,
@@ -200,7 +200,7 @@ def policy_inputs(name: str, maps: dict, schedule: dict) -> tuple:
     """Use exactly the documented forecast and turnover-rule combinations."""
     if name.startswith("fixed_"):
         return maps["momentum"], name[6:]
-    if name == "v6_selected":
+    if name == "selected_strategy":
         return maps["selected"], schedule
     if name == "matched_momentum":
         return maps["momentum"], schedule
@@ -210,10 +210,11 @@ def policy_inputs(name: str, maps: dict, schedule: dict) -> tuple:
 
 
 def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) -> dict[str, Any]:
-    """Re-run frozen V6 accounts; fail if refactoring changes any recorded economics."""
+    """Re-run frozen accounts; fail if refactoring changes any recorded economics."""
     from .storage import load_gzip
 
     integrity = check_integrity(paths)
+    reference_primary = read(paths.reference / "evaluation_summary.json")["primary_policy"]
     bundle = load_bundle(paths)
     maps, schedule, folds, start, end = load_predictions(bundle, paths.reference)
     results = {}
@@ -223,10 +224,11 @@ def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) ->
         key = f"{cost:02d}bps"
         results[key] = {}
         for policy in policies:
+            reference_policy = reference_primary if policy == "selected_strategy" else policy
             forecasts, rules = policy_inputs(policy, maps, schedule)
             actual = episodes(bundle, start, end, forecasts, cost / 10000, True, rules=rules)
             expected = load_gzip(
-                paths.reference / "evaluation" / key / (policy + ".ledgers.json.gz")
+                paths.reference / "evaluation" / key / (reference_policy + ".ledgers.json.gz")
             )
             if len(actual) != len(expected):
                 raise AssertionError(f"Account count mismatch: {key}/{policy}")
@@ -234,7 +236,7 @@ def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) ->
                 bundle, start + 1, end + 1, forecasts, cost / 10000, True, rules=rules
             )
             expected_continuous = load_gzip(
-                paths.reference / "evaluation/continuous" / key / (policy + ".json.gz")
+                paths.reference / "evaluation/continuous" / key / (reference_policy + ".json.gz")
             )
             paired = list(zip(actual, expected)) + [
                 ({"summary": summary, "ledger": continuous}, expected_continuous)

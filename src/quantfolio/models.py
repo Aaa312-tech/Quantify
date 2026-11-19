@@ -19,7 +19,7 @@ CANDIDATES = ["momentum", "ridge25", "ridge50", "tree25", "tree50"]
 
 
 def make_model(name):
-    """Construct the fixed Ridge or histogram-tree estimator used by the V6 protocol."""
+    """Construct the Ridge or histogram-tree estimator fixed by the experiment protocol."""
     imputer = SimpleImputer(strategy="median", keep_empty_features=True, add_indicator=True)
     if name == "ridge":
         return make_pipeline(imputer, StandardScaler(), Ridge(alpha=1000.0))

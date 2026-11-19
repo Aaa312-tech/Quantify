@@ -32,15 +32,16 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
     costs = sorted(result["results"], key=lambda cost: int(cost[:-3]))
     cost = costs[0]
     cost_bps = int(cost[:-3])
-    benchmark = read(paths.root / "docs/references/frozen_v4_benchmark.json") if reference else None
+    benchmark = read(paths.benchmark) if reference else None
     destination = (
         paths.root / "reports" / ("latest" if reference else f"experiments/{source.name}")
     ).resolve()
     if not destination.is_relative_to(paths.root / "reports"):
         raise ValueError("Report destination escapes the project")
     destination.mkdir(parents=True, exist_ok=True)
-    primary = result["continuous"][cost]["v6_selected"]["summary"]
-    aggregate = result["results"][cost]["v6_selected"]["aggregate"]
+    primary_policy = result["primary_policy"]
+    primary = result["continuous"][cost][primary_policy]["summary"]
+    aggregate = result["results"][cost][primary_policy]["aggregate"]
 
     def curve_for(policy):
         relative = f"evaluation/continuous/{cost}/{policy}.json.gz"
@@ -49,7 +50,7 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
             raise ValueError(f"Evaluation ledger hash mismatch: {relative}")
         return load_gzip(path)["ledger"]["curve"]
 
-    curve = curve_for("v6_selected")
+    curve = curve_for(primary_policy)
     dates = pd.to_datetime([point["date"] for point in curve])
     figure, axis = plt.subplots(figsize=(11, 4.2), layout="constrained")
     figure.set_facecolor("#f7f9fc")
@@ -59,7 +60,7 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
         [point["nav"] / 1e6 for point in curve],
         color="#185adb",
         linewidth=2,
-        label="Selected strategy",
+        label="Walk-forward momentum",
     )
     momentum_curve = curve_for("matched_momentum")
     axis.plot(
@@ -78,7 +79,7 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
             color="#a45b00",
             linewidth=1.5,
             alpha=0.8,
-            label="Frozen V4 (no recovery)",
+            label="Historical baseline (no recovery)",
         )
     axis.axhline(1, color="#7d8794", linewidth=0.8)
     axis.set_ylabel("Net asset value / initial capital")
@@ -90,9 +91,9 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
     plt.close(figure)
     rows = []
     for current_cost in costs:
-        current = result["continuous"][current_cost]["v6_selected"]["summary"]
+        current = result["continuous"][current_cost][primary_policy]["summary"]
         momentum = result["continuous"][current_cost]["matched_momentum"]["summary"]
-        episode = result["results"][current_cost]["v6_selected"]["aggregate"]
+        episode = result["results"][current_cost][primary_policy]["aggregate"]
         old_cell = (
             f"<td>{benchmark[current_cost]['continuous']['return']:.2%}</td>" if benchmark else ""
         )
@@ -103,9 +104,9 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
             f"<td>{episode['mean_net_return']:.2%}</td></tr>"
         )
     template = files("quantfolio").joinpath("templates/report.html").read_text("utf-8")
-    title = "V6回测结果" if reference else f"实验回测：{source.name}"
+    title = f"{paths.config['strategy_name']}回测" if reference else f"实验回测：{source.name}"
     notice = (
-        "收益优势验证未通过。V6与同风控动量结果相同，新增选股模型尚未带来可验证的增益。"
+        "收益优势验证未通过。主策略与同风控动量结果相同，新增选股模型尚未带来可验证的增益。"
         if reference
         else "此实验尚未进行收益优势检验，结果用于研究。"
     )
@@ -129,7 +130,7 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
         net_return=f"{primary['return']:.2%}",
         drawdown=f"{primary['max_drawdown']:.2%}",
         average=f"{aggregate['mean_net_return']:.2%}",
-        benchmark_header="<th>冻结V4</th>" if benchmark else "",
+        benchmark_header="<th>历史基准（不恢复仓位）</th>" if benchmark else "",
         scope="此页展示冻结回测，不包含实时行情或新交易指令。"
         if reference
         else "仅展示本实验已完成窗口，不能与不同区间的完整历史收益直接比较。",
