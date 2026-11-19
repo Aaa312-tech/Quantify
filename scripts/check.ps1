@@ -2,6 +2,9 @@ param([string]$Python = "python")
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
+$PreviousPythonPath = $env:PYTHONPATH
+$PreviousBytecode = $env:PYTHONDONTWRITEBYTECODE
+$env:PYTHONPATH = Join-Path $ProjectRoot "src"
 $env:PYTHONDONTWRITEBYTECODE = "1"
 Push-Location -LiteralPath $ProjectRoot
 try {
@@ -14,4 +17,6 @@ try {
 }
 finally {
     Pop-Location
+    $env:PYTHONPATH = $PreviousPythonPath
+    $env:PYTHONDONTWRITEBYTECODE = $PreviousBytecode
 }

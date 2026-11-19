@@ -130,7 +130,7 @@ def momentum_features(table):
     extra["volume_confirmation"] = t.mom5 * np.log1p(t.amount_ratio.clip(0, 10))
     extra = extra.replace([np.inf, -np.inf], np.nan)
     ranked = extra.where(t.eligible, axis=0).groupby(t.date_index, sort=False).rank(pct=True) - 0.5
-    ranked.columns = ["v4_rank_" + c for c in extra]
+    ranked.columns = ["rank_" + c for c in extra]
     ranked["momentum_percentile"] = (
         t.momentum_score.where(t.eligible).groupby(t.date_index, sort=False).rank(pct=True)
     )

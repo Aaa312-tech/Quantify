@@ -1,4 +1,4 @@
-"""Safety and portability invariants of the retained package."""
+"""Risk, output isolation and project portability invariants."""
 
 from pathlib import Path
 

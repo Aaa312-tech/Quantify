@@ -1,4 +1,4 @@
-"""Integer-share next-open simulation for the retained non-recovering strategy."""
+"""Integer-share next-open simulation with non-recovering risk controls."""
 
 from __future__ import annotations
 

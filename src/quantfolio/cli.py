@@ -16,7 +16,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--project", help="Project directory (or QUANTFOLIO_ROOT)")
     parser.add_argument("--debug", action="store_true", help="Show traceback on research errors")
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("status", help="Show the retained strategy and validation status")
+    commands.add_parser("status", help="Show the active strategy and validation status")
     verification = commands.add_parser("verify", help="Check frozen files, features and models")
     verification.add_argument("--output", help="New directory under artifacts/checks")
     verification.add_argument("--refit", action="store_true", help="Refit fold 1's two estimators")
@@ -45,7 +45,7 @@ def main(argv: list[str] | None = None) -> None:
         "--all-policies", action="store_true", help="Include all 19 rule comparisons"
     )
     report = commands.add_parser(
-        "report", help="Render retained results or an evaluated experiment"
+        "report", help="Render reference results or an evaluated experiment"
     )
     report.add_argument("--run", help="Evaluated directory under artifacts/evaluations")
     args = parser.parse_args(argv)
@@ -71,7 +71,7 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         path = paths.reference / "evaluation_summary.json"
         manifest = read(paths.manifest)
         if sha(path) != manifest["files"][path.relative_to(paths.root).as_posix()]:
-            raise ValueError("Retained evaluation summary hash mismatch")
+            raise ValueError("Reference evaluation summary hash mismatch")
         result = read(path)
         return {
             "software_version": __version__,

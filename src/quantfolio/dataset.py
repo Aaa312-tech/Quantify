@@ -9,13 +9,13 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from .features import industry_features
+from .features import industry_features, momentum_features
 from .settings import Paths
 from .storage import read, sha
 
 
 def check_integrity(paths: Paths) -> dict[str, Any]:
-    """Verify every retained input and reference file before deserializing models."""
+    """Verify every frozen input and reference file before deserializing models."""
     manifest = read(paths.manifest)
     errors = []
     for relative, expected in manifest["files"].items():
@@ -53,17 +53,27 @@ def load_bundle(paths: Paths) -> dict[str, Any]:
         raise ValueError(f"Missing dataset fields: {required - bundle.keys()}")
     if str(bundle["cutoff"])[:10] != paths.config["data_cutoff"]:
         raise ValueError("Dataset cutoff differs from configs/project.toml")
+    aliases = paths.archive.get("features", {})
+    columns = [aliases.get(name, name) for name in bundle["table"].columns]
+    features = [aliases.get(name, name) for name in bundle["features"]]
+    if len(set(columns)) != len(columns) or len(set(features)) != len(features):
+        raise ValueError("Archived feature names collide with current columns")
+    # Rename the freshly loaded frame; preserve values, dtypes and model input order.
+    bundle["table"].columns = columns
+    bundle["features"] = features
     return bundle
 
 
 def validate_features(bundle: dict[str, Any]) -> dict[str, Any]:
-    """Rebuild industry features and prove future rows do not change historical prefixes."""
+    """Rebuild derived ranks and prove future rows do not change historical prefixes."""
     table = bundle["table"]
-    rebuilt, _ = industry_features(table.copy(deep=True), bundle["meta"])
+    industry, _ = industry_features(table, bundle["meta"])
+    rebuilt = pd.concat([momentum_features(table), industry], axis=1)
     pd.testing.assert_frame_equal(table[rebuilt.columns], rebuilt)
     for cutoff in (300, 500, 650):
         prefix = table.loc[table.date_index <= cutoff].copy(deep=True)
-        actual, _ = industry_features(prefix, bundle["meta"])
+        industry, _ = industry_features(prefix, bundle["meta"])
+        actual = pd.concat([momentum_features(prefix), industry], axis=1)
         pd.testing.assert_frame_equal(actual, rebuilt.loc[prefix.index])
     return {
         "status": "PASS",

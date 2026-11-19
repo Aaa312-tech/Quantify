@@ -1,0 +1,40 @@
+# Compatibility names and relocation map for byte-preserved research evidence.
+source_commit = "beccaf214fe460d28ed786ecbf550ffffeff2706"
+
+[paths]
+"artifacts/v6_2026-11-19" = "artifacts/reference/2026-11-19"
+"configs/experiment_v6.json" = "configs/experiment.json"
+"docs/references/frozen_v4_benchmark.json" = "docs/references/benchmarks/latched_risk.json"
+"docs/references/data_lineage/v2_source_manifest.json" = "docs/references/data_lineage/base_features.json"
+"docs/references/data_lineage/v3_source_manifest.json" = "docs/references/data_lineage/adjusted_labels.json"
+"docs/references/data_lineage/v4_source_manifest.json" = "docs/references/data_lineage/momentum_features.json"
+"docs/references/data_lineage/v5_source_manifest.json" = "docs/references/data_lineage/industry_features.json"
+"docs/references/version_selection.json" = "docs/references/provenance/strategy_selection.json"
+"docs/references/migration_source_map.json" = "docs/references/provenance/source_paths.json"
+"docs/references/github_conventions.md" = "docs/references/provenance/repository_references.md"
+"docs/references/corporate_actions/300308_2026-04-30.pdf" = "docs/references/corporate_actions/sz300308_2026-04-30.pdf"
+"docs/references/corporate_actions/sh600066.pdf" = "docs/references/corporate_actions/sh600066_2026-05-08.pdf"
+"docs/references/corporate_actions/sh600309.pdf" = "docs/references/corporate_actions/sh600309_2026-05-21.pdf"
+"docs/references/corporate_actions/sh601133.pdf" = "docs/references/corporate_actions/sh601133_2026-06-30.pdf"
+"docs/references/corporate_actions/sz300012.pdf" = "docs/references/corporate_actions/sz300012_2026-08-20.pdf"
+
+[filenames]
+"forecast_v2_tests.log" = "checks/portfolio_constraints.log"
+"forecast_v3_tests.log" = "checks/accounting.log"
+"forecast_v4_tests.log" = "checks/latched_risk.log"
+"forecast_v5_tests.log" = "checks/industry_selection.log"
+"forecast_v6_tests.log" = "checks/turnover_rules.log"
+
+[policies]
+v6_selected = "selected_strategy"
+selected_legacy = "selected_baseline_rules"
+
+[features]
+v4_rank_momentum20_ex5 = "rank_momentum20_ex5"
+v4_rank_momentum60_ex20 = "rank_momentum60_ex20"
+v4_rank_short_acceleration = "rank_short_acceleration"
+v4_rank_vol_ratio = "rank_vol_ratio"
+v4_rank_momentum_atr = "rank_momentum_atr"
+v4_rank_downside_share = "rank_downside_share"
+v4_rank_rebound_risk = "rank_rebound_risk"
+v4_rank_volume_confirmation = "rank_volume_confirmation"

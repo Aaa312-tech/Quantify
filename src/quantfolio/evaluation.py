@@ -16,7 +16,7 @@ from .simulation import episodes, simulate
 from .storage import digest, dump_gzip, log, now, read, save, sha
 from .validation import execution_audit, reconcile
 
-POLICIES = ["selected_strategy", "matched_momentum", "selected_legacy"] + [
+POLICIES = ["selected_strategy", "matched_momentum", "selected_baseline_rules"] + [
     "fixed_" + name for name in CONFIGS
 ]
 
@@ -204,7 +204,7 @@ def policy_inputs(name: str, maps: dict, schedule: dict) -> tuple:
         return maps["selected"], schedule
     if name == "matched_momentum":
         return maps["momentum"], schedule
-    if name == "selected_legacy":
+    if name == "selected_baseline_rules":
         return maps["selected"], "baseline"
     raise ValueError(name)
 
@@ -214,7 +214,6 @@ def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) ->
     from .storage import load_gzip
 
     integrity = check_integrity(paths)
-    reference_primary = read(paths.reference / "evaluation_summary.json")["primary_policy"]
     bundle = load_bundle(paths)
     maps, schedule, folds, start, end = load_predictions(bundle, paths.reference)
     results = {}
@@ -224,11 +223,10 @@ def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) ->
         key = f"{cost:02d}bps"
         results[key] = {}
         for policy in policies:
-            reference_policy = reference_primary if policy == "selected_strategy" else policy
             forecasts, rules = policy_inputs(policy, maps, schedule)
             actual = episodes(bundle, start, end, forecasts, cost / 10000, True, rules=rules)
             expected = load_gzip(
-                paths.reference / "evaluation" / key / (reference_policy + ".ledgers.json.gz")
+                paths.reference / "evaluation" / key / (policy + ".ledgers.json.gz")
             )
             if len(actual) != len(expected):
                 raise AssertionError(f"Account count mismatch: {key}/{policy}")
@@ -236,7 +234,7 @@ def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) ->
                 bundle, start + 1, end + 1, forecasts, cost / 10000, True, rules=rules
             )
             expected_continuous = load_gzip(
-                paths.reference / "evaluation/continuous" / key / (reference_policy + ".json.gz")
+                paths.reference / "evaluation/continuous" / key / (policy + ".json.gz")
             )
             paired = list(zip(actual, expected)) + [
                 ({"summary": summary, "ledger": continuous}, expected_continuous)

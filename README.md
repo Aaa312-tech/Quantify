@@ -52,12 +52,11 @@ python -m venv .venv
 | --- | --- |
 | `src/quantfolio/` | 特征、训练、选股、模拟、独立核账及命令入口 |
 | `tests/` | 合成数据上的交易规则与因果性测试 |
-| `configs/` | 项目路径、实验协议和冻结文件SHA-256清单 |
+| `configs/` | 项目路径、实验协议、历史名称映射和冻结文件SHA-256清单 |
 | `data/processed/2026-11-18/` | 行情、公司行为、特征与标签快照 |
-| `artifacts/`下由`configs/project.toml`指定的参考目录 | 冻结训练、预测和回测账本 |
+| `artifacts/reference/2026-11-19/` | 冻结训练、预测和回测账本 |
 | `artifacts/experiments/`、`artifacts/evaluations/` | 新训练及对应评估；每次使用新名称 |
-| `artifacts/checks/`、`artifacts/replays/` | 模型验证和账本重放结果 |
-| `artifacts/maintenance/` | 工程验证摘要 |
+| `artifacts/checks/`、`artifacts/replays/` | 当前模型校验、迁移核对和完整账本重放结果 |
 | `docs/` | 方法、架构、复现说明及来源材料 |
 | `reports/latest/` | 可重建的HTML报告和净值图 |
 | `scripts/` | PowerShell运行、检查和同步入口 |

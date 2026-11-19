@@ -98,7 +98,7 @@ def experiment(tmp_path, monkeypatch):
     return Paths(tmp_path), bundle, run, folds
 
 
-@pytest.mark.parametrize("stored_policy", ["selected_strategy", "v6_selected"])
+@pytest.mark.parametrize("stored_policy", ["selected_strategy", "archived_primary"])
 def test_evaluate_and_report_use_actual_window_cost_and_policy(experiment, capsys, stored_policy):
     paths, _, run, _ = experiment
     output = paths.root / "artifacts/evaluations/partial_run"

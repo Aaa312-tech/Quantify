@@ -25,7 +25,7 @@ class RiskState:
     def update(self, nav: float, healthy: bool) -> dict[str, Any]:
         """Use preceding-close NAV, preserving the frozen ledger evidence schema."""
         if self.mode != "latched":
-            raise ValueError("Only the retained non-recovering risk policy is supported")
+            raise ValueError("Only non-recovering risk is supported")
         if not math.isfinite(nav) or nav <= 0:
             raise ValueError("Invalid preceding-close NAV")
         self.peak = max(self.peak, float(nav))

@@ -27,7 +27,7 @@ python -m quantfolio replay --output artifacts/replays/full_check
 python -m quantfolio report
 ```
 
-`verify`校验872项冻结文件、特征历史前缀、48个模型的保存预测和标签可用日期。`--refit`重新拟合第1窗口的两个估计器，与冻结预测逐项比较。
+`verify`校验872项冻结文件、动量与行业特征的历史前缀、48个模型的保存预测和标签可用日期。`--refit`重新拟合第1窗口的两个估计器，与冻结预测逐项比较。目录更名不改变模型、预测、账本及数据文件的内容哈希。
 
 `replay`重放19项策略×3档成本×25个账户，共1425个账户，并比较完整摘要和账本；差异会导致非零退出码。可加 `--primary-only`或 `--cost 10`缩小检查范围。旧命令 `backtest`是`replay`的兼容别名。
 

@@ -10,11 +10,11 @@
 | `calendar` | 有序交易日历 |
 | `panels`、`scores` | 日期×证券的历史面板与基础评分 |
 | `table` | 日期索引、证券、合格状态、特征、标签及标签结束日 |
-| `features` | 模型使用的57列有序特征名 |
+| `features` | 模型使用的57列有序特征名，读取时转换历史名称但不改变顺序 |
 | `cutoff` | 数据完成截止日 |
 
-`y1/y3/y5`、`end1/end3/end5`、`status1/status3/status5`配套使用。`dataset.label_mask`按真实标签结束日净化训练样本；`features`包含价格、动量、横截面及行业变换。行业特征只使用同日数据，历史前缀通过重建比较验证。
+`y1/y3/y5`、`end1/end3/end5`、`status1/status3/status5`配套使用。`dataset.label_mask`按真实标签结束日净化训练样本；`features`包含价格、动量、横截面及行业变换。动量和行业排名只使用同日数据，历史前缀通过重建比较验证。历史字段映射集中在`configs/archive.toml`；列名冲突会拒绝载入。
 
-`market.legal_label`处理合法可成交标签，`ledger.causal_price_index`处理因果价格调整。原始来源清单在 `docs/references/data_lineage`；公司行为公告、赛事材料及PDF保留在 `docs/references`。这些记录中的历史路径不参与当前文件定位。
+`market.legal_label`处理合法可成交标签，`ledger.causal_price_index`处理因果价格调整。原始来源清单在 `docs/references/data_lineage`，历史方法比较和迁移记录在`docs/references/provenance`。公司行为PDF按证券代码和公告日期命名。原记录中的路径、标识和来源哈希保留原文，可通过`configs/archive.toml`查找当前位置。
 
 新数据需要新日期目录，核查交易日、重复记录、OHLC、流动性、公司行为和历史可用性，再登记配置与完整性清单。修改路径不会自动采集行情。`configs/project.toml`的`protocol`指向冻结实验协议，不是可任意修改的调参配置。

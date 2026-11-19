@@ -41,6 +41,11 @@ class Paths:
         with (self.root / "configs/project.toml").open("rb") as stream:
             return tomllib.load(stream)
 
+    @cached_property
+    def archive(self) -> dict:
+        with self._configured_path("archive").open("rb") as stream:
+            return tomllib.load(stream)
+
     def _configured_path(self, name: str) -> Path:
         relative = Path(self.config[name])
         target = (self.root / relative).resolve()

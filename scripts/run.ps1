@@ -7,6 +7,7 @@ param(
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $PreviousPythonPath = $env:PYTHONPATH
+$PreviousBytecode = $env:PYTHONDONTWRITEBYTECODE
 $env:PYTHONDONTWRITEBYTECODE = "1"
 try {
     $env:PYTHONPATH = Join-Path $ProjectRoot "src"
@@ -15,4 +16,5 @@ try {
 }
 finally {
     $env:PYTHONPATH = $PreviousPythonPath
+    $env:PYTHONDONTWRITEBYTECODE = $PreviousBytecode
 }

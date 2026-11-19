@@ -44,7 +44,8 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
     aggregate = result["results"][cost][primary_policy]["aggregate"]
 
     def curve_for(policy):
-        relative = f"evaluation/continuous/{cost}/{policy}.json.gz"
+        filename = paths.archive.get("policies", {}).get(policy, policy) if reference else policy
+        relative = f"evaluation/continuous/{cost}/{filename}.json.gz"
         path = source / relative
         if not reference and sha(path) != result["artifacts"][relative]:
             raise ValueError(f"Evaluation ledger hash mismatch: {relative}")
