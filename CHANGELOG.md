@@ -6,6 +6,7 @@
 - 分离开盘订单执行与逐日模拟；复用整手规则，合并重复收益统计，写清持仓金额、数量及训练样本的变量名。
 - 审计改为检查非恢复风险等级，补充恢复仓位和缺失每日决策的回归测试。
 - HTML模板移入包资源；精简项目说明，机器维护记录归入 `artifacts/maintenance`。
+- CI使用Node.js 24运行时的[checkout v7.0.1](https://github.com/actions/checkout/releases/tag/v7.0.1)和[setup-python v7.1.0](https://github.com/actions/setup-python/releases/tag/v7.1.0)，固定到对应发布提交。
 - 策略参数不变。工程验证结果见 `artifacts/maintenance/refactor_2026-11-19`。
 
 ## 0.6.0 — 2026-11-19
