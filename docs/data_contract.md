@@ -1,22 +1,20 @@
-# 数据契约与来源
+# 数据契约
 
-保留快照：`data/processed/2026-11-18/bundle.joblib`。它是受信任的本地研究产物；先按完整性清单校验，再反序列化。不要直接加载来源不明的joblib/pickle文件。
+`configs/project.toml`声明数据快照、参考实验和完整性清单的相对路径及数据截止日。当前快照为 `data/processed/2026-11-18/bundle.joblib`。载入前检查SHA-256及截止日期；joblib仅用于本地受信任的快照和模型。
 
-| 字段 | 含义 |
+| 字段 | 内容 |
 | --- | --- |
-| `meta` | 证券代码、类别、名称、行业等元数据 |
+| `meta` | 证券代码、类别、名称、行业 |
 | `raws` | 各证券按日期索引的未复权OHLC、成交量与成交额 |
-| `actions` | 除权、登记、支付、上市日期及来源证据 |
+| `actions` | 除权、登记、支付、上市日期与来源 |
 | `calendar` | 有序交易日历 |
-| `panels` / `scores` | 日期×证券的历史面板与基础评分 |
-| `table` | 日期索引、证券、合格状态、特征、标签及标签结束日期 |
-| `features` | 模型使用的有序57列特征名，次序不得随意更改 |
-| `cutoff` | 数据完成截止日期 |
+| `panels`、`scores` | 日期×证券的历史面板与基础评分 |
+| `table` | 日期索引、证券、合格状态、特征、标签及标签结束日 |
+| `features` | 模型使用的57列有序特征名 |
+| `cutoff` | 数据完成截止日 |
 
-表中 `y1/y3/y5`、`end1/end3/end5`、`status1/status3/status5` 配套使用。训练必须通过 `splits.label_mask` 排除尚不可用的标签。行业特征使用同日截面；不得用未来行回填当前缺失值。
+`y1/y3/y5`、`end1/end3/end5`、`status1/status3/status5`配套使用。`dataset.label_mask`按真实标签结束日净化训练样本；`features`包含价格、动量、横截面及行业变换。行业特征只使用同日数据，历史前缀通过重建比较验证。
 
-`transforms`保留价格、动量与横截面变换；`features`保留行业变换；`market.legal_label`和`ledger.causal_price_index`保留标签和因果价格工具。旧数据采集、早期实验和临时下载脚本退出活动代码。当前入口针对冻结数据训练与复现，不承诺自动更新市场数据。
+`market.legal_label`处理合法可成交标签，`ledger.causal_price_index`处理因果价格调整。原始来源清单在 `docs/references/data_lineage`；公司行为公告、赛事材料及PDF保留在 `docs/references`。这些记录中的历史路径不参与当前文件定位。
 
-以后接入新行情时，应在新日期目录构建同样字段的快照，核查交易日、重复记录、OHLC、流动性、公司行为来源与历史可用性，并更新数据协议。不能仅修改文件名或截止日期。新快照不应覆盖本次参考数据。
-
-原始数据各阶段来源清单留在 `docs/references/data_lineage`；已核实公司行为见 `corporate_action_sources.json`及配套PDF。其内的原路径与历史版本标识是来源追溯信息，当前运行不读取那些旧位置。赛事白皮书与通知截图单独保存在同一参考目录。
+新数据需要新日期目录，核查交易日、重复记录、OHLC、流动性、公司行为和历史可用性，再登记配置与完整性清单。修改路径不会自动采集行情。`configs/experiment_v6.json`是冻结实验协议，不是可任意修改的调参配置。

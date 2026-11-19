@@ -1,5 +1,14 @@
 # 维护记录
 
+## 0.7.0 — 2026-11-19
+
+- 接通`train → evaluate → report --run`，支持部分窗口、成本选择、实验来源及预测覆盖校验。`replay`负责冻结重放，兼容旧命令`backtest`。
+- 报告使用实际区间、成本及样本数；部分实验不再展示不同区间的V4对比。
+- 关键约束不再依赖assert；完善LFS、路径及参数错误提示，JSON和压缩账本使用原子写入。
+- 包导入不再改变全局pandas配置；项目路径集中配置，软件版本只有一个来源。
+- CI从源码分发包构建并测试wheel，覆盖Windows和Ubuntu。修正文档中失效的模块引用，移出机器清理日志。
+- V6参数与冻结数据不变；完整重放和真实训练流程的验证见`artifacts/maintenance/quality_2026-11-19`。
+
 ## 0.6.1 — 2026-11-19
 
 - 合并特征、模型、时间窗口和验证模块，移除单函数文件、空包装和未使用的区间估计函数。
@@ -17,6 +26,6 @@
 - 采用 `src` 包布局与 `pyproject.toml`；统一命令入口、格式、导入、测试和本地检查脚本。
 - 数据快照、冻结实验、可重建报告和参考材料分目录管理；增加可移植SHA-256清单。
 - 重建中文项目说明、方法、架构、复现指南和本地结果报告。
-- 策略参数、成本、风险规则与历史数据保持原实验语义；迁移验证与回收站记录见 `artifacts/maintenance/import_2026-11-19/reorganization.md`。
+- 策略参数、成本、风险规则与历史数据保持原实验语义；迁移验证与回收站记录见 [历史迁移记录](https://github.com/Aaa312-tech/Quantify/blob/21a32c06331ff8a78b733aa531d857f7bee55cf8/docs/maintenance/reorganization.md)。
 
 这是工程整理，不是新增收益证据。版本保留依据见 `docs/references/version_selection.json`。

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+import pandas as pd
 
 from .calibration import calibrate, map_calibration, rank_by_date
 from .dataset import eligible_rows, label_mask
@@ -21,6 +22,7 @@ from .storage import dump_gzip, log, now, read, save, sha
 from .validation import execution_audit, reconcile
 
 
+@pd.option_context("compute.use_numexpr", False)
 def run_training(paths, output, first=1, last=11, include_latest=False):
     """Train the unchanged V6 protocol in a new experiment, preserving all reference files.
 
@@ -95,7 +97,8 @@ def trial(bundle, fold, forecasts, config, path, identity):
     ledger_path = path.with_suffix(".ledgers.json.gz")
     if summary_path.exists():
         out = read(summary_path)
-        assert out["identity"] == identity and sha(ledger_path) == out["ledger_sha256"]
+        if out["identity"] != identity or sha(ledger_path) != out["ledger_sha256"]:
+            raise ValueError(f"Cached trial identity or ledger hash mismatch: {summary_path}")
         return out
     accounts = episodes(
         bundle,
@@ -119,9 +122,9 @@ def trial(bundle, fold, forecasts, config, path, identity):
     audits = [execution_audit(e["ledger"], bundle) for e in accounts] + [
         execution_audit(continuous_ledger, bundle)
     ]
-    assert all(c["status"] == "PASS" for c in checks + audits), str(
-        [c for c in checks + audits if c["status"] != "PASS"]
-    )
+    failures = [check for check in checks + audits if check["status"] != "PASS"]
+    if failures:
+        raise ValueError(f"Validation account audit failed: {failures}")
     dump_gzip(
         ledger_path,
         {
@@ -146,16 +149,18 @@ def trial(bundle, fold, forecasts, config, path, identity):
     return out
 
 
+@pd.option_context("compute.use_numexpr", False)
 def run_window(bundle, fold, folder, identity, final=False):
     """Select rules and models on validation data, refit, then freeze outer predictions."""
     folder.mkdir(parents=True, exist_ok=True)
     table = bundle["table"]
     if (folder / "result.json").exists():
         result = read(folder / "result.json")
-        assert (
-            result["identity"] == identity
-            and sha(folder / "outer_predictions.npz") == result["predictions_sha256"]
-        )
+        if (
+            result["identity"] != identity
+            or sha(folder / "outer_predictions.npz") != result["predictions_sha256"]
+        ):
+            raise ValueError(f"Cached window identity or prediction hash mismatch: {folder}")
         return result
     calibration_start = fold["train_end"] - 59
     fit_end = calibration_start - 7

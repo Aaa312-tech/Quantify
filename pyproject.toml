@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quantfolio-research"
-version = "0.6.1"
+dynamic = ["version"]
 description = "Reproducible A-share portfolio research with frozen V6 evidence"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
@@ -19,7 +19,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest==8.4.2", "ruff==0.17.5"]
+dev = ["pytest==8.4.2", "ruff==0.17.5", "build==1.3.0"]
+
+[project.urls]
+Repository = "https://github.com/Aaa312-tech/Quantify"
+Documentation = "https://github.com/Aaa312-tech/Quantify/blob/main/docs/reproducibility.md"
+Changelog = "https://github.com/Aaa312-tech/Quantify/blob/main/CHANGELOG.md"
 
 [project.scripts]
 quantfolio = "quantfolio.cli:main"
@@ -27,12 +32,14 @@ quantfolio = "quantfolio.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.dynamic]
+version = {attr = "quantfolio.__version__"}
+
 [tool.setuptools.package-data]
 quantfolio = ["templates/*.html"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
 addopts = "-ra -p no:cacheprovider"
 
 [tool.ruff]
@@ -42,7 +49,10 @@ src = ["src"]
 extend-exclude = ["data", "artifacts", "reports", ".venv"]
 
 [tool.ruff.lint]
-select = ["E4", "E7", "E9", "F", "I"]
+select = ["E4", "E7", "E9", "F", "I", "S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
 
 [tool.ruff.format]
 quote-style = "double"

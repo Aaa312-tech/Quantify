@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 
+@pd.option_context("compute.use_numexpr", False)
 def price_features(raw, adj, bench_returns):
     """Compute trailing price and liquidity features from causal adjusted bars."""
     f = pd.DataFrame(index=adj.index)
@@ -89,6 +90,7 @@ BASE_FEATURES = [
 ]
 
 
+@pd.option_context("compute.use_numexpr", False)
 def feature_frame(raw, causal, splits, benchmark):
     """Build the base feature frame with split-normalized volume and finite values."""
     normalized = raw.copy()
@@ -103,6 +105,7 @@ def feature_frame(raw, causal, splits, benchmark):
     return x.replace([np.inf, -np.inf], np.nan)
 
 
+@pd.option_context("compute.use_numexpr", False)
 def cross_ranks(table, columns):
     """Rank eligible base features within each completed signal date."""
     values = table[columns].where(table.eligible, axis=0)
@@ -111,6 +114,7 @@ def cross_ranks(table, columns):
     return result
 
 
+@pd.option_context("compute.use_numexpr", False)
 def momentum_features(table):
     """Build trailing momentum interactions and their same-date cross-sectional ranks."""
     t = table
@@ -148,6 +152,7 @@ INDUSTRY_FEATURES = [
 ]
 
 
+@pd.option_context("compute.use_numexpr", False)
 def industry_features(table, meta):
     """Compute same-date industry ranks with small-group shrinkage and eligibility masking."""
     sector = table.symbol.map({s: m["industry"] for s, m in meta.items()})

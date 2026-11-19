@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import os
+from html import escape
 from importlib.resources import files
+from pathlib import Path
 from string import Template
 
 import matplotlib
@@ -13,21 +16,40 @@ import pandas as pd
 
 from .dataset import check_integrity
 from .settings import Paths
-from .storage import load_gzip, read
+from .storage import load_gzip, read, sha
 
 
-def build_report(paths: Paths) -> dict:
-    """Render the retained results, benchmarks and failed adoption gates without new claims."""
+def build_report(paths: Paths, run: str | Path | None = None) -> dict:
+    """Render frozen results or an evaluated experiment without mixing sample periods."""
     check_integrity(paths)
-    result = read(paths.reference / "evaluation_summary.json")
-    benchmark = read(paths.root / "docs/references/frozen_v4_benchmark.json")
-    destination = paths.root / "reports/latest"
+    reference = run is None
+    source = paths.reference if reference else paths.artifact_path(run, "evaluations")
+    result = read(source / "evaluation_summary.json")
+    if not reference and (
+        result.get("schema_version") != 1 or result["status"] not in {"COMPLETE", "PARTIAL"}
+    ):
+        raise ValueError("Report requires a completed evaluation summary")
+    costs = sorted(result["results"], key=lambda cost: int(cost[:-3]))
+    cost = costs[0]
+    cost_bps = int(cost[:-3])
+    benchmark = read(paths.root / "docs/references/frozen_v4_benchmark.json") if reference else None
+    destination = (
+        paths.root / "reports" / ("latest" if reference else f"experiments/{source.name}")
+    ).resolve()
+    if not destination.is_relative_to(paths.root / "reports"):
+        raise ValueError("Report destination escapes the project")
     destination.mkdir(parents=True, exist_ok=True)
-    primary = result["continuous"]["10bps"]["v6_selected"]["summary"]
-    average = result["results"]["10bps"]["v6_selected"]["aggregate"]["mean_net_return"]
-    curve = load_gzip(paths.reference / "evaluation/continuous/10bps/v6_selected.json.gz")[
-        "ledger"
-    ]["curve"]
+    primary = result["continuous"][cost]["v6_selected"]["summary"]
+    aggregate = result["results"][cost]["v6_selected"]["aggregate"]
+
+    def curve_for(policy):
+        relative = f"evaluation/continuous/{cost}/{policy}.json.gz"
+        path = source / relative
+        if not reference and sha(path) != result["artifacts"][relative]:
+            raise ValueError(f"Evaluation ledger hash mismatch: {relative}")
+        return load_gzip(path)["ledger"]["curve"]
+
+    curve = curve_for("v6_selected")
     dates = pd.to_datetime([point["date"] for point in curve])
     figure, axis = plt.subplots(figsize=(11, 4.2), layout="constrained")
     figure.set_facecolor("#f7f9fc")
@@ -37,45 +59,85 @@ def build_report(paths: Paths) -> dict:
         [point["nav"] / 1e6 for point in curve],
         color="#185adb",
         linewidth=2,
-        label="V6 / matched momentum",
+        label="Selected strategy",
     )
-    old_curve = benchmark["10bps"]["curve"]
+    momentum_curve = curve_for("matched_momentum")
     axis.plot(
-        pd.to_datetime([point["date"] for point in old_curve]),
-        [point["nav"] / 1e6 for point in old_curve],
-        color="#a45b00",
-        linewidth=1.5,
-        alpha=0.8,
-        label="Frozen V4 (no recovery)",
+        pd.to_datetime([point["date"] for point in momentum_curve]),
+        [point["nav"] / 1e6 for point in momentum_curve],
+        color="#6a57a5",
+        linestyle="--",
+        linewidth=1.3,
+        label="Matched momentum",
     )
+    if benchmark:
+        old_curve = benchmark[cost]["curve"]
+        axis.plot(
+            pd.to_datetime([point["date"] for point in old_curve]),
+            [point["nav"] / 1e6 for point in old_curve],
+            color="#a45b00",
+            linewidth=1.5,
+            alpha=0.8,
+            label="Frozen V4 (no recovery)",
+        )
     axis.axhline(1, color="#7d8794", linewidth=0.8)
     axis.set_ylabel("Net asset value / initial capital")
-    axis.set_title("Continuous account · 10 bp slippage per side · historical replay", loc="left")
+    axis.set_title(f"Continuous account · {cost_bps} bp slippage per side", loc="left")
     axis.grid(alpha=0.18)
     axis.spines[["top", "right"]].set_visible(False)
     axis.legend(frameon=False, loc="upper left")
     figure.savefig(destination / "equity_curve.png", dpi=160)
     plt.close(figure)
     rows = []
-    for cost in ("10bps", "20bps", "30bps"):
-        current = result["continuous"][cost]["v6_selected"]["summary"]
-        momentum = result["continuous"][cost]["matched_momentum"]["summary"]
-        old = benchmark[cost]["continuous"]
-        episode = result["results"][cost]["v6_selected"]["aggregate"]
+    for current_cost in costs:
+        current = result["continuous"][current_cost]["v6_selected"]["summary"]
+        momentum = result["continuous"][current_cost]["matched_momentum"]["summary"]
+        episode = result["results"][current_cost]["v6_selected"]["aggregate"]
+        old_cell = (
+            f"<td>{benchmark[current_cost]['continuous']['return']:.2%}</td>" if benchmark else ""
+        )
         rows.append(
-            f"<tr><td>{cost}</td><td>{current['return']:.2%}</td>"
-            f"<td>{momentum['return']:.2%}</td><td>{old['return']:.2%}</td>"
+            f"<tr><td>{current_cost}</td><td>{current['return']:.2%}</td>"
+            f"<td>{momentum['return']:.2%}</td>{old_cell}"
             f"<td>{current['max_drawdown']:.2%}</td>"
             f"<td>{episode['mean_net_return']:.2%}</td></tr>"
         )
     template = files("quantfolio").joinpath("templates/report.html").read_text("utf-8")
+    title = "V6回测结果" if reference else f"实验回测：{source.name}"
+    notice = (
+        "收益优势验证未通过。V6与同风控动量结果相同，新增选股模型尚未带来可验证的增益。"
+        if reference
+        else "此实验尚未进行收益优势检验，结果用于研究。"
+    )
+    if not reference and result["status"] == "PARTIAL":
+        notice = "部分窗口回测。" + notice
+    links = {
+        "methodology_link": "docs/methodology.md",
+        "reproduction_link": "docs/reproducibility.md",
+        "results_link": (source / "evaluation_summary.json").relative_to(paths.root).as_posix(),
+        "readme_link": "README.md",
+    }
     document = Template(template).substitute(
+        title=escape(title),
+        notice=escape(notice),
+        cost_bps=cost_bps,
+        data_cutoff=escape(result.get("data_cutoff", paths.config["data_cutoff"])),
+        folds=len(result["fold_choices"]),
+        episodes=aggregate["complete_episodes"],
         trade_start=result["trade_start"],
         trade_end=result["trade_end"],
         net_return=f"{primary['return']:.2%}",
         drawdown=f"{primary['max_drawdown']:.2%}",
-        average=f"{average:.2%}",
+        average=f"{aggregate['mean_net_return']:.2%}",
+        benchmark_header="<th>冻结V4</th>" if benchmark else "",
+        scope="此页展示冻结回测，不包含实时行情或新交易指令。"
+        if reference
+        else "仅展示本实验已完成窗口，不能与不同区间的完整历史收益直接比较。",
         rows="".join(rows),
+        **{
+            name: escape(Path(os.path.relpath(paths.root / relative, destination)).as_posix())
+            for name, relative in links.items()
+        },
     )
     (destination / "index.html").write_text(document, "utf-8", newline="\n")
     return {

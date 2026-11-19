@@ -7,6 +7,7 @@ import math
 from dataclasses import dataclass
 
 import numpy as np
+import pandas as pd
 
 from .allocation import allocate
 from .ledger import Ledger, buy_quantity, fees_cents, lot_rule
@@ -212,12 +213,17 @@ class _Execution:
                 self._observe()
 
 
+@pd.option_context("compute.use_numexpr", False)
 def simulate(
     bundle, start, end, forecasts, slippage=0.001, detail=True, mode="latched", rules="baseline"
 ):
     """Replay next-open executions with prior-close signals and non-recovering risk control."""
     if mode != "latched":
         raise ValueError("V6 supports only non-recovering risk (latched)")
+    if not 1 <= start <= end < len(bundle["calendar"]):
+        raise ValueError("Execution range needs a prior signal day and available market bars")
+    if not np.isfinite(slippage) or slippage < 0:
+        raise ValueError("Slippage must be finite and nonnegative")
     meta = bundle["meta"]
     raws = bundle["raws"]
     panels = bundle["panels"]
@@ -423,6 +429,8 @@ def episodes(
     rules="baseline",
 ):
     """Run reset-capital ten-session accounts and retain the final partial account separately."""
+    if not 0 <= signal_start <= signal_end < len(bundle["calendar"]) - 1:
+        raise ValueError("Signal range must have a following execution day")
     out = []
     for start in range(signal_start + 1, signal_end + 2, 10):
         end = min(start + 9, signal_end + 1)

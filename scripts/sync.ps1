@@ -9,6 +9,7 @@ $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $ExpectedRemote = "https://github.com/Aaa312-tech/Quantify.git"
 $PreviousPythonPath = $env:PYTHONPATH
 $PreviousPrompt = $env:GIT_TERMINAL_PROMPT
+$PreviousBytecode = $env:PYTHONDONTWRITEBYTECODE
 $env:PYTHONDONTWRITEBYTECODE = "1"
 $env:GIT_TERMINAL_PROMPT = "0"
 
@@ -62,7 +63,7 @@ try {
     Write-Output "Commit: https://github.com/Aaa312-tech/Quantify/commit/$Commit"
     $Runs = @()
     for ($Attempt = 0; $Attempt -lt 10 -and $Runs.Count -eq 0; $Attempt++) {
-        $RunJson = & gh run list --repo Aaa312-tech/Quantify --commit $Commit --event push --limit 5 --json databaseId
+        $RunJson = & gh run list --repo Aaa312-tech/Quantify --commit $Commit --workflow ci.yml --event push --limit 5 --json databaseId
         Assert-GitSuccess "CI lookup"
         $Runs = @($RunJson | ConvertFrom-Json)
         if ($Runs.Count -eq 0) { Start-Sleep -Seconds 3 }
@@ -74,5 +75,6 @@ try {
 finally {
     $env:PYTHONPATH = $PreviousPythonPath
     $env:GIT_TERMINAL_PROMPT = $PreviousPrompt
+    $env:PYTHONDONTWRITEBYTECODE = $PreviousBytecode
     Pop-Location
 }

@@ -20,11 +20,13 @@ rules / allocation / risk → simulation → ledger → validation
 | `simulation` | 信号和每日估值；内部 `_Execution`按先卖后买处理成交 |
 | `ledger` | 整数股、T+1、分币现金、应收款和公司行为 |
 | `validation` | 独立重建账务，核对信号时序、风险状态及成交后仓位 |
-| `metrics`、`evaluation` | 单账户与10日账户统计、冻结账本精确重放 |
-| `verification`、`reporting` | 模型重载与重训核验、从冻结结果生成HTML报告 |
+| `metrics`、`evaluation` | 单账户与10日账户统计、新实验评估与冻结账本精确重放 |
+| `verification`、`reporting` | 模型重载与重训核验、从冻结结果或指定实验生成HTML报告 |
 
 模型只读取信号日已知数据，订单在下一交易日开盘处理。`_Execution`的价格映射包含同一开盘时段较早的成交，后续买单按更新后的净值检查上限。`validation`不复用`Ledger`的金额计算，保留独立核对能力。
 
 `recovery`、`v4_rank_*`、`selected_legacy`等名称属于冻结数据协议，不表示维护旧策略。风险控制仅支持 `latched`，历史记录中的这些字段继续保留以便逐项比对。
 
 行情与实验在包外，报告模板在包内。新行情遵循[数据契约](data_contract.md)，新实验写入独立目录；[冻结参考文件](../configs/integrity_manifest.json)不随工程整理改写。
+
+`train → evaluate → report --run`按实验目录传递结果；`replay`独立负责冻结V6的数值回归。项目路径和截止日期由`configs/project.toml`提供，运行时校验与输入一致。包导入不修改全局pandas设置。

@@ -8,6 +8,7 @@ import hashlib
 import json
 import logging
 import os
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -65,10 +66,34 @@ def save(path: str | Path, value: Any, immutable: bool = False) -> None:
         if read(path) != json.loads(encoded):
             raise ValueError(f"Immutable artifact already exists: {path}")
         return
+    try:
+        _atomic_write(path, (encoded + "\n").encode("utf-8"), immutable=immutable)
+    except FileExistsError:
+        if not immutable:
+            raise
+        if read(path) != json.loads(encoded):
+            raise ValueError(f"Immutable artifact already exists: {path}") from None
+
+
+def _atomic_write(path: Path, content: bytes, *, immutable: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f"{path.name}.{os.getpid()}.tmp")
-    temporary.write_text(encoded + "\n", encoding="utf-8", newline="\n")
-    os.replace(temporary, path)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            dir=path.parent, prefix=path.name + ".", suffix=".tmp", delete=False
+        ) as stream:
+            temporary = Path(stream.name)
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        if immutable:
+            # Linking a completed file fails atomically if another writer got there first.
+            os.link(temporary, path)
+        else:
+            os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def dump_gzip(path: str | Path, value: Any) -> None:
@@ -78,7 +103,7 @@ def dump_gzip(path: str | Path, value: Any) -> None:
     encoded = json.dumps(
         value, ensure_ascii=False, allow_nan=False, separators=(",", ":"), default=native_scalar
     ).encode("utf-8")
-    path.write_bytes(gzip.compress(encoded, mtime=0))
+    _atomic_write(path, gzip.compress(encoded, mtime=0))
 
 
 def load_gzip(path: str | Path) -> Any:

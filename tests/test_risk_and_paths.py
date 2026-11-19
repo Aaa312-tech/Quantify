@@ -40,13 +40,14 @@ def test_recovery_strategy_is_not_an_active_version():
 def test_new_outputs_cannot_overwrite_frozen_artifacts(tmp_path):
     paths = Paths(tmp_path)
     with pytest.raises(ValueError):
-        paths.new_output("artifacts/v6_2026-11-19", "experiments")
+        paths.output_path("artifacts/v6_2026-11-19", "experiments")
     with pytest.raises(ValueError):
-        paths.new_output("artifacts/experiments/../../outside", "experiments")
-    first = paths.new_output("artifacts/experiments/new_run", "experiments")
-    assert first.is_dir()
+        paths.output_path("artifacts/experiments/../../outside", "experiments")
+    first = paths.output_path("artifacts/experiments/new_run", "experiments")
+    assert not first.exists()
+    first.mkdir(parents=True)
     with pytest.raises(FileExistsError):
-        paths.new_output(first, "experiments")
+        paths.output_path(first, "experiments")
 
 
 def test_project_lookup_from_another_directory(tmp_path, monkeypatch):

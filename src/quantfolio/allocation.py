@@ -207,7 +207,10 @@ def allocate(
             "solver_status": int(result.status),
         }
     x = result.x
-    assert np.all(np.array(A) @ x <= np.array(rhs) + 1e-7) and np.max(np.abs(eq @ x - old)) < 1e-7
+    if not (
+        np.all(np.array(A) @ x <= np.array(rhs) + 1e-7) and np.max(np.abs(eq @ x - old)) < 1e-7
+    ):
+        raise ValueError("Optimizer returned weights that violate portfolio constraints")
     targets = {s: max(0.0, float(x[i])) for i, s in enumerate(names)}
     buffered = 0
     if cfg["deadband2"] and level < 2:

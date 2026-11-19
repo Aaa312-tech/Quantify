@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import joblib
 import numpy as np
+import pandas as pd
 from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
@@ -77,6 +78,7 @@ def training_targets(table, rows):
     )
 
 
+@pd.option_context("compute.use_numexpr", False)
 def fit_stage(bundle, train_rows, pred_rows, path, identity):
     """Fit two fixed estimators or verify and reuse identical cached training artifacts."""
     path.mkdir(parents=True, exist_ok=True)
@@ -98,11 +100,13 @@ def fit_stage(bundle, train_rows, pred_rows, path, identity):
         metadata_path = folder / "fit.json"
         if metadata_path.exists():
             metadata = read(metadata_path)
-            assert (
-                metadata["identity"] == key
-                and sha(folder / "model.joblib") == metadata["model_sha256"]
-            )
-            assert sha(folder / "predictions.npy") == metadata["predictions_sha256"]
+            if (
+                metadata["identity"] != key
+                or sha(folder / "model.joblib") != metadata["model_sha256"]
+            ):
+                raise ValueError(f"Cached model identity or hash mismatch: {folder}")
+            if sha(folder / "predictions.npy") != metadata["predictions_sha256"]:
+                raise ValueError(f"Cached prediction hash mismatch: {folder}")
             out[name] = np.load(folder / "predictions.npy")
             continue
         log("Fitting industry-residual model", stage=str(path), family=name, rows=len(rows))
@@ -111,7 +115,8 @@ def fit_stage(bundle, train_rows, pred_rows, path, identity):
         with threadpool_limits(limits=2):
             model.fit(matrix[rows], target, **{estimator_step + "__sample_weight": weights})
             pred = model.predict(matrix[pred_rows])
-        assert np.isfinite(pred).all()
+        if not np.isfinite(pred).all():
+            raise ValueError(f"Model produced non-finite predictions: {name}")
         joblib.dump(model, folder / "model.joblib", compress=3)
         np.save(folder / "predictions.npy", pred)
         save(

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Quantfolio · V6回测</title>
+  <title>Quantfolio · $title</title>
   <style>
     :root { font-family: system-ui, "Microsoft YaHei", sans-serif; color: #1c2c45; background: #f2f5f9; }
     body { margin: 0; }
@@ -33,26 +33,25 @@
 </head>
 <body>
 <main>
-  <h1>V6回测结果</h1>
+  <h1>$title</h1>
   <p>均衡进攻 · 8%回撤预警 · 仓位降级后不恢复<br>
-    连续账户：$trade_start — $trade_end ｜ 数据截止：2026-11-18</p>
-  <p class="notice"><strong>收益优势验证未通过。</strong>
-    V6与同风控动量结果相同，新增选股模型尚未带来可验证的增益。</p>
+    连续账户：$trade_start — $trade_end ｜ 数据截止：$data_cutoff</p>
+  <p class="notice">$notice</p>
   <div class="cards">
-    <div class="card"><span>连续净收益 · 10bp</span><strong>$net_return</strong></div>
-    <div class="card"><span>最大回撤 · 10bp</span><strong>$drawdown</strong></div>
+    <div class="card"><span>连续净收益 · ${cost_bps}bp</span><strong>$net_return</strong></div>
+    <div class="card"><span>最大回撤 · ${cost_bps}bp</span><strong>$drawdown</strong></div>
     <div class="card"><span>10日账户平均净收益</span><strong>$average</strong></div>
-    <div class="card"><span>外层窗口 / 完整10日账户</span><strong>11 / 23</strong></div>
+    <div class="card"><span>外层窗口 / 完整10日账户</span><strong>$folds / $episodes</strong></div>
   </div>
   <section>
     <h2>连续账户净值</h2>
-    <img src="equity_curve.png" alt="V6与同风控动量曲线重合，与冻结V4的历史净值比较">
+    <img src="equity_curve.png" alt="所选策略与同风控动量的连续净值比较">
     <p>10日账户每期重置本金，其平均收益不能连乘为连续账户收益。</p>
   </section>
   <section>
     <h2>成本敏感性与基准</h2>
     <div class="scroll"><table>
-      <thead><tr><th>每边滑点</th><th>V6连续净收益</th><th>同风控动量</th><th>冻结V4</th><th>V6最大回撤</th><th>V6平均10日</th></tr></thead>
+      <thead><tr><th>每边滑点</th><th>策略连续净收益</th><th>同风控动量</th>$benchmark_header<th>策略最大回撤</th><th>策略平均10日</th></tr></thead>
       <tbody>$rows</tbody>
     </table></div>
     <p>另计佣金、过户费、印花税。各档独立重放，费用会改变成交和持仓路径；20bp收益高于10bp不意味着更高成本有利。</p>
@@ -62,14 +61,14 @@
     <ul>
       <li>历史区间已用于多轮研究，股票池和行业分类不属于认证的历史时点数据。</li>
       <li>8%是预警和下个可交易时点的退出目标，实际回撤仍可能超过8%。</li>
-      <li>此页展示冻结回测，不包含实时行情或新交易指令。</li>
+      <li>$scope</li>
     </ul>
-    <p><a href="../../docs/methodology.md">方法与限制</a> ·
-      <a href="../../docs/reproducibility.md">复现命令</a> ·
-      <a href="../../artifacts/v6_2026-11-19/evaluation_summary.json">完整回测数据</a> ·
-      <a href="../../README.md">项目首页</a></p>
+    <p><a href="$methodology_link">方法与限制</a> ·
+      <a href="$reproduction_link">复现命令</a> ·
+      <a href="$results_link">完整回测数据</a> ·
+      <a href="$readme_link">项目首页</a></p>
   </section>
-  <footer>由 quantfolio report 从冻结数据生成。</footer>
+  <footer>由 quantfolio report 从已完成的回测记录生成。</footer>
 </main>
 </body>
 </html>

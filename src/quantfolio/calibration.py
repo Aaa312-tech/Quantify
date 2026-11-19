@@ -18,6 +18,7 @@ def rank_by_date(table, rows, values):
     return sub.groupby("date", sort=False).x.rank(pct=True).to_numpy()
 
 
+@pd.option_context("compute.use_numexpr", False)
 def calibrate(table, rows, score, available_before, clip):
     """Map historical ranks to returns using only labels available before the boundary."""
     sub = table.iloc[rows][["date_index", "y5", "end5", "status5"]].copy()

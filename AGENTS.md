@@ -15,7 +15,7 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
 - Track code, configuration, docs, data, models, reports and research evidence. Ignore credentials,
   environments, caches and build outputs. Keep `*.joblib` in LFS and verify changed objects on remote.
   Preserve `.gitattributes` newline rules. Recycled obsolete versions are outside the sync scope.
-- Update affected docs and CHANGELOG. Keep dated maintenance records as history. Report the
+- Update affected docs and CHANGELOG. Keep research verification summaries; Git history preserves obsolete machine cleanup logs. Do not commit local recycle-bin inventories or one-off cleanup scripts. Report the
   commit link, local checks and actual CI conclusion; queued checks are not passing checks.
 
 ## Research constraints
