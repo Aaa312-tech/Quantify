@@ -1,0 +1,137 @@
+"""Completed-close regime classification and conservative daily-bar execution."""
+
+from __future__ import annotations
+
+import numpy as np
+import pandas as pd
+
+from .ledger import nearest_tick, tick_price
+
+
+def board_limit(m, date):
+    """Return the daily price-limit assumption for the board and date."""
+    code = m["code"]
+    if m["kind"] == "etf":
+        return m.get("observed_limit", 0.20 if code in ["159915", "588000"] else 0.10)
+    if m["symbol"].startswith("bj"):
+        return 0.30
+    if code.startswith(("300", "301", "688", "689")):
+        return 0.20
+    return 0.10
+
+
+def regime(panels, date):
+    """Derive the exposure ceiling from completed-close market breadth and trend."""
+    bench = "sh510300"
+    breadth = ((panels["trend20"].loc[date] > 0) & panels["eligible"].loc[date]).sum() / max(
+        1, panels["eligible"].loc[date].sum()
+    )
+    above = panels["trend20"].at[date, bench] > 0
+    if above and breadth >= 0.55:
+        return 0.90, float(breadth), "强势"
+    if (not above) and breadth < 0.35:
+        return 0.30, float(breadth), "弱势"
+    return 0.60, float(breadth), "震荡"
+
+
+def opening_price(meta, raw, date, previous, actions=(), side="BUY", slippage=0.0, check_bar=False):
+    """A daily-bar approximation, with explicit refusal instead of queue fills."""
+    if date not in raw.index or previous not in raw.index:
+        return None, "NO_QUOTE"
+    bar = raw.loc[date]
+    old = float(raw.at[previous, "close"])
+    o = float(bar.open)
+    if not np.isfinite(o) or o <= 0 or not np.isfinite(bar.volume_lots) or bar.volume_lots <= 0:
+        return None, "NO_VOLUME"
+    today = [a for a in actions if a["ex_date"] == str(date.date())]
+    ref = old
+    for a in today:
+        ref = (ref - a.get("ex_reference_cash_per_share", a["cash_per_share"])) / a[
+            "share_multiplier"
+        ]
+        if a.get("price_limit_reference") is not None:
+            ref = a["price_limit_reference"]
+    tick = 0.001 if meta["kind"] == "etf" else 0.01
+    lim = board_limit(meta, date)
+    upper = nearest_tick(ref * (1 + lim), tick)
+    lower = nearest_tick(ref * (1 - lim), tick)
+    if side == "BUY" and o >= upper - tick * 0.51:
+        return None, "OPEN_AT_UPPER_LIMIT"
+    if side == "SELL" and o <= lower + tick * 0.51:
+        return None, "OPEN_AT_LOWER_LIMIT"
+    price = tick_price(
+        o * (1 + slippage if side == "BUY" else 1 - slippage), tick, up=side == "BUY"
+    )
+    if not lower <= price <= upper:
+        return None, "MODEL_SLIPPAGE_OUTSIDE_LIMIT"
+    if check_bar and (price > bar.high + tick * 0.1 or price < bar.low - tick * 0.1):
+        return None, "MODEL_SLIPPAGE_OUTSIDE_BAR"
+    return float(price), None
+
+
+def gross_entitlement(entry, exit_date, exit_price, actions):
+    """Continuous base-share gross wealth, not an integer order or a reinvested index.
+
+    End-of-record-day entitlement matters. Cash receivables retain gross value even
+    if their payment follows exit. Complex overlapping record/ex schedules are
+    explicitly censored rather than approximated silently.
+    """
+    en = str(entry.date())
+    ex = str(exit_date.date())
+    quantity = 1.0
+    cash = 0.0
+    latest_listing = None
+    relevant = []
+    for a in actions:
+        if en < a["ex_date"] <= ex and not a.get("record_date"):
+            return None, None, "UNKNOWN_RECORD_DATE"
+        record = a.get("record_date")
+        if record and en <= record < ex and a["ex_date"] <= ex:
+            relevant.append(a)
+    last_ex = None
+    for a in sorted(relevant, key=lambda x: x["ex_date"]):
+        if last_ex and a["record_date"] < last_ex:
+            return None, None, "OVERLAPPING_RECORD_SCHEDULE"
+        before = quantity
+        cash += before * float(a["cash_per_share"])
+        quantity += before * (float(a["share_multiplier"]) - 1)
+        if abs(float(a["share_multiplier"]) - 1) > 1e-10:
+            if not a.get("share_list_date"):
+                return None, None, "UNKNOWN_SHARE_LIST_DATE"
+            listing = pd.Timestamp(a["share_list_date"])
+            latest_listing = max(latest_listing, listing) if latest_listing is not None else listing
+        last_ex = a["ex_date"]
+    return quantity * exit_price + cash, latest_listing, None
+
+
+LABEL_STATUS = {
+    "OK": 0,
+    "INELIGIBLE": 1,
+    "NO_ENTRY": 2,
+    "RIGHT_CENSORED": 3,
+    "ACTION_UNRESOLVED": 4,
+}
+
+
+def legal_label(meta, raw, calendar, index, horizon, actions):
+    """Compute a forward wealth label only after a legal entry and complete legal exit."""
+    entry_index = index + 1
+    target = entry_index + horizon
+    if target >= len(calendar):
+        return np.nan, -1, LABEL_STATUS["RIGHT_CENSORED"], 0
+    entry = calendar[entry_index]
+    buy, reason = opening_price(meta, raw, entry, calendar[index], actions, "BUY", 0.0)
+    if reason:
+        return np.nan, -1, LABEL_STATUS["NO_ENTRY"], 0
+    for j in range(target, len(calendar)):
+        exit_date = calendar[j]
+        sell, reason = opening_price(meta, raw, exit_date, calendar[j - 1], actions, "SELL", 0.0)
+        if reason:
+            continue
+        wealth, listing, problem = gross_entitlement(entry, exit_date, sell, actions)
+        if problem:
+            return np.nan, -1, LABEL_STATUS["ACTION_UNRESOLVED"], j - target
+        if listing is not None and exit_date < listing:
+            continue
+        return wealth / buy - 1, j, LABEL_STATUS["OK"], j - target
+    return np.nan, -1, LABEL_STATUS["RIGHT_CENSORED"], len(calendar) - target

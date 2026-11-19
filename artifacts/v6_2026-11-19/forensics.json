@@ -1,0 +1,3458 @@
+{
+  "status": "PASS",
+  "completed_at": "2026-11-19T16:47:45.378848+08:00",
+  "evaluation_sha256": "263960e0e36c69755ffb6179690b3dbc4d8ee329d56104ab528488cce036ff24",
+  "cent_parity": {
+    "10bps": {
+      "orders_prices_quantities_fees_equal_to_cent": true,
+      "daily_total_nav_equal_to_cent": true,
+      "exact_field_differences": [],
+      "max_nav_float_difference": 0.0
+    },
+    "20bps": {
+      "orders_prices_quantities_fees_equal_to_cent": true,
+      "daily_total_nav_equal_to_cent": true,
+      "exact_field_differences": [],
+      "max_nav_float_difference": 0.0
+    },
+    "30bps": {
+      "orders_prices_quantities_fees_equal_to_cent": true,
+      "daily_total_nav_equal_to_cent": true,
+      "exact_field_differences": [
+        {
+          "account": 24,
+          "trade": 26,
+          "fields": {
+            "cash_after": [
+              936352.26,
+              936029.06
+            ]
+          }
+        },
+        {
+          "account": 24,
+          "trade": 27,
+          "fields": {
+            "cash_after": [
+              951453.55,
+              951130.35
+            ]
+          }
+        }
+      ],
+      "max_nav_float_difference": 1.1641532182693481e-10
+    }
+  },
+  "first_continuous_divergences": {
+    "10bps": {
+      "fixed_add_caution_budget25": {
+        "date": "2025-11-27",
+        "index": 7,
+        "baseline": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh600941",
+              "sz000333",
+              "sh600690",
+              "sh600901",
+              "sh601328",
+              "sh601939"
+            ],
+            "rule_config": "baseline",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 3,
+            "predicted_net_objective": 0.00436016164955368,
+            "turnover_budget": null,
+            "signal_date": "2025-11-26",
+            "execution_date": "2025-11-27",
+            "drawdown": 0.04072867000000002,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 7,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1000000.0,
+              "drawdown": 0.04072867000000002,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-27",
+            "prior_close_nav": 959271.33,
+            "nav": 958066.13,
+            "cash": 676635.13,
+            "holdings_value": 281431.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh600941": {
+                "quantity": 1200,
+                "available": 100,
+                "close": 108.25,
+                "value": 129900.0
+              },
+              "sh601328": {
+                "quantity": 2400,
+                "available": 0,
+                "close": 7.71,
+                "value": 18504.0
+              },
+              "sh601939": {
+                "quantity": 13700,
+                "available": 0,
+                "close": 9.71,
+                "value": 133027.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.1388494967461171,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.04072867000000002,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz000829",
+              "side": "SELL",
+              "quantity": 12800,
+              "price": 10.33,
+              "gross": 132224.0,
+              "fee": 107.1,
+              "cash_after": 948011.23
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh600941",
+              "side": "BUY",
+              "quantity": 1100,
+              "price": 108.69,
+              "gross": 119559.0,
+              "fee": 37.07,
+              "cash_after": 828415.16
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601328",
+              "side": "BUY",
+              "quantity": 2400,
+              "price": 7.68,
+              "gross": 18432.0,
+              "fee": 5.71,
+              "cash_after": 809977.45
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601939",
+              "side": "BUY",
+              "quantity": 13700,
+              "price": 9.73,
+              "gross": 133301.0,
+              "fee": 41.32,
+              "cash_after": 676635.13
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh600593",
+                "sh600900",
+                "sh600183"
+              ],
+              "rule_config": "baseline",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 3,
+              "predicted_net_objective": 0.001975027561028137,
+              "turnover_budget": null,
+              "signal_date": "2026-06-03",
+              "execution_date": "2026-06-04",
+              "drawdown": 0.06150127579679765,
+              "scheduled": true,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 123,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1152836.4100000001,
+                "drawdown": 0.06150127579679765,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        },
+        "contrast": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh600941",
+              "sz000333",
+              "sh600690",
+              "sh600901",
+              "sh601328",
+              "sh601939"
+            ],
+            "rule_config": "add_caution_budget25",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": true,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 2,
+            "predicted_net_objective": 0.0037682882740536616,
+            "turnover_budget": 0.25,
+            "signal_date": "2025-11-26",
+            "execution_date": "2025-11-27",
+            "drawdown": 0.04072867000000002,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 7,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1000000.0,
+              "drawdown": 0.04072867000000002,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-27",
+            "prior_close_nav": 959271.33,
+            "nav": 958041.26,
+            "cash": 712592.26,
+            "holdings_value": 245449.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh600941": {
+                "quantity": 1200,
+                "available": 100,
+                "close": 108.25,
+                "value": 129900.0
+              },
+              "sh601939": {
+                "quantity": 11900,
+                "available": 0,
+                "close": 9.71,
+                "value": 115549.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.13558914988692658,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.04072867000000002,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz000829",
+              "side": "SELL",
+              "quantity": 12800,
+              "price": 10.33,
+              "gross": 132224.0,
+              "fee": 107.1,
+              "cash_after": 948011.23
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh600941",
+              "side": "BUY",
+              "quantity": 1100,
+              "price": 108.69,
+              "gross": 119559.0,
+              "fee": 37.07,
+              "cash_after": 828415.16
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601939",
+              "side": "BUY",
+              "quantity": 11900,
+              "price": 9.73,
+              "gross": 115787.0,
+              "fee": 35.9,
+              "cash_after": 712592.26
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh600941",
+                "sz300502"
+              ],
+              "rule_config": "add_caution_budget25",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": 0.00024778853083517744,
+              "turnover_budget": null,
+              "signal_date": "2026-01-06",
+              "execution_date": "2026-01-07",
+              "drawdown": 0.06124646,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 27,
+                "healthy_streak_before": 2,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1000000.0,
+                "drawdown": 0.06124646,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": true,
+                "mode": "latched"
+              }
+            }
+          ]
+        }
+      },
+      "fixed_add_retain18": {
+        "date": "2025-12-04",
+        "index": 12,
+        "baseline": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh601100",
+              "sz000333",
+              "sz002078",
+              "sz000408",
+              "sh600309",
+              "sh601133"
+            ],
+            "rule_config": "baseline",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 3,
+            "predicted_net_objective": 0.004200194056716046,
+            "turnover_budget": null,
+            "signal_date": "2025-12-03",
+            "execution_date": "2025-12-04",
+            "drawdown": 0.05041193999999993,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 5,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": false,
+              "reason": "UNCHANGED",
+              "peak": 1000000.0,
+              "drawdown": 0.05041193999999993,
+              "state_age": 5,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-12-04",
+            "prior_close_nav": 949588.06,
+            "nav": 948437.01,
+            "cash": 676219.01,
+            "holdings_value": 272218.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601100": {
+                "quantity": 1200,
+                "available": 1200,
+                "close": 106.45,
+                "value": 127740.0
+              },
+              "sh600309": {
+                "quantity": 200,
+                "available": 0,
+                "close": 67.68,
+                "value": 13536.0
+              },
+              "sh601133": {
+                "quantity": 9400,
+                "available": 0,
+                "close": 13.93,
+                "value": 130942.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.13806082915300827,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.05041193999999993,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh600941",
+              "side": "SELL",
+              "quantity": 1200,
+              "price": 106.57,
+              "gross": 127884.0,
+              "fee": 103.59,
+              "cash_after": 654466.47
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603601",
+              "side": "SELL",
+              "quantity": 5400,
+              "price": 5.13,
+              "gross": 27702.0,
+              "fee": 22.44,
+              "cash_after": 682146.03
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603893",
+              "side": "SELL",
+              "quantity": 700,
+              "price": 178.92,
+              "gross": 125244.0,
+              "fee": 101.44,
+              "cash_after": 807288.59
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sz000708",
+              "side": "SELL",
+              "quantity": 1000,
+              "price": 15.91,
+              "gross": 15910.0,
+              "fee": 13.12,
+              "cash_after": 823185.47
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh600309",
+              "side": "BUY",
+              "quantity": 200,
+              "price": 68.14,
+              "gross": 13628.0,
+              "fee": 5.14,
+              "cash_after": 809552.33
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh601133",
+              "side": "BUY",
+              "quantity": 9400,
+              "price": 14.18,
+              "gross": 133292.0,
+              "fee": 41.32,
+              "cash_after": 676219.01
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh600593",
+                "sh600900",
+                "sh600183"
+              ],
+              "rule_config": "baseline",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 3,
+              "predicted_net_objective": 0.001975027561028137,
+              "turnover_budget": null,
+              "signal_date": "2026-06-03",
+              "execution_date": "2026-06-04",
+              "drawdown": 0.06150127579679765,
+              "scheduled": true,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 123,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1152836.4100000001,
+                "drawdown": 0.06150127579679765,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        },
+        "contrast": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh601100",
+              "sz000708",
+              "sz000333",
+              "sz002078",
+              "sz000408",
+              "sh600309"
+            ],
+            "rule_config": "add_retain18",
+            "rule_activity": {
+              "retained_beyond12": 1,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 4,
+            "predicted_net_objective": 0.00424671924930437,
+            "turnover_budget": null,
+            "signal_date": "2025-12-03",
+            "execution_date": "2025-12-04",
+            "drawdown": 0.05041193999999993,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 5,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": false,
+              "reason": "UNCHANGED",
+              "peak": 1000000.0,
+              "drawdown": 0.05041193999999993,
+              "state_age": 5,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-12-04",
+            "prior_close_nav": 949588.06,
+            "nav": 949944.46,
+            "cash": 677782.46,
+            "holdings_value": 272162.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601100": {
+                "quantity": 1200,
+                "available": 1200,
+                "close": 106.45,
+                "value": 127740.0
+              },
+              "sz000708": {
+                "quantity": 1000,
+                "available": 1000,
+                "close": 15.83,
+                "value": 15830.0
+              },
+              "sh600309": {
+                "quantity": 1900,
+                "available": 0,
+                "close": 67.68,
+                "value": 128592.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.13536791403573215,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.05041193999999993,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh600941",
+              "side": "SELL",
+              "quantity": 1200,
+              "price": 106.57,
+              "gross": 127884.0,
+              "fee": 103.59,
+              "cash_after": 654466.47
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603601",
+              "side": "SELL",
+              "quantity": 5400,
+              "price": 5.13,
+              "gross": 27702.0,
+              "fee": 22.44,
+              "cash_after": 682146.03
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603893",
+              "side": "SELL",
+              "quantity": 700,
+              "price": 178.92,
+              "gross": 125244.0,
+              "fee": 101.44,
+              "cash_after": 807288.59
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh600309",
+              "side": "BUY",
+              "quantity": 1900,
+              "price": 68.14,
+              "gross": 129466.0,
+              "fee": 40.13,
+              "cash_after": 677782.46
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sz300759",
+                "sh688002",
+                "sh588000"
+              ],
+              "rule_config": "add_retain18",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": 0.0027196907234394605,
+              "turnover_budget": null,
+              "signal_date": "2026-07-13",
+              "execution_date": "2026-07-14",
+              "drawdown": 0.06167806668089493,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 150,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1390119.6099999999,
+                "drawdown": 0.06167806668089493,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        }
+      },
+      "fixed_all_on": {
+        "date": "2025-11-27",
+        "index": 7,
+        "baseline": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh600941",
+              "sz000333",
+              "sh600690",
+              "sh600901",
+              "sh601328",
+              "sh601939"
+            ],
+            "rule_config": "baseline",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 3,
+            "predicted_net_objective": 0.00436016164955368,
+            "turnover_budget": null,
+            "signal_date": "2025-11-26",
+            "execution_date": "2025-11-27",
+            "drawdown": 0.04072867000000002,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 7,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1000000.0,
+              "drawdown": 0.04072867000000002,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-27",
+            "prior_close_nav": 959271.33,
+            "nav": 958066.13,
+            "cash": 676635.13,
+            "holdings_value": 281431.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh600941": {
+                "quantity": 1200,
+                "available": 100,
+                "close": 108.25,
+                "value": 129900.0
+              },
+              "sh601328": {
+                "quantity": 2400,
+                "available": 0,
+                "close": 7.71,
+                "value": 18504.0
+              },
+              "sh601939": {
+                "quantity": 13700,
+                "available": 0,
+                "close": 9.71,
+                "value": 133027.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.1388494967461171,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.04072867000000002,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz000829",
+              "side": "SELL",
+              "quantity": 12800,
+              "price": 10.33,
+              "gross": 132224.0,
+              "fee": 107.1,
+              "cash_after": 948011.23
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh600941",
+              "side": "BUY",
+              "quantity": 1100,
+              "price": 108.69,
+              "gross": 119559.0,
+              "fee": 37.07,
+              "cash_after": 828415.16
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601328",
+              "side": "BUY",
+              "quantity": 2400,
+              "price": 7.68,
+              "gross": 18432.0,
+              "fee": 5.71,
+              "cash_after": 809977.45
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601939",
+              "side": "BUY",
+              "quantity": 13700,
+              "price": 9.73,
+              "gross": 133301.0,
+              "fee": 41.32,
+              "cash_after": 676635.13
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh600593",
+                "sh600900",
+                "sh600183"
+              ],
+              "rule_config": "baseline",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 3,
+              "predicted_net_objective": 0.001975027561028137,
+              "turnover_budget": null,
+              "signal_date": "2026-06-03",
+              "execution_date": "2026-06-04",
+              "drawdown": 0.06150127579679765,
+              "scheduled": true,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 123,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1152836.4100000001,
+                "drawdown": 0.06150127579679765,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        },
+        "contrast": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh600941",
+              "sz000333",
+              "sh600690",
+              "sh600901",
+              "sh601328",
+              "sh601939"
+            ],
+            "rule_config": "all_on",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": true,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.001
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 2,
+            "predicted_net_objective": 0.003380183448175044,
+            "turnover_budget": 0.25,
+            "signal_date": "2025-11-26",
+            "execution_date": "2025-11-27",
+            "drawdown": 0.04072867000000002,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 7,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1000000.0,
+              "drawdown": 0.04072867000000002,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-27",
+            "prior_close_nav": 959271.33,
+            "nav": 958041.26,
+            "cash": 712592.26,
+            "holdings_value": 245449.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh600941": {
+                "quantity": 1200,
+                "available": 100,
+                "close": 108.25,
+                "value": 129900.0
+              },
+              "sh601939": {
+                "quantity": 11900,
+                "available": 0,
+                "close": 9.71,
+                "value": 115549.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.13558914988692658,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.04072867000000002,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz000829",
+              "side": "SELL",
+              "quantity": 12800,
+              "price": 10.33,
+              "gross": 132224.0,
+              "fee": 107.1,
+              "cash_after": 948011.23
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh600941",
+              "side": "BUY",
+              "quantity": 1100,
+              "price": 108.69,
+              "gross": 119559.0,
+              "fee": 37.07,
+              "cash_after": 828415.16
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601939",
+              "side": "BUY",
+              "quantity": 11900,
+              "price": 9.73,
+              "gross": 115787.0,
+              "fee": 35.9,
+              "cash_after": 712592.26
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh600941",
+                "sz300502"
+              ],
+              "rule_config": "all_on",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.001
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": 0.0001856782010035584,
+              "turnover_budget": null,
+              "signal_date": "2026-01-06",
+              "execution_date": "2026-01-07",
+              "drawdown": 0.06124646,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 27,
+                "healthy_streak_before": 2,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1000000.0,
+                "drawdown": 0.06124646,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": true,
+                "mode": "latched"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "20bps": {
+      "fixed_add_caution_budget25": {
+        "date": "2025-11-27",
+        "index": 7,
+        "baseline": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sz000333",
+              "sh600690",
+              "sh600901",
+              "sh601328",
+              "sh601939",
+              "sz002584"
+            ],
+            "rule_config": "baseline",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 3,
+            "predicted_net_objective": 0.0036069441952660984,
+            "turnover_budget": null,
+            "signal_date": "2025-11-26",
+            "execution_date": "2025-11-27",
+            "drawdown": 0.04130049000000002,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 7,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1000000.0,
+              "drawdown": 0.04130049000000002,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-27",
+            "prior_close_nav": 958699.51,
+            "nav": 961708.96,
+            "cash": 672465.96,
+            "holdings_value": 289243.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601328": {
+                "quantity": 2400,
+                "available": 0,
+                "close": 7.71,
+                "value": 18504.0
+              },
+              "sh601939": {
+                "quantity": 13700,
+                "available": 0,
+                "close": 9.71,
+                "value": 133027.0
+              },
+              "sz002584": {
+                "quantity": 15200,
+                "available": 0,
+                "close": 9.06,
+                "value": 137712.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.14319508887595267,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.04130049000000002,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz000829",
+              "side": "SELL",
+              "quantity": 12800,
+              "price": 10.32,
+              "gross": 132096.0,
+              "fee": 107.0,
+              "cash_after": 958208.51
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601328",
+              "side": "BUY",
+              "quantity": 2400,
+              "price": 7.69,
+              "gross": 18456.0,
+              "fee": 5.72,
+              "cash_after": 939746.79
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601939",
+              "side": "BUY",
+              "quantity": 13700,
+              "price": 9.74,
+              "gross": 133438.0,
+              "fee": 41.36,
+              "cash_after": 806267.43
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz002584",
+              "side": "BUY",
+              "quantity": 15200,
+              "price": 8.8,
+              "gross": 133760.0,
+              "fee": 41.47,
+              "cash_after": 672465.96
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sz300759",
+                "sh688002",
+                "sh588000"
+              ],
+              "rule_config": "baseline",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": 0.002307263263291088,
+              "turnover_budget": null,
+              "signal_date": "2026-07-13",
+              "execution_date": "2026-07-14",
+              "drawdown": 0.06382553791100543,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 150,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1188174.24,
+                "drawdown": 0.06382553791100543,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        },
+        "contrast": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sz000333",
+              "sh600690",
+              "sh600901",
+              "sh601328",
+              "sh601939",
+              "sz002584"
+            ],
+            "rule_config": "add_caution_budget25",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": true,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 2,
+            "predicted_net_objective": 0.0029410691578418847,
+            "turnover_budget": 0.25,
+            "signal_date": "2025-11-26",
+            "execution_date": "2025-11-27",
+            "drawdown": 0.04130049000000002,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 7,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1000000.0,
+              "drawdown": 0.04130049000000002,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-27",
+            "prior_close_nav": 958699.51,
+            "nav": 961762.43,
+            "cash": 719182.43,
+            "holdings_value": 242580.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601939": {
+                "quantity": 10800,
+                "available": 0,
+                "close": 9.71,
+                "value": 104868.0
+              },
+              "sz002584": {
+                "quantity": 15200,
+                "available": 0,
+                "close": 9.06,
+                "value": 137712.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.14318712782324008,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.04130049000000002,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz000829",
+              "side": "SELL",
+              "quantity": 12800,
+              "price": 10.32,
+              "gross": 132096.0,
+              "fee": 107.0,
+              "cash_after": 958208.51
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601939",
+              "side": "BUY",
+              "quantity": 10800,
+              "price": 9.74,
+              "gross": 105192.0,
+              "fee": 32.61,
+              "cash_after": 852983.9
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz002584",
+              "side": "BUY",
+              "quantity": 15200,
+              "price": 8.8,
+              "gross": 133760.0,
+              "fee": 41.47,
+              "cash_after": 719182.43
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh515880",
+                "sh600869"
+              ],
+              "rule_config": "add_caution_budget25",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": -0.00030359724266418395,
+              "turnover_budget": null,
+              "signal_date": "2026-07-02",
+              "execution_date": "2026-07-03",
+              "drawdown": 0.0606333990736847,
+              "scheduled": true,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 143,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1295632.46,
+                "drawdown": 0.0606333990736847,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            },
+            {
+              "status": "RISK_EXIT",
+              "cap": 0.0,
+              "level": 3,
+              "selected": [],
+              "rule_config": "add_caution_budget25",
+              "signal_date": "2026-07-06",
+              "execution_date": "2026-07-07",
+              "drawdown": 0.08056916851249618,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 2,
+                "healthy_streak_before": 0,
+                "previous_phase": "FROZEN20",
+                "probe_anchor_before": null,
+                "phase": "HALTED0",
+                "level": 3,
+                "cap": 0.0,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_8",
+                "peak": 1295632.46,
+                "drawdown": 0.08056916851249618,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        }
+      },
+      "fixed_add_retain18": {
+        "date": "2025-12-04",
+        "index": 12,
+        "baseline": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh601100",
+              "sz000333",
+              "sz002078",
+              "sz000408",
+              "sh600309",
+              "sh601133"
+            ],
+            "rule_config": "baseline",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 3,
+            "predicted_net_objective": 0.0034495605391728574,
+            "turnover_budget": null,
+            "signal_date": "2025-12-03",
+            "execution_date": "2025-12-04",
+            "drawdown": 0.044588189999999917,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 5,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": false,
+              "reason": "UNCHANGED",
+              "peak": 1000000.0,
+              "drawdown": 0.044588189999999917,
+              "state_age": 5,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-12-04",
+            "prior_close_nav": 955411.81,
+            "nav": 953600.05,
+            "cash": 681382.05,
+            "holdings_value": 272218.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601100": {
+                "quantity": 1200,
+                "available": 1200,
+                "close": 106.45,
+                "value": 127740.0
+              },
+              "sh600309": {
+                "quantity": 200,
+                "available": 0,
+                "close": 67.68,
+                "value": 13536.0
+              },
+              "sh601133": {
+                "quantity": 9400,
+                "available": 0,
+                "close": 13.93,
+                "value": 130942.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.13731333172644022,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.044588189999999917,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603601",
+              "side": "SELL",
+              "quantity": 5500,
+              "price": 5.12,
+              "gross": 28160.0,
+              "fee": 22.81,
+              "cash_after": 570072.0
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603893",
+              "side": "SELL",
+              "quantity": 700,
+              "price": 178.74,
+              "gross": 125118.0,
+              "fee": 101.35,
+              "cash_after": 695088.65
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sz000708",
+              "side": "SELL",
+              "quantity": 8400,
+              "price": 15.89,
+              "gross": 133476.0,
+              "fee": 108.11,
+              "cash_after": 828456.54
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh600309",
+              "side": "BUY",
+              "quantity": 200,
+              "price": 68.21,
+              "gross": 13642.0,
+              "fee": 5.14,
+              "cash_after": 814809.4
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh601133",
+              "side": "BUY",
+              "quantity": 9400,
+              "price": 14.19,
+              "gross": 133386.0,
+              "fee": 41.35,
+              "cash_after": 681382.05
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sz300759",
+                "sh688002",
+                "sh588000"
+              ],
+              "rule_config": "baseline",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": 0.002307263263291088,
+              "turnover_budget": null,
+              "signal_date": "2026-07-13",
+              "execution_date": "2026-07-14",
+              "drawdown": 0.06382553791100543,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 150,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1188174.24,
+                "drawdown": 0.06382553791100543,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        },
+        "contrast": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh601100",
+              "sz000708",
+              "sz000333",
+              "sz002078",
+              "sz000408",
+              "sh600309"
+            ],
+            "rule_config": "add_retain18",
+            "rule_activity": {
+              "retained_beyond12": 1,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 3,
+            "predicted_net_objective": 0.004117345331144656,
+            "turnover_budget": null,
+            "signal_date": "2025-12-03",
+            "execution_date": "2025-12-04",
+            "drawdown": 0.044588189999999917,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 5,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": false,
+              "reason": "UNCHANGED",
+              "peak": 1000000.0,
+              "drawdown": 0.044588189999999917,
+              "state_age": 5,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-12-04",
+            "prior_close_nav": 955411.81,
+            "nav": 955689.51,
+            "cash": 681441.51,
+            "holdings_value": 274248.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601100": {
+                "quantity": 1200,
+                "available": 1200,
+                "close": 106.45,
+                "value": 127740.0
+              },
+              "sz000708": {
+                "quantity": 8400,
+                "available": 8400,
+                "close": 15.83,
+                "value": 132972.0
+              },
+              "sh600309": {
+                "quantity": 200,
+                "available": 0,
+                "close": 67.68,
+                "value": 13536.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.13913723924834123,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.044588189999999917,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603601",
+              "side": "SELL",
+              "quantity": 5500,
+              "price": 5.12,
+              "gross": 28160.0,
+              "fee": 22.81,
+              "cash_after": 570072.0
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603893",
+              "side": "SELL",
+              "quantity": 700,
+              "price": 178.74,
+              "gross": 125118.0,
+              "fee": 101.35,
+              "cash_after": 695088.65
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh600309",
+              "side": "BUY",
+              "quantity": 200,
+              "price": 68.21,
+              "gross": 13642.0,
+              "fee": 5.14,
+              "cash_after": 681441.51
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sz300759",
+                "sh688002",
+                "sh588000"
+              ],
+              "rule_config": "add_retain18",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": 0.0023047555424526704,
+              "turnover_budget": null,
+              "signal_date": "2026-07-13",
+              "execution_date": "2026-07-14",
+              "drawdown": 0.06178105743561879,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 150,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1291947.78,
+                "drawdown": 0.06178105743561879,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        }
+      },
+      "fixed_all_on": {
+        "date": "2025-11-27",
+        "index": 7,
+        "baseline": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sz000333",
+              "sh600690",
+              "sh600901",
+              "sh601328",
+              "sh601939",
+              "sz002584"
+            ],
+            "rule_config": "baseline",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 3,
+            "predicted_net_objective": 0.0036069441952660984,
+            "turnover_budget": null,
+            "signal_date": "2025-11-26",
+            "execution_date": "2025-11-27",
+            "drawdown": 0.04130049000000002,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 7,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1000000.0,
+              "drawdown": 0.04130049000000002,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-27",
+            "prior_close_nav": 958699.51,
+            "nav": 961708.96,
+            "cash": 672465.96,
+            "holdings_value": 289243.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601328": {
+                "quantity": 2400,
+                "available": 0,
+                "close": 7.71,
+                "value": 18504.0
+              },
+              "sh601939": {
+                "quantity": 13700,
+                "available": 0,
+                "close": 9.71,
+                "value": 133027.0
+              },
+              "sz002584": {
+                "quantity": 15200,
+                "available": 0,
+                "close": 9.06,
+                "value": 137712.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.14319508887595267,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.04130049000000002,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz000829",
+              "side": "SELL",
+              "quantity": 12800,
+              "price": 10.32,
+              "gross": 132096.0,
+              "fee": 107.0,
+              "cash_after": 958208.51
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601328",
+              "side": "BUY",
+              "quantity": 2400,
+              "price": 7.69,
+              "gross": 18456.0,
+              "fee": 5.72,
+              "cash_after": 939746.79
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601939",
+              "side": "BUY",
+              "quantity": 13700,
+              "price": 9.74,
+              "gross": 133438.0,
+              "fee": 41.36,
+              "cash_after": 806267.43
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz002584",
+              "side": "BUY",
+              "quantity": 15200,
+              "price": 8.8,
+              "gross": 133760.0,
+              "fee": 41.47,
+              "cash_after": 672465.96
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sz300759",
+                "sh688002",
+                "sh588000"
+              ],
+              "rule_config": "baseline",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": 0.002307263263291088,
+              "turnover_budget": null,
+              "signal_date": "2026-07-13",
+              "execution_date": "2026-07-14",
+              "drawdown": 0.06382553791100543,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 150,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1188174.24,
+                "drawdown": 0.06382553791100543,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        },
+        "contrast": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sz000333",
+              "sh600690",
+              "sh600901",
+              "sh601328",
+              "sh601939",
+              "sz002584"
+            ],
+            "rule_config": "all_on",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": true,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.001
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 2,
+            "predicted_net_objective": 0.002552881958810146,
+            "turnover_budget": 0.25,
+            "signal_date": "2025-11-26",
+            "execution_date": "2025-11-27",
+            "drawdown": 0.04130049000000002,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 7,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1000000.0,
+              "drawdown": 0.04130049000000002,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-27",
+            "prior_close_nav": 958699.51,
+            "nav": 961762.43,
+            "cash": 719182.43,
+            "holdings_value": 242580.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601939": {
+                "quantity": 10800,
+                "available": 0,
+                "close": 9.71,
+                "value": 104868.0
+              },
+              "sz002584": {
+                "quantity": 15200,
+                "available": 0,
+                "close": 9.06,
+                "value": 137712.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.14318712782324008,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.04130049000000002,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz000829",
+              "side": "SELL",
+              "quantity": 12800,
+              "price": 10.32,
+              "gross": 132096.0,
+              "fee": 107.0,
+              "cash_after": 958208.51
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sh601939",
+              "side": "BUY",
+              "quantity": 10800,
+              "price": 9.74,
+              "gross": 105192.0,
+              "fee": 32.61,
+              "cash_after": 852983.9
+            },
+            {
+              "date": "2025-11-27",
+              "signal_date": "2025-11-26",
+              "symbol": "sz002584",
+              "side": "BUY",
+              "quantity": 15200,
+              "price": 8.8,
+              "gross": 133760.0,
+              "fee": 41.47,
+              "cash_after": 719182.43
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh601939",
+                "sh600066",
+                "sh688411"
+              ],
+              "rule_config": "all_on",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.001
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 3,
+              "predicted_net_objective": 0.0004053381373399195,
+              "turnover_budget": null,
+              "signal_date": "2026-03-30",
+              "execution_date": "2026-03-31",
+              "drawdown": 0.06480861999999998,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 80,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1000000.0,
+                "drawdown": 0.06480861999999998,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "30bps": {
+      "fixed_add_caution_budget25": {
+        "date": "2025-11-25",
+        "index": 5,
+        "baseline": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh600901",
+              "sh601398",
+              "sz000895",
+              "sh601988",
+              "sh600941",
+              "sz000333"
+            ],
+            "rule_config": "baseline",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 3,
+            "predicted_net_objective": 0.0034030079442301043,
+            "turnover_budget": null,
+            "signal_date": "2025-11-24",
+            "execution_date": "2025-11-25",
+            "drawdown": 0.044955180000000095,
+            "scheduled": true,
+            "forced": false,
+            "recovery": {
+              "state_age_before": 1,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": false,
+              "reason": "UNCHANGED",
+              "peak": 1000000.0,
+              "drawdown": 0.044955180000000095,
+              "state_age": 1,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-25",
+            "prior_close_nav": 955044.82,
+            "nav": 958706.51,
+            "cash": 688292.51,
+            "holdings_value": 270414.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601398": {
+                "quantity": 16200,
+                "available": 2300,
+                "close": 8.31,
+                "value": 134622.0
+              },
+              "sh600901": {
+                "quantity": 20700,
+                "available": 20700,
+                "close": 6.56,
+                "value": 135792.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.1416408448086996,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.044955180000000095,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-25",
+              "signal_date": "2025-11-24",
+              "symbol": "sh601857",
+              "side": "SELL",
+              "quantity": 13300,
+              "price": 9.74,
+              "gross": 129542.0,
+              "fee": 104.93,
+              "cash_after": 802446.89
+            },
+            {
+              "date": "2025-11-25",
+              "signal_date": "2025-11-24",
+              "symbol": "sh601398",
+              "side": "BUY",
+              "quantity": 13900,
+              "price": 8.21,
+              "gross": 114119.0,
+              "fee": 35.38,
+              "cash_after": 688292.51
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh601100",
+                "sh600309",
+                "sh601133"
+              ],
+              "rule_config": "baseline",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": 0.0023517999740456136,
+              "turnover_budget": null,
+              "signal_date": "2025-12-04",
+              "execution_date": "2025-12-05",
+              "drawdown": 0.06098755,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 9,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1000000.0,
+                "drawdown": 0.06098755,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        },
+        "contrast": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh600901",
+              "sh601398",
+              "sz000895",
+              "sh601988",
+              "sh600941",
+              "sz000333"
+            ],
+            "rule_config": "add_caution_budget25",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 4,
+            "predicted_net_objective": 0.0034030079442301034,
+            "turnover_budget": 0.25,
+            "signal_date": "2025-11-24",
+            "execution_date": "2025-11-25",
+            "drawdown": 0.044955180000000095,
+            "scheduled": true,
+            "forced": false,
+            "recovery": {
+              "state_age_before": 1,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": false,
+              "reason": "UNCHANGED",
+              "peak": 1000000.0,
+              "drawdown": 0.044955180000000095,
+              "state_age": 1,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-25",
+            "prior_close_nav": 955044.82,
+            "nav": 957351.89,
+            "cash": 802446.89,
+            "holdings_value": 154905.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601398": {
+                "quantity": 2300,
+                "available": 2300,
+                "close": 8.31,
+                "value": 19113.0
+              },
+              "sh600901": {
+                "quantity": 20700,
+                "available": 20700,
+                "close": 6.56,
+                "value": 135792.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.14184126173292455,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.044955180000000095,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-25",
+              "signal_date": "2025-11-24",
+              "symbol": "sh601857",
+              "side": "SELL",
+              "quantity": 13300,
+              "price": 9.74,
+              "gross": 129542.0,
+              "fee": 104.93,
+              "cash_after": 802446.89
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh515880",
+                "sh600869"
+              ],
+              "rule_config": "add_caution_budget25",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": -0.0005891465466561663,
+              "turnover_budget": null,
+              "signal_date": "2026-07-02",
+              "execution_date": "2026-07-03",
+              "drawdown": 0.060780085986928634,
+              "scheduled": true,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 146,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1249720.18,
+                "drawdown": 0.060780085986928634,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            },
+            {
+              "status": "RISK_EXIT",
+              "cap": 0.0,
+              "level": 3,
+              "selected": [],
+              "rule_config": "add_caution_budget25",
+              "signal_date": "2026-07-06",
+              "execution_date": "2026-07-07",
+              "drawdown": 0.08081530699136175,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 2,
+                "healthy_streak_before": 0,
+                "previous_phase": "FROZEN20",
+                "probe_anchor_before": null,
+                "phase": "HALTED0",
+                "level": 3,
+                "cap": 0.0,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_8",
+                "peak": 1249720.18,
+                "drawdown": 0.08081530699136175,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        }
+      },
+      "fixed_add_retain18": {
+        "date": "2025-12-04",
+        "index": 12,
+        "baseline": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh601100",
+              "sz000333",
+              "sz002078",
+              "sz000408",
+              "sh600309",
+              "sh601133"
+            ],
+            "rule_config": "baseline",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 3,
+            "predicted_net_objective": 0.0026763750051387305,
+            "turnover_budget": null,
+            "signal_date": "2025-12-03",
+            "execution_date": "2025-12-04",
+            "drawdown": 0.05880204,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 8,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": false,
+              "reason": "UNCHANGED",
+              "peak": 1000000.0,
+              "drawdown": 0.05880204,
+              "state_age": 8,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-12-04",
+            "prior_close_nav": 941197.96,
+            "nav": 939012.45,
+            "cash": 668187.45,
+            "holdings_value": 270825.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601100": {
+                "quantity": 1200,
+                "available": 1200,
+                "close": 106.45,
+                "value": 127740.0
+              },
+              "sh600309": {
+                "quantity": 200,
+                "available": 0,
+                "close": 67.68,
+                "value": 13536.0
+              },
+              "sh601133": {
+                "quantity": 9300,
+                "available": 0,
+                "close": 13.93,
+                "value": 129549.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.13796302700778887,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.05880204,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603601",
+              "side": "SELL",
+              "quantity": 5400,
+              "price": 5.12,
+              "gross": 27648.0,
+              "fee": 22.39,
+              "cash_after": 557454.57
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603893",
+              "side": "SELL",
+              "quantity": 700,
+              "price": 178.56,
+              "gross": 124992.0,
+              "fee": 101.25,
+              "cash_after": 682345.32
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sz000708",
+              "side": "SELL",
+              "quantity": 8300,
+              "price": 15.88,
+              "gross": 131804.0,
+              "fee": 106.76,
+              "cash_after": 814042.56
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh600309",
+              "side": "BUY",
+              "quantity": 200,
+              "price": 68.28,
+              "gross": 13656.0,
+              "fee": 5.14,
+              "cash_after": 800381.42
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh601133",
+              "side": "BUY",
+              "quantity": 9300,
+              "price": 14.21,
+              "gross": 132153.0,
+              "fee": 40.97,
+              "cash_after": 668187.45
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh601100",
+                "sh600309",
+                "sh601133"
+              ],
+              "rule_config": "baseline",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": 0.0023517999740456136,
+              "turnover_budget": null,
+              "signal_date": "2025-12-04",
+              "execution_date": "2025-12-05",
+              "drawdown": 0.06098755,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 9,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1000000.0,
+                "drawdown": 0.06098755,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        },
+        "contrast": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh601100",
+              "sz000708",
+              "sz000333",
+              "sz002078",
+              "sz000408",
+              "sh600309"
+            ],
+            "rule_config": "add_retain18",
+            "rule_activity": {
+              "retained_beyond12": 1,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 3,
+            "predicted_net_objective": 0.0036241597971105287,
+            "turnover_budget": null,
+            "signal_date": "2025-12-03",
+            "execution_date": "2025-12-04",
+            "drawdown": 0.05880204,
+            "scheduled": false,
+            "forced": true,
+            "recovery": {
+              "state_age_before": 8,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": false,
+              "reason": "UNCHANGED",
+              "peak": 1000000.0,
+              "drawdown": 0.05880204,
+              "state_age": 8,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-12-04",
+            "prior_close_nav": 941197.96,
+            "nav": 941349.18,
+            "cash": 668684.18,
+            "holdings_value": 272665.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601100": {
+                "quantity": 1200,
+                "available": 1200,
+                "close": 106.45,
+                "value": 127740.0
+              },
+              "sz000708": {
+                "quantity": 8300,
+                "available": 8300,
+                "close": 15.83,
+                "value": 131389.0
+              },
+              "sh600309": {
+                "quantity": 200,
+                "available": 0,
+                "close": 67.68,
+                "value": 13536.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.1395751999274063,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.05880204,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603601",
+              "side": "SELL",
+              "quantity": 5400,
+              "price": 5.12,
+              "gross": 27648.0,
+              "fee": 22.39,
+              "cash_after": 557454.57
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh603893",
+              "side": "SELL",
+              "quantity": 700,
+              "price": 178.56,
+              "gross": 124992.0,
+              "fee": 101.25,
+              "cash_after": 682345.32
+            },
+            {
+              "date": "2025-12-04",
+              "signal_date": "2025-12-03",
+              "symbol": "sh600309",
+              "side": "BUY",
+              "quantity": 200,
+              "price": 68.28,
+              "gross": 13656.0,
+              "fee": 5.14,
+              "cash_after": 668684.18
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh605376",
+                "sh688120",
+                "sh603650",
+                "sh600066"
+              ],
+              "rule_config": "add_retain18",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": -0.000741944558245023,
+              "turnover_budget": null,
+              "signal_date": "2025-12-16",
+              "execution_date": "2025-12-17",
+              "drawdown": 0.06627022999999999,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 17,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1000000.0,
+                "drawdown": 0.06627022999999999,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        }
+      },
+      "fixed_all_on": {
+        "date": "2025-11-25",
+        "index": 5,
+        "baseline": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh600901",
+              "sh601398",
+              "sz000895",
+              "sh601988",
+              "sh600941",
+              "sz000333"
+            ],
+            "rule_config": "baseline",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 0,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.0
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 3,
+            "predicted_net_objective": 0.0034030079442301043,
+            "turnover_budget": null,
+            "signal_date": "2025-11-24",
+            "execution_date": "2025-11-25",
+            "drawdown": 0.044955180000000095,
+            "scheduled": true,
+            "forced": false,
+            "recovery": {
+              "state_age_before": 1,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": false,
+              "reason": "UNCHANGED",
+              "peak": 1000000.0,
+              "drawdown": 0.044955180000000095,
+              "state_age": 1,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-25",
+            "prior_close_nav": 955044.82,
+            "nav": 958706.51,
+            "cash": 688292.51,
+            "holdings_value": 270414.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601398": {
+                "quantity": 16200,
+                "available": 2300,
+                "close": 8.31,
+                "value": 134622.0
+              },
+              "sh600901": {
+                "quantity": 20700,
+                "available": 20700,
+                "close": 6.56,
+                "value": 135792.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.1416408448086996,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.044955180000000095,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-25",
+              "signal_date": "2025-11-24",
+              "symbol": "sh601857",
+              "side": "SELL",
+              "quantity": 13300,
+              "price": 9.74,
+              "gross": 129542.0,
+              "fee": 104.93,
+              "cash_after": 802446.89
+            },
+            {
+              "date": "2025-11-25",
+              "signal_date": "2025-11-24",
+              "symbol": "sh601398",
+              "side": "BUY",
+              "quantity": 13900,
+              "price": 8.21,
+              "gross": 114119.0,
+              "fee": 35.38,
+              "cash_after": 688292.51
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh601100",
+                "sh600309",
+                "sh601133"
+              ],
+              "rule_config": "baseline",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.0
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": 0.0023517999740456136,
+              "turnover_budget": null,
+              "signal_date": "2025-12-04",
+              "execution_date": "2025-12-05",
+              "drawdown": 0.06098755,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 9,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1000000.0,
+                "drawdown": 0.06098755,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        },
+        "contrast": {
+          "decision": {
+            "cap": 0.3,
+            "level": 1,
+            "selected": [
+              "sh600901",
+              "sh601398",
+              "sz000895",
+              "sh601988",
+              "sh600941",
+              "sz000333"
+            ],
+            "rule_config": "all_on",
+            "rule_activity": {
+              "retained_beyond12": 0,
+              "replacements": 0,
+              "blocked_by_count": 0,
+              "blocked_by_rank_gap": 0,
+              "buffered_positions": 2,
+              "buy_budget_binding": false,
+              "sell_budget_binding": false,
+              "extra_penalty_rate": 0.001
+            },
+            "status": "OPTIMAL",
+            "positive_targets": 4,
+            "predicted_net_objective": 0.0031259251932865407,
+            "turnover_budget": 0.25,
+            "signal_date": "2025-11-24",
+            "execution_date": "2025-11-25",
+            "drawdown": 0.044955180000000095,
+            "scheduled": true,
+            "forced": false,
+            "recovery": {
+              "state_age_before": 1,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": false,
+              "reason": "UNCHANGED",
+              "peak": 1000000.0,
+              "drawdown": 0.044955180000000095,
+              "state_age": 1,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          },
+          "account": {
+            "date": "2025-11-25",
+            "prior_close_nav": 955044.82,
+            "nav": 957351.89,
+            "cash": 802446.89,
+            "holdings_value": 154905.0,
+            "receivables": 0.0,
+            "positions": {
+              "sh601398": {
+                "quantity": 2300,
+                "available": 2300,
+                "close": 8.31,
+                "value": 19113.0
+              },
+              "sh600901": {
+                "quantity": 20700,
+                "available": 20700,
+                "close": 6.56,
+                "value": 135792.0
+              }
+            },
+            "risk_level": 1,
+            "max_nav_weight": 0.14184126173292455,
+            "risk_cap": 0.3,
+            "risk_phase": "CAUTION45",
+            "risk_peak": 1000000.0,
+            "risk_drawdown": 0.044955180000000095,
+            "can_buy": true,
+            "exposure_above_target": false
+          },
+          "trades": [
+            {
+              "date": "2025-11-25",
+              "signal_date": "2025-11-24",
+              "symbol": "sh601857",
+              "side": "SELL",
+              "quantity": 13300,
+              "price": 9.74,
+              "gross": 129542.0,
+              "fee": 104.93,
+              "cash_after": 802446.89
+            }
+          ],
+          "later_transitions": [
+            {
+              "cap": 0.2,
+              "level": 2,
+              "selected": [
+                "sh603256",
+                "sz301526"
+              ],
+              "rule_config": "all_on",
+              "rule_activity": {
+                "buffered_positions": 0,
+                "buy_budget_binding": false,
+                "sell_budget_binding": false,
+                "extra_penalty_rate": 0.001
+              },
+              "status": "OPTIMAL",
+              "positive_targets": 2,
+              "predicted_net_objective": -0.0001548216279630253,
+              "turnover_budget": null,
+              "signal_date": "2026-07-06",
+              "execution_date": "2026-07-07",
+              "drawdown": 0.06847114996777448,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 148,
+                "healthy_streak_before": 0,
+                "previous_phase": "CAUTION45",
+                "probe_anchor_before": null,
+                "phase": "FROZEN20",
+                "level": 2,
+                "cap": 0.2,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_6",
+                "peak": 1029449.63,
+                "drawdown": 0.06847114996777448,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            },
+            {
+              "status": "RISK_EXIT",
+              "cap": 0.0,
+              "level": 3,
+              "selected": [],
+              "rule_config": "all_on",
+              "signal_date": "2026-07-13",
+              "execution_date": "2026-07-14",
+              "drawdown": 0.09021088287729051,
+              "scheduled": false,
+              "forced": true,
+              "recovery": {
+                "state_age_before": 5,
+                "healthy_streak_before": 0,
+                "previous_phase": "FROZEN20",
+                "probe_anchor_before": null,
+                "phase": "HALTED0",
+                "level": 3,
+                "cap": 0.0,
+                "can_buy": false,
+                "changed": true,
+                "reason": "GLOBAL_DRAWDOWN_8",
+                "peak": 1029449.63,
+                "drawdown": 0.09021088287729051,
+                "state_age": 0,
+                "healthy_streak": 0,
+                "probe_anchor": null,
+                "healthy": false,
+                "mode": "latched"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "retain18_validation_failure_counts": {
+    "minimum_mean_advantage": 10,
+    "wins_at_least_four": 11,
+    "lower90_positive": 11,
+    "continuous_dd_within8": 2,
+    "quality_clear": 5,
+    "continuous_dd_not_over50bp_worse": 2,
+    "continuous_return_not_over50bp_worse": 3
+  },
+  "unresolved_outer_events": [
+    {
+      "cost": "20bps",
+      "policy": "fixed_add_caution_budget25",
+      "scope": "continuous",
+      "account": 0,
+      "event": {
+        "date": "2026-05-26",
+        "symbol": "sz301511",
+        "type": "CORPORATE_ACTION",
+        "entitled_quantity": 2400,
+        "cash_gross": 240.0,
+        "cash_tax_reserve": 48.0,
+        "net_receivable": 192.0,
+        "share_quantity_change": 0,
+        "extra_shares_restricted": 0,
+        "fractional_shares_discarded": 0.0,
+        "pay_date": null,
+        "share_list_date": null,
+        "unknown_cash_pay_date": true,
+        "unknown_share_list_date": false,
+        "bonus_tax_not_modelled": false
+      }
+    },
+    {
+      "cost": "20bps",
+      "policy": "fixed_remove_penalty10",
+      "scope": "continuous",
+      "account": 0,
+      "event": {
+        "date": "2026-05-26",
+        "symbol": "sz301511",
+        "type": "CORPORATE_ACTION",
+        "entitled_quantity": 2400,
+        "cash_gross": 240.0,
+        "cash_tax_reserve": 48.0,
+        "net_receivable": 192.0,
+        "share_quantity_change": 0,
+        "extra_shares_restricted": 0,
+        "fractional_shares_discarded": 0.0,
+        "pay_date": null,
+        "share_list_date": null,
+        "unknown_cash_pay_date": true,
+        "unknown_share_list_date": false,
+        "bonus_tax_not_modelled": false
+      }
+    },
+    {
+      "cost": "30bps",
+      "policy": "fixed_add_retain18",
+      "scope": "continuous",
+      "account": 0,
+      "event": {
+        "date": "2026-06-10",
+        "symbol": "sh688120",
+        "type": "CORPORATE_ACTION",
+        "entitled_quantity": 383,
+        "cash_gross": 153.2,
+        "cash_tax_reserve": 30.64,
+        "net_receivable": 122.56,
+        "share_quantity_change": 153,
+        "extra_shares_restricted": 153,
+        "fractional_shares_discarded": 0.2,
+        "pay_date": null,
+        "share_list_date": null,
+        "unknown_cash_pay_date": true,
+        "unknown_share_list_date": true,
+        "bonus_tax_not_modelled": false
+      }
+    },
+    {
+      "cost": "30bps",
+      "policy": "fixed_add_caution_budget25",
+      "scope": "continuous",
+      "account": 0,
+      "event": {
+        "date": "2026-05-26",
+        "symbol": "sz301511",
+        "type": "CORPORATE_ACTION",
+        "entitled_quantity": 2200,
+        "cash_gross": 220.0,
+        "cash_tax_reserve": 44.0,
+        "net_receivable": 176.0,
+        "share_quantity_change": 0,
+        "extra_shares_restricted": 0,
+        "fractional_shares_discarded": 0.0,
+        "pay_date": null,
+        "share_list_date": null,
+        "unknown_cash_pay_date": true,
+        "unknown_share_list_date": false,
+        "bonus_tax_not_modelled": false
+      }
+    },
+    {
+      "cost": "30bps",
+      "policy": "fixed_add_caution_budget25",
+      "scope": "continuous",
+      "account": 0,
+      "event": {
+        "date": "2026-05-27",
+        "symbol": "sh600176",
+        "type": "CORPORATE_ACTION",
+        "entitled_quantity": 3400,
+        "cash_gross": 646.0,
+        "cash_tax_reserve": 129.2,
+        "net_receivable": 516.8,
+        "share_quantity_change": 0,
+        "extra_shares_restricted": 0,
+        "fractional_shares_discarded": 0.0,
+        "pay_date": null,
+        "share_list_date": null,
+        "unknown_cash_pay_date": true,
+        "unknown_share_list_date": false,
+        "bonus_tax_not_modelled": false
+      }
+    },
+    {
+      "cost": "30bps",
+      "policy": "fixed_remove_caution_budget25",
+      "scope": "continuous",
+      "account": 0,
+      "event": {
+        "date": "2026-06-10",
+        "symbol": "sh688120",
+        "type": "CORPORATE_ACTION",
+        "entitled_quantity": 383,
+        "cash_gross": 153.2,
+        "cash_tax_reserve": 30.64,
+        "net_receivable": 122.56,
+        "share_quantity_change": 153,
+        "extra_shares_restricted": 153,
+        "fractional_shares_discarded": 0.2,
+        "pay_date": null,
+        "share_list_date": null,
+        "unknown_cash_pay_date": true,
+        "unknown_share_list_date": true,
+        "bonus_tax_not_modelled": false
+      }
+    },
+    {
+      "cost": "30bps",
+      "policy": "fixed_remove_penalty10",
+      "scope": "continuous",
+      "account": 0,
+      "event": {
+        "date": "2026-05-26",
+        "symbol": "sz301511",
+        "type": "CORPORATE_ACTION",
+        "entitled_quantity": 2200,
+        "cash_gross": 220.0,
+        "cash_tax_reserve": 44.0,
+        "net_receivable": 176.0,
+        "share_quantity_change": 0,
+        "extra_shares_restricted": 0,
+        "fractional_shares_discarded": 0.0,
+        "pay_date": null,
+        "share_list_date": null,
+        "unknown_cash_pay_date": true,
+        "unknown_share_list_date": false,
+        "bonus_tax_not_modelled": false
+      }
+    },
+    {
+      "cost": "30bps",
+      "policy": "fixed_remove_penalty10",
+      "scope": "continuous",
+      "account": 0,
+      "event": {
+        "date": "2026-05-27",
+        "symbol": "sh600176",
+        "type": "CORPORATE_ACTION",
+        "entitled_quantity": 3400,
+        "cash_gross": 646.0,
+        "cash_tax_reserve": 129.2,
+        "net_receivable": 516.8,
+        "share_quantity_change": 0,
+        "extra_shares_restricted": 0,
+        "fractional_shares_discarded": 0.0,
+        "pay_date": null,
+        "share_list_date": null,
+        "unknown_cash_pay_date": true,
+        "unknown_share_list_date": false,
+        "bonus_tax_not_modelled": false
+      }
+    }
+  ],
+  "notes": [
+    "Original evaluation exact-float parity flags retained; this supplement tests economic values at the ledger cent unit.",
+    "Verified dividend availability changes cash versus receivables; this does not change total NAV or executed economic order terms in the baseline.",
+    "First divergence is a concrete mechanism trace, not proof that the entire eventual difference was caused by one skipped stock.",
+    "Positive fixed-retain18 continuous performance is retrospective and was not used to override validation selection."
+  ]
+}

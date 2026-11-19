@@ -1,0 +1,107 @@
+{
+  "returns": [
+    0.007470410000000038,
+    -0.006257079999999915,
+    0.011151890000000053,
+    0.11057224999999993,
+    0.009169839999999985,
+    0.05414485999999985
+  ],
+  "mean_net_return": 0.031042028333333322,
+  "worst_drawdown": -0.0684444039111467,
+  "episodes": 6,
+  "trades": 82,
+  "unresolved_events": 0,
+  "quality_issues": 0,
+  "identity": "434eb7dcd6dee0a64d5fd9ab38aef29a44f5de8daa582cb19f19f230fa8c58de",
+  "config": "baseline",
+  "continuous": {
+    "start": "2025-11-10",
+    "end": "2026-02-06",
+    "sessions": 63,
+    "return": 0.19792271000000006,
+    "max_drawdown": -0.06878499201423749,
+    "es95": -0.02199761960863167,
+    "fees": 3713.14,
+    "trades": 71,
+    "turnover": 6.767502400000001,
+    "ending_cash": 985160.74,
+    "ending_receivables": 0.0,
+    "unresolved_events": 0,
+    "quality_issues": 0,
+    "rejection_counts": {
+      "T1_OR_MINIMUM_QUANTITY": 9,
+      "MODEL_SLIPPAGE_OUTSIDE_BAR": 4,
+      "LOT_BUDGET_TOO_SMALL": 1,
+      "OPEN_AT_UPPER_LIMIT": 2,
+      "VOLATILITY_GAP_CEILING": 2,
+      "OTHER_HOLDING_ABOVE_NAV_CAP": 3,
+      "NO_QUOTE": 1
+    },
+    "solver_counts": {
+      "OPTIMAL": 17,
+      "HOLD_BETWEEN_REBALANCES": 45,
+      "INFEASIBLE_REDUCE_ONLY": 1
+    },
+    "mean_exposure": 0.4319637438877651,
+    "target_exposure_breach_days": 2,
+    "risk_mode": "latched",
+    "rule_config_days": {
+      "baseline": 63
+    },
+    "phase_days": {
+      "NORMAL": 47,
+      "CAUTION45": 1,
+      "FROZEN20": 15
+    },
+    "recovery_transitions": [
+      {
+        "date": "2026-01-16",
+        "state_age_before": 47,
+        "healthy_streak_before": 1,
+        "previous_phase": "NORMAL",
+        "probe_anchor_before": null,
+        "phase": "CAUTION45",
+        "level": 1,
+        "cap": 0.45,
+        "can_buy": true,
+        "changed": true,
+        "reason": "GLOBAL_DRAWDOWN_4",
+        "peak": 1286195.25,
+        "drawdown": 0.04457760203981476,
+        "state_age": 0,
+        "healthy_streak": 0,
+        "probe_anchor": null,
+        "healthy": true,
+        "mode": "latched"
+      },
+      {
+        "date": "2026-01-19",
+        "state_age_before": 1,
+        "healthy_streak_before": 0,
+        "previous_phase": "CAUTION45",
+        "probe_anchor_before": null,
+        "phase": "FROZEN20",
+        "level": 2,
+        "cap": 0.2,
+        "can_buy": false,
+        "changed": true,
+        "reason": "GLOBAL_DRAWDOWN_6",
+        "peak": 1286195.25,
+        "drawdown": 0.06478280805344283,
+        "state_age": 0,
+        "healthy_streak": 0,
+        "probe_anchor": null,
+        "healthy": false,
+        "mode": "latched"
+      }
+    ],
+    "probe_entries": 0,
+    "probe_failures": 0
+  },
+  "accounting_pass": true,
+  "accounting_checks": 2756,
+  "execution_checks": 1568,
+  "ledger_sha256": "d2b895ed3ee0bc35e203bd96e105841b156ae726f1a5d6e22e8f7af5c695f7bd",
+  "ledger_path": "D:\\投资组合量化\\runs\\forecast_v6\\20261119_v1\\training\\fold_04\\inner_models\\tree50.ledgers.json.gz"
+}

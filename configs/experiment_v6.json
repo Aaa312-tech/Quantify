@@ -1,0 +1,225 @@
+{
+  "version": "forecast_v6_20261119_v1",
+  "registered_at": "2026-11-19T16:30:07.193746+08:00",
+  "registration": "Before V6 training, rule selection or outcome evaluation",
+  "objective": "Identify turnover drag via independent rule additions/removals, select only with past validation, retrain stock models, compare net returns with frozenV4latched and matched momentum.",
+  "risk_preference": "balanced_attack",
+  "drawdown_alert": 0.08,
+  "initial_cash": 1000000,
+  "data": {
+    "source": "FrozenV5 bundle ending2026-11-18; all prices,57features and legal5session labels unchanged",
+    "known_cash_dates": "New copy adds four already source-verified dividend pay dates from V4/V5 supplements, conservatively available next trading open; retain declared date and PDF hash.",
+    "limitations": "594 currently selected/surviving securities; historical universe/ST/industry not fully point-in-time. No new future data or contest assumptions."
+  },
+  "risk": {
+    "controller": "Exact frozenV4 latched state:90%normal,45%after4%DD,20%after6%DD with no new buys,0%after8%terminal. Same market regime,original highwater never resets. NoV5voloverlay/recovery.",
+    "execution": "V4 engine:5session rebalance,integercents/lots,T+1,limit/gap/liquiditychecks,1%priorADV,14%name28%sector targets and15%/30%postbuyhardcaps. Infeasible turnover constraints reduce only; never block terminal risk exit.",
+    "costs": "SameV4fees,minimumfees,taxes/reserve and10/20/30bp per-side slippage. Ending holdings marked at close, not forced liquidated."
+  },
+  "rules": {
+    "independent_switches": [
+      "retain18",
+      "replace1",
+      "rank_gap3",
+      "normal_budget25",
+      "caution_budget25",
+      "penalty10",
+      "deadband2"
+    ],
+    "configs": {
+      "baseline": {
+        "retain18": false,
+        "replace1": false,
+        "rank_gap3": false,
+        "normal_budget25": false,
+        "caution_budget25": false,
+        "penalty10": false,
+        "deadband2": false
+      },
+      "add_retain18": {
+        "retain18": true,
+        "replace1": false,
+        "rank_gap3": false,
+        "normal_budget25": false,
+        "caution_budget25": false,
+        "penalty10": false,
+        "deadband2": false
+      },
+      "add_replace1": {
+        "retain18": false,
+        "replace1": true,
+        "rank_gap3": false,
+        "normal_budget25": false,
+        "caution_budget25": false,
+        "penalty10": false,
+        "deadband2": false
+      },
+      "add_rank_gap3": {
+        "retain18": false,
+        "replace1": false,
+        "rank_gap3": true,
+        "normal_budget25": false,
+        "caution_budget25": false,
+        "penalty10": false,
+        "deadband2": false
+      },
+      "add_normal_budget25": {
+        "retain18": false,
+        "replace1": false,
+        "rank_gap3": false,
+        "normal_budget25": true,
+        "caution_budget25": false,
+        "penalty10": false,
+        "deadband2": false
+      },
+      "add_caution_budget25": {
+        "retain18": false,
+        "replace1": false,
+        "rank_gap3": false,
+        "normal_budget25": false,
+        "caution_budget25": true,
+        "penalty10": false,
+        "deadband2": false
+      },
+      "add_penalty10": {
+        "retain18": false,
+        "replace1": false,
+        "rank_gap3": false,
+        "normal_budget25": false,
+        "caution_budget25": false,
+        "penalty10": true,
+        "deadband2": false
+      },
+      "add_deadband2": {
+        "retain18": false,
+        "replace1": false,
+        "rank_gap3": false,
+        "normal_budget25": false,
+        "caution_budget25": false,
+        "penalty10": false,
+        "deadband2": true
+      },
+      "all_on": {
+        "retain18": true,
+        "replace1": true,
+        "rank_gap3": true,
+        "normal_budget25": true,
+        "caution_budget25": true,
+        "penalty10": true,
+        "deadband2": true
+      },
+      "remove_retain18": {
+        "retain18": false,
+        "replace1": true,
+        "rank_gap3": true,
+        "normal_budget25": true,
+        "caution_budget25": true,
+        "penalty10": true,
+        "deadband2": true
+      },
+      "remove_replace1": {
+        "retain18": true,
+        "replace1": false,
+        "rank_gap3": true,
+        "normal_budget25": true,
+        "caution_budget25": true,
+        "penalty10": true,
+        "deadband2": true
+      },
+      "remove_rank_gap3": {
+        "retain18": true,
+        "replace1": true,
+        "rank_gap3": false,
+        "normal_budget25": true,
+        "caution_budget25": true,
+        "penalty10": true,
+        "deadband2": true
+      },
+      "remove_normal_budget25": {
+        "retain18": true,
+        "replace1": true,
+        "rank_gap3": true,
+        "normal_budget25": false,
+        "caution_budget25": true,
+        "penalty10": true,
+        "deadband2": true
+      },
+      "remove_caution_budget25": {
+        "retain18": true,
+        "replace1": true,
+        "rank_gap3": true,
+        "normal_budget25": true,
+        "caution_budget25": false,
+        "penalty10": true,
+        "deadband2": true
+      },
+      "remove_penalty10": {
+        "retain18": true,
+        "replace1": true,
+        "rank_gap3": true,
+        "normal_budget25": true,
+        "caution_budget25": true,
+        "penalty10": false,
+        "deadband2": true
+      },
+      "remove_deadband2": {
+        "retain18": true,
+        "replace1": true,
+        "rank_gap3": true,
+        "normal_budget25": true,
+        "caution_budget25": true,
+        "penalty10": true,
+        "deadband2": false
+      }
+    },
+    "design": "16 configurations:baseline/alloff;7singleadditions;all7on;7single-removals. Two conditional contrasts per rule, not a full128factorial. Do not assign one universal effect when interactions differ.",
+    "baseline": "ExactV4allocation math and rank12retention, unlimited cost-justified replacement,normal50%budget,no caution budget,no extra penalty/deadband.",
+    "normal_budget25": "Only normal-state budget50->25%; initial empty account exempt.",
+    "caution_budget25": "Only level1 receives25%buy/sell budget; distinct from normal budget.",
+    "replace1_vs_gap": "One discretionary replacement and3percentage-point ranking gap are separate toggles. Required exits/vacancyfills not counted as discretionary substitutions.",
+    "penalty10": "Additional10bp per buy/sell traded weight in optimization, not an added fictitious realized fee. Existing marketcosts already in model.",
+    "deadband2": "Keep prior weight when target difference<=2pp and all portfolio limits remain feasible."
+  },
+  "training": {
+    "features": 57,
+    "models": "SameindustryresidualRidge(alpha1000) andHGB7leaves100iterations asV5, retrain all48models from scratch; same5momentum/blend candidates.",
+    "windows": "11outerwalkforward252train+6gap+63validation+6gap+21test, pluslatestwindow;actualdelayedlabelendpurge.",
+    "stage1": "Using momentum validation forecasts, evaluate all16rules on sixcomplete10session accounts+partialtail AND continuous63session account. Choose turnover config before evaluating stock overlay.",
+    "rule_adoption": "Fallback baseline. Requiremeanpaired10session net advantage>=10bp,>=4/6wins,one-sided90%two-episodeblockbootstraplower>0;episodeandcontinuousDD<=8% and no more50bp worse thanbaseline;continuousreturn>=baseline-.005;clearaccountinganddata. Maximize meanadvantage-standarderror, ties favor fewer rules thenconfigID.",
+    "stage2": "With chosenconfigfixed, evaluate5stockrankings on samevalidationaccounts. Learnedblend requiresV5industrygate plus20bpnetadvantage,4/6wins,90%lower>0,DD/noqualityflags,andcontinuousnotmore50bpworse. Else momentum.",
+    "selection_inference": "Innerbootstrap is regularization, not formal significance over16searchedconfigs. All trials persisted; no post-outer parameter changes.",
+    "adaptive_rule_schedule": "Chosenconfig assigned to each outer signaldate; affects nextscheduled/risk-triggered rebalance, never retroactive fills or a reset of account risk."
+  },
+  "evaluation": {
+    "primary": "v6_selected",
+    "policies": "v6_selected,matched_momentum,selected_legacy, plus16fixedmomentumconfigpolicies:19total at all3costs.",
+    "comparators": [
+      "matched_momentum",
+      "fixed_baseline",
+      "frozen_v4_selected_latched",
+      "cash"
+    ],
+    "units": "Same23complete independent10sessionaccounts pluspartialtail and231sessioncontinuousaccount.",
+    "uncertainty": "Fourpaired98.75%two-sidedcircular2episodeblockCI,5000draws,seed20261119; report additional rule contrasts descriptively with no winning-rule significance claim.",
+    "gate": "All4pairedlowerbounds>0,>=20episodes,positiveprimary10daymeansatall3costs,primarycontinuouspositiveandDD<=8%atall3costs,clearprimaryaccounting/data. Keep failures visible.",
+    "reference_parity": "Compare baseline V6 momentum forecasts/trades/NAV to frozenV4momentumlatched on exactdates. If added verifiedcashdates or numerical ties cause differences, disclose them rather than quietly relabel reference.",
+    "limits": "HistoricaldatesalreadyinspectedinV1-V5; retrospective development,notpristineholdout orprospectiveproof."
+  },
+  "deliverables": [
+    "versionedcodeanddata",
+    "48freshmodel fits",
+    "allinnertrialsandcausalselections",
+    "16rulecontrastsand19policythreecostledgers",
+    "independentaccounting/riskchecks",
+    "datedresearchsnapshot",
+    "HTML/TXTreportandimmutableindex"
+  ],
+  "prohibited": [
+    "APPdownload/operation",
+    "WeChat",
+    "brokerorders",
+    "backgroundautomation",
+    "overwriteV1-V5",
+    "fabricateforwardperformance"
+  ]
+}

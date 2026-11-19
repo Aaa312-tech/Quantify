@@ -1,0 +1,17 @@
+* text=auto eol=lf
+*.png binary
+*.pdf binary
+*.joblib binary
+*.npz binary
+*.npy binary
+*.gz binary
+
+# Preserve the exact bytes of research evidence, including historical CRLF files.
+data/** -text
+artifacts/** -text
+docs/references/** -text
+docs/maintenance/** -text
+configs/experiment_v6.json -text
+
+# Large datasets and fitted estimators are downloaded through Git LFS.
+*.joblib filter=lfs diff=lfs merge=lfs -text
