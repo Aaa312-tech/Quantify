@@ -1,39 +1,28 @@
-# 开发与写作规范
+# 开发约定
 
-## 命名和位置
+代码放在 `src/quantfolio`，按职责组织，不按V1、V2拆包。Python使用UTF-8、LF、4空格缩进和100列；格式及导入顺序交给Ruff。
 
-- Python包、模块、函数和变量使用 `snake_case`；类使用 `PascalCase`；常量使用 `UPPER_CASE`。文件名表达职责，避免 `final2`、`新版`、`最新最终版` 等名称。
-- 活动代码只放 `src/quantfolio`，按 `models`、`allocation`、`simulation`、`risk`、`reconciliation` 等职责拆分。不得重新引入 `forecast_v2` 到 `forecast_v6` 的跨版本导入。
-- 配置放 `configs`；输入快照用 `data/processed/YYYY-MM-DD`；实验产物用 `artifacts/experiments/<purpose>_YYYY-MM-DD`；报告入口固定在 `reports/latest`。同日多次实验加 `_01`、`_02`。
-- 需要保留的实验参数写入协议JSON，不靠文件名代替参数说明。新实验必须使用新目录；禁止覆盖冻结参考实验。
+## 代码
 
-## Python代码
+- 模块、函数和变量用 `snake_case`，类用 `PascalCase`，常量用 `UPPER_CASE`。
+- 一个模块围绕一项职责。不要为一个小函数单建文件，也不要为未来可能用到的功能预先搭框架。
+- 业务变量写出含义和单位，如 `position_values`、`quantity`、`after_fee_nav`；矩阵运算可用常见数学符号。
+- 注释说明时间可用性、单位和交易限制。无需复述函数名或写“完整、强大、智能”等评价。
+- 共享交易规则集中定义；独立核账应保留自己的计算，避免执行器和验证器共享同一错误。
+- 持久化使用 `storage.save`，不写NaN/Infinity。新实验用新目录，不覆盖冻结参考文件。
 
-- UTF-8、LF换行、4空格缩进、100列目标宽度。格式交给Ruff，不手工维护多套风格。
-- 每行表达一个语句，不用分号压缩逻辑。标准库、第三方库、本地导入分组；删除无用导入。
-- 模块说明用途；公开边界函数说明输入、输出及限制，新增接口应带类型标注。局部数值计算可保留常用数学缩写，业务状态和路径使用清楚的名称。
-- 注释解释时间可用性、交易约束和取舍，不复述代码。禁止把“收益最大化”写成未经验证的结果保证。
-- 持久化用 `storage.save`，保留UTC+8时间戳和哈希。JSON拒绝NaN/Infinity，路径优先相对项目根目录。
-- 不读取未来行，不把验证/测试结果用于事后选定主策略，不把不可成交信号计为成交。回测账务和执行规则必须独立核对。
+## 检查与提交
 
-## 验证和变更
+运行 `scripts/check.ps1`。数值、时序或成交逻辑改变时，再按[复现指南](docs/reproducibility.md)核对模型与完整账本。新增测试应覆盖实际失败情形或交易约束。
 
-修改前明确问题与预期行为，修改后运行格式检查、静态检查及相关不变量测试。涉及收益、时序或成交逻辑时，再执行冻结重放；纯文档修改无需重新训练模型。
+README保留入口和当前结论；方法、实现、运行说明分别放在对应文档。机器结果放 `artifacts`，不要复制到文档目录。报告注明样本、区间、成本与基准，区分连续收益和重置本金的10日均值。
 
-增加新策略时，先登记规则、成本和样本边界，再做训练与评估。保留未通过的候选证据。禁止为了让结果通过而更新“预期值”或覆盖历史结果。
+提交标题说明动作与对象，例如 `fix: reject recovery in latched risk audit`。同步方式见[仓库维护](docs/repository.md)。
 
-提交标题可采用 `refactor: consolidate allocation helpers`、`fix: preserve cash receivable timing`、`docs: explain validation gates`。说明应包含具体问题、最终行为、验证结果和已知限制。
+## 参考代码
 
-## 文档和结果
+本轮阅读了以下实现，借鉴职责划分和命名，没有复制第三方代码：
 
-README只放项目入口、当前状态、运行方式和目录导航。方法写在 `docs/methodology.md`，实现关系写在 `docs/architecture.md`，实验细节留在对应产物中。
-
-报告同时写明数据截止日、区间、成本、样本数、风险设定、基准和未通过的门槛。百分比注明是连续账户收益还是重置本金的10日均值。数据表保留机器可读JSON，图表可从数据重建。
-
-文件整理只改变呈现和依赖结构，不自动构成新策略版本。删除重要产物前需先保留可复核摘要和必要来源；本次旧文件按用户要求进入Windows回收站。
-
-## GitHub同步
-
-维护目标为 `Aaa312-tech/Quantify` 的 `main` 分支。用户已授权同步当前项目的全部研究内容及后续项目修改；每次完成实质变更后检查、提交、推送并核对CI。同步前先获取远端状态，避免覆盖他人工作，禁止以强制推送处理常规分歧。
-
-数据、训练产物、报告和来源材料应跟随相应代码提交；不要只上传摘要或LFS指针而漏传实际对象。`.joblib`使用Git LFS，冻结数据与证据保留字节不变。凭据、环境和缓存不进入仓库。可使用 `scripts/sync.ps1 -Message '说明具体变化'` 执行常规同步，详见 `docs/repository.md`。
+- [Backtesting.py的Broker](https://github.com/kernc/backtesting.py/blob/master/backtesting/backtesting.py)：订单处理与每日账户推进分开。本项目用 `_Execution` 集中处理开盘成交，`simulate`保留信号和估值流程。
+- [Qlib的Account](https://github.com/microsoft/qlib/blob/main/qlib/backtest/account.py)：区分持仓核算和绩效统计。本项目由 `Ledger`记账，`metrics`统计账户与区间结果。
+- [pysystemtrade的portfolioWeights](https://github.com/pst-group/pysystemtrade/blob/develop/sysquant/optimisation/weights.py)：区分权重、金额和数量，按资产键对齐。重命名仓位和训练变量时遵循这一点，没有引入其框架层级。

@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from quantfolio.features import INDUSTRY_FEATURES, features
+from quantfolio.features import INDUSTRY_FEATURES, industry_features
 from quantfolio.models import candidate_scores, factor_check, neutral_scores, training_targets
 
 
@@ -76,6 +76,6 @@ class IndustryTests(unittest.TestCase):
         for c in INDUSTRY_FEATURES:
             t[c] = np.arange(24, dtype=float)
         meta = {s: {"industry": g} for s, g in zip(t.symbol, t.industry)}
-        a, _ = features(t, meta)
-        b, _ = features(t.iloc[:12], meta)
+        a, _ = industry_features(t, meta)
+        b, _ = industry_features(t.iloc[:12], meta)
         pd.testing.assert_frame_equal(a.iloc[:12], b)

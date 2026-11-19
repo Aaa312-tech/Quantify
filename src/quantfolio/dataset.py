@@ -5,9 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 import joblib
+import numpy as np
 import pandas as pd
 
-from .features import features
+from .features import industry_features
 from .settings import Paths
 from .storage import read, sha
 
@@ -43,11 +44,11 @@ def load_bundle(paths: Paths) -> dict[str, Any]:
 def validate_features(bundle: dict[str, Any]) -> dict[str, Any]:
     """Rebuild industry features and prove future rows do not change historical prefixes."""
     table = bundle["table"]
-    rebuilt, _ = features(table.copy(deep=True), bundle["meta"])
+    rebuilt, _ = industry_features(table.copy(deep=True), bundle["meta"])
     pd.testing.assert_frame_equal(table[rebuilt.columns], rebuilt)
     for cutoff in (300, 500, 650):
         prefix = table.loc[table.date_index <= cutoff].copy(deep=True)
-        actual, _ = features(prefix, bundle["meta"])
+        actual, _ = industry_features(prefix, bundle["meta"])
         pd.testing.assert_frame_equal(actual, rebuilt.loc[prefix.index])
     return {
         "status": "PASS",
@@ -55,3 +56,54 @@ def validate_features(bundle: dict[str, Any]) -> dict[str, Any]:
         "features": len(bundle["features"]),
         "prefix_cutoffs": [300, 500, 650],
     }
+
+
+def walk_forward_folds(calendar, train=252, validation=63, test=21, gap=6, first=125):
+    """Create chronological train, validation and test windows with purging gaps."""
+    folds = []
+    start = first
+    while True:
+        train_end = start + train - 1
+        valid_start = train_end + gap + 1
+        valid_end = valid_start + validation - 1
+        test_start = valid_end + gap + 1
+        test_end = test_start + test - 1
+        if test_end + 6 >= len(calendar):
+            break
+        folds.append(
+            {
+                "fold": len(folds) + 1,
+                "train_start": start,
+                "train_end": train_end,
+                "validation_start": valid_start,
+                "validation_end": valid_end,
+                "test_start": test_start,
+                "test_end": test_end,
+            }
+        )
+        start += test
+    return folds
+
+
+def label_mask(table, horizon, start, end, available_before):
+    """Calendar grouping plus actual, possibly delayed, label-end purging."""
+    dates = table.date_index.to_numpy()
+    ends = table[f"end{horizon}"].to_numpy()
+    return (
+        (dates >= start)
+        & (dates <= end)
+        & table.eligible.to_numpy()
+        & (table[f"status{horizon}"].to_numpy() == 0)
+        & (ends < available_before)
+        & (ends > dates)
+        & np.isfinite(table[f"y{horizon}"].to_numpy())
+    )
+
+
+def eligible_rows(table, start, end):
+    """Select eligible signal rows within an inclusive historical date-index range."""
+    return np.flatnonzero(
+        (table.date_index.to_numpy() >= start)
+        & (table.date_index.to_numpy() <= end)
+        & table.eligible.to_numpy()
+    )

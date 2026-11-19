@@ -7,16 +7,14 @@ from typing import Any
 
 import numpy as np
 
-from .audit import execution_audit
-from .dataset import check_integrity, load_bundle
-from .metrics import stats
-from .predictions import prediction_map
-from .reconciliation import reconcile
+from .dataset import check_integrity, load_bundle, walk_forward_folds
+from .metrics import episode_stats
+from .models import prediction_map
 from .rules import CONFIGS
 from .settings import Paths
 from .simulation import episodes, simulate
-from .splits import walk_forward_folds
 from .storage import digest, log, now, read, save, sha
+from .validation import execution_audit, reconcile
 
 POLICIES = ["v6_selected", "matched_momentum", "selected_legacy"] + [
     "fixed_" + name for name in CONFIGS
@@ -66,11 +64,6 @@ def policy_inputs(name: str, maps: dict, schedule: dict) -> tuple:
     raise ValueError(name)
 
 
-def comparable_ledger(ledger: dict) -> dict:
-    """Compare every deterministic account field, including rejected orders and decisions."""
-    return ledger
-
-
 def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) -> dict[str, Any]:
     """Re-run frozen V6 accounts; fail if refactoring changes any recorded economics."""
     from .storage import load_gzip
@@ -104,9 +97,7 @@ def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) ->
             for number, (new, old) in enumerate(paired):
                 if new["summary"] != old["summary"]:
                     raise AssertionError(f"Summary mismatch: {key}/{policy}/{number}")
-                if digest(comparable_ledger(new["ledger"])) != digest(
-                    comparable_ledger(old["ledger"])
-                ):
+                if digest(new["ledger"]) != digest(old["ledger"]):
                     raise AssertionError(f"Ledger mismatch: {key}/{policy}/{number}")
                 check = reconcile(new["ledger"], new["summary"], bundle["meta"], bundle["actions"])
                 audit = execution_audit(new["ledger"], bundle)
@@ -116,13 +107,12 @@ def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) ->
                 execution_checks += audit["checks"]
                 accounts += 1
             results[key][policy] = {
-                "aggregate": stats(actual),
+                "aggregate": episode_stats(actual),
                 "continuous": summary,
                 "accounts": len(paired),
                 "full_ledger_exact": True,
             }
             log("Replay matched frozen ledgers", cost=key, policy=policy, accounts=len(paired))
-            save(output / "progress.json", {"completed_at": now(), "results": results})
     result = {
         "status": "PASS",
         "completed_at": now(),

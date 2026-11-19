@@ -6,11 +6,10 @@ import pandas as pd
 from conftest import fixture
 
 from quantfolio.allocation import allocate, select_names
-from quantfolio.audit import execution_audit
-from quantfolio.reconciliation import reconcile
 from quantfolio.rules import CONFIGS, RULES, config_for
 from quantfolio.selection import assess, select_model, select_rules
 from quantfolio.simulation import simulate
+from quantfolio.validation import execution_audit, reconcile
 
 
 def selection_fixture():
@@ -218,6 +217,25 @@ class SimulationTests(unittest.TestCase):
             any((t["date"] > freeze and t["side"] == "BUY" for t in ledger_detail["trades"]))
         )
         self.assertEqual(reconcile(ledger_detail, s, b["meta"], [])["status"], "PASS")
+
+    def test_audit_rejects_recovery_even_after_a_long_healthy_streak(self):
+        bundle, forecasts = fixture()
+        for symbol in forecasts[0]:
+            bundle["raws"][symbol].loc[bundle["calendar"][6] :, "close"] = 9.15
+            bundle["raws"][symbol].loc[bundle["calendar"][7] :, "open"] = 9.15
+        _, account = simulate(bundle, 6, 25, forecasts)
+        state = account["decisions"][-1]["recovery"]
+        self.assertEqual(state["phase"], "FROZEN20")
+        state.update(phase="NORMAL", changed=True, state_age_before=5, healthy_streak_before=3)
+        audit = execution_audit(account, bundle)
+        self.assertEqual(audit["status"], "FAIL")
+        self.assertIn("RISK_LEVEL_RESTORED", [error[0] for error in audit["errors"]])
+
+    def test_audit_rejects_a_missing_daily_decision(self):
+        bundle, forecasts = fixture()
+        _, account = simulate(bundle, 6, 8, forecasts)
+        account["decisions"].pop()
+        self.assertEqual(execution_audit(account, bundle)["errors"], [["DECISION_DATES_MISMATCH"]])
 
 
 if __name__ == "__main__":

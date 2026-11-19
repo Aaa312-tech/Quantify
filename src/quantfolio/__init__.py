@@ -6,4 +6,4 @@ import pandas as pd
 # Windows runtime produced inconsistent feature masks when numexpr was enabled.
 pd.set_option("compute.use_numexpr", False)
 
-__version__ = "0.6.0"
+__version__ = "0.6.1"

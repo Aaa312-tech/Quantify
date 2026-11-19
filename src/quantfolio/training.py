@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from .audit import execution_audit
 from .calibration import calibrate, map_calibration, rank_by_date
+from .dataset import eligible_rows, label_mask
 from .models import (
     CANDIDATES,
     candidate_scores,
@@ -14,12 +14,11 @@ from .models import (
     forecasts_by_date,
     neutral_scores,
 )
-from .reconciliation import reconcile
 from .rules import CONFIGS
-from .selection import clip_for, eligible_rows, objective, select_model, select_rules
+from .selection import clip_for, objective, select_model, select_rules
 from .simulation import episodes, simulate
-from .splits import label_mask
 from .storage import dump_gzip, log, now, read, save, sha
+from .validation import execution_audit, reconcile
 
 
 def run_training(paths, output, first=1, last=11, include_latest=False):
@@ -30,9 +29,8 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
     """
     from pathlib import Path
 
-    from .dataset import check_integrity, load_bundle
+    from .dataset import check_integrity, load_bundle, walk_forward_folds
     from .settings import Paths
-    from .splits import walk_forward_folds
     from .storage import digest
 
     if not isinstance(paths, Paths):
@@ -99,7 +97,7 @@ def trial(bundle, fold, forecasts, config, path, identity):
         out = read(summary_path)
         assert out["identity"] == identity and sha(ledger_path) == out["ledger_sha256"]
         return out
-    eps = episodes(
+    accounts = episodes(
         bundle,
         fold["validation_start"],
         fold["validation_end"],
@@ -107,7 +105,7 @@ def trial(bundle, fold, forecasts, config, path, identity):
         detail=True,
         rules=config,
     )
-    cs, cl = simulate(
+    continuous_summary, continuous_ledger = simulate(
         bundle,
         fold["validation_start"] + 1,
         fold["validation_end"] + 1,
@@ -116,26 +114,28 @@ def trial(bundle, fold, forecasts, config, path, identity):
         rules=config,
     )
     checks = [
-        reconcile(e["ledger"], e["summary"], bundle["meta"], bundle["actions"]) for e in eps
-    ] + [reconcile(cl, cs, bundle["meta"], bundle["actions"])]
-    audits = [execution_audit(e["ledger"], bundle) for e in eps] + [execution_audit(cl, bundle)]
+        reconcile(e["ledger"], e["summary"], bundle["meta"], bundle["actions"]) for e in accounts
+    ] + [reconcile(continuous_ledger, continuous_summary, bundle["meta"], bundle["actions"])]
+    audits = [execution_audit(e["ledger"], bundle) for e in accounts] + [
+        execution_audit(continuous_ledger, bundle)
+    ]
     assert all(c["status"] == "PASS" for c in checks + audits), str(
         [c for c in checks + audits if c["status"] != "PASS"]
     )
     dump_gzip(
         ledger_path,
         {
-            "episodes": eps,
-            "continuous": {"summary": cs, "ledger": cl},
+            "episodes": accounts,
+            "continuous": {"summary": continuous_summary, "ledger": continuous_ledger},
             "reconciliation": checks,
             "execution_audit": audits,
         },
     )
     out = {
-        **objective(eps),
+        **objective(accounts),
         "identity": identity,
         "config": config,
-        "continuous": cs,
+        "continuous": continuous_summary,
         "accounting_pass": True,
         "accounting_checks": sum(c["checks"] for c in checks),
         "execution_checks": sum(c["checks"] for c in audits),
@@ -146,112 +146,149 @@ def trial(bundle, fold, forecasts, config, path, identity):
     return out
 
 
-def run_window(b, f, folder, identity, final=False):
+def run_window(bundle, fold, folder, identity, final=False):
     """Select rules and models on validation data, refit, then freeze outer predictions."""
     folder.mkdir(parents=True, exist_ok=True)
-    t = b["table"]
+    table = bundle["table"]
     if (folder / "result.json").exists():
-        x = read(folder / "result.json")
+        result = read(folder / "result.json")
         assert (
-            x["identity"] == identity
-            and sha(folder / "outer_predictions.npz") == x["predictions_sha256"]
+            result["identity"] == identity
+            and sha(folder / "outer_predictions.npz") == result["predictions_sha256"]
         )
-        return x
-    ci = f["train_end"] - 59
-    fit_end = ci - 7
-    cr = eligible_rows(t, ci, f["train_end"])
-    vr = eligible_rows(t, f["validation_start"], f["validation_end"])
-    tr = eligible_rows(t, f["test_start"], f["test_end"])
-    first = np.flatnonzero(label_mask(t, 5, f["train_start"], fit_end, ci))
-    initial_cal = calibrate(
-        t,
-        cr,
-        rank_by_date(t, cr, t.iloc[cr].momentum_score.to_numpy()),
-        f["validation_start"],
-        clip_for(t, first),
+        return result
+    calibration_start = fold["train_end"] - 59
+    fit_end = calibration_start - 7
+    calibration_rows = eligible_rows(table, calibration_start, fold["train_end"])
+    validation_rows = eligible_rows(table, fold["validation_start"], fold["validation_end"])
+    test_rows = eligible_rows(table, fold["test_start"], fold["test_end"])
+    calibration_fit_rows = np.flatnonzero(
+        label_mask(table, 5, fold["train_start"], fit_end, calibration_start)
     )
-    vt = np.flatnonzero(label_mask(t, 5, f["train_start"], f["train_end"], f["validation_start"]))
-    pred = fit_stage(
-        b,
-        vt,
-        vr,
+    initial_calibration = calibrate(
+        table,
+        calibration_rows,
+        rank_by_date(
+            table, calibration_rows, table.iloc[calibration_rows].momentum_score.to_numpy()
+        ),
+        fold["validation_start"],
+        clip_for(table, calibration_fit_rows),
+    )
+    train_rows = np.flatnonzero(
+        label_mask(table, 5, fold["train_start"], fold["train_end"], fold["validation_start"])
+    )
+    predictions = fit_stage(
+        bundle,
+        train_rows,
+        validation_rows,
         folder / "validation_fit",
-        {"experiment": identity, "fold": f, "stage": "validation"},
+        {"experiment": identity, "fold": fold, "stage": "validation"},
     )
-    vs = candidate_scores(t, vr, pred)
-    fc = forecasts_by_date(t, vr, vs["momentum"], vs["momentum"], initial_cal)
+    validation_scores = candidate_scores(table, validation_rows, predictions)
+    forecasts = forecasts_by_date(
+        table,
+        validation_rows,
+        validation_scores["momentum"],
+        validation_scores["momentum"],
+        initial_calibration,
+    )
     rules = {}
     for config in CONFIGS:
-        rules[config] = trial(b, f, fc, config, folder / "inner_rules" / config, identity)
+        rules[config] = trial(
+            bundle, fold, forecasts, config, folder / "inner_rules" / config, identity
+        )
     selected_rules = select_rules(rules)
-    log("V6 rules selected from past validation", window=f["fold"], config=selected_rules)
+    log("V6 rules selected from past validation", window=fold["fold"], config=selected_rules)
     factors = {
-        name: factor_check(t, vr, neutral_scores(t, vr, pred[name])[0], f["test_start"])
+        name: factor_check(
+            table,
+            validation_rows,
+            neutral_scores(table, validation_rows, predictions[name])[0],
+            fold["test_start"],
+        )
         for name in ["ridge", "tree"]
     }
-    factors["momentum"] = factor_check(t, vr, vs["momentum"], f["test_start"])
+    factors["momentum"] = factor_check(
+        table, validation_rows, validation_scores["momentum"], fold["test_start"]
+    )
     models = {}
     for name in CANDIDATES:
         if name == "momentum":
-            x = {**rules[selected_rules]}
-            x.pop("adoption", None)
+            result = {**rules[selected_rules]}
+            result.pop("adoption", None)
         else:
-            x = trial(
-                b,
-                f,
-                forecasts_by_date(t, vr, vs[name], vs["momentum"], initial_cal),
+            result = trial(
+                bundle,
+                fold,
+                forecasts_by_date(
+                    table,
+                    validation_rows,
+                    validation_scores[name],
+                    validation_scores["momentum"],
+                    initial_calibration,
+                ),
                 selected_rules,
                 folder / "inner_models" / name,
                 identity,
             )
-        x["factor_check"] = factors["momentum" if name == "momentum" else name[:-2]]
-        models[name] = x
+        result["factor_check"] = factors["momentum" if name == "momentum" else name[:-2]]
+        models[name] = result
     selected = select_model(models)
-    outer_cal = calibrate(t, vr, vs["momentum"], f["test_start"], clip_for(t, vt))
-    refit = np.flatnonzero(label_mask(t, 5, f["train_start"], f["validation_end"], f["test_start"]))
-    if final:
-        refit = np.flatnonzero(
-            label_mask(t, 5, f["train_start"], f["test_start"] - 1, f["test_start"] + 1)
-        )
-    pred = fit_stage(
-        b,
-        refit,
-        tr,
-        folder / "outer_fit",
-        {"experiment": identity, "fold": f, "stage": "final" if final else "outer"},
+    outer_calibration = calibrate(
+        table,
+        validation_rows,
+        validation_scores["momentum"],
+        fold["test_start"],
+        clip_for(table, train_rows),
     )
-    score = candidate_scores(t, tr, pred)
-    mean, margin = map_calibration(score["momentum"], outer_cal)
+    refit_rows = np.flatnonzero(
+        label_mask(table, 5, fold["train_start"], fold["validation_end"], fold["test_start"])
+    )
+    if final:
+        refit_rows = np.flatnonzero(
+            label_mask(
+                table, 5, fold["train_start"], fold["test_start"] - 1, fold["test_start"] + 1
+            )
+        )
+    predictions = fit_stage(
+        bundle,
+        refit_rows,
+        test_rows,
+        folder / "outer_fit",
+        {"experiment": identity, "fold": fold, "stage": "final" if final else "outer"},
+    )
+    scores = candidate_scores(table, test_rows, predictions)
+    mean, margin = map_calibration(scores["momentum"], outer_calibration)
     arrays = {
-        "row_indices": tr,
+        "row_indices": test_rows,
         "common_mu": mean,
         "common_margin": margin,
-        "ridge_rank_target_prediction": pred["ridge"],
-        "tree_rank_target_prediction": pred["tree"],
+        "ridge_rank_target_prediction": predictions["ridge"],
+        "tree_rank_target_prediction": predictions["tree"],
     }
     for name in CANDIDATES:
-        arrays[name + "_rank"] = score[name]
+        arrays[name + "_rank"] = scores[name]
     np.savez_compressed(folder / "outer_predictions.npz", **arrays)
-    out = {
+    result = {
         "identity": identity,
         "completed_at": now(),
-        "fold": f,
+        "fold": fold,
         "selected_candidate": selected,
         "selected_rules": selected_rules,
         "inner_rules": rules,
         "inner_candidates": models,
-        "initial_calibration": initial_cal,
-        "outer_calibration": outer_cal,
+        "initial_calibration": initial_calibration,
+        "outer_calibration": outer_calibration,
         "calibration_fit_end": fit_end,
-        "calibration_signal_start": ci,
-        "validation_train_rows": len(vt),
-        "refit_rows": len(refit),
-        "outer_rows": len(tr),
+        "calibration_signal_start": calibration_start,
+        "validation_train_rows": len(train_rows),
+        "refit_rows": len(refit_rows),
+        "outer_rows": len(test_rows),
         "predictions_sha256": sha(folder / "outer_predictions.npz"),
         "final_fit": final,
         "outer_results_used_for_selection": False,
         "source_selection": "Validation only; continuous outcomes also constrain adoption.",
     }
-    save(folder / "result.json", out, immutable=True)
-    log("V6 window complete", window=f["fold"], rules=selected_rules, model=selected)
-    return out
+    save(folder / "result.json", result, immutable=True)
+    log("V6 window complete", window=fold["fold"], rules=selected_rules, model=selected)
+    return result

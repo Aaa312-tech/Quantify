@@ -7,15 +7,6 @@ import numpy as np
 from .rules import CONFIGS, complexity
 
 
-def eligible_rows(table, start, end):
-    """Select eligible signal rows within an inclusive historical date-index range."""
-    return np.flatnonzero(
-        (table.date_index.to_numpy() >= start)
-        & (table.date_index.to_numpy() <= end)
-        & table.eligible.to_numpy()
-    )
-
-
 def objective(eps):
     """Summarize validation accounts without including any outer test results."""
     full = [x["summary"] for x in eps if x["complete_10_sessions"]]

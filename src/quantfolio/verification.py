@@ -8,11 +8,16 @@ import joblib
 import numpy as np
 from threadpoolctl import threadpool_limits
 
-from .dataset import check_integrity, load_bundle, validate_features
+from .dataset import (
+    check_integrity,
+    eligible_rows,
+    label_mask,
+    load_bundle,
+    validate_features,
+    walk_forward_folds,
+)
 from .models import fit_stage
-from .selection import eligible_rows
 from .settings import Paths
-from .splits import label_mask, walk_forward_folds
 from .storage import now, read, save, sha
 
 

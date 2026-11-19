@@ -4,13 +4,39 @@ from __future__ import annotations
 
 import joblib
 import numpy as np
+from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import Ridge
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 from threadpoolctl import threadpool_limits
 
 from .calibration import map_calibration, rank_by_date
-from .estimators import make_model
 from .storage import array_sha, digest, log, now, read, save, sha
 
 CANDIDATES = ["momentum", "ridge25", "ridge50", "tree25", "tree50"]
+
+
+def make_model(name):
+    """Construct the fixed Ridge or histogram-tree estimator used by the V6 protocol."""
+    imputer = SimpleImputer(strategy="median", keep_empty_features=True, add_indicator=True)
+    if name == "ridge":
+        return make_pipeline(imputer, StandardScaler(), Ridge(alpha=1000.0))
+    if name != "tree":
+        raise ValueError(name)
+    return make_pipeline(
+        imputer,
+        HistGradientBoostingRegressor(
+            loss="squared_error",
+            max_leaf_nodes=7,
+            max_iter=100,
+            learning_rate=0.05,
+            min_samples_leaf=150,
+            l2_regularization=30.0,
+            early_stopping=False,
+            random_state=20261119,
+        ),
+    )
 
 
 def industry_residuals(sub):
@@ -54,10 +80,10 @@ def training_targets(table, rows):
 def fit_stage(bundle, train_rows, pred_rows, path, identity):
     """Fit two fixed estimators or verify and reuse identical cached training artifacts."""
     path.mkdir(parents=True, exist_ok=True)
-    t = bundle["table"]
-    rows, target, weights, info = training_targets(t, train_rows)
-    X = t[bundle["features"]].to_numpy(dtype=np.float32)
-    ident = {
+    table = bundle["table"]
+    rows, target, weights, info = training_targets(table, train_rows)
+    matrix = table[bundle["features"]].to_numpy(dtype=np.float32)
+    cache_identity = {
         **identity,
         "train_rows_sha256": array_sha(train_rows),
         "fit_rows_sha256": array_sha(rows),
@@ -68,35 +94,38 @@ def fit_stage(bundle, train_rows, pred_rows, path, identity):
     for name in ["ridge", "tree"]:
         folder = path / name
         folder.mkdir(exist_ok=True)
-        key = digest({**ident, "family": name})
-        p = folder / "fit.json"
-        if p.exists():
-            m = read(p)
-            assert m["identity"] == key and sha(folder / "model.joblib") == m["model_sha256"]
-            assert sha(folder / "predictions.npy") == m["predictions_sha256"]
+        key = digest({**cache_identity, "family": name})
+        metadata_path = folder / "fit.json"
+        if metadata_path.exists():
+            metadata = read(metadata_path)
+            assert (
+                metadata["identity"] == key
+                and sha(folder / "model.joblib") == metadata["model_sha256"]
+            )
+            assert sha(folder / "predictions.npy") == metadata["predictions_sha256"]
             out[name] = np.load(folder / "predictions.npy")
             continue
         log("Fitting industry-residual model", stage=str(path), family=name, rows=len(rows))
         model = make_model(name)
-        last = list(model.named_steps)[-1]
+        estimator_step = list(model.named_steps)[-1]
         with threadpool_limits(limits=2):
-            model.fit(X[rows], target, **{last + "__sample_weight": weights})
-            pred = model.predict(X[pred_rows])
+            model.fit(matrix[rows], target, **{estimator_step + "__sample_weight": weights})
+            pred = model.predict(matrix[pred_rows])
         assert np.isfinite(pred).all()
         joblib.dump(model, folder / "model.joblib", compress=3)
         np.save(folder / "predictions.npy", pred)
         save(
-            p,
+            metadata_path,
             {
                 "identity": key,
                 "completed_at": now(),
                 "train_samples": len(rows),
                 "prediction_samples": len(pred_rows),
                 "target_details": info,
-                "latest_training_signal": int(t.iloc[train_rows].date_index.max()),
-                "latest_training_label_end": int(t.iloc[train_rows].end5.max()),
+                "latest_training_signal": int(table.iloc[train_rows].date_index.max()),
+                "latest_training_label_end": int(table.iloc[train_rows].end5.max()),
                 "target_bounds": [float(target.min()), float(target.max())],
-                "parameters": model.get_params()[last].get_params(),
+                "parameters": model.get_params()[estimator_step].get_params(),
                 "model_sha256": sha(folder / "model.joblib"),
                 "predictions_sha256": sha(folder / "predictions.npy"),
             },
@@ -211,3 +240,22 @@ def factor_check(table, rows, scores, available_before):
     }
     result["pass"] = all(result["requirements"].values())
     return result
+
+
+def prediction_map(table, arrays, name):
+    """Translate stored outer prediction arrays into per-date instrument forecasts."""
+    out = {}
+    sub = table.iloc[arrays["row_indices"]]
+    for day, symbol, rank, mean, margin in zip(
+        sub.date_index,
+        sub.symbol,
+        arrays[name + "_rank"],
+        arrays["common_mu"],
+        arrays["common_margin"],
+    ):
+        out.setdefault(int(day), {})[str(symbol)] = {
+            "rank": float(rank),
+            "mu": float(mean),
+            "margin": float(margin),
+        }
+    return out

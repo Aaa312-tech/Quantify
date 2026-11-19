@@ -3,7 +3,7 @@ import unittest
 import pandas as pd
 
 from quantfolio.ledger import Ledger
-from quantfolio.reconciliation import reconcile
+from quantfolio.validation import reconcile
 
 
 class IndependentAccountingTests(unittest.TestCase):

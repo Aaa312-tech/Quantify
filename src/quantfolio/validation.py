@@ -1,10 +1,14 @@
-"""Independent cash, share and corporate-action reconciliation."""
+"""Independent account reconciliation and execution checks."""
 
 from __future__ import annotations
 
 import collections
 import datetime as dt
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal
+
+import pandas as pd
+
+from .risk import CAPS, LEVELS
 
 
 def money(value):
@@ -162,4 +166,69 @@ def reconcile(detail, summary, meta, actions):
         previous = money(row["nav"])
     check(fees == money(summary["fees"]), "fee total")
     check(abs(summary["return"] - (previous / 100_000_000 - 1)) < 1e-12, "terminal return")
+    return {"status": "PASS" if not errors else "FAIL", "checks": checks, "errors": errors}
+
+
+def execution_audit(ledger, bundle):
+    """Independently inspect preceding-close signals, high-water marks and post-fill limits."""
+    errors = []
+    checks = 1
+    if [row["date"] for row in ledger["curve"]] != [
+        decision["execution_date"] for decision in ledger["decisions"]
+    ]:
+        return {"status": "FAIL", "checks": checks, "errors": [["DECISION_DATES_MISMATCH"]]}
+    peak = 1e6
+    marks = {(x["date"], x["after_fill"]): x for x in ledger["intermediate_weights"]}
+    decisions = {decision["execution_date"]: decision for decision in ledger["decisions"]}
+    previous_phase = "NORMAL"
+    for row, decision in zip(ledger["curve"], ledger["decisions"]):
+        state = decision["recovery"]
+        if state["phase"] not in CAPS:
+            return {
+                "status": "FAIL",
+                "checks": checks,
+                "errors": [["UNKNOWN_RISK_PHASE", row["date"]]],
+            }
+        peak = max(peak, row["prior_close_nav"])
+        checks += 6
+        if abs(state["peak"] - peak) > 0.0001:
+            errors.append(["PEAK_RESET", row["date"]])
+        if abs(state["drawdown"] - (1 - row["prior_close_nav"] / peak)) > 1e-10:
+            errors.append(["DRAWDOWN_MISMATCH", row["date"]])
+        if state["previous_phase"] != previous_phase:
+            errors.append(["STATE_DISCONTINUITY", row["date"]])
+        if previous_phase == "HALTED0" and state["phase"] != "HALTED0":
+            errors.append(["RESTORED_AFTER_8", row["date"]])
+        if state["drawdown"] >= 0.08 - 1e-12 and state["phase"] != "HALTED0":
+            errors.append(["8_ALERT_MISSED", row["date"]])
+        if row["risk_cap"] > CAPS[state["phase"]] + 1e-9:
+            errors.append(["RISK_CAP_MISMATCH", row["date"]])
+        checks += 1
+        if LEVELS[state["phase"]] < LEVELS[previous_phase]:
+            errors.append(["RISK_LEVEL_RESTORED", row["date"]])
+        previous_phase = state["phase"]
+    for i, trade in enumerate(ledger["trades"]):
+        checks += 3
+        date = pd.Timestamp(trade["date"])
+        prior = bundle["calendar"][bundle["calendar"].get_loc(date) - 1]
+        if trade["signal_date"] != str(prior.date()):
+            errors.append(["NONPRIOR_SIGNAL", trade])
+        if (
+            trade["gross"]
+            > float(bundle["panels"]["adv20"].at[prior, trade["symbol"]]) * 0.01 + 0.02
+        ):
+            errors.append(["ADV_LIMIT", trade])
+        if trade["cash_after"] < 0:
+            errors.append(["NEGATIVE_CASH", trade])
+        if trade["side"] == "BUY":
+            checks += 4
+            weights = marks[trade["date"], i + 1]
+            if not decisions[trade["date"]]["recovery"]["can_buy"]:
+                errors.append(["BUY_WHILE_FROZEN", trade])
+            if weights["max_nav_weight"] > 0.15 + 1e-7:
+                errors.append(["POSTBUY_SINGLE_CAP", trade])
+            if weights["max_industry_weight"] > 0.30 + 1e-7:
+                errors.append(["POSTBUY_SECTOR_CAP", trade])
+            if weights["gross_exposure"] > weights["risk_cap"] + 1e-7:
+                errors.append(["POSTBUY_TOTAL_CAP", trade])
     return {"status": "PASS" if not errors else "FAIL", "checks": checks, "errors": errors}

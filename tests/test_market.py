@@ -3,10 +3,10 @@ import unittest
 import numpy as np
 import pandas as pd
 
+from quantfolio.dataset import label_mask, walk_forward_folds
+from quantfolio.features import feature_frame
 from quantfolio.ledger import causal_price_index
 from quantfolio.market import LABEL_STATUS, gross_entitlement, legal_label
-from quantfolio.splits import label_mask, walk_forward_folds
-from quantfolio.transforms import feature_frame
 
 META = {"code": "600001", "symbol": "sh600001", "kind": "stock", "name": "TEST"}
 
