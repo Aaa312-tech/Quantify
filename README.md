@@ -36,12 +36,12 @@ python -m venv .venv
 
 ## 研究流程
 
-在已激活的环境中，依次运行：
+沿用上面创建的虚拟环境，依次运行：
 
 ```powershell
-python -m quantfolio train --first 1 --last 1 --output artifacts/experiments/example_run
-python -m quantfolio evaluate --run artifacts/experiments/example_run --output artifacts/evaluations/example_run
-python -m quantfolio report --run artifacts/evaluations/example_run
+.\.venv\Scripts\python -m quantfolio train --first 1 --last 1 --output artifacts/experiments/example_run
+.\.venv\Scripts\python -m quantfolio evaluate --run artifacts/experiments/example_run --output artifacts/evaluations/example_run
+.\.venv\Scripts\python -m quantfolio report --run artifacts/evaluations/example_run
 ```
 
 示例仅运行一个窗口，结果会标为`PARTIAL`。完整训练、成本选择和冻结重放见[复现指南](docs/reproducibility.md)。新实验不会自动替换主策略；报告可从对应的`reports/experiments`目录打开。
@@ -65,8 +65,8 @@ python -m quantfolio report --run artifacts/evaluations/example_run
 ## 开发
 
 ```powershell
-scripts/check.ps1
-scripts/sync.ps1 -Message 'refactor: describe the change'
+scripts/check.ps1 -Python '.\.venv\Scripts\python'
+scripts/sync.ps1 -Python '.\.venv\Scripts\python' -Message 'refactor: describe the change'
 ```
 
 同步脚本依次检查、提交、推送并等待CI。CI构建并安装wheel，在Windows和Ubuntu上测试；完整历史验证需本地LFS数据。涉及数值或成交逻辑的修改必须重放冻结账本。
