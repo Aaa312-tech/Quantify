@@ -1,0 +1,86 @@
+{
+  "name": "distribution_repair",
+  "registered_at": "2026-11-21T07:30:16.176584+08:00",
+  "baseline_commit": "3dae6ebb1faf289e29179101b24cbfc2dcccfd61",
+  "parent_protocol": "configs/protocols/resumption_reference.json",
+  "parent_protocol_sha256": "94a005f6d7695bfbc31088b42547a97c6206f36e44b6de4a15a8b62a20ca5319",
+  "source_bundle": "data/processed/2026-11-20-reviewed-resumption/bundle.joblib",
+  "source_bundle_sha256": "abb61a2dd56168fc9176e0b05c0180ec8376cd3fca46556dbc3a13ca9522ef29",
+  "source_data_cutoff": "2026-11-20",
+  "baseline_manifest_sha256": "8b7d5ca067926967645364523c4982c7b07508428a3c610da68660078d5e1521",
+  "baseline_frozen_files": 21656,
+  "source_inputs": {
+    "disclosures": {
+      "path": "data/raw/disclosures_retry_2026-11-21/collection.json",
+      "sha256": "9f1d7ad5ce168f1a95fb37e32e9ae0752e81c19d548e469a0df5ccee10b564a2"
+    },
+    "structured_actions": {
+      "path": "artifacts/checks/disclosure_sources_2026-11-21/all_structured_actions.json",
+      "sha256": "350a26313b2d128be42a5b74d87985e8e0f5450d749bfd1763454b5bff9b8eed"
+    },
+    "event_index": {
+      "path": "artifacts/checks/disclosure_sources_2026-11-21/primary_event_index.json",
+      "sha256": "76f4a72bbb88f7023799935ecd39293efd2aa2d7d357bb1664b54282feb792d0"
+    },
+    "primary_reviews": {
+      "path": "docs/references/distribution_reconciliation_2026-11-21.json",
+      "sha256": "50561527682f42996ee568982ab21c633e2652bb3098d0a4d17f8e3af59c7822"
+    },
+    "prior_followup": {
+      "path": "docs/references/resumption_followup_2026-11-21.json",
+      "sha256": "17e03664da4ca80da04c5ed35dda18f1bdf8fdd81ec10c17e4c51948160ac5e6"
+    }
+  },
+  "source_selection": "All 1839 frozen corporate actions, independent of holdings, forecasts and returns. Keep every unmatched, multiple, late, malformed or conflicting source case in the review output.",
+  "source_verification": {
+    "manual": "Apply only fields explicitly supported by the five existing primary reviews plus the sourced Caitong follow-up. Bind the whole stored action identity and original source hashes. Preserve the Baofeng shareholder-specific entitlement.",
+    "automated": "Require a single issuer-bound implementation filing available under the conservative date convention before the ex-date, exact role-labelled record/ex/payment dates, an explicitly gross amount matching the stored entitlement, and agreement with the already archived structured source. Mere date occurrence, proposals, amendments, multiple provider variants and rounding-compatible differences do not pass.",
+    "shares": "Only an explicitly labelled and independently agreeing share listing date may be supplied. A payment date does not certify share availability or fractional allocation.",
+    "rounding": "Account-level cash truncation may be supplied only by an explicit payment-rounding clause or the existing primary review. Truncation of a per-ten-share distribution rate is not account cash rounding.",
+    "availability": "Use midnight strictly following the catalogue date as a conservative retrospective convention, not a verified publication timestamp. Require it no later than the ex-date opening. Spend cash only at the first observed trading opening strictly after the stated payment date.",
+    "parser": "Read the archived PDF using the pinned optional pypdf dependency; preserve page numbers and source hashes for every extracted field. An unsupported layout stays unresolved."
+  },
+  "allowed_fact_changes": [
+    "cash_per_share",
+    "cash_pay_date",
+    "share_list_date",
+    "ex_reference_cash_per_share",
+    "cash_rounding"
+  ],
+  "cash_rounding": "Missing field preserves the historical half-up path exactly. FLOOR_TO_CENT uses decimal arithmetic on the entire entitled position before the unchanged tax scenario. Independent reconciliation implements the calculation separately. Continuous base-share gross labels and price indices are not account-cent-rounded.",
+  "review": "artifacts/checks/distribution_repair_2026-11-21/source_review.json",
+  "review_binding": "The frozen generated review must bind this protocol hash, the input bundle, every original action identity and the extraction implementation before a snapshot can be built.",
+  "snapshot_output": "data/processed/2026-11-20-reviewed-distributions",
+  "baseline_run": "artifacts/experiments/resumption_reference_2026-11-21",
+  "baseline_evaluation": "artifacts/evaluations/resumption_reference_2026-11-21",
+  "checks_output": "artifacts/checks/distribution_repair_2026-11-21",
+  "training_output": "artifacts/experiments/distribution_repair_2026-11-21",
+  "evaluation_output": "artifacts/evaluations/distribution_repair_2026-11-21",
+  "snapshot_checks": "Rebuild the parent snapshot exactly first. Preserve raw bars, calendar, universe, dated ST metadata, opening statuses and eligibility. Rebuild features, ranks and labels where changed cash affects them; require the non-label prefix before the first changed entitlement to remain exact. Record all action, feature, score and label changes. No source date or field not explicitly verified is filled.",
+  "compatibility": "On the unchanged old input, reload all 48 models, replay all 1425 accounts and compare all 75 paper accounts. Preserve frozen bytes and old outcomes.",
+  "retraining": {
+    "windows": 11,
+    "include_latest": true,
+    "fits": 48,
+    "policies": 19,
+    "slippage_bps": [
+      10,
+      20,
+      30
+    ],
+    "evaluation_accounts": 1425,
+    "fixed_forecast_accounts": 1425,
+    "paper_accounts": 75
+  },
+  "selection_mode": "positive_score",
+  "turnover_policy": "legacy",
+  "risk": "Balanced attack; 8 percent warning; original high-water mark and latched risk; no recovery. No new alpha candidates or relaxed adoption thresholds.",
+  "adoption": "Retain validated source facts regardless of return direction. Activate a new research snapshot only after source, reconstruction, independent ledgers, model reloads, fixed-forecast comparisons and ST-specific checks pass. Source/engineering validation is not evidence of superiority.",
+  "limitations": [
+    "Historical industry taxonomy/timing and universe selection remain separate unresolved work.",
+    "The 111 other quote-gap endpoints and carried-price flags remain unresolved; no synthetic bars or fills.",
+    "Retrospective source review does not add a forward observation.",
+    "Competition fee and matching details remain unconfirmed."
+  ],
+  "decision": "RESEARCH_ONLY"
+}
