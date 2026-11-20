@@ -244,3 +244,14 @@ python -m quantfolio repair-resumption --protocol configs/protocols/resumption_r
 复牌修正已完成上述验收，当前配置成套绑定其独立快照、训练、评估和ST复核。
 旧输入的源码兼容性诊断保存在`artifacts/checks/resumption_reference_2026-11-21/implementation`；
 完整差异、固定旧预测、门槛敏感性和未核验缺口均在同名检查目录。
+
+## 整池公告采集
+
+```powershell
+python -m quantfolio fetch-disclosures --output data/raw/issuer_notices
+```
+
+输出必须是不存在的新目录。命令先保存绑定输入哈希的完整待核验队列，再逐组分页采集
+公告和原始PDF；网络失败保留原记录。`collection.json`汇总完成、失败和未处理范围，
+只有已结束批次才加入冻结清单。采集不切换训练数据，也不生成已核验的历史事实。
+当前关键词范围及核验要求见[数据契约](data_contract.md#整池公告补证)。

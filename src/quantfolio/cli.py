@@ -73,6 +73,10 @@ def main(argv: list[str] | None = None) -> None:
     )
     status_collection.add_argument("--output", required=True, help="New directory under data/raw")
     status_collection.add_argument("--retry", help="Finished collection with missing histories")
+    disclosures = commands.add_parser(
+        "fetch-disclosures", help="Archive issuer notices for unresolved historical events"
+    )
+    disclosures.add_argument("--output", required=True, help="New directory under data/raw")
     status_audit = commands.add_parser(
         "audit-status", help="Compare daily flags with frozen history"
     )
@@ -289,6 +293,10 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .status_data import fetch_status_history
 
         return fetch_status_history(paths, args.output, args.retry)
+    if args.command == "fetch-disclosures":
+        from .disclosures import collect_disclosures
+
+        return collect_disclosures(paths, args.output)
     if args.command == "audit-status":
         from .status_data import audit_status_history
 
