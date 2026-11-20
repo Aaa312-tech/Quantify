@@ -24,8 +24,37 @@ def opening_errors(trade, bundle):
     previous = bundle["calendar"][bundle["calendar"].get_loc(date) - 1]
     meta = bundle["meta"][symbol]
     raw = bundle["raws"][symbol]
-    if date not in raw.index or previous not in raw.index:
+    status = bundle.get("opening_status", {}).get(trade["date"], {}).get(symbol)
+    if date not in raw.index:
         return ["MISSING_OPENING_QUOTE"]
+    if previous not in raw.index:
+        # Independently reconstruct the full suspension gap; do not reuse market.py.
+        try:
+            anchor = pd.Timestamp(status["reference_date"])
+            observations = raw.loc[raw.index < date]
+            gap = bundle["calendar"][(bundle["calendar"] > anchor) & (bundle["calendar"] < date)]
+            evidence = status["suspension_evidence"]
+            if (
+                trade["side"] != "SELL"
+                or observations.empty
+                or anchor != observations.index[-1]
+                or not len(gap)
+                or gap[-1] != previous
+                or [e["date"] for e in evidence] != [str(d.date()) for d in gap]
+                or any(
+                    a["symbol"] == symbol and str(anchor.date()) < a["ex_date"] < trade["date"]
+                    for a in bundle["actions"]
+                )
+            ):
+                return ["UNVERIFIED_RESUMPTION_REFERENCE"]
+            for item, day in zip(evidence, gap):
+                known = pd.Timestamp(item["known_at"])
+                deadline = day.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=9, minutes=25)
+                if pd.isna(known) or known.tzinfo is None or known > deadline:
+                    return ["UNVERIFIED_RESUMPTION_REFERENCE"]
+            previous = anchor
+        except (KeyError, TypeError, ValueError):
+            return ["MISSING_OPENING_QUOTE"]
     opening = float(raw.at[date, "open"])
     reference = float(raw.at[previous, "close"])
     if not math.isfinite(opening) or opening <= 0 or not math.isfinite(reference) or reference <= 0:
@@ -33,7 +62,6 @@ def opening_errors(trade, bundle):
     failures = []
     if trade["price"] != opening:
         failures.append("NOT_OPENING_PROXY")
-    status = bundle.get("opening_status", {}).get(trade["date"], {}).get(symbol)
     if status is not None:
         known = pd.Timestamp(status.get("known_at"))
         deadline = date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=9, minutes=25)
@@ -402,10 +430,8 @@ def execution_audit(ledger, bundle):
         prior = bundle["calendar"][bundle["calendar"].get_loc(date) - 1]
         if trade["signal_date"] != str(prior.date()):
             errors.append(["NONPRIOR_SIGNAL", trade])
-        if (
-            trade["gross"]
-            > float(bundle["panels"]["adv20"].at[prior, trade["symbol"]]) * 0.01 + 0.02
-        ):
+        adv = float(bundle["panels"]["adv20"].at[prior, trade["symbol"]])
+        if not math.isfinite(adv) or adv <= 0 or trade["gross"] > adv * 0.01 + 0.02:
             errors.append(["ADV_LIMIT", trade])
         if trade["cash_after"] < 0:
             errors.append(["NEGATIVE_CASH", trade])

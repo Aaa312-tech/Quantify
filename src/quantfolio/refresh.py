@@ -393,9 +393,13 @@ def refresh_snapshot(paths, output, protocol_path):
         "source_sha256": {p.name: sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))},
     }
     save(target / "provenance.json", provenance, immutable=True)
-    result = build_dataset(source["meta"], raws, actions, quarantined=protocol["quarantined"])
-    if "opening_status" in source:
-        result["opening_status"] = deepcopy(source["opening_status"])
+    result = build_dataset(
+        source["meta"],
+        raws,
+        actions,
+        quarantined=protocol["quarantined"],
+        opening_status=source.get("opening_status"),
+    )
     prefix = compare_history(source, result, labels=False)
     previous_rows = result["table"].loc[result["table"].date_index < len(source["calendar"])]
     changes, details = label_changes(source["table"], previous_rows)

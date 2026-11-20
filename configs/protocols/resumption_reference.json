@@ -1,0 +1,45 @@
+{
+  "registered_at": "2026-11-21T05:12:37.245007+08:00",
+  "purpose": "Source-bound resumption reference and legal-label correction",
+  "source_bundle": "data/processed/2026-11-20-reviewed-sources/bundle.joblib",
+  "source_bundle_sha256": "feba98f0fa48dc86f7ecdf992e97fb331ffeaeb532900a3140309261fd8b3735",
+  "source_data_cutoff": "2026-11-20",
+  "review": "docs/references/security_status/gaole_publication_timing_2026-11-21.json",
+  "review_sha256": "60551200985e4b772f464d16959266ee4c546d3cb787721a8b297eeae3cabcff",
+  "snapshot_output": "data/processed/2026-11-20-reviewed-resumption",
+  "training_output": "artifacts/experiments/resumption_reference_2026-11-21",
+  "evaluation_output": "artifacts/evaluations/resumption_reference_2026-11-21",
+  "checks_output": "artifacts/checks/resumption_reference_2026-11-21",
+  "baseline_run": "artifacts/experiments/daily_source_extension_2026-11-21",
+  "baseline_evaluation": "artifacts/evaluations/daily_source_extension_2026-11-21",
+  "correction": "For a sourced resumption SELL only, use the last actual close if every intervening exchange session has timely suspension evidence and no intervening corporate action. Check the original tick and directional limits. Unknown gaps and new BUY entries stay blocked. Preserve missing liquidity and closing-mark blocks; do not invent fills or capacity.",
+  "data_contract": "All raw bars, actions, meta, panels, scores, non-label table columns and feature order remain exact. Rebuild only affected-symbol labels; carry opening_status through later builders.",
+  "risk": "Balanced attack, original high-water mark, latched 4/6/8 percent stages, no automatic recovery.",
+  "selection_mode": "positive_score",
+  "turnover_policy": "legacy",
+  "candidate_budget_change": 0,
+  "validation": {
+    "old_models": 48,
+    "old_accounts_exact": 1425,
+    "old_paper_accounts_exact": 75,
+    "new_fits": 48,
+    "new_accounts": 1425,
+    "fixed_forecast_accounts": 1425,
+    "paper_accounts": 75,
+    "cost_bps": [
+      10,
+      20,
+      30
+    ]
+  },
+  "activation": "Only after source checks, tests, frozen-input parity, complete retraining/account audits and a new snapshot-bound ST review. Retain factual corrections even if returns worsen; no superiority assertion.",
+  "limitations": [
+    "Publication metadata is retrospective and not a complete point-in-time status database.",
+    "No intraday auction depth is available.",
+    "The initial and continuation notices describe ongoing suspension; their expected duration is not treated as an automatic resumption date.",
+    "Missing prior-session ADV still blocks simulated fills; paper accounts require observed closing marks. This correction does not relax these separate safeguards.",
+    "Forty prior carried-price flags are not cleared by knowing the suspension cause.",
+    "Historic universe, industry and other status coverage remain incomplete; contest fees and matching remain unconfirmed.",
+    "Previously examined history is not new forward performance."
+  ]
+}

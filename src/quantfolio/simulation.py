@@ -35,6 +35,8 @@ def post_buy_limits(values, meta, symbol, purchase, after_fee_nav, cap):
 
 def buy_ceiling(raw, previous, date, actions, atr):
     """Limit acceptable opening gaps using prior-close ATR and ex-date reference adjustments."""
+    if previous not in raw.index:
+        return None
     reference = float(raw.at[previous, "close"])
     for a in actions:
         if a["ex_date"] == str(date.date()):
@@ -75,6 +77,7 @@ class _Execution:
             side,
             status=self.bundle.get("opening_status", {}).get(str(self.date.date()), {}).get(symbol),
             as_of=self.bundle.get("information_at"),
+            calendar=self.bundle["calendar"],
         )
 
     def _observe(self):

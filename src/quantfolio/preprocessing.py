@@ -103,7 +103,7 @@ def rank_panels(frames, meta, calendar, quarantined=()):
     return panels, scores
 
 
-def _labels(frame, instrument, raw, calendar, actions):
+def _labels(frame, instrument, raw, calendar, actions, opening_status=None):
     eligible = np.flatnonzero(frame.eligible.to_numpy())
     for horizon in (1, 3, 5):
         values = np.full(len(calendar), np.nan, dtype="float32")
@@ -112,14 +112,20 @@ def _labels(frame, instrument, raw, calendar, actions):
         delay = np.zeros(len(calendar), dtype="int16")
         for index in eligible:
             values[index], ends[index], status[index], delay[index] = legal_label(
-                instrument, raw, calendar, int(index), horizon, actions
+                instrument,
+                raw,
+                calendar,
+                int(index),
+                horizon,
+                actions,
+                opening_status=opening_status,
             )
         for name, column in zip(("y", "end", "status", "delay"), (values, ends, status, delay)):
             frame[f"{name}{horizon}"] = column
 
 
 @pd.option_context("compute.use_numexpr", False)
-def build_dataset(meta, raws, actions, *, quarantined=()):
+def build_dataset(meta, raws, actions, *, quarantined=(), opening_status=None):
     """Regenerate panels, scores, 57 model inputs and legal labels without future bars."""
     if set(meta) != set(raws) or "sh510300" not in raws:
         raise ValueError("Metadata and raw securities must match and include the benchmark")
@@ -175,7 +181,7 @@ def build_dataset(meta, raws, actions, *, quarantined=()):
         frame.insert(0, "date_index", np.arange(len(calendar), dtype="int16"))
         frame.insert(1, "symbol", symbol)
         frame["eligible"] = panels["eligible"][symbol].fillna(False).to_numpy(dtype=bool)
-        _labels(frame, instrument, raw, calendar, grouped[symbol])
+        _labels(frame, instrument, raw, calendar, grouped[symbol], opening_status)
         frames.append(frame)
         if count % 100 == 0:
             log("Legal labels built", securities=count, total=len(meta))
@@ -192,7 +198,7 @@ def build_dataset(meta, raws, actions, *, quarantined=()):
     features = [*ranks, *CONTEXT_FEATURES, *momentum, *industry]
     if np.isinf(table[features].to_numpy()).any():
         raise ValueError("Nonfinite model inputs")
-    return {
+    result = {
         "meta": deepcopy(meta),
         "raws": {s: r.copy() for s, r in raws.items()},
         "actions": deepcopy(actions),
@@ -203,6 +209,9 @@ def build_dataset(meta, raws, actions, *, quarantined=()):
         "features": features,
         "cutoff": str(calendar[-1].date()),
     }
+    if opening_status is not None:
+        result["opening_status"] = deepcopy(opening_status)
+    return result
 
 
 def compare_history(before, after, *, labels=True):

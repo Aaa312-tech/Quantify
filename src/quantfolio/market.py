@@ -64,7 +64,39 @@ def regime(panels, date):
     return 0.60, float(breadth), "震荡"
 
 
-def opening_price(meta, raw, date, previous, actions=(), side="BUY", *, status=None, as_of=None):
+def resumption_reference(raw, date, previous, calendar, status, actions):
+    """Return an observed anchor only for a completely documented suspension gap."""
+    if calendar is None or not status or status.get("suspended") is not False:
+        return None
+    try:
+        anchor = pd.Timestamp(status.get("reference_date"))
+        prior = raw.index[raw.index < date]
+        if not len(prior) or pd.isna(anchor) or anchor != prior[-1] or anchor >= previous:
+            return None
+        sessions = calendar[(calendar > anchor) & (calendar < date)]
+        evidence = status.get("suspension_evidence", [])
+        if (
+            not len(sessions)
+            or sessions[-1] != previous
+            or [item["date"] for item in evidence] != [str(day.date()) for day in sessions]
+        ):
+            return None
+        for item, day in zip(evidence, sessions):
+            known = pd.Timestamp(item["known_at"])
+            deadline = day.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=9, minutes=25)
+            if pd.isna(known) or known.tzinfo is None or known > deadline:
+                return None
+        # A missing ex-date bar needs a separate reference-price review.
+        if any(str(anchor.date()) < action["ex_date"] < str(date.date()) for action in actions):
+            return None
+        return anchor
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def opening_price(
+    meta, raw, date, previous, actions=(), side="BUY", *, status=None, as_of=None, calendar=None
+):
     """Use only the opening quote and information available by the opening auction.
 
     Daily volume and the eventual high/low cannot establish opening tradability.
@@ -86,9 +118,18 @@ def opening_price(meta, raw, date, previous, actions=(), side="BUY", *, status=N
             return None, "SUSPENDED_AT_OPEN"
     if side == "BUY" and risk_warning(meta, date, as_of=as_of) is not None:
         return None, "RISK_WARNING_BUY_EXCLUDED"
-    if date not in raw.index or previous not in raw.index:
+    if date not in raw.index:
         return None, "NO_QUOTE"
-    old = float(raw.at[previous, "close"])
+    reference_date = previous
+    if previous not in raw.index:
+        reference_date = (
+            resumption_reference(raw, date, previous, calendar, status, actions)
+            if side == "SELL"
+            else None
+        )
+        if reference_date is None:
+            return None, "NO_QUOTE"
+    old = float(raw.at[reference_date, "close"])
     o = float(raw.at[date, "open"])
     if not np.isfinite(o) or o <= 0 or not np.isfinite(old) or old <= 0:
         return None, "INVALID_OPENING_REFERENCE"
@@ -161,19 +202,38 @@ LABEL_STATUS = {
 }
 
 
-def legal_label(meta, raw, calendar, index, horizon, actions):
+def legal_label(meta, raw, calendar, index, horizon, actions, *, opening_status=None):
     """Compute a forward wealth label only after a legal entry and complete legal exit."""
     entry_index = index + 1
     target = entry_index + horizon
     if target >= len(calendar):
         return np.nan, -1, LABEL_STATUS["RIGHT_CENSORED"], 0
     entry = calendar[entry_index]
-    buy, reason = opening_price(meta, raw, entry, calendar[index], actions, "BUY")
+    statuses = opening_status or {}
+    buy, reason = opening_price(
+        meta,
+        raw,
+        entry,
+        calendar[index],
+        actions,
+        "BUY",
+        status=statuses.get(str(entry.date()), {}).get(meta["symbol"]),
+        calendar=calendar,
+    )
     if reason:
         return np.nan, -1, LABEL_STATUS["NO_ENTRY"], 0
     for j in range(target, len(calendar)):
         exit_date = calendar[j]
-        sell, reason = opening_price(meta, raw, exit_date, calendar[j - 1], actions, "SELL")
+        sell, reason = opening_price(
+            meta,
+            raw,
+            exit_date,
+            calendar[j - 1],
+            actions,
+            "SELL",
+            status=statuses.get(str(exit_date.date()), {}).get(meta["symbol"]),
+            calendar=calendar,
+        )
         if reason:
             continue
         wealth, listing, problem = gross_entitlement(entry, exit_date, sell, actions)

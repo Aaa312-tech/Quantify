@@ -104,6 +104,7 @@ def rebuild_labels(bundle, symbols=None):
                         int(row.date_index),
                         horizon,
                         actions.get(symbol, []),
+                        opening_status=bundle.get("opening_status"),
                     )
                     if row.eligible
                     else (np.nan, -1, LABEL_STATUS["INELIGIBLE"], 0)

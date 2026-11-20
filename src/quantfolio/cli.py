@@ -52,6 +52,11 @@ def main(argv: list[str] | None = None) -> None:
     status_repair.add_argument(
         "--protocol", required=True, help="Registered status repair protocol"
     )
+    resumption = commands.add_parser(
+        "repair-resumption", help="Rebuild labels from a reviewed suspension and resumption"
+    )
+    resumption.add_argument("--output", required=True, help="New directory under data/processed")
+    resumption.add_argument("--protocol", required=True, help="Registered resumption protocol")
     refresh = commands.add_parser("refresh-data", help="Build a reviewed market-data extension")
     refresh.add_argument("--output", required=True, help="New directory under data/processed")
     refresh.add_argument("--protocol", required=True, help="Registered market refresh protocol")
@@ -272,6 +277,10 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .status_repair import repair_status_snapshot
 
         return repair_status_snapshot(paths, args.output, args.protocol)
+    if args.command == "repair-resumption":
+        from .status_repair import repair_resumption_snapshot
+
+        return repair_resumption_snapshot(paths, args.output, args.protocol)
     if args.command == "fetch-bars":
         from .market_data import fetch_bars
 

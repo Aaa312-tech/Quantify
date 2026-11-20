@@ -230,3 +230,12 @@ python -m quantfolio verify --run artifacts/experiments/source_extension_reprodu
 
 最新拟合只用于尚未发生的开盘计划，不进入已结束的外层回测。历史收益相同并不等于新一日
 信号相同，也不代表前向验证通过。当前计划及有效期见[纸面流程](paper_workflow.md)。
+## 已核验复牌标签修正
+
+```powershell
+python -m quantfolio repair-resumption --protocol configs/protocols/resumption_reference.json --output data/processed/2026-11-20-reviewed-resumption
+```
+
+该命令保留所有行情、公司行为、元数据、特征和非标签历史，仅附加审查中的开盘状态并重建
+对应证券的合法退出标签。输出不可覆盖；复现时须在协议副本登记新目录。构建不会启用新数据，
+还须完成48个模型、1425个新账户、1425个固定旧预测对照和75个纸面账户核对，并绑定ST专项复核。
