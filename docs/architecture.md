@@ -18,6 +18,7 @@ rules / allocation / risk → simulation → ledger → validation
 | `features` | 价格特征、同日横截面排序、行业相对特征 |
 | `models`、`calibration` | 固定估计器、残差目标、预测混合、行业检验及历史收益校准 |
 | `training`、`selection` | 在过去验证段选择模型和规则，再重训并冻结外层预测 |
+| `study` | 执行登记的六项改动和两项组合，冻结内层选择，分别评估恢复与同风控基准 |
 | `rules`、`allocation` | 换手开关、选股和线性规划仓位 |
 | `risk`、`market` | 风险降级、市场状态、仅依赖开盘可用信息的报价代理 |
 | `simulation` | 信号和每日估值；内部 `_Execution`按先卖后买处理成交 |
@@ -28,7 +29,7 @@ rules / allocation / risk → simulation → ledger → validation
 
 模型只读取信号日已知数据，订单在下一交易日开盘处理。`_Execution`按开盘报价代理估值，较早成交扣除的佣金和滑点降低现金及净值，后续买单重新检查上限。`validation`不复用`Ledger`的金额计算或`market`的报价函数，独立检查现金、开盘代理价格、方向涨跌停和成本。
 
-风险控制仅支持 `latched`。运行时特征使用`rank_*`、`industry_*`等含义明确的名称；`dataset.load_bundle`在读取后按`configs/archive.toml`转换历史列名，保持值、类型及模型输入顺序。历史文件本身不改写。主策略使用`selected_strategy`，固定基准换手规则的对照使用`selected_baseline_rules`。
+主策略默认使用`latched`。`staged_restore`和`probe_restore`只在注册研究中显式启用，独立核验恢复等待期、市场条件、仓位与永久退出。运行时特征使用`rank_*`、`industry_*`等含义明确的名称；`dataset.load_bundle`在读取后按`configs/archive.toml`转换历史列名，保持值、类型及模型输入顺序。历史文件本身不改写。主策略使用`selected_strategy`，固定基准换手规则的对照使用`selected_baseline_rules`。
 
 行情与实验在包外，报告模板在包内。新行情遵循[数据契约](data_contract.md)，新实验写入独立目录；[冻结参考文件](../configs/integrity_manifest.json)不随工程整理改写。路径调整只更新清单中的键，保留原SHA-256值；归档名称映射记录原路径。
 

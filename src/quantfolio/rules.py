@@ -25,6 +25,16 @@ CONFIGS["all_on"] = {r: True for r in RULES}
 for r in RULES:
     CONFIGS["remove_" + r] = {k: k != r for k in RULES}
 
+TURNOVER_POLICIES = ("legacy", "cost_penalty", "cost_band")
+
+
+def turnover_for(schedule, date_index):
+    """Resolve a registered research turnover policy on the completed signal date."""
+    name = schedule if isinstance(schedule, str) else schedule.get(int(date_index), "legacy")
+    if name not in TURNOVER_POLICIES:
+        raise ValueError("Unregistered turnover policy: " + str(name))
+    return name
+
 
 def config_for(schedule, date_index):
     """Resolve a fixed configuration or a signal-date rule schedule."""

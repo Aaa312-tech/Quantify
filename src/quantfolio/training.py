@@ -40,6 +40,9 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
         raise TypeError("paths must be a Paths instance")
     check_integrity(paths)
     bundle = load_bundle(paths)
+    selection_mode = paths.config.get("selection_mode", "legacy")
+    if selection_mode not in ("legacy", "positive_score"):
+        raise ValueError("Unknown model adoption policy")
     folds = walk_forward_folds(bundle["calendar"])
     if not 1 <= first <= last <= len(folds):
         raise ValueError(f"Require 1 <= first <= last <= {len(folds)}")
@@ -55,6 +58,7 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
         "selected_folds": [first, last],
         "include_latest": include_latest,
         "execution_model": EXECUTION_MODEL,
+        "selection_mode": selection_mode,
     }
     identity = digest(specification)
     save(
@@ -64,7 +68,13 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
     )
     for fold in folds:
         if first <= fold["fold"] <= last:
-            run_window(bundle, fold, output / "training" / f"fold_{fold['fold']:02d}", identity)
+            run_window(
+                bundle,
+                fold,
+                output / "training" / f"fold_{fold['fold']:02d}",
+                identity,
+                positive_score=selection_mode == "positive_score",
+            )
     if include_latest:
         latest = len(bundle["calendar"]) - 1
         validation_end = latest - 7
@@ -79,7 +89,14 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
             "test_start": latest,
             "test_end": latest,
         }
-        run_window(bundle, fold, output / "final_fit", identity, final=True)
+        run_window(
+            bundle,
+            fold,
+            output / "final_fit",
+            identity,
+            final=True,
+            positive_score=selection_mode == "positive_score",
+        )
     result = {
         "status": "COMPLETE" if first == 1 and last == len(folds) else "PARTIAL",
         "completed_at": now(),
@@ -93,7 +110,7 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
     return result
 
 
-def trial(bundle, fold, forecasts, config, path, identity):
+def trial(bundle, fold, forecasts, config, path, identity, *, mode="latched", turnover="legacy"):
     """Run and independently audit a validation candidate before allowing its adoption."""
     summary_path = path.with_suffix(".json")
     ledger_path = path.with_suffix(".ledgers.json.gz")
@@ -109,6 +126,8 @@ def trial(bundle, fold, forecasts, config, path, identity):
         forecasts,
         detail=True,
         rules=config,
+        mode=mode,
+        turnover=turnover,
     )
     continuous_summary, continuous_ledger = simulate(
         bundle,
@@ -117,6 +136,8 @@ def trial(bundle, fold, forecasts, config, path, identity):
         forecasts,
         detail=True,
         rules=config,
+        mode=mode,
+        turnover=turnover,
     )
     checks = [
         reconcile(e["ledger"], e["summary"], bundle["meta"], bundle["actions"]) for e in accounts
@@ -152,7 +173,7 @@ def trial(bundle, fold, forecasts, config, path, identity):
 
 
 @pd.option_context("compute.use_numexpr", False)
-def run_window(bundle, fold, folder, identity, final=False):
+def run_window(bundle, fold, folder, identity, final=False, *, positive_score=False):
     """Select rules and models on validation data, refit, then freeze outer predictions."""
     folder.mkdir(parents=True, exist_ok=True)
     table = bundle["table"]
@@ -204,7 +225,7 @@ def run_window(bundle, fold, folder, identity, final=False):
         rules[config] = trial(
             bundle, fold, forecasts, config, folder / "inner_rules" / config, identity
         )
-    selected_rules = select_rules(rules)
+    selected_rules = select_rules(rules, positive_score=positive_score)
     log("Rules selected from past validation", window=fold["fold"], config=selected_rules)
     factors = {
         name: factor_check(
@@ -240,7 +261,7 @@ def run_window(bundle, fold, folder, identity, final=False):
             )
         result["factor_check"] = factors["momentum" if name == "momentum" else name[:-2]]
         models[name] = result
-    selected = select_model(models)
+    selected = select_model(models, positive_score=positive_score)
     outer_calibration = calibrate(
         table,
         validation_rows,

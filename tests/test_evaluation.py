@@ -205,6 +205,7 @@ def test_rejects_inconsistent_training_metadata(experiment, field, value, messag
     [
         ("execution_model", "archived_full_bar_filter", "another execution model"),
         ("source_sha256", {}, "Execution source changed"),
+        ("selection_mode", "positive_score", "adoption policy"),
     ],
 )
 def test_rejects_training_from_another_execution_engine(experiment, field, value, message):

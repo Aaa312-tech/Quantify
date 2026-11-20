@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 from scipy.optimize import linprog
 
-from .rules import CONFIGS
+from .rules import CONFIGS, TURNOVER_POLICIES
 
 
 def costs(meta, s, slippage):
@@ -16,7 +16,7 @@ def costs(meta, s, slippage):
     ) + slippage
 
 
-def buffered_weights(target, previous, selected, meta, cap):
+def buffered_weights(target, previous, selected, meta, cap, *, slippage=None):
     """Keep small weight differences only when all portfolio constraints remain feasible."""
     out = dict(target)
     count = 0
@@ -24,7 +24,10 @@ def buffered_weights(target, previous, selected, meta, cap):
         return out, count
     for s in selected:
         old = previous.get(s, 0.0)
-        if not old or abs(out.get(s, 0.0) - old) > 0.02 or old > 0.14:
+        width = (
+            0.02 if slippage is None else min(0.02, max(0.005, 2 * sum(costs(meta, s, slippage))))
+        )
+        if not old or abs(out.get(s, 0.0) - old) > width or old > 0.14:
             continue
         proposed = {**out, s: old}
         if sum(proposed.values()) > cap + 1e-9:
@@ -111,9 +114,14 @@ def allocate(
     slippage=0.001,
     receivable_weight=0.0,
     config="baseline",
+    *,
+    turnover="legacy",
+    allow_probe=False,
 ):
     """Optimize target weights under cash, liquidity, concentration and turnover constraints."""
     cfg = CONFIGS[config]
+    if turnover not in TURNOVER_POLICIES:
+        raise ValueError("Unknown turnover policy")
     cap = min(exposure, [0.9, 0.45, 0.2, 0.0][level])
     if level == 3:
         return {s: 0.0 for s in previous}, {
@@ -125,7 +133,7 @@ def allocate(
         }
     selected, audit = (
         select_names(meta, forecasts, previous, returns, slippage, config)
-        if level < 2
+        if level < 2 or allow_probe
         else (list(previous), {})
     )
     names = list(dict.fromkeys(selected + list(previous)))
@@ -137,6 +145,8 @@ def allocate(
         "rule_config": config,
         "rule_activity": audit,
     }
+    if turnover != "legacy":
+        common["turnover_policy"] = turnover
     if not n:
         return {}, {**common, "status": "CASH_NO_POSITIVE_EDGE"}
     objective = np.zeros(3 * n)
@@ -145,19 +155,22 @@ def allocate(
     buys = []
     sells = []
     penalty = 0.001 if cfg["penalty10"] else 0.0
+    penalties = {}
     for i, s in enumerate(names):
         buy, sell = costs(meta, s, slippage)
+        extra = (buy + sell) / 2 if turnover == "cost_penalty" else penalty
+        penalties[s] = extra
         v = forecasts.get(s, {"mu": -0.05, "margin": 0})
         objective[i] = -v["mu"] + v["margin"] + sell
-        objective[n + i] = buy + penalty
-        objective[2 * n + i] = sell + penalty
+        objective[n + i] = buy + extra
+        objective[2 * n + i] = sell + extra
         limit = float(adv.get(s, 0) or 0) * 0.01 / max(nav, 1)
         if not np.isfinite(limit):
             limit = 0.0
         max_sell = min(old[i], max(0.0, sellable.get(s, 0)), max(0.0, limit))
         forced = old[i] - max_sell
         bounds.append((0.0, max(forced, 0.14 if s in selected else 0.0)))
-        buys.append((0.0, max(0.0, limit) if s in selected and level < 2 else 0.0))
+        buys.append((0.0, max(0.0, limit) if s in selected and (level < 2 or allow_probe) else 0.0))
         sells.append((0.0, max_sell))
     bounds += buys + sells
     eq = np.zeros((n, 3 * n))
@@ -213,14 +226,23 @@ def allocate(
         raise ValueError("Optimizer returned weights that violate portfolio constraints")
     targets = {s: max(0.0, float(x[i])) for i, s in enumerate(names)}
     buffered = 0
-    if cfg["deadband2"] and level < 2:
-        targets, buffered = buffered_weights(targets, previous, selected, meta, cap)
+    if (cfg["deadband2"] or turnover == "cost_band") and (level < 2 or allow_probe):
+        targets, buffered = buffered_weights(
+            targets,
+            previous,
+            selected,
+            meta,
+            cap,
+            slippage=slippage if turnover == "cost_band" else None,
+        )
     audit.update(
         buffered_positions=buffered,
         buy_budget_binding=budget is not None and x[n : 2 * n].sum() >= budget - 1e-7,
         sell_budget_binding=budget is not None and x[2 * n :].sum() >= budget - 1e-7,
-        extra_penalty_rate=penalty,
+        extra_penalty_rate=penalty if turnover != "cost_penalty" else None,
     )
+    if turnover == "cost_penalty":
+        audit["extra_penalty_rates"] = penalties
     return targets, {
         **common,
         "status": "OPTIMAL",

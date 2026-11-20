@@ -275,6 +275,7 @@ def execution_audit(ledger, bundle):
     marks = {(x["date"], x["after_fill"]): x for x in ledger["intermediate_weights"]}
     decisions = {decision["execution_date"]: decision for decision in ledger["decisions"]}
     previous_phase = "NORMAL"
+    state_age, healthy_streak, probe_anchor = 0, 0, None
     execution = ledger.get("execution")
     if execution is None or (
         execution.get("model") != "opening_proxy_separate_cost"
@@ -282,7 +283,17 @@ def execution_audit(ledger, bundle):
         or execution["slippage_rate"] < 0
     ):
         return {"status": "FAIL", "checks": checks, "errors": [["INVALID_EXECUTION_MODEL"]]}
-    for row, decision in zip(ledger["curve"], ledger["decisions"]):
+    mode = execution.get("risk_mode", "latched")
+    if mode not in ("latched", "staged_restore", "probe_restore"):
+        return {"status": "FAIL", "checks": checks, "errors": [["INVALID_RISK_MODE"]]}
+    panels = bundle["panels"]
+    eligible = panels["eligible"]
+    breadth = ((panels["trend20"] > 0) & eligible).sum(axis=1) / eligible.sum(axis=1).clip(lower=1)
+    benchmark = panels["close"]["sh510300"].dropna()
+    rising = (benchmark / benchmark.shift(5) > 1).astype("boolean")
+    rising = rising.reindex(eligible.index).ffill().fillna(False)
+    market_health = (panels["trend20"]["sh510300"] > 0) & (breadth >= 0.55) & rising
+    for index, (row, decision) in enumerate(zip(ledger["curve"], ledger["decisions"])):
         state = decision["recovery"]
         if state["phase"] not in CAPS:
             return {
@@ -305,8 +316,73 @@ def execution_audit(ledger, bundle):
         if row["risk_cap"] > CAPS[state["phase"]] + 1e-9:
             errors.append(["RISK_CAP_MISMATCH", row["date"]])
         checks += 1
-        if LEVELS[state["phase"]] < LEVELS[previous_phase]:
+        if mode == "latched" and LEVELS[state["phase"]] < LEVELS[previous_phase]:
             errors.append(["RISK_LEVEL_RESTORED", row["date"]])
+        # Reconstruct transitions from NAV and market data, never by calling RiskState.
+        date = pd.Timestamp(row["date"])
+        prior_date = bundle["calendar"][bundle["calendar"].get_loc(date) - 1]
+        healthy = bool(market_health.loc[prior_date])
+        age_before = state_age + int(index > 0)
+        streak_before = healthy_streak + 1 if healthy else 0
+        drawdown = 1 - row["prior_close_nav"] / peak
+        phase, reason = previous_phase, "UNCHANGED"
+        if previous_phase == "HALTED0":
+            pass
+        elif drawdown >= 0.08 - 1e-12:
+            phase, reason = "HALTED0", "GLOBAL_DRAWDOWN_8"
+        elif drawdown >= 0.06 - 1e-12 and LEVELS[previous_phase] < 2:
+            phase, reason = "FROZEN20", "GLOBAL_DRAWDOWN_6"
+        elif drawdown >= 0.04 - 1e-12 and LEVELS[previous_phase] < 1:
+            phase, reason = "CAUTION45", "GLOBAL_DRAWDOWN_4"
+        elif previous_phase == "PROBE20" and drawdown >= 0.07 - 1e-12:
+            phase, reason = "FROZEN20", "PROBE_DRAWDOWN_7"
+        elif mode != "latched" and age_before >= 5 and streak_before >= 3:
+            if previous_phase in ("FROZEN20", "PROBE20") and drawdown < 0.05 - 1e-12:
+                phase, reason = "CAUTION45", "RESTORE_BELOW_5"
+            elif previous_phase == "CAUTION45" and drawdown < 0.025 - 1e-12:
+                phase, reason = "NORMAL", "RESTORE_BELOW_2_5"
+            elif (
+                mode == "probe_restore"
+                and previous_phase == "FROZEN20"
+                and age_before >= 10
+                and streak_before >= 5
+                and drawdown < 0.07 - 1e-12
+            ):
+                phase, reason = "PROBE20", "PROBE_AFTER_HEALTHY_MARKET"
+        changed = phase != previous_phase
+        anchor_before = probe_anchor
+        if changed:
+            state_age, healthy_streak = 0, 0
+            probe_anchor = row["prior_close_nav"] if phase == "PROBE20" else None
+        else:
+            state_age, healthy_streak = age_before, streak_before
+        expected = {
+            "phase": phase,
+            "reason": reason,
+            "level": LEVELS[phase],
+            "cap": CAPS[phase],
+            "can_buy": phase not in ("FROZEN20", "HALTED0"),
+            "changed": changed,
+            "healthy": healthy,
+            "mode": mode,
+            "state_age_before": age_before,
+            "healthy_streak_before": streak_before,
+            "state_age": state_age,
+            "healthy_streak": healthy_streak,
+            "probe_anchor_before": anchor_before,
+            "probe_anchor": probe_anchor,
+        }
+        for name, value in expected.items():
+            checks += 1
+            if state.get(name) != value:
+                errors.append(["RISK_EVIDENCE_MISMATCH", row["date"], name])
+        checks += 3
+        if (
+            row["risk_phase"] != phase
+            or row["risk_level"] != LEVELS[phase]
+            or row["can_buy"] != expected["can_buy"]
+        ):
+            errors.append(["RISK_CURVE_MISMATCH", row["date"]])
         previous_phase = state["phase"]
     for i, trade in enumerate(ledger["trades"]):
         checks += 3

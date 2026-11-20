@@ -100,6 +100,10 @@ def experiment_folds(paths: Paths, bundle: dict, run: Path) -> tuple[dict, list]
         raise ValueError("Training used a different dataset or experiment protocol")
     if specification.get("execution_model") != EXECUTION_MODEL:
         raise ValueError("Training used another execution model; retrain before evaluating")
+    if specification.get("selection_mode", "legacy") != paths.config.get(
+        "selection_mode", "legacy"
+    ):
+        raise ValueError("Training used another model adoption policy")
     for name in (
         "simulation",
         "ledger",

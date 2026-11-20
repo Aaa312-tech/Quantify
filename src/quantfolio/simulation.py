@@ -13,8 +13,8 @@ from .allocation import allocate
 from .ledger import Ledger, buy_quantity, cents, fees_cents, lot_rule, slippage_cents
 from .market import EXECUTION_MODEL, opening_price, regime
 from .metrics import account_stats
-from .risk import RiskState, healthy_market
-from .rules import config_for
+from .risk import RISK_MODES, RiskState, healthy_market
+from .rules import config_for, turnover_for
 
 
 def post_buy_limits(values, meta, symbol, purchase, after_fee_nav, cap):
@@ -224,11 +224,20 @@ class _Execution:
 
 @pd.option_context("compute.use_numexpr", False)
 def simulate(
-    bundle, start, end, forecasts, slippage=0.001, detail=True, mode="latched", rules="baseline"
+    bundle,
+    start,
+    end,
+    forecasts,
+    slippage=0.001,
+    detail=True,
+    mode="latched",
+    rules="baseline",
+    *,
+    turnover="legacy",
 ):
     """Replay next-open executions with prior-close signals and non-recovering risk control."""
-    if mode != "latched":
-        raise ValueError("Only non-recovering risk (latched) is supported")
+    if mode not in RISK_MODES:
+        raise ValueError("Unknown risk mode")
     if not 1 <= start <= end < len(bundle["calendar"]):
         raise ValueError("Execution range needs a prior signal day and available market bars")
     if not np.isfinite(slippage) or slippage < 0:
@@ -266,6 +275,7 @@ def simulate(
         previous = calendar[index - 1]
         day = str(date.date())
         active_config = config_for(rules, index - 1)
+        active_turnover = turnover_for(turnover, index - 1)
         prior = ledger.nav(last_close)
         prior_values = ledger.values(last_close)
         state = risk.update(prior, healthy_market(panels, previous))
@@ -307,6 +317,8 @@ def simulate(
                 slippage,
                 sum(x["cents"] for x in ledger.receivables) / 100 / prior,
                 config=active_config,
+                turnover=active_turnover,
+                allow_probe=state["phase"] == "PROBE20",
             )
         else:
             target_weights = {}
@@ -325,6 +337,8 @@ def simulate(
         )
         decision["recovery"] = state
         decision["rule_config"] = active_config
+        if active_turnover != "legacy":
+            decision["turnover_policy"] = active_turnover
         decision["target_weights"] = dict(target_weights)
         decisions.append(decision)
         for action in ex_dates[day]:
@@ -426,6 +440,12 @@ def simulate(
         "decisions": decisions,
         "intermediate_weights": intermediate,
     }
+    if mode != "latched":
+        full["execution"]["risk_mode"] = mode
+    if turnover != "legacy":
+        full["execution"]["turnover_policy"] = (
+            turnover if isinstance(turnover, str) else "scheduled"
+        )
     return summary, full if detail else None
 
 
@@ -438,6 +458,8 @@ def episodes(
     detail=False,
     mode="latched",
     rules="baseline",
+    *,
+    turnover="legacy",
 ):
     """Run reset-capital ten-session accounts and retain the final partial account separately."""
     if not 0 <= signal_start <= signal_end < len(bundle["calendar"]) - 1:
@@ -447,7 +469,9 @@ def episodes(
         end = min(start + 9, signal_end + 1)
         if end >= len(bundle["calendar"]):
             break
-        summary, ledger = simulate(bundle, start, end, forecasts, slippage, detail, mode, rules)
+        summary, ledger = simulate(
+            bundle, start, end, forecasts, slippage, detail, mode, rules, turnover=turnover
+        )
         out.append(
             {"summary": summary, "ledger": ledger, "complete_10_sessions": end - start + 1 == 10}
         )

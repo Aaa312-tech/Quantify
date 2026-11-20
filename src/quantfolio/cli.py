@@ -71,6 +71,16 @@ def main(argv: list[str] | None = None) -> None:
     training.add_argument("--first", type=int, default=1)
     training.add_argument("--last", type=int, default=11)
     training.add_argument("--include-latest", action="store_true")
+    study = commands.add_parser("study", help="Refit and select the registered research recipes")
+    study.add_argument("--output", required=True, help="New directory under artifacts/experiments")
+    study.add_argument("--protocol", default="configs/protocols/strategy_study.json")
+    study_evaluation = commands.add_parser(
+        "evaluate-study", help="Evaluate frozen research recipes"
+    )
+    study_evaluation.add_argument("--run", required=True, help="Completed study directory")
+    study_evaluation.add_argument(
+        "--output", required=True, help="New directory under artifacts/evaluations"
+    )
     evaluation = commands.add_parser("evaluate", help="Backtest a completed training run")
     evaluation.add_argument(
         "--run", required=True, help="Training directory under artifacts/experiments"
@@ -187,6 +197,14 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
 
         output = paths.output_path(args.output, "experiments")
         return run_training(paths, output, args.first, args.last, args.include_latest)
+    if args.command == "study":
+        from .study import run_study
+
+        return run_study(paths, args.output, args.protocol)
+    if args.command == "evaluate-study":
+        from .study import evaluate_study
+
+        return evaluate_study(paths, args.run, args.output)
     if args.command == "execution-bridge":
         from .evaluation import POLICIES, execution_bridge
 

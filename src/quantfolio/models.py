@@ -247,6 +247,50 @@ def factor_check(table, rows, scores, available_before):
     return result
 
 
+def industry_holdout_check(table, rows, scores, available_before):
+    """Remove the five largest signal-date industries without using labels to choose them."""
+    sub = table.iloc[rows]
+    pool = sub.momentum_percentile >= 0.70
+    counts = sub.loc[pool, "industry"].value_counts()
+    industries = sorted(counts.index, key=lambda name: (-int(counts[name]), str(name)))
+    results = []
+    if len(industries) >= 6:
+        for industry in industries[:5]:
+            retained = (sub.industry != industry).to_numpy()
+            result = factor_check(
+                table, rows[retained], np.asarray(scores)[retained], available_before
+            )
+            ic = result["mean_industry_ic"]
+            spread = result["mean_industry_top_bottom"]
+            requirements = {
+                "at_least_40_dates": result["dates"] >= 40,
+                "coverage_at_least_80pct": result["coverage"] >= 0.8,
+                "positive_industry_ic": bool(np.isfinite(ic) and ic > 0),
+                "positive_residual_spread": bool(np.isfinite(spread) and spread > 0),
+            }
+            results.append(
+                {
+                    "excluded_industry": str(industry),
+                    "signal_pool_rows": int(counts[industry]),
+                    "dates": result["dates"],
+                    "coverage": result["coverage"],
+                    "mean_industry_ic": float(ic) if np.isfinite(ic) else None,
+                    "mean_industry_top_bottom": float(spread) if np.isfinite(spread) else None,
+                    "last_label_end": result["last_label_end"],
+                    "requirements": requirements,
+                    "pass": all(requirements.values()),
+                }
+            )
+    return {
+        "pass": len(results) == 5 and all(result["pass"] for result in results),
+        "represented_industries": len(industries),
+        "available_before": int(available_before),
+        "industry_selection_uses_labels": False,
+        "holdouts": results,
+        "historical_industry_point_in_time_certified": False,
+    }
+
+
 def prediction_map(table, arrays, name):
     """Translate stored outer prediction arrays into per-date instrument forecasts."""
     out = {}

@@ -93,5 +93,7 @@ def account_stats(ledger, curve, decisions, quality, mode):
         "probe_entries": sum(
             d["recovery"]["changed"] and d["recovery"]["phase"] == "PROBE20" for d in decisions
         ),
-        "probe_failures": sum(d["recovery"]["reason"] == "PROBE_LOSS_1" for d in decisions),
+        "probe_failures": sum(
+            d["recovery"]["reason"] in ("PROBE_LOSS_1", "PROBE_DRAWDOWN_7") for d in decisions
+        ),
     }

@@ -27,7 +27,7 @@ def clip_for(table, rows):
     return {"gross_clip": np.quantile(table.iloc[rows].y5.to_numpy(), [0.01, 0.99]).tolist()}
 
 
-def assess(candidate, base, minimum=0.001):
+def assess(candidate, base, minimum=0.001, *, positive_score=False):
     """Apply predeclared return, paired-consistency, quality and drawdown adoption gates."""
     diff = np.array(candidate["returns"]) - np.array(base["returns"])
     n = len(diff)
@@ -60,6 +60,8 @@ def assess(candidate, base, minimum=0.001):
         == 0,
         "accounting_clear": candidate["accounting_pass"] and base["accounting_pass"],
     }
+    if positive_score:
+        req["positive_mean_minus_standard_error"] = diff.mean() - se > 0
     return {
         "requirements": req,
         "qualifies": bool(all(req.values())),
@@ -71,12 +73,12 @@ def assess(candidate, base, minimum=0.001):
     }
 
 
-def select_rules(trials):
+def select_rules(trials, *, positive_score=False):
     """Choose a qualifying turnover rule from past validation evidence, defaulting to baseline."""
     selected = "baseline"
     best = -np.inf
     for name in sorted((k for k in CONFIGS if k != "baseline"), key=lambda x: (complexity(x), x)):
-        a = assess(trials[name], trials["baseline"])
+        a = assess(trials[name], trials["baseline"], positive_score=positive_score)
         trials[name]["adoption"] = a
         if a["qualifies"] and a["score"] > best:
             selected = name
@@ -84,12 +86,12 @@ def select_rules(trials):
     return selected
 
 
-def select_model(trials):
+def select_model(trials, *, positive_score=False):
     """Choose a qualifying ranking model with an industry gate, defaulting to momentum."""
     selected = "momentum"
     best = -np.inf
     for name in ["ridge25", "tree25", "ridge50", "tree50"]:
-        a = assess(trials[name], trials["momentum"], 0.002)
+        a = assess(trials[name], trials["momentum"], 0.002, positive_score=positive_score)
         a["requirements"]["industry_factor_check"] = trials[name]["factor_check"]["pass"]
         a["qualifies"] = bool(all(a["requirements"].values()))
         trials[name]["adoption"] = a
