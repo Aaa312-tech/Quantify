@@ -212,3 +212,21 @@ python -m pytest -q
 ```
 
 CI在Windows的Python 3.11、3.13及Ubuntu的Python 3.13上，从源码分发包构建wheel并安装，确认包和模板可在仓库外加载，再运行测试。CI使用合成数据；完整历史验证在含LFS数据的项目中执行。
+
+
+## 已验收的11月20日扩展
+
+当前配置成套指向`daily_source_extension_2026-11-21`的完整训练、评估与状态复核。
+新数据来源、单位转换和历史标签变化见同名`artifacts/checks`目录；实现兼容性、训练影响
+及固定旧预测对照分别存档，旧腾讯全池核验失败记录不变。
+
+复现训练及评估时使用新输出目录，避免覆盖冻结结果：
+
+```powershell
+python -m quantfolio train --first 1 --last 11 --include-latest --output artifacts/experiments/source_extension_reproduction
+python -m quantfolio evaluate --run artifacts/experiments/source_extension_reproduction --all-policies --output artifacts/evaluations/source_extension_reproduction
+python -m quantfolio verify --run artifacts/experiments/source_extension_reproduction --output artifacts/checks/source_extension_reproduction
+```
+
+最新拟合只用于尚未发生的开盘计划，不进入已结束的外层回测。历史收益相同并不等于新一日
+信号相同，也不代表前向验证通过。当前计划及有效期见[纸面流程](paper_workflow.md)。

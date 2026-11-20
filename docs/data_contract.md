@@ -1,6 +1,6 @@
 # 数据契约
 
-`configs/project.toml`声明活跃快照`bundle`、冻结核验快照`reference_bundle`、研究评估`evaluation`及完整性清单。当前活跃快照位于`data/processed/2026-11-19-reviewed-status`，在父快照`2026-11-19-inner-actions`上应用十只股票的历史ST区间；行情截止日不变。父快照、此前公司行为修正与原快照`2026-11-18`均保留。载入前检查SHA-256及各自截止日期；joblib仅用于本地受信任的快照和模型。
+`configs/project.toml`声明活跃快照`bundle`、冻结核验快照`reference_bundle`、研究评估`evaluation`及完整性清单。当前活跃快照位于`data/processed/2026-11-20-reviewed-sources`，在`2026-11-19-reviewed-inner-events`上追加已核验行情与下一交易日分红。十只股票的历史ST区间、既有行情和非标签特征不变。父快照及历次修正均保留；载入前检查SHA-256及各自截止日期。joblib仅用于本地受信任的快照和模型。
 
 | 字段 | 内容 |
 | --- | --- |
@@ -25,7 +25,7 @@
 最初确认新潮能源和亚振家居的594条历史样本违反ST剔除约定，原诊断保存在
 `artifacts/checks/historical_status_2026-11-21/impact.json`，统计范围与文件均未改写。
 当前快照已应用全部十只已核验证券的日期修正；训练和成交检查通过后，
-`historical_status_review`指向`artifacts/checks/inner_event_repair_2026-11-21/status_review.json`。
+`historical_status_review`指向`artifacts/checks/daily_source_extension_2026-11-21/status_review.json`。
 解除决定只适用于绑定的数据SHA-256；未来新快照必须另做一致性审查，不能沿用旧哈希或
 仅修改行情截止日。其他历史状态未知项仍保留。
 
@@ -64,8 +64,9 @@ ST修正后的内层路径另出现六项公司行为、九次未核实事件，
 40次价格延用记录。六项支付日期、一项股份上市日及差异化除息参考已核实，保存于
 `docs/references/status_followup_2026-11-21.json`，已在独立登记的快照中应用并完成重训。
 原始行情、证券状态、资格与非标签特征精确不变，1/3/5日标签分别修正1/3/5条。
-全表现金支付日期已知127项，开盘可用日期已知124项；仍有1694项现金支付日期和105项股份上市日未知。
-覆盖统计包含基金份额合并，见`artifacts/checks/inner_event_repair_2026-11-21/coverage.json`。
+补入江波龙11月23日分红后，当前全表有1839项事件，现金支付日期已知128项，开盘可用日期已知125项；
+仍有1694项现金支付日期和105项股份上市日未知。覆盖统计包含基金份额合并，
+见`artifacts/checks/daily_source_extension_2026-11-21/coverage.json`。
 停牌核验保存在`docs/references/security_status/gaole_suspension_review_2026-11-21.json`；
 公告日期不能证明当日开盘前可用，未生成`opening_status`，也未移除价格延用质量标记。
 
@@ -88,7 +89,7 @@ ST修正后的内层路径另出现六项公司行为、九次未核实事件，
 腾讯北交所日线与腾讯收盘报价属于同一提供方；另两只缺少主来源目标日数据的证券仍无独立
 交叉证明。全池来源覆盖、字段转换诊断及其限制见`artifacts/checks/market_close_2026-11-20/source_readiness_review.json`。
 `refresh-data`现可按`daily_source_extension.json`读取这些归档响应，原严格失败记录不变；
-源适配只提供数据构建能力，新快照仍须完成重建、回测和独立启用检查。
+本次独立快照已完成历史前缀、完整重训与账户核验，并成套启用；未来扩展仍须逐次验证。
 
 目标日568只沪深证券的参考价已与前收盘及既有公告核对，中国中免和嘉美包装的除息调整匹配。
 546只股票的日线`isST=0`只作来源筛查；22只ETF的同名字段不映射为股票风险警示。

@@ -29,16 +29,16 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
 - Name strategies by behavior, not iteration numbers. Keep old identifiers only where required
   to read or trace frozen evidence; use semantic software versions for package releases.
 - The superiority gate is false. Engineering parity does not prove outperformance; the active
-  verified snapshot ends on 2026-11-19. Historical status and industry coverage remain incomplete.
+  verified snapshot ends on 2026-11-20. Historical status and industry coverage remain incomplete.
 - The registered ten-security historical ST correction passed full retraining and account checks.
   `historical_status_review` clears only that defect for its bound dataset hash. A new snapshot
   requires a new matching review; retain the old models, ledgers and impact reports.
 - The six sourced inner-trial corporate actions are applied and fully retrained. Five suspended
   sessions still have 40 carried-price flags in inner rule trials; pre-open availability is unverified.
-- The November 20 source adapters and new snapshot passed historical-prefix checks. On old
-  inputs, all 48 models, 1425 complete accounts and 75 paper accounts remain exact. Full new-data
-  validation is running; active inputs still end November 19. Preserve original failed source checks.
-- `configs/protocols/daily_source_extension.json` registers the source adapters, exact historical
-  preservation and full extension validation, including the sourced next-session Jiangbolong event.
-  Complete that protocol before activating November 20 data or issuing a November 23 plan.
+- The registered November 20 multi-source extension is active after 48 fits, 1425 retrained
+  accounts, 1425 fixed-forecast accounts and 75 paper-account comparisons. All prior non-label
+  history remains exact; original failed source checks and ETF denominator limitations remain.
+- `artifacts/plans/reviewed_sources_2026-11-23` is a frozen conditional paper plan with
+  no orders, expiring November 23 at 09:25 Shanghai time. No fills or
+  forward returns exist yet; do not fabricate quotes or extend the plan by changing its date.
 - Do not operate a trading app, broker account or WeChat.
