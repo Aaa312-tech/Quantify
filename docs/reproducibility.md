@@ -216,7 +216,8 @@ CI在Windows的Python 3.11、3.13及Ubuntu的Python 3.13上，从源码分发包
 
 ## 已验收的11月20日扩展
 
-当前配置成套指向`daily_source_extension_2026-11-21`的完整训练、评估与状态复核。
+行情扩展阶段的完整训练、评估与状态复核保存于`daily_source_extension_2026-11-21`；
+当前配置已进一步切换至本页下方已核验复牌标签修正后的`resumption_reference_2026-11-21`。
 新数据来源、单位转换和历史标签变化见同名`artifacts/checks`目录；实现兼容性、训练影响
 及固定旧预测对照分别存档，旧腾讯全池核验失败记录不变。
 
@@ -239,3 +240,7 @@ python -m quantfolio repair-resumption --protocol configs/protocols/resumption_r
 该命令保留所有行情、公司行为、元数据、特征和非标签历史，仅附加审查中的开盘状态并重建
 对应证券的合法退出标签。输出不可覆盖；复现时须在协议副本登记新目录。构建不会启用新数据，
 还须完成48个模型、1425个新账户、1425个固定旧预测对照和75个纸面账户核对，并绑定ST专项复核。
+
+复牌修正已完成上述验收，当前配置成套绑定其独立快照、训练、评估和ST复核。
+旧输入的源码兼容性诊断保存在`artifacts/checks/resumption_reference_2026-11-21/implementation`；
+完整差异、固定旧预测、门槛敏感性和未核验缺口均在同名检查目录。

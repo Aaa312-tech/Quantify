@@ -21,7 +21,7 @@
 计划返回`HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED`并保留空订单。不同快照、
 审查文件被改写或不一致的解除决定会被拒绝。
 十只已核验证券的日期修正已完成完整重训与账户验收，相关暂停仅对当前快照解除。
-[最新纸面计划](../artifacts/plans/reviewed_sources_2026-11-23/plan.md)的行情、账户及训练日期一致；
+[最新纸面计划](../artifacts/plans/reviewed_resumption_2026-11-23/plan.md)的行情、账户及训练日期一致；
 旧的过期记录保留。未来新快照还须另做绑定审查，不能直接复用解除决定。
 
 ## 从账户到收盘
@@ -130,11 +130,15 @@ python -m quantfolio verify-paper --output artifacts/checks/paper_replay
 随后已完成[最低卖出预算研究](exit_budget_repair.md)：修正未通过收益与回撤条件，
 因此纸面主策略仍保留原换手政策；新训练来源再次通过75账户、1386交易日的完整重放。
 
-历史ST及后续六项公司行为修正并重训后，[最新纸面验证](../artifacts/checks/inner_event_repair_2026-11-21/paper/verification.json)
+历史ST及后续六项公司行为修正并重训后，[该阶段纸面验证](../artifacts/checks/inner_event_repair_2026-11-21/paper/verification.json)
 通过全部75个账户、1386个交易日对比，证明纸面流程与本轮回测账本一致。
 历史资格修正另由训练样本和逐笔买入核查验证，不能只靠纸面重放作结论。
-行情截止日仍为11月19日，当前就绪检查受账户日期与行情时效限制；
-11月23日是下一次检查日期，尚无有效交易计划。
+该阶段的11月19日就绪阻断记录保留。随后完成行情扩展及复牌标签修正；当前行情、账户与最新拟合
+均截至11月20日，新条件式计划有效至11月23日09:25，参考意向为零。旧计划使用旧输入并保留原样。
 
 模型收益优势仍未通过，历史证券状态、行业时点与选样偏差仍有缺口。`FROZEN_CONDITIONAL_PLAN`
 表示时间与输入检查通过；`BLOCKED`表示没有有效操作建议；二者都不表示收益保证。
+
+最新复牌修正另通过75个纸面账户、1386个交易日的完整对照，见
+[当前验证](../artifacts/checks/resumption_reference_2026-11-21/paper/verification.json)。
+纸面流程仍要求持仓有实际收盘估值，缺少流动性仍不能成交；已知停牌不会自动补齐这些输入。
