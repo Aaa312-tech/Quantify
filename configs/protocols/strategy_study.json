@@ -1,0 +1,100 @@
+{
+  "name": "strategy_study",
+  "registered_at": "2026-11-20T14:14:30.864220+08:00",
+  "baseline_commit": "35ae14eeb9334b9b72354de695cb1a3a3d38b584",
+  "data_bundle": "data/processed/2026-11-19/bundle.joblib",
+  "data_sha256": "f387f259843397187afde08ea24a7e4348f6960fd23b3862348299e70fc8e40c",
+  "baseline_training": "artifacts/experiments/market_retraining_2026-11-20",
+  "baseline_training_protocol_sha256": "7611273196bb51e7b09d13202ea2d3fb42a451d28fbd17692c6e4c0c0d6a1609",
+  "baseline_evaluation": "artifacts/evaluations/market_retraining_2026-11-20",
+  "baseline_evaluation_sha256": "d8a082bef51a8e1e34aaab4a5af01b75ef56d22599f37a0a2c893183539b4f2b",
+  "primary_hypothesis": "positive_adoption",
+  "discovery_disclosure": "The negative mean-minus-standard-error adoption score was found in the already examined seventh historical window. All historical outcomes in this study are reused research evidence, not an independent test.",
+  "single_changes": [
+    {
+      "name": "positive_adoption",
+      "area": "selection",
+      "change": "Require strictly positive paired mean advantage minus its standard error for adopting either a model or a turnover rule; keep every existing adoption gate. Baseline score is zero, not negative infinity."
+    },
+    {
+      "name": "industry_holdout",
+      "area": "selection",
+      "change": "Keep existing full-cohort factor gates. Before looking at outcomes, select the five largest industries by validation momentum-pool row count. For each excluded industry, require at least 40 evaluable dates, at least 80% supported coverage, positive mean industry-residual IC and positive top-minus-bottom residual spread. Require at least six represented industries; unsupported cases fail. Use only labels available before the next outer window."
+    },
+    {
+      "name": "staged_restore",
+      "area": "risk",
+      "mode": "staged_restore",
+      "change": "After at least five observations since the last state change and three healthy-market observations in a row, restore FROZEN20 to CAUTION45 only below 5% current drawdown, or CAUTION45 to NORMAL only below 2.5%. Change at most one level per observation. Original high-water mark is never reset. HALTED0 is permanent."
+    },
+    {
+      "name": "probe_restore",
+      "area": "risk",
+      "mode": "probe_restore",
+      "change": "Use staged_restore promotions. Additionally, FROZEN20 may enter PROBE20 after at least ten observations since its state change, five healthy observations in a row, and current drawdown below 7%. PROBE20 permits buying within 20% exposure and normal concentration limits. At drawdown at least 7% return to FROZEN20; at 8% halt permanently. Probe may promote to CAUTION45 only through the same below-5%, age-five, healthy-three gate."
+    },
+    {
+      "name": "cost_penalty",
+      "area": "turnover",
+      "change": "Replace the optional extra fixed 10bp optimization penalty with half of the instrument-specific estimated buy-plus-sell rate on each turnover direction. Rates include the declared slippage. The penalty changes optimization only, never realized cash fees."
+    },
+    {
+      "name": "cost_band",
+      "area": "turnover",
+      "change": "Use a per-instrument target-weight buffer min(0.02,max(0.005,2*(estimated buy rate + estimated sell rate))) instead of the optional fixed 2-point buffer. Apply it on each planned rebalance, only to selected existing positions; never prevent required total or industry deleveraging or breach single-name bounds."
+    }
+  ],
+  "combinations": [
+    {
+      "name": "stable_selection",
+      "components": [
+        "positive_adoption",
+        "industry_holdout"
+      ]
+    },
+    {
+      "name": "stable_cost_band",
+      "components": [
+        "positive_adoption",
+        "cost_band"
+      ]
+    }
+  ],
+  "combination_budget": "Exactly these two pairs may be tested. A pair is eligible for inner evaluation in a window only when both single components pass the registered paired adoption gates and have positive mean-minus-SE scores versus the matching-risk momentum account. If none qualify, record NOT_TESTED_COMPONENT_GATE; do not search for other pairs.",
+  "selection": {
+    "windows": 11,
+    "include_latest": true,
+    "training": "Refit the same two fixed estimators for validation and outer use in each historical window and the latest window: 48 fits. No feature, label, universe, model hyperparameter or calibration change.",
+    "single_recipe_model_rules": "Use the recipe selection gates to choose rules and ranking models from inner validation only. Risk and turnover single changes retain baseline model/rule selection to isolate their effects.",
+    "inner_cost_bps": 10,
+    "inner_accounts": "Six complete 10-session accounts plus the continuous validation account; retain partial tails and quality flags.",
+    "inner_selected_latched": "Among eligible latched single recipes and eligible combinations, choose the highest positive paired mean-minus-SE score versus latched momentum, subject to all existing return, drawdown, industry, quality and accounting gates. Break ties by fewer modifications and then name. Default to baseline-rule momentum. Recovery is evaluated separately and cannot be selected by this policy.",
+    "outer_use": "Freeze choices and applicable turnover controls per signal window before its results are evaluated. Never use outer performance to pick combinations, thresholds or a winning recipe."
+  },
+  "evaluation": {
+    "costs_bps": [
+      10,
+      20,
+      30
+    ],
+    "accounts": "Continuous account and 23 full plus one partial 10-session accounts per policy. Preserve all ledgers and independent audit results.",
+    "comparators": [
+      "legacy_selected",
+      "matched_momentum",
+      "staged_momentum",
+      "probe_momentum"
+    ],
+    "attribution": "Compare selection recipes to latched momentum and the previous selected strategy. Compare each recovery recipe to momentum with the identical fixed recovery policy, and report the separate effect of changing risk on momentum. Report costs, turnover, exposure, transitions, rejected orders, event quality and NAV.",
+    "multiple_testing": "Report every single recipe and every permitted combination, including failures and skipped combinations. Historical paired statistics are descriptive; no independent alpha or championship claim. No further candidate or parameter sweep in this study."
+  },
+  "activation": "Current main strategy stays non-recovering during research. The preregistered primary positive_adoption recipe may replace selection only if engineering parity passes and its historical net return is no lower in all three costs with observed continuous drawdown within 8%; explicitly label this a retrospective robustness change, not validated alpha. Recovery candidates remain research-only until separate prospective evidence.",
+  "invariants": [
+    "Use the whitepaper hierarchy and existing conservative position limits.",
+    "Balanced attack, 8% alert, unchanged original account high-water mark.",
+    "Never restart after HALTED0.",
+    "Keep historical data, models and results immutable.",
+    "Unresolved source facts and opening-status limitations remain explicit; do not weaken quality gates.",
+    "No broker, APP or WeChat actions."
+  ],
+  "decision": "RESEARCH_ONLY"
+}
