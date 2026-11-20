@@ -1,0 +1,5374 @@
+{
+  "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+  "completed_at": "2026-11-20T13:57:18.818200+08:00",
+  "fold": {
+    "fold": 11,
+    "train_start": 335,
+    "train_end": 586,
+    "validation_start": 593,
+    "validation_end": 655,
+    "test_start": 662,
+    "test_end": 682
+  },
+  "selected_candidate": "momentum",
+  "selected_rules": "baseline",
+  "inner_rules": {
+    "baseline": {
+      "returns": [
+        0.04206349000000009,
+        -0.009547850000000135,
+        0.014331410000000044,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        -0.01122361999999999
+      ],
+      "mean_net_return": -0.008472546666666672,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 72,
+      "unresolved_events": 1,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "baseline",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.01560684999999995,
+        "max_drawdown": -0.06557903020843425,
+        "es95": -0.020377753417969324,
+        "fees": 4827.38,
+        "slippage_cost": 8618.72,
+        "total_cost": 13446.1,
+        "trades": 83,
+        "turnover": 8.61863463,
+        "ending_cash": 892751.21,
+        "ending_receivables": 265.2,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "LOT_BUDGET_TOO_SMALL": 3,
+          "T1_OR_MINIMUM_QUANTITY": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 19,
+          "HOLD_BETWEEN_REBALANCES": 44
+        },
+        "mean_exposure": 0.326980700906637,
+        "target_exposure_breach_days": 3,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 63
+        },
+        "phase_days": {
+          "NORMAL": 37,
+          "CAUTION45": 8,
+          "FROZEN20": 18
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-08-12",
+            "state_age_before": 37,
+            "healthy_streak_before": 3,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1066659.72,
+            "drawdown": 0.052388009926914614,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": true,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-08-24",
+            "state_age_before": 8,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1066659.72,
+            "drawdown": 0.06557903020843425,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 3230,
+      "execution_checks": 2182,
+      "ledger_sha256": "d7a186ca5f6879729820e44c2f3503e4bef8170c43e2cc9f7b3b645a9c6d681d",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\baseline.ledgers.json.gz"
+    },
+    "add_retain18": {
+      "returns": [
+        0.04206349000000009,
+        0.020735589999999915,
+        0.014331410000000044,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        -0.01122361999999999
+      ],
+      "mean_net_return": -0.0034253066666666645,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 69,
+      "unresolved_events": 1,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "add_retain18",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.020718510000000023,
+        "max_drawdown": -0.06602443338989117,
+        "es95": -0.018915090807857377,
+        "fees": 4345.19,
+        "slippage_cost": 7699.5,
+        "total_cost": 12044.69,
+        "trades": 74,
+        "turnover": 7.699476,
+        "ending_cash": 1020453.31,
+        "ending_receivables": 265.2,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 2,
+          "LOT_BUDGET_TOO_SMALL": 4,
+          "T1_OR_MINIMUM_QUANTITY": 5,
+          "OPEN_AT_LOWER_LIMIT": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 18,
+          "HOLD_BETWEEN_REBALANCES": 44,
+          "CASH_NO_POSITIVE_EDGE": 1
+        },
+        "mean_exposure": 0.27593292988792134,
+        "target_exposure_breach_days": 4,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "add_retain18": 63
+        },
+        "phase_days": {
+          "NORMAL": 33,
+          "CAUTION45": 6,
+          "FROZEN20": 24
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-08-06",
+            "state_age_before": 33,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1092874.96,
+            "drawdown": 0.04200454917550678,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-08-14",
+            "state_age_before": 6,
+            "healthy_streak_before": 5,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1092874.96,
+            "drawdown": 0.06190019213176967,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": true,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 3024,
+      "execution_checks": 2082,
+      "ledger_sha256": "41007062062e2bb87d20f3be00b156e4ad61255e23dd64ca804c35b37ff9d138",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\add_retain18.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": true,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": 0.005047240000000008,
+        "winning_episodes": 1,
+        "lower90": 0.0,
+        "standard_error": 0.005047240000000008,
+        "score": 0.0
+      }
+    },
+    "add_replace1": {
+      "returns": [
+        0.04206349000000009,
+        -0.009547850000000135,
+        0.014331410000000044,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        -0.01122361999999999
+      ],
+      "mean_net_return": -0.008472546666666672,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 72,
+      "unresolved_events": 1,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "add_replace1",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.01560684999999995,
+        "max_drawdown": -0.06557903020843425,
+        "es95": -0.020377753417969324,
+        "fees": 4827.38,
+        "slippage_cost": 8618.72,
+        "total_cost": 13446.1,
+        "trades": 83,
+        "turnover": 8.61863463,
+        "ending_cash": 892751.21,
+        "ending_receivables": 265.2,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "LOT_BUDGET_TOO_SMALL": 3,
+          "T1_OR_MINIMUM_QUANTITY": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 19,
+          "HOLD_BETWEEN_REBALANCES": 44
+        },
+        "mean_exposure": 0.326980700906637,
+        "target_exposure_breach_days": 3,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "add_replace1": 63
+        },
+        "phase_days": {
+          "NORMAL": 37,
+          "CAUTION45": 8,
+          "FROZEN20": 18
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-08-12",
+            "state_age_before": 37,
+            "healthy_streak_before": 3,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1066659.72,
+            "drawdown": 0.052388009926914614,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": true,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-08-24",
+            "state_age_before": 8,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1066659.72,
+            "drawdown": 0.06557903020843425,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 3230,
+      "execution_checks": 2182,
+      "ledger_sha256": "2b16d976cd8a64a2b4b652364d9b6682f1df42d13e84b7d2d4aed387f326b749",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\add_replace1.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0,
+        "winning_episodes": 0,
+        "lower90": 0.0,
+        "standard_error": 0.0,
+        "score": 0.0
+      }
+    },
+    "add_rank_gap3": {
+      "returns": [
+        0.04206349000000009,
+        -0.009547850000000135,
+        0.014331410000000044,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        -0.01122361999999999
+      ],
+      "mean_net_return": -0.008472546666666672,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 72,
+      "unresolved_events": 1,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "add_rank_gap3",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.01560684999999995,
+        "max_drawdown": -0.06557903020843425,
+        "es95": -0.020377753417969324,
+        "fees": 4827.38,
+        "slippage_cost": 8618.72,
+        "total_cost": 13446.1,
+        "trades": 83,
+        "turnover": 8.61863463,
+        "ending_cash": 892751.21,
+        "ending_receivables": 265.2,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "LOT_BUDGET_TOO_SMALL": 3,
+          "T1_OR_MINIMUM_QUANTITY": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 19,
+          "HOLD_BETWEEN_REBALANCES": 44
+        },
+        "mean_exposure": 0.326980700906637,
+        "target_exposure_breach_days": 3,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "add_rank_gap3": 63
+        },
+        "phase_days": {
+          "NORMAL": 37,
+          "CAUTION45": 8,
+          "FROZEN20": 18
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-08-12",
+            "state_age_before": 37,
+            "healthy_streak_before": 3,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1066659.72,
+            "drawdown": 0.052388009926914614,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": true,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-08-24",
+            "state_age_before": 8,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1066659.72,
+            "drawdown": 0.06557903020843425,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 3230,
+      "execution_checks": 2182,
+      "ledger_sha256": "738bcf7bd38e1bf791ade9756acad4a633d8a55c8df510670f6319efac750f7b",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\add_rank_gap3.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0,
+        "winning_episodes": 0,
+        "lower90": 0.0,
+        "standard_error": 0.0,
+        "score": 0.0
+      }
+    },
+    "add_normal_budget25": {
+      "returns": [
+        -0.023269749999999978,
+        -0.0068462400000000034,
+        0.008450800000000092,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        0.03244453000000003
+      ],
+      "mean_net_return": -0.012613228333333318,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 58,
+      "unresolved_events": 0,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "add_normal_budget25",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": -0.022891879999999976,
+        "max_drawdown": -0.07385651894136203,
+        "es95": -0.019352998339890834,
+        "fees": 1067.52,
+        "slippage_cost": 1896.36,
+        "total_cost": 2963.88,
+        "trades": 22,
+        "turnover": 1.896328,
+        "ending_cash": 977108.12,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "T1_OR_MINIMUM_QUANTITY": 8,
+          "LOT_BUDGET_TOO_SMALL": 2
+        },
+        "solver_counts": {
+          "OPTIMAL": 13,
+          "HOLD_BETWEEN_REBALANCES": 47,
+          "INFEASIBLE_REDUCE_ONLY": 1,
+          "CASH_NO_POSITIVE_EDGE": 2
+        },
+        "mean_exposure": 0.17964870915200623,
+        "target_exposure_breach_days": 3,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "add_normal_budget25": 63
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 4,
+          "FROZEN20": 50
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-03",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1034768.78,
+            "drawdown": 0.05900467928690323,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-09",
+            "state_age_before": 4,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1034768.78,
+            "drawdown": 0.07385651894136203,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2352,
+      "execution_checks": 1580,
+      "ledger_sha256": "c21722eab0d6f51a9ad5d2992155c7050e7fcb6795e4880f55064bd36309f954",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\add_normal_budget25.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": false,
+          "continuous_return_not_over50bp_worse": false,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": -0.004140681666666646,
+        "winning_episodes": 2,
+        "lower90": -0.014579286666666635,
+        "standard_error": 0.01427626045327965,
+        "score": -0.018416942119946295
+      }
+    },
+    "add_caution_budget25": {
+      "returns": [
+        0.04206349000000009,
+        -0.009547850000000135,
+        0.014331410000000044,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        -0.01122361999999999
+      ],
+      "mean_net_return": -0.008472546666666672,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 72,
+      "unresolved_events": 1,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "add_caution_budget25",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.0028833299999999618,
+        "max_drawdown": -0.06549993281831246,
+        "es95": -0.018695096651498315,
+        "fees": 4215.17,
+        "slippage_cost": 7521.39,
+        "total_cost": 11736.56,
+        "trades": 70,
+        "turnover": 7.52130449,
+        "ending_cash": 935808.13,
+        "ending_receivables": 265.2,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "LOT_BUDGET_TOO_SMALL": 3,
+          "T1_OR_MINIMUM_QUANTITY": 4
+        },
+        "solver_counts": {
+          "OPTIMAL": 17,
+          "HOLD_BETWEEN_REBALANCES": 45,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.3115190539915646,
+        "target_exposure_breach_days": 1,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "add_caution_budget25": 63
+        },
+        "phase_days": {
+          "NORMAL": 37,
+          "CAUTION45": 7,
+          "FROZEN20": 19
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-08-12",
+            "state_age_before": 37,
+            "healthy_streak_before": 3,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1066659.72,
+            "drawdown": 0.052388009926914614,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": true,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-08-21",
+            "state_age_before": 7,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1066659.72,
+            "drawdown": 0.06020180456425217,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 3055,
+      "execution_checks": 2080,
+      "ledger_sha256": "abfffc43e741bdf38baf5cc3332b744719940bf644239b3d8b1aec8192eb2c7a",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\add_caution_budget25.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": false,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0,
+        "winning_episodes": 0,
+        "lower90": 0.0,
+        "standard_error": 0.0,
+        "score": 0.0
+      }
+    },
+    "add_penalty10": {
+      "returns": [
+        0.04206349000000009,
+        -0.009547850000000135,
+        0.014331410000000044,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        -0.01122361999999999
+      ],
+      "mean_net_return": -0.008472546666666672,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 72,
+      "unresolved_events": 1,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "add_penalty10",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.01560684999999995,
+        "max_drawdown": -0.06557903020843425,
+        "es95": -0.020377753417969324,
+        "fees": 4827.38,
+        "slippage_cost": 8618.72,
+        "total_cost": 13446.1,
+        "trades": 83,
+        "turnover": 8.61863463,
+        "ending_cash": 892751.21,
+        "ending_receivables": 265.2,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "LOT_BUDGET_TOO_SMALL": 3,
+          "T1_OR_MINIMUM_QUANTITY": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 19,
+          "HOLD_BETWEEN_REBALANCES": 44
+        },
+        "mean_exposure": 0.326980700906637,
+        "target_exposure_breach_days": 3,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "add_penalty10": 63
+        },
+        "phase_days": {
+          "NORMAL": 37,
+          "CAUTION45": 8,
+          "FROZEN20": 18
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-08-12",
+            "state_age_before": 37,
+            "healthy_streak_before": 3,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1066659.72,
+            "drawdown": 0.052388009926914614,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": true,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-08-24",
+            "state_age_before": 8,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1066659.72,
+            "drawdown": 0.06557903020843425,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 3230,
+      "execution_checks": 2182,
+      "ledger_sha256": "e04b48951705c03a559a429833d3f82224e457f8ec99dd4d78466567cb793b73",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\add_penalty10.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0,
+        "winning_episodes": 0,
+        "lower90": 0.0,
+        "standard_error": 0.0,
+        "score": 0.0
+      }
+    },
+    "add_deadband2": {
+      "returns": [
+        0.04206349000000009,
+        -0.009547850000000135,
+        0.014331410000000044,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        -0.01122361999999999
+      ],
+      "mean_net_return": -0.008472546666666672,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 72,
+      "unresolved_events": 1,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "add_deadband2",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.01560684999999995,
+        "max_drawdown": -0.06557903020843425,
+        "es95": -0.020377753417969324,
+        "fees": 4827.38,
+        "slippage_cost": 8618.72,
+        "total_cost": 13446.1,
+        "trades": 83,
+        "turnover": 8.61863463,
+        "ending_cash": 892751.21,
+        "ending_receivables": 265.2,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "LOT_BUDGET_TOO_SMALL": 3,
+          "T1_OR_MINIMUM_QUANTITY": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 19,
+          "HOLD_BETWEEN_REBALANCES": 44
+        },
+        "mean_exposure": 0.326980700906637,
+        "target_exposure_breach_days": 3,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "add_deadband2": 63
+        },
+        "phase_days": {
+          "NORMAL": 37,
+          "CAUTION45": 8,
+          "FROZEN20": 18
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-08-12",
+            "state_age_before": 37,
+            "healthy_streak_before": 3,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1066659.72,
+            "drawdown": 0.052388009926914614,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": true,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-08-24",
+            "state_age_before": 8,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1066659.72,
+            "drawdown": 0.06557903020843425,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 3230,
+      "execution_checks": 2182,
+      "ledger_sha256": "344a08eab633a713c3f8362330dc63bcbca5f03d376b690b1c2ab1a3f1fd1aa3",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\add_deadband2.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0,
+        "winning_episodes": 0,
+        "lower90": 0.0,
+        "standard_error": 0.0,
+        "score": 0.0
+      }
+    },
+    "all_on": {
+      "returns": [
+        -0.02751722000000001,
+        0.01587458999999991,
+        0.008450800000000092,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        0.03244453000000003
+      ],
+      "mean_net_return": -0.009534335000000005,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 56,
+      "unresolved_events": 0,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "all_on",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": -0.021899380000000024,
+        "max_drawdown": -0.06613920068210799,
+        "es95": -0.01721072635589073,
+        "fees": 631.62,
+        "slippage_cost": 1165.76,
+        "total_cost": 1797.38,
+        "trades": 16,
+        "turnover": 1.165738,
+        "ending_cash": 841150.62,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "T1_OR_MINIMUM_QUANTITY": 5,
+          "LOT_BUDGET_TOO_SMALL": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 13,
+          "HOLD_BETWEEN_REBALANCES": 49,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.20397798956360655,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "all_on": 63
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 1,
+          "FROZEN20": 53
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-03",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1034768.78,
+            "drawdown": 0.05900467928690323,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-06",
+            "state_age_before": 1,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1034768.78,
+            "drawdown": 0.0601931573544382,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2284,
+      "execution_checks": 1516,
+      "ledger_sha256": "a88b6599cebee10d678cbfbb11f34c01ca1ae37999cb3bb7a37bb093f4e53fdf",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\all_on.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": false,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": -0.0010617883333333318,
+        "winning_episodes": 2,
+        "lower90": -0.01167847166666669,
+        "standard_error": 0.015729484195043296,
+        "score": -0.016791272528376627
+      }
+    },
+    "remove_retain18": {
+      "returns": [
+        -0.02751722000000001,
+        -0.0068462400000000034,
+        0.008450800000000092,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        0.03244453000000003
+      ],
+      "mean_net_return": -0.01332113999999999,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 56,
+      "unresolved_events": 0,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "remove_retain18",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": -0.021899380000000024,
+        "max_drawdown": -0.06613920068210799,
+        "es95": -0.01721072635589073,
+        "fees": 631.62,
+        "slippage_cost": 1165.76,
+        "total_cost": 1797.38,
+        "trades": 16,
+        "turnover": 1.165738,
+        "ending_cash": 841150.62,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "T1_OR_MINIMUM_QUANTITY": 5,
+          "LOT_BUDGET_TOO_SMALL": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 13,
+          "HOLD_BETWEEN_REBALANCES": 49,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.20397798956360655,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "remove_retain18": 63
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 1,
+          "FROZEN20": 53
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-03",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1034768.78,
+            "drawdown": 0.05900467928690323,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-06",
+            "state_age_before": 1,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1034768.78,
+            "drawdown": 0.0601931573544382,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2285,
+      "execution_checks": 1508,
+      "ledger_sha256": "edac3f129040dbbbe25f90e13009f4b694e4bad847ce431da5bfc26059ddd4b3",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\remove_retain18.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": false,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": -0.0048485933333333175,
+        "winning_episodes": 2,
+        "lower90": -0.01599510999999998,
+        "standard_error": 0.014887589524184845,
+        "score": -0.019736182857518162
+      }
+    },
+    "remove_replace1": {
+      "returns": [
+        -0.02751722000000001,
+        0.01587458999999991,
+        0.008450800000000092,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        0.03244453000000003
+      ],
+      "mean_net_return": -0.009534335000000005,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 56,
+      "unresolved_events": 0,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "remove_replace1",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": -0.021899380000000024,
+        "max_drawdown": -0.06613920068210799,
+        "es95": -0.01721072635589073,
+        "fees": 631.62,
+        "slippage_cost": 1165.76,
+        "total_cost": 1797.38,
+        "trades": 16,
+        "turnover": 1.165738,
+        "ending_cash": 841150.62,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "T1_OR_MINIMUM_QUANTITY": 5,
+          "LOT_BUDGET_TOO_SMALL": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 13,
+          "HOLD_BETWEEN_REBALANCES": 49,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.20397798956360655,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "remove_replace1": 63
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 1,
+          "FROZEN20": 53
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-03",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1034768.78,
+            "drawdown": 0.05900467928690323,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-06",
+            "state_age_before": 1,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1034768.78,
+            "drawdown": 0.0601931573544382,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2284,
+      "execution_checks": 1516,
+      "ledger_sha256": "10619ab5079b15ee73affd1b4d915beb01e192d167625a35373f121209f512ad",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\remove_replace1.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": false,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": -0.0010617883333333318,
+        "winning_episodes": 2,
+        "lower90": -0.01167847166666669,
+        "standard_error": 0.015729484195043296,
+        "score": -0.016791272528376627
+      }
+    },
+    "remove_rank_gap3": {
+      "returns": [
+        -0.02751722000000001,
+        0.01587458999999991,
+        0.008450800000000092,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        0.03244453000000003
+      ],
+      "mean_net_return": -0.009534335000000005,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 56,
+      "unresolved_events": 0,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "remove_rank_gap3",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": -0.021899380000000024,
+        "max_drawdown": -0.06613920068210799,
+        "es95": -0.01721072635589073,
+        "fees": 631.62,
+        "slippage_cost": 1165.76,
+        "total_cost": 1797.38,
+        "trades": 16,
+        "turnover": 1.165738,
+        "ending_cash": 841150.62,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "T1_OR_MINIMUM_QUANTITY": 5,
+          "LOT_BUDGET_TOO_SMALL": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 13,
+          "HOLD_BETWEEN_REBALANCES": 49,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.20397798956360655,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "remove_rank_gap3": 63
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 1,
+          "FROZEN20": 53
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-03",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1034768.78,
+            "drawdown": 0.05900467928690323,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-06",
+            "state_age_before": 1,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1034768.78,
+            "drawdown": 0.0601931573544382,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2284,
+      "execution_checks": 1516,
+      "ledger_sha256": "efbeb87f151afb1b5030df9ca067580fd2d050e7fda57db46483128114345a4f",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\remove_rank_gap3.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": false,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": -0.0010617883333333318,
+        "winning_episodes": 2,
+        "lower90": -0.01167847166666669,
+        "standard_error": 0.015729484195043296,
+        "score": -0.016791272528376627
+      }
+    },
+    "remove_normal_budget25": {
+      "returns": [
+        0.04206349000000009,
+        0.020735589999999915,
+        0.014331410000000044,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        -0.01122361999999999
+      ],
+      "mean_net_return": -0.0034253066666666645,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 69,
+      "unresolved_events": 1,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "remove_normal_budget25",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.05549603000000003,
+        "max_drawdown": -0.05034978566989956,
+        "es95": -0.016301350052880734,
+        "fees": 3429.11,
+        "slippage_cost": 6179.0599999999995,
+        "total_cost": 9608.17,
+        "trades": 62,
+        "turnover": 6.179032,
+        "ending_cash": 757773.83,
+        "ending_receivables": 265.2,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "LOT_BUDGET_TOO_SMALL": 12,
+          "T1_OR_MINIMUM_QUANTITY": 8,
+          "OPEN_AT_LOWER_LIMIT": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 11,
+          "HOLD_BETWEEN_REBALANCES": 46,
+          "INFEASIBLE_REDUCE_ONLY": 6
+        },
+        "mean_exposure": 0.35645771240061747,
+        "target_exposure_breach_days": 2,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "remove_normal_budget25": 63
+        },
+        "phase_days": {
+          "NORMAL": 33,
+          "CAUTION45": 30
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-08-06",
+            "state_age_before": 33,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1092874.96,
+            "drawdown": 0.04200454917550678,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2980,
+      "execution_checks": 1990,
+      "ledger_sha256": "95329a251e0fb95cca8415ae3d5fd2360f3cf4efabbc59f9e80383d6f3fb65b6",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\remove_normal_budget25.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": true,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": 0.005047240000000008,
+        "winning_episodes": 1,
+        "lower90": 0.0,
+        "standard_error": 0.005047240000000008,
+        "score": 0.0
+      }
+    },
+    "remove_caution_budget25": {
+      "returns": [
+        -0.023269749999999978,
+        0.01587458999999991,
+        0.008450800000000092,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        0.03244453000000003
+      ],
+      "mean_net_return": -0.008826423333333333,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 58,
+      "unresolved_events": 0,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "remove_caution_budget25",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": -0.022516810000000054,
+        "max_drawdown": -0.07380869183161876,
+        "es95": -0.01928401908476172,
+        "fees": 1058.97,
+        "slippage_cost": 1885.84,
+        "total_cost": 2944.81,
+        "trades": 21,
+        "turnover": 1.885804,
+        "ending_cash": 977483.19,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "T1_OR_MINIMUM_QUANTITY": 6,
+          "LOT_BUDGET_TOO_SMALL": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 13,
+          "HOLD_BETWEEN_REBALANCES": 47,
+          "INFEASIBLE_REDUCE_ONLY": 1,
+          "CASH_NO_POSITIVE_EDGE": 2
+        },
+        "mean_exposure": 0.17749294231637264,
+        "target_exposure_breach_days": 2,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "remove_caution_budget25": 63
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 4,
+          "FROZEN20": 50
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-03",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1034768.78,
+            "drawdown": 0.05900467928690323,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-09",
+            "state_age_before": 4,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1034768.78,
+            "drawdown": 0.07380869183161876,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2342,
+      "execution_checks": 1578,
+      "ledger_sha256": "643663e0b7480d052bb08cc761a15802fb91b0594b1b25c5b3ab95e2badd721b",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\remove_caution_budget25.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": false,
+          "continuous_return_not_over50bp_worse": false,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": -0.00035387666666666,
+        "winning_episodes": 2,
+        "lower90": -0.010262648333333346,
+        "standard_error": 0.015116734910549243,
+        "score": -0.015470611577215904
+      }
+    },
+    "remove_penalty10": {
+      "returns": [
+        -0.02751722000000001,
+        0.01587458999999991,
+        0.008450800000000092,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        0.03244453000000003
+      ],
+      "mean_net_return": -0.009534335000000005,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 56,
+      "unresolved_events": 0,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "remove_penalty10",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": -0.034286170000000005,
+        "max_drawdown": -0.06673466704320175,
+        "es95": -0.01721072635589073,
+        "fees": 714.63,
+        "slippage_cost": 1290.54,
+        "total_cost": 2005.17,
+        "trades": 13,
+        "turnover": 1.290509,
+        "ending_cash": 965713.83,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "T1_OR_MINIMUM_QUANTITY": 5,
+          "LOT_BUDGET_TOO_SMALL": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 9,
+          "HOLD_BETWEEN_REBALANCES": 49,
+          "INFEASIBLE_REDUCE_ONLY": 1,
+          "CASH_NO_POSITIVE_EDGE": 4
+        },
+        "mean_exposure": 0.1414400695791029,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "remove_penalty10": 63
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 1,
+          "FROZEN20": 53
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-03",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1034768.78,
+            "drawdown": 0.05900467928690323,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-06",
+            "state_age_before": 1,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1034768.78,
+            "drawdown": 0.0601931573544382,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2201,
+      "execution_checks": 1498,
+      "ledger_sha256": "1555220ef4a9527f18d90314966ca5eac6f262a409d4d83e652f5a5aff4775b8",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\remove_penalty10.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": false,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": -0.0010617883333333318,
+        "winning_episodes": 2,
+        "lower90": -0.01167847166666669,
+        "standard_error": 0.015729484195043296,
+        "score": -0.016791272528376627
+      }
+    },
+    "remove_deadband2": {
+      "returns": [
+        -0.02751722000000001,
+        0.01587458999999991,
+        0.008450800000000092,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        0.03244453000000003
+      ],
+      "mean_net_return": -0.009534335000000005,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 56,
+      "unresolved_events": 0,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "remove_deadband2",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": -0.021899380000000024,
+        "max_drawdown": -0.06613920068210799,
+        "es95": -0.01721072635589073,
+        "fees": 631.62,
+        "slippage_cost": 1165.76,
+        "total_cost": 1797.38,
+        "trades": 16,
+        "turnover": 1.165738,
+        "ending_cash": 841150.62,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "T1_OR_MINIMUM_QUANTITY": 5,
+          "LOT_BUDGET_TOO_SMALL": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 13,
+          "HOLD_BETWEEN_REBALANCES": 49,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.20397798956360655,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "remove_deadband2": 63
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 1,
+          "FROZEN20": 53
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-03",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1034768.78,
+            "drawdown": 0.05900467928690323,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-06",
+            "state_age_before": 1,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1034768.78,
+            "drawdown": 0.0601931573544382,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2284,
+      "execution_checks": 1516,
+      "ledger_sha256": "e32a425f82b7a7154523df7382c7ae066470807def2eb6f9ac98a2b2d2f6b9c4",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\remove_deadband2.ledgers.json.gz",
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": false,
+          "quality_clear": false,
+          "accounting_clear": true
+        },
+        "qualifies": false,
+        "mean_advantage": -0.0010617883333333318,
+        "winning_episodes": 2,
+        "lower90": -0.01167847166666669,
+        "standard_error": 0.015729484195043296,
+        "score": -0.016791272528376627
+      }
+    }
+  },
+  "inner_candidates": {
+    "momentum": {
+      "returns": [
+        0.04206349000000009,
+        -0.009547850000000135,
+        0.014331410000000044,
+        -0.03039032000000008,
+        -0.05606838999999997,
+        -0.01122361999999999
+      ],
+      "mean_net_return": -0.008472546666666672,
+      "worst_drawdown": -0.08604803658579452,
+      "episodes": 6,
+      "trades": 72,
+      "unresolved_events": 1,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "baseline",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.01560684999999995,
+        "max_drawdown": -0.06557903020843425,
+        "es95": -0.020377753417969324,
+        "fees": 4827.38,
+        "slippage_cost": 8618.72,
+        "total_cost": 13446.1,
+        "trades": 83,
+        "turnover": 8.61863463,
+        "ending_cash": 892751.21,
+        "ending_receivables": 265.2,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "LOT_BUDGET_TOO_SMALL": 3,
+          "T1_OR_MINIMUM_QUANTITY": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 19,
+          "HOLD_BETWEEN_REBALANCES": 44
+        },
+        "mean_exposure": 0.326980700906637,
+        "target_exposure_breach_days": 3,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 63
+        },
+        "phase_days": {
+          "NORMAL": 37,
+          "CAUTION45": 8,
+          "FROZEN20": 18
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-08-12",
+            "state_age_before": 37,
+            "healthy_streak_before": 3,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1066659.72,
+            "drawdown": 0.052388009926914614,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": true,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-08-24",
+            "state_age_before": 8,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1066659.72,
+            "drawdown": 0.06557903020843425,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 3230,
+      "execution_checks": 2182,
+      "ledger_sha256": "d7a186ca5f6879729820e44c2f3503e4bef8170c43e2cc9f7b3b645a9c6d681d",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_rules\\baseline.ledgers.json.gz",
+      "factor_check": {
+        "dates": 63,
+        "coverage": 0.8670531590842095,
+        "mean_raw_ic": -0.0659323674126679,
+        "mean_industry_ic": -0.03526046366462975,
+        "mean_industry_top_bottom": -0.005613084329586373,
+        "positive_ten_signal_day_blocks": 3,
+        "block_spreads": [
+          -0.0005792738621800971,
+          -0.014428169333247847,
+          -0.02217022456758923,
+          0.0002517470848418024,
+          0.0005834906469744036,
+          0.0018694873109393662
+        ],
+        "last_label_end": 661,
+        "available_before": 662,
+        "daily": [
+          {
+            "date_index": 593,
+            "raw_ic": 0.04799643365493153,
+            "industry_ic": 0.05363113295617747,
+            "q5_minus_q1": -0.0016836033753432414,
+            "top_gross": 0.06867839395999908,
+            "rows": 147
+          },
+          {
+            "date_index": 594,
+            "raw_ic": 0.03282988373835993,
+            "industry_ic": 0.09204121557278633,
+            "q5_minus_q1": 0.0084163330013432,
+            "top_gross": 0.030591964721679688,
+            "rows": 149
+          },
+          {
+            "date_index": 595,
+            "raw_ic": 0.11463026656087222,
+            "industry_ic": 0.11284990081699937,
+            "q5_minus_q1": 0.04504090384309442,
+            "top_gross": 0.08706357330083847,
+            "rows": 152
+          },
+          {
+            "date_index": 596,
+            "raw_ic": 0.027357806255417654,
+            "industry_ic": -0.019302277000399555,
+            "q5_minus_q1": -0.00967728108800927,
+            "top_gross": 0.00032692309468984604,
+            "rows": 150
+          },
+          {
+            "date_index": 597,
+            "raw_ic": 0.11669255202290159,
+            "industry_ic": 0.005069429138204446,
+            "q5_minus_q1": 0.0009055659473244729,
+            "top_gross": -0.039154257625341415,
+            "rows": 152
+          },
+          {
+            "date_index": 598,
+            "raw_ic": -0.0033659419639954754,
+            "industry_ic": -0.009311869900393574,
+            "q5_minus_q1": 0.00142229316502418,
+            "top_gross": -0.007847921922802925,
+            "rows": 152
+          },
+          {
+            "date_index": 599,
+            "raw_ic": -0.4187111862647125,
+            "industry_ic": -0.2747043841589997,
+            "q5_minus_q1": -0.04718660547217348,
+            "top_gross": -0.0938122346997261,
+            "rows": 146
+          },
+          {
+            "date_index": 600,
+            "raw_ic": -0.11859387870233161,
+            "industry_ic": -0.11146899544115096,
+            "q5_minus_q1": 0.00017464356872417403,
+            "top_gross": -0.08550212532281876,
+            "rows": 145
+          },
+          {
+            "date_index": 601,
+            "raw_ic": -0.004501268493652862,
+            "industry_ic": -0.023464871518028778,
+            "q5_minus_q1": -0.001325231670137655,
+            "top_gross": -0.039200566709041595,
+            "rows": 144
+          },
+          {
+            "date_index": 602,
+            "raw_ic": -0.0738640659277349,
+            "industry_ic": -0.03330187275871562,
+            "q5_minus_q1": -0.001879756541647774,
+            "top_gross": -0.013737229630351067,
+            "rows": 135
+          },
+          {
+            "date_index": 603,
+            "raw_ic": 0.08734952481571817,
+            "industry_ic": -0.009872427866149966,
+            "q5_minus_q1": -0.027705004608606983,
+            "top_gross": -0.025206850841641426,
+            "rows": 138
+          },
+          {
+            "date_index": 604,
+            "raw_ic": 0.005894561249069449,
+            "industry_ic": -0.03389189808784366,
+            "q5_minus_q1": -0.019102724550162042,
+            "top_gross": -0.04097374156117439,
+            "rows": 135
+          },
+          {
+            "date_index": 605,
+            "raw_ic": -0.04170800570300979,
+            "industry_ic": 0.019580037900202175,
+            "q5_minus_q1": 0.0012276212339494249,
+            "top_gross": -0.016769658774137497,
+            "rows": 133
+          },
+          {
+            "date_index": 606,
+            "raw_ic": -0.16096057834550287,
+            "industry_ic": -0.1028996532375033,
+            "q5_minus_q1": -0.02074863096337312,
+            "top_gross": -0.04888954386115074,
+            "rows": 137
+          },
+          {
+            "date_index": 607,
+            "raw_ic": -0.33328478518656784,
+            "industry_ic": -0.08449473427265101,
+            "q5_minus_q1": -0.011801580248263869,
+            "top_gross": -0.10857048630714417,
+            "rows": 142
+          },
+          {
+            "date_index": 608,
+            "raw_ic": -0.2527897421965922,
+            "industry_ic": -0.05850153599927098,
+            "q5_minus_q1": -0.008867046402866405,
+            "top_gross": -0.0788276344537735,
+            "rows": 138
+          },
+          {
+            "date_index": 609,
+            "raw_ic": -0.1022512878270508,
+            "industry_ic": 0.0057871855844492046,
+            "q5_minus_q1": -0.01770275239413298,
+            "top_gross": -0.06310886144638062,
+            "rows": 137
+          },
+          {
+            "date_index": 610,
+            "raw_ic": -0.07394200318482573,
+            "industry_ic": -0.11371956061410984,
+            "q5_minus_q1": -0.039213522547687826,
+            "top_gross": -0.05064941942691803,
+            "rows": 131
+          },
+          {
+            "date_index": 611,
+            "raw_ic": 0.02155923618884749,
+            "industry_ic": -0.07793525520775907,
+            "q5_minus_q1": -0.017000443681431734,
+            "top_gross": -0.011412323452532291,
+            "rows": 129
+          },
+          {
+            "date_index": 612,
+            "raw_ic": 0.05479671433286279,
+            "industry_ic": 0.05557601866314526,
+            "q5_minus_q1": 0.01663239083009703,
+            "top_gross": -0.004064681939780712,
+            "rows": 131
+          },
+          {
+            "date_index": 613,
+            "raw_ic": 0.12419309176923858,
+            "industry_ic": 0.03777261447205864,
+            "q5_minus_q1": 0.007553368636471658,
+            "top_gross": 0.014346987940371037,
+            "rows": 133
+          },
+          {
+            "date_index": 614,
+            "raw_ic": -0.012800022899816483,
+            "industry_ic": -0.04020099303849396,
+            "q5_minus_q1": -0.0047067771652434635,
+            "top_gross": -0.009603657759726048,
+            "rows": 136
+          },
+          {
+            "date_index": 615,
+            "raw_ic": 0.1760632482652166,
+            "industry_ic": -0.07617598603694344,
+            "q5_minus_q1": -0.014124778647479805,
+            "top_gross": 0.012590224854648113,
+            "rows": 137
+          },
+          {
+            "date_index": 616,
+            "raw_ic": -0.04956660432243952,
+            "industry_ic": -0.17708471886825258,
+            "q5_minus_q1": -0.0330506837563854,
+            "top_gross": -0.026996467262506485,
+            "rows": 137
+          },
+          {
+            "date_index": 617,
+            "raw_ic": -0.15918787916035293,
+            "industry_ic": -0.18014206018077106,
+            "q5_minus_q1": -0.029944549587746123,
+            "top_gross": -0.010891827754676342,
+            "rows": 135
+          },
+          {
+            "date_index": 618,
+            "raw_ic": -0.021260929275342073,
+            "industry_ic": -0.22935155609880498,
+            "q5_minus_q1": -0.03517059295964597,
+            "top_gross": 0.01872914470732212,
+            "rows": 138
+          },
+          {
+            "date_index": 619,
+            "raw_ic": -0.18165167820354092,
+            "industry_ic": -0.09599609791965762,
+            "q5_minus_q1": -0.019342329680884163,
+            "top_gross": 0.0077208238653838634,
+            "rows": 135
+          },
+          {
+            "date_index": 620,
+            "raw_ic": -0.322541728002884,
+            "industry_ic": -0.2100019084062702,
+            "q5_minus_q1": -0.021181838131429726,
+            "top_gross": -0.016027191653847694,
+            "rows": 131
+          },
+          {
+            "date_index": 621,
+            "raw_ic": -0.4273236317710867,
+            "industry_ic": -0.18225871748688896,
+            "q5_minus_q1": -0.03986843261198224,
+            "top_gross": -0.02516225166618824,
+            "rows": 135
+          },
+          {
+            "date_index": 622,
+            "raw_ic": -0.5001073427133764,
+            "industry_ic": -0.16739628594412873,
+            "q5_minus_q1": -0.03186563177156708,
+            "top_gross": -0.032160378992557526,
+            "rows": 137
+          },
+          {
+            "date_index": 623,
+            "raw_ic": -0.29722115040021574,
+            "industry_ic": -0.10521989782875144,
+            "q5_minus_q1": -0.0026929957582230574,
+            "top_gross": -0.02166503481566906,
+            "rows": 138
+          },
+          {
+            "date_index": 624,
+            "raw_ic": -0.2420208017718453,
+            "industry_ic": -0.22260649558073026,
+            "q5_minus_q1": -0.03269850065598807,
+            "top_gross": -0.01444095280021429,
+            "rows": 133
+          },
+          {
+            "date_index": 625,
+            "raw_ic": 0.09149408284023669,
+            "industry_ic": -0.14808126871612406,
+            "q5_minus_q1": -0.016427800010231267,
+            "top_gross": 0.0049908217042684555,
+            "rows": 133
+          },
+          {
+            "date_index": 626,
+            "raw_ic": -0.05894353307575781,
+            "industry_ic": -0.10058323791613705,
+            "q5_minus_q1": 0.007090523485664582,
+            "top_gross": 0.010031642392277718,
+            "rows": 135
+          },
+          {
+            "date_index": 627,
+            "raw_ic": -0.06991153714900457,
+            "industry_ic": -0.031799873813749824,
+            "q5_minus_q1": -6.611798845658837e-05,
+            "top_gross": -0.009629781357944012,
+            "rows": 136
+          },
+          {
+            "date_index": 628,
+            "raw_ic": 0.012522928913139332,
+            "industry_ic": 0.047104533501465935,
+            "q5_minus_q1": 0.0248463117715605,
+            "top_gross": 0.01706661842763424,
+            "rows": 139
+          },
+          {
+            "date_index": 629,
+            "raw_ic": -0.015187746916555889,
+            "industry_ic": 0.08632580309451236,
+            "q5_minus_q1": 0.002345650156301178,
+            "top_gross": -0.0015501293819397688,
+            "rows": 144
+          },
+          {
+            "date_index": 630,
+            "raw_ic": 0.1207093733987419,
+            "industry_ic": 0.14527924987391702,
+            "q5_minus_q1": 0.030491115491991502,
+            "top_gross": 0.026123179122805595,
+            "rows": 140
+          },
+          {
+            "date_index": 631,
+            "raw_ic": 0.0018031896307728196,
+            "industry_ic": 0.06477455028675715,
+            "q5_minus_q1": 0.028402842176940186,
+            "top_gross": -0.027049126103520393,
+            "rows": 133
+          },
+          {
+            "date_index": 632,
+            "raw_ic": -0.14331198193569214,
+            "industry_ic": -0.12206941506463032,
+            "q5_minus_q1": -0.03877355782114095,
+            "top_gross": -0.044909581542015076,
+            "rows": 138
+          },
+          {
+            "date_index": 633,
+            "raw_ic": -0.036969332434017316,
+            "industry_ic": -0.030113138327848683,
+            "q5_minus_q1": -0.00392826396454402,
+            "top_gross": -0.014417638070881367,
+            "rows": 141
+          },
+          {
+            "date_index": 634,
+            "raw_ic": -0.1135595050360066,
+            "industry_ic": -0.03798427492341748,
+            "q5_minus_q1": -0.011045949045566127,
+            "top_gross": -0.10035668313503265,
+            "rows": 146
+          },
+          {
+            "date_index": 635,
+            "raw_ic": -0.0196456589258911,
+            "industry_ic": -0.08739904833071166,
+            "q5_minus_q1": -0.030351690517001154,
+            "top_gross": -0.04761615768074989,
+            "rows": 141
+          },
+          {
+            "date_index": 636,
+            "raw_ic": 0.08013024265589419,
+            "industry_ic": 0.05684161563012927,
+            "q5_minus_q1": 0.0064259478749350354,
+            "top_gross": 0.0006687538116239011,
+            "rows": 136
+          },
+          {
+            "date_index": 637,
+            "raw_ic": -0.03557759816559335,
+            "industry_ic": -0.007421186020101807,
+            "q5_minus_q1": 0.014310795478690628,
+            "top_gross": 0.017790935933589935,
+            "rows": 141
+          },
+          {
+            "date_index": 638,
+            "raw_ic": -0.1021277730894181,
+            "industry_ic": -0.04002540318422755,
+            "q5_minus_q1": -0.022262322893415117,
+            "top_gross": -0.008281642571091652,
+            "rows": 143
+          },
+          {
+            "date_index": 639,
+            "raw_ic": -0.04252281014479443,
+            "industry_ic": 0.05680204239026947,
+            "q5_minus_q1": -0.019961029077656626,
+            "top_gross": 0.018675774335861206,
+            "rows": 140
+          },
+          {
+            "date_index": 640,
+            "raw_ic": 0.0497012747140739,
+            "industry_ic": 0.06365195724113536,
+            "q5_minus_q1": 0.002878531426738858,
+            "top_gross": 0.05278164520859718,
+            "rows": 145
+          },
+          {
+            "date_index": 641,
+            "raw_ic": 0.03457548038555167,
+            "industry_ic": 0.10819908404834189,
+            "q5_minus_q1": 0.022453946740661715,
+            "top_gross": 0.032268062233924866,
+            "rows": 147
+          },
+          {
+            "date_index": 642,
+            "raw_ic": 0.08669945697224106,
+            "industry_ic": 0.1692558411425169,
+            "q5_minus_q1": 0.04731494044690085,
+            "top_gross": 0.016696831211447716,
+            "rows": 145
+          },
+          {
+            "date_index": 643,
+            "raw_ic": 0.0094342323087272,
+            "industry_ic": 0.11412187200716102,
+            "q5_minus_q1": 0.011870954945164342,
+            "top_gross": 0.01637044921517372,
+            "rows": 136
+          },
+          {
+            "date_index": 644,
+            "raw_ic": 0.01854678342565614,
+            "industry_ic": 0.005171817594413794,
+            "q5_minus_q1": 0.01452989323894362,
+            "top_gross": 0.018534250557422638,
+            "rows": 150
+          },
+          {
+            "date_index": 645,
+            "raw_ic": -0.15688142160132515,
+            "industry_ic": -0.1939345346140936,
+            "q5_minus_q1": -0.028698258817416694,
+            "top_gross": -1.1164428542542737e-05,
+            "rows": 144
+          },
+          {
+            "date_index": 646,
+            "raw_ic": 0.022144242486584902,
+            "industry_ic": -0.026019013410943325,
+            "q5_minus_q1": -0.004519039193890518,
+            "top_gross": -0.0014477083459496498,
+            "rows": 142
+          },
+          {
+            "date_index": 647,
+            "raw_ic": 0.08288614017871286,
+            "industry_ic": -0.023539739055711023,
+            "q5_minus_q1": -0.021923903905055886,
+            "top_gross": -0.005529031157493591,
+            "rows": 145
+          },
+          {
+            "date_index": 648,
+            "raw_ic": 0.07447596594732202,
+            "industry_ic": 0.008623435627218876,
+            "q5_minus_q1": 0.023405941141167164,
+            "top_gross": -0.01563457027077675,
+            "rows": 142
+          },
+          {
+            "date_index": 649,
+            "raw_ic": 0.041870465606078044,
+            "industry_ic": 0.12634695905185442,
+            "q5_minus_q1": 0.030112712624601315,
+            "top_gross": -0.028362901881337166,
+            "rows": 142
+          },
+          {
+            "date_index": 650,
+            "raw_ic": -0.14133051742427127,
+            "industry_ic": -0.02443677045592116,
+            "q5_minus_q1": 0.004488806345143951,
+            "top_gross": -0.0729522705078125,
+            "rows": 138
+          },
+          {
+            "date_index": 651,
+            "raw_ic": -0.2474696394202104,
+            "industry_ic": -0.06680116230008261,
+            "q5_minus_q1": -0.005516230887199929,
+            "top_gross": -0.06840872764587402,
+            "rows": 141
+          },
+          {
+            "date_index": 652,
+            "raw_ic": -0.12417737509707427,
+            "industry_ic": -0.05276806041568357,
+            "q5_minus_q1": -0.005056002382063702,
+            "top_gross": -0.018342893570661545,
+            "rows": 148
+          },
+          {
+            "date_index": 653,
+            "raw_ic": -0.01202037143549644,
+            "industry_ic": -0.04559295441319366,
+            "q5_minus_q1": 0.003329418532486021,
+            "top_gross": -0.01399209164083004,
+            "rows": 140
+          },
+          {
+            "date_index": 654,
+            "raw_ic": -0.3118811424070489,
+            "industry_ic": -0.04341924502690294,
+            "q5_minus_q1": -0.018191393346049592,
+            "top_gross": -0.008048329502344131,
+            "rows": 143
+          },
+          {
+            "date_index": 655,
+            "raw_ic": -0.2609238687402128,
+            "industry_ic": 0.06507687197675854,
+            "q5_minus_q1": 0.005967089252238237,
+            "top_gross": 0.004583328031003475,
+            "rows": 142
+          }
+        ],
+        "gross_diagnostic_not_portfolio": true,
+        "requirements": {
+          "at_least_40_dates": true,
+          "coverage_at_least_80pct": true,
+          "industry_ic_above_001": false,
+          "top_group_advantage_positive": false,
+          "at_least_four_positive_blocks": false
+        },
+        "pass": false
+      }
+    },
+    "ridge25": {
+      "returns": [
+        0.06479575000000004,
+        -0.060028639999999855,
+        0.015675949999999883,
+        -0.030038340000000052,
+        -0.047690780000000044,
+        0.02872233000000013
+      ],
+      "mean_net_return": -0.0047606216666666494,
+      "worst_drawdown": -0.07162130151338508,
+      "episodes": 6,
+      "trades": 87,
+      "unresolved_events": 3,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "baseline",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.0228517800000001,
+        "max_drawdown": -0.09245725207014877,
+        "es95": -0.018074542811828846,
+        "fees": 2568.93,
+        "slippage_cost": 4585.27,
+        "total_cost": 7154.2,
+        "trades": 40,
+        "turnover": 4.58524962,
+        "ending_cash": 963559.78,
+        "ending_receivables": 0.0,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 52,
+          "LOT_BUDGET_TOO_SMALL": 1,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 3,
+          "VOLATILITY_GAP_CEILING": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 8,
+          "HOLD_BETWEEN_REBALANCES": 9,
+          "RISK_EXIT": 46
+        },
+        "mean_exposure": 0.14091228845366627,
+        "target_exposure_breach_days": 47,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 63
+        },
+        "phase_days": {
+          "NORMAL": 12,
+          "CAUTION45": 4,
+          "FROZEN20": 1,
+          "HALTED0": 46
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-08",
+            "state_age_before": 12,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1097995.8599999999,
+            "drawdown": 0.04656746155673097,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-14",
+            "state_age_before": 4,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1097995.8599999999,
+            "drawdown": 0.07412159095026094,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-15",
+            "state_age_before": 1,
+            "healthy_streak_before": 0,
+            "previous_phase": "FROZEN20",
+            "probe_anchor_before": null,
+            "phase": "HALTED0",
+            "level": 3,
+            "cap": 0.0,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_8",
+            "peak": 1097995.8599999999,
+            "drawdown": 0.08570802807945,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2819,
+      "execution_checks": 1970,
+      "ledger_sha256": "4a6273881264683e6e5cad28490cfce332199650db6344626025bcead59b3e16",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_models\\ridge25.ledgers.json.gz",
+      "factor_check": {
+        "dates": 63,
+        "coverage": 0.8670531590842095,
+        "mean_raw_ic": -0.036059002514751685,
+        "mean_industry_ic": -0.045971798127483636,
+        "mean_industry_top_bottom": -0.0037312645178968307,
+        "positive_ten_signal_day_blocks": 2,
+        "block_spreads": [
+          -0.0035933627090587715,
+          0.011480478235954305,
+          -0.009763589824505675,
+          -0.021895806826279653,
+          -0.0028473439039306647,
+          0.004423100132167834
+        ],
+        "last_label_end": 661,
+        "available_before": 662,
+        "daily": [
+          {
+            "date_index": 593,
+            "raw_ic": 0.07745626851761733,
+            "industry_ic": 0.13669162592841652,
+            "q5_minus_q1": 0.03208612361321862,
+            "top_gross": 0.0866110771894455,
+            "rows": 147
+          },
+          {
+            "date_index": 594,
+            "raw_ic": -0.030480682024306184,
+            "industry_ic": 0.09501541810266642,
+            "q5_minus_q1": 0.005657547258219667,
+            "top_gross": 0.06261226534843445,
+            "rows": 149
+          },
+          {
+            "date_index": 595,
+            "raw_ic": 0.0782673473711548,
+            "industry_ic": 0.031831136079388186,
+            "q5_minus_q1": 0.037461804173887496,
+            "top_gross": 0.10375291854143143,
+            "rows": 152
+          },
+          {
+            "date_index": 596,
+            "raw_ic": -0.04463313447989183,
+            "industry_ic": 0.0680545802035646,
+            "q5_minus_q1": 0.010863954149885922,
+            "top_gross": -0.0005097288521938026,
+            "rows": 150
+          },
+          {
+            "date_index": 597,
+            "raw_ic": -0.017602012049160138,
+            "industry_ic": -0.004452615356252312,
+            "q5_minus_q1": 0.00538923445960263,
+            "top_gross": -0.04396067559719086,
+            "rows": 152
+          },
+          {
+            "date_index": 598,
+            "raw_ic": -0.16948243222001244,
+            "industry_ic": -0.1934608629091232,
+            "q5_minus_q1": -0.018410288273104713,
+            "top_gross": -0.03071022778749466,
+            "rows": 152
+          },
+          {
+            "date_index": 599,
+            "raw_ic": -0.2698177050697464,
+            "industry_ic": -0.3226919109637242,
+            "q5_minus_q1": -0.06148076881471565,
+            "top_gross": -0.08206502348184586,
+            "rows": 146
+          },
+          {
+            "date_index": 600,
+            "raw_ic": -0.15855770744764605,
+            "industry_ic": -0.2168241221854826,
+            "q5_minus_q1": -0.025161072132904652,
+            "top_gross": -0.07808057963848114,
+            "rows": 145
+          },
+          {
+            "date_index": 601,
+            "raw_ic": -0.21463931219297083,
+            "industry_ic": -0.18870487571836117,
+            "q5_minus_q1": -0.031219112147280598,
+            "top_gross": -0.061115097254514694,
+            "rows": 144
+          },
+          {
+            "date_index": 602,
+            "raw_ic": -0.046907618768900594,
+            "industry_ic": -0.038323090430201934,
+            "q5_minus_q1": 0.008878950622603566,
+            "top_gross": 0.011471306905150414,
+            "rows": 135
+          },
+          {
+            "date_index": 603,
+            "raw_ic": -0.02587964537922185,
+            "industry_ic": 0.006892867172463235,
+            "q5_minus_q1": 0.015943963767552867,
+            "top_gross": -0.023129066452383995,
+            "rows": 138
+          },
+          {
+            "date_index": 604,
+            "raw_ic": 0.039230318993268946,
+            "industry_ic": 0.14772217344649302,
+            "q5_minus_q1": 0.056895756805343325,
+            "top_gross": -0.01686863973736763,
+            "rows": 135
+          },
+          {
+            "date_index": 605,
+            "raw_ic": -0.04875485865273768,
+            "industry_ic": 0.01848583466808133,
+            "q5_minus_q1": 0.011244647221834398,
+            "top_gross": -0.006163521204143763,
+            "rows": 133
+          },
+          {
+            "date_index": 606,
+            "raw_ic": -0.11619574107637265,
+            "industry_ic": -0.04921873541546101,
+            "q5_minus_q1": -0.014220109950958482,
+            "top_gross": -0.0277109257876873,
+            "rows": 137
+          },
+          {
+            "date_index": 607,
+            "raw_ic": -0.15394045570851084,
+            "industry_ic": -0.2104251756634136,
+            "q5_minus_q1": -0.055808442846220684,
+            "top_gross": -0.11022491753101349,
+            "rows": 142
+          },
+          {
+            "date_index": 608,
+            "raw_ic": -0.09184933868202169,
+            "industry_ic": -0.1287909057076776,
+            "q5_minus_q1": -0.019646130334972686,
+            "top_gross": -0.08464279770851135,
+            "rows": 138
+          },
+          {
+            "date_index": 609,
+            "raw_ic": -0.07881960771050003,
+            "industry_ic": -0.056625347695409486,
+            "q5_minus_q1": 0.011014522580856362,
+            "top_gross": -0.0807555615901947,
+            "rows": 137
+          },
+          {
+            "date_index": 610,
+            "raw_ic": -0.004057011690599477,
+            "industry_ic": 0.0830779907115785,
+            "q5_minus_q1": 0.028664696860743646,
+            "top_gross": -0.03998090699315071,
+            "rows": 131
+          },
+          {
+            "date_index": 611,
+            "raw_ic": 0.16671511627906976,
+            "industry_ic": 0.19899373881932023,
+            "q5_minus_q1": 0.04364207986723927,
+            "top_gross": 0.022076744586229324,
+            "rows": 129
+          },
+          {
+            "date_index": 612,
+            "raw_ic": 0.19080525116823052,
+            "industry_ic": 0.218427374152565,
+            "q5_minus_q1": 0.037073798388125016,
+            "top_gross": 0.005062424577772617,
+            "rows": 131
+          },
+          {
+            "date_index": 613,
+            "raw_ic": 0.09547443915079422,
+            "industry_ic": 0.14304077697636222,
+            "q5_minus_q1": 0.024506304657934193,
+            "top_gross": 0.011573364958167076,
+            "rows": 133
+          },
+          {
+            "date_index": 614,
+            "raw_ic": 0.07998435187300174,
+            "industry_ic": -0.015409570154095702,
+            "q5_minus_q1": 0.006645157908046355,
+            "top_gross": -0.0026437039487063885,
+            "rows": 136
+          },
+          {
+            "date_index": 615,
+            "raw_ic": 0.06982152003747732,
+            "industry_ic": 0.04182145724046521,
+            "q5_minus_q1": 0.003950822254018147,
+            "top_gross": 0.0012235852191224694,
+            "rows": 137
+          },
+          {
+            "date_index": 616,
+            "raw_ic": 0.1115146819809153,
+            "industry_ic": -0.0506281852633151,
+            "q5_minus_q1": -0.0038547246381754312,
+            "top_gross": -0.013343583792448044,
+            "rows": 137
+          },
+          {
+            "date_index": 617,
+            "raw_ic": -0.04304945858940591,
+            "industry_ic": -0.016866647156374988,
+            "q5_minus_q1": -0.010403827804775775,
+            "top_gross": 0.0003835946263279766,
+            "rows": 135
+          },
+          {
+            "date_index": 618,
+            "raw_ic": -0.01190213898310891,
+            "industry_ic": 0.05211318092463509,
+            "q5_minus_q1": -0.01064294159687458,
+            "top_gross": 0.002021640306338668,
+            "rows": 138
+          },
+          {
+            "date_index": 619,
+            "raw_ic": -0.1711540337528046,
+            "industry_ic": -0.04351282801677885,
+            "q5_minus_q1": 0.015582325947222553,
+            "top_gross": -0.011703290976583958,
+            "rows": 135
+          },
+          {
+            "date_index": 620,
+            "raw_ic": -0.041813911279560134,
+            "industry_ic": -0.19069556397800672,
+            "q5_minus_q1": -0.034531943361440325,
+            "top_gross": -0.0004363872285466641,
+            "rows": 131
+          },
+          {
+            "date_index": 621,
+            "raw_ic": -0.14024763498147985,
+            "industry_ic": -0.3335869671251585,
+            "q5_minus_q1": -0.036996527598097365,
+            "top_gross": 0.019294198602437973,
+            "rows": 135
+          },
+          {
+            "date_index": 622,
+            "raw_ic": -0.08824462822259974,
+            "industry_ic": -0.31803162394757967,
+            "q5_minus_q1": -0.05189054401291453,
+            "top_gross": -0.006513580214232206,
+            "rows": 137
+          },
+          {
+            "date_index": 623,
+            "raw_ic": -0.17585164907309253,
+            "industry_ic": -0.34344926470756115,
+            "q5_minus_q1": -0.05208193671149072,
+            "top_gross": -0.0212564617395401,
+            "rows": 138
+          },
+          {
+            "date_index": 624,
+            "raw_ic": -0.11348603039922919,
+            "industry_ic": -0.2599650329587521,
+            "q5_minus_q1": -0.02102633456192414,
+            "top_gross": -0.003060911549255252,
+            "rows": 133
+          },
+          {
+            "date_index": 625,
+            "raw_ic": 0.006763891226923201,
+            "industry_ic": -0.11828587751604248,
+            "q5_minus_q1": 0.0017397480653465122,
+            "top_gross": 0.027677910402417183,
+            "rows": 133
+          },
+          {
+            "date_index": 626,
+            "raw_ic": 0.003628931952691459,
+            "industry_ic": -0.11512047605111697,
+            "q5_minus_q1": -0.017400927867956214,
+            "top_gross": 0.015411091968417168,
+            "rows": 135
+          },
+          {
+            "date_index": 627,
+            "raw_ic": 0.07248699966604646,
+            "industry_ic": -0.12248461428366968,
+            "q5_minus_q1": -0.0072151969592460456,
+            "top_gross": 0.015607914887368679,
+            "rows": 136
+          },
+          {
+            "date_index": 628,
+            "raw_ic": 0.12712811117565576,
+            "industry_ic": 0.02290093391125609,
+            "q5_minus_q1": -0.010923595742780654,
+            "top_gross": -0.002343191299587488,
+            "rows": 139
+          },
+          {
+            "date_index": 629,
+            "raw_ic": 0.14438549955791335,
+            "industry_ic": -0.038614259303914475,
+            "q5_minus_q1": -0.009671758248688461,
+            "top_gross": 0.017169605940580368,
+            "rows": 144
+          },
+          {
+            "date_index": 630,
+            "raw_ic": -0.056215757599646116,
+            "industry_ic": -0.10609433425903654,
+            "q5_minus_q1": -0.04530598423759617,
+            "top_gross": 0.002415320836007595,
+            "rows": 140
+          },
+          {
+            "date_index": 631,
+            "raw_ic": -0.20912865610430417,
+            "industry_ic": -0.15722141173830098,
+            "q5_minus_q1": -0.049544271587539226,
+            "top_gross": -0.03972289711236954,
+            "rows": 133
+          },
+          {
+            "date_index": 632,
+            "raw_ic": -0.17260935776925904,
+            "industry_ic": -0.05951975962866647,
+            "q5_minus_q1": -0.007527810410921406,
+            "top_gross": -0.04421290382742882,
+            "rows": 138
+          },
+          {
+            "date_index": 633,
+            "raw_ic": -0.13927409057982482,
+            "industry_ic": -0.006460036816644548,
+            "q5_minus_q1": -0.015849969489710188,
+            "top_gross": -0.04214499890804291,
+            "rows": 141
+          },
+          {
+            "date_index": 634,
+            "raw_ic": -0.09653822795060396,
+            "industry_ic": -0.03188763460036825,
+            "q5_minus_q1": -0.012661436115027413,
+            "top_gross": -0.09324324131011963,
+            "rows": 146
+          },
+          {
+            "date_index": 635,
+            "raw_ic": -0.054232005788440736,
+            "industry_ic": 0.12209426773406395,
+            "q5_minus_q1": 0.02278499982931937,
+            "top_gross": -0.05380910262465477,
+            "rows": 141
+          },
+          {
+            "date_index": 636,
+            "raw_ic": -0.12513238872191212,
+            "industry_ic": -0.027002528505319402,
+            "q5_minus_q1": 0.00014496202955406254,
+            "top_gross": -0.015464226715266705,
+            "rows": 136
+          },
+          {
+            "date_index": 637,
+            "raw_ic": -0.08651911468812877,
+            "industry_ic": -0.023566933515989555,
+            "q5_minus_q1": 0.008595800184821957,
+            "top_gross": 0.028637511655688286,
+            "rows": 141
+          },
+          {
+            "date_index": 638,
+            "raw_ic": -0.13883006664696806,
+            "industry_ic": -0.05939541678978299,
+            "q5_minus_q1": -0.0011685572283977393,
+            "top_gross": 0.012747440487146378,
+            "rows": 143
+          },
+          {
+            "date_index": 639,
+            "raw_ic": 0.028637029586057596,
+            "industry_ic": -0.0020336314534998142,
+            "q5_minus_q1": 0.010340345390102685,
+            "top_gross": 0.04572495073080063,
+            "rows": 140
+          },
+          {
+            "date_index": 640,
+            "raw_ic": -0.021555660525901434,
+            "industry_ic": -0.009030074004093844,
+            "q5_minus_q1": -0.022895546486386135,
+            "top_gross": 0.0450432151556015,
+            "rows": 145
+          },
+          {
+            "date_index": 641,
+            "raw_ic": 0.0937978141050982,
+            "industry_ic": 0.05193465760980438,
+            "q5_minus_q1": 0.0029807626607404377,
+            "top_gross": 0.035842373967170715,
+            "rows": 147
+          },
+          {
+            "date_index": 642,
+            "raw_ic": -0.11299839788466497,
+            "industry_ic": -0.19904817764355776,
+            "q5_minus_q1": -0.020744799814323686,
+            "top_gross": -0.01590721309185028,
+            "rows": 145
+          },
+          {
+            "date_index": 643,
+            "raw_ic": -0.040246267464136884,
+            "industry_ic": -0.0936836192019406,
+            "q5_minus_q1": -0.005787664657356038,
+            "top_gross": -0.005668838508427143,
+            "rows": 136
+          },
+          {
+            "date_index": 644,
+            "raw_ic": -0.10341651954914763,
+            "industry_ic": -0.11090092893017467,
+            "q5_minus_q1": -0.02693481258961953,
+            "top_gross": -0.014639542438089848,
+            "rows": 150
+          },
+          {
+            "date_index": 645,
+            "raw_ic": -0.09180130214612973,
+            "industry_ic": -0.09788602202395306,
+            "q5_minus_q1": -0.011745470243688641,
+            "top_gross": -0.011082497425377369,
+            "rows": 144
+          },
+          {
+            "date_index": 646,
+            "raw_ic": -0.13646736841222906,
+            "industry_ic": -0.0779247722610024,
+            "q5_minus_q1": -0.016160889549039815,
+            "top_gross": -0.015245860442519188,
+            "rows": 142
+          },
+          {
+            "date_index": 647,
+            "raw_ic": -0.073492435731058,
+            "industry_ic": -0.014403243583687608,
+            "q5_minus_q1": 0.0008996394223022381,
+            "top_gross": -0.005786030553281307,
+            "rows": 145
+          },
+          {
+            "date_index": 648,
+            "raw_ic": 0.036601734527425815,
+            "industry_ic": 0.052832094486274885,
+            "q5_minus_q1": 0.023351797380967217,
+            "top_gross": -0.02114095911383629,
+            "rows": 142
+          },
+          {
+            "date_index": 649,
+            "raw_ic": -0.019562417944207027,
+            "industry_ic": 0.07832720894489835,
+            "q5_minus_q1": 0.015466511049206356,
+            "top_gross": -0.0216506514698267,
+            "rows": 142
+          },
+          {
+            "date_index": 650,
+            "raw_ic": 0.02662852263413008,
+            "industry_ic": 0.1674996404019279,
+            "q5_minus_q1": 0.03025467625758272,
+            "top_gross": -0.028324555605649948,
+            "rows": 138
+          },
+          {
+            "date_index": 651,
+            "raw_ic": 0.03135628955932,
+            "industry_ic": 0.06909970461064258,
+            "q5_minus_q1": 0.015145473055358767,
+            "top_gross": -0.01524188369512558,
+            "rows": 141
+          },
+          {
+            "date_index": 652,
+            "raw_ic": 0.1488307267750767,
+            "industry_ic": 0.15078645279987563,
+            "q5_minus_q1": 0.019741741195965067,
+            "top_gross": -0.0021992705296725035,
+            "rows": 148
+          },
+          {
+            "date_index": 653,
+            "raw_ic": 0.05920935384026832,
+            "industry_ic": 0.028383372329492028,
+            "q5_minus_q1": 0.0042726748529473965,
+            "top_gross": 0.02168174274265766,
+            "rows": 140
+          },
+          {
+            "date_index": 654,
+            "raw_ic": 0.01948528959145726,
+            "industry_ic": -0.22575018877835779,
+            "q5_minus_q1": -0.007101068854215536,
+            "top_gross": 0.03483792394399643,
+            "rows": 143
+          },
+          {
+            "date_index": 655,
+            "raw_ic": -0.044539864058508426,
+            "industry_ic": -0.20427250304385455,
+            "q5_minus_q1": -0.010276021669705907,
+            "top_gross": 0.012029241770505905,
+            "rows": 142
+          }
+        ],
+        "gross_diagnostic_not_portfolio": true,
+        "requirements": {
+          "at_least_40_dates": true,
+          "coverage_at_least_80pct": true,
+          "industry_ic_above_001": false,
+          "top_group_advantage_positive": false,
+          "at_least_four_positive_blocks": false
+        },
+        "pass": false
+      },
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": true,
+          "wins_at_least_four": true,
+          "lower90_positive": false,
+          "episode_dd_within8": true,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": false,
+          "continuous_dd_not_over50bp_worse": false,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true,
+          "industry_factor_check": false
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0037119250000000235,
+        "winning_episodes": 5,
+        "lower90": -0.011359198333333284,
+        "standard_error": 0.012450154522393857,
+        "score": -0.008738229522393833
+      }
+    },
+    "ridge50": {
+      "returns": [
+        -0.0009131500000000292,
+        -0.06217443,
+        0.02046013999999996,
+        -0.015979070000000095,
+        -0.05787772000000002,
+        0.03614461000000002
+      ],
+      "mean_net_return": -0.013389936666666694,
+      "worst_drawdown": -0.08270426560546029,
+      "episodes": 6,
+      "trades": 85,
+      "unresolved_events": 3,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "baseline",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": -0.016390359999999937,
+        "max_drawdown": -0.09080933435352234,
+        "es95": -0.019851592413086597,
+        "fees": 1525.3700000000001,
+        "slippage_cost": 2708.31,
+        "total_cost": 4233.68,
+        "trades": 26,
+        "turnover": 2.7083166800000003,
+        "ending_cash": 983531.64,
+        "ending_receivables": 78.0,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 2,
+          "LOT_BUDGET_TOO_SMALL": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 5,
+          "HOLD_BETWEEN_REBALANCES": 47,
+          "RISK_EXIT": 11
+        },
+        "mean_exposure": 0.08025285828657865,
+        "target_exposure_breach_days": 1,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 63
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "FROZEN20": 2,
+          "HALTED0": 52
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-03",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1081851.8900000001,
+            "drawdown": 0.06470370911862999,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-07",
+            "state_age_before": 2,
+            "healthy_streak_before": 0,
+            "previous_phase": "FROZEN20",
+            "probe_anchor_before": null,
+            "phase": "HALTED0",
+            "level": 3,
+            "cap": 0.0,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_8",
+            "peak": 1081851.8900000001,
+            "drawdown": 0.08807709343651482,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2530,
+      "execution_checks": 1814,
+      "ledger_sha256": "36934016e1846740a88d063889eae455a54862fcd03e81eab00cb6daf833c259",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_models\\ridge50.ledgers.json.gz",
+      "factor_check": {
+        "dates": 63,
+        "coverage": 0.8670531590842095,
+        "mean_raw_ic": -0.036059002514751685,
+        "mean_industry_ic": -0.045971798127483636,
+        "mean_industry_top_bottom": -0.0037312645178968307,
+        "positive_ten_signal_day_blocks": 2,
+        "block_spreads": [
+          -0.0035933627090587715,
+          0.011480478235954305,
+          -0.009763589824505675,
+          -0.021895806826279653,
+          -0.0028473439039306647,
+          0.004423100132167834
+        ],
+        "last_label_end": 661,
+        "available_before": 662,
+        "daily": [
+          {
+            "date_index": 593,
+            "raw_ic": 0.07745626851761733,
+            "industry_ic": 0.13669162592841652,
+            "q5_minus_q1": 0.03208612361321862,
+            "top_gross": 0.0866110771894455,
+            "rows": 147
+          },
+          {
+            "date_index": 594,
+            "raw_ic": -0.030480682024306184,
+            "industry_ic": 0.09501541810266642,
+            "q5_minus_q1": 0.005657547258219667,
+            "top_gross": 0.06261226534843445,
+            "rows": 149
+          },
+          {
+            "date_index": 595,
+            "raw_ic": 0.0782673473711548,
+            "industry_ic": 0.031831136079388186,
+            "q5_minus_q1": 0.037461804173887496,
+            "top_gross": 0.10375291854143143,
+            "rows": 152
+          },
+          {
+            "date_index": 596,
+            "raw_ic": -0.04463313447989183,
+            "industry_ic": 0.0680545802035646,
+            "q5_minus_q1": 0.010863954149885922,
+            "top_gross": -0.0005097288521938026,
+            "rows": 150
+          },
+          {
+            "date_index": 597,
+            "raw_ic": -0.017602012049160138,
+            "industry_ic": -0.004452615356252312,
+            "q5_minus_q1": 0.00538923445960263,
+            "top_gross": -0.04396067559719086,
+            "rows": 152
+          },
+          {
+            "date_index": 598,
+            "raw_ic": -0.16948243222001244,
+            "industry_ic": -0.1934608629091232,
+            "q5_minus_q1": -0.018410288273104713,
+            "top_gross": -0.03071022778749466,
+            "rows": 152
+          },
+          {
+            "date_index": 599,
+            "raw_ic": -0.2698177050697464,
+            "industry_ic": -0.3226919109637242,
+            "q5_minus_q1": -0.06148076881471565,
+            "top_gross": -0.08206502348184586,
+            "rows": 146
+          },
+          {
+            "date_index": 600,
+            "raw_ic": -0.15855770744764605,
+            "industry_ic": -0.2168241221854826,
+            "q5_minus_q1": -0.025161072132904652,
+            "top_gross": -0.07808057963848114,
+            "rows": 145
+          },
+          {
+            "date_index": 601,
+            "raw_ic": -0.21463931219297083,
+            "industry_ic": -0.18870487571836117,
+            "q5_minus_q1": -0.031219112147280598,
+            "top_gross": -0.061115097254514694,
+            "rows": 144
+          },
+          {
+            "date_index": 602,
+            "raw_ic": -0.046907618768900594,
+            "industry_ic": -0.038323090430201934,
+            "q5_minus_q1": 0.008878950622603566,
+            "top_gross": 0.011471306905150414,
+            "rows": 135
+          },
+          {
+            "date_index": 603,
+            "raw_ic": -0.02587964537922185,
+            "industry_ic": 0.006892867172463235,
+            "q5_minus_q1": 0.015943963767552867,
+            "top_gross": -0.023129066452383995,
+            "rows": 138
+          },
+          {
+            "date_index": 604,
+            "raw_ic": 0.039230318993268946,
+            "industry_ic": 0.14772217344649302,
+            "q5_minus_q1": 0.056895756805343325,
+            "top_gross": -0.01686863973736763,
+            "rows": 135
+          },
+          {
+            "date_index": 605,
+            "raw_ic": -0.04875485865273768,
+            "industry_ic": 0.01848583466808133,
+            "q5_minus_q1": 0.011244647221834398,
+            "top_gross": -0.006163521204143763,
+            "rows": 133
+          },
+          {
+            "date_index": 606,
+            "raw_ic": -0.11619574107637265,
+            "industry_ic": -0.04921873541546101,
+            "q5_minus_q1": -0.014220109950958482,
+            "top_gross": -0.0277109257876873,
+            "rows": 137
+          },
+          {
+            "date_index": 607,
+            "raw_ic": -0.15394045570851084,
+            "industry_ic": -0.2104251756634136,
+            "q5_minus_q1": -0.055808442846220684,
+            "top_gross": -0.11022491753101349,
+            "rows": 142
+          },
+          {
+            "date_index": 608,
+            "raw_ic": -0.09184933868202169,
+            "industry_ic": -0.1287909057076776,
+            "q5_minus_q1": -0.019646130334972686,
+            "top_gross": -0.08464279770851135,
+            "rows": 138
+          },
+          {
+            "date_index": 609,
+            "raw_ic": -0.07881960771050003,
+            "industry_ic": -0.056625347695409486,
+            "q5_minus_q1": 0.011014522580856362,
+            "top_gross": -0.0807555615901947,
+            "rows": 137
+          },
+          {
+            "date_index": 610,
+            "raw_ic": -0.004057011690599477,
+            "industry_ic": 0.0830779907115785,
+            "q5_minus_q1": 0.028664696860743646,
+            "top_gross": -0.03998090699315071,
+            "rows": 131
+          },
+          {
+            "date_index": 611,
+            "raw_ic": 0.16671511627906976,
+            "industry_ic": 0.19899373881932023,
+            "q5_minus_q1": 0.04364207986723927,
+            "top_gross": 0.022076744586229324,
+            "rows": 129
+          },
+          {
+            "date_index": 612,
+            "raw_ic": 0.19080525116823052,
+            "industry_ic": 0.218427374152565,
+            "q5_minus_q1": 0.037073798388125016,
+            "top_gross": 0.005062424577772617,
+            "rows": 131
+          },
+          {
+            "date_index": 613,
+            "raw_ic": 0.09547443915079422,
+            "industry_ic": 0.14304077697636222,
+            "q5_minus_q1": 0.024506304657934193,
+            "top_gross": 0.011573364958167076,
+            "rows": 133
+          },
+          {
+            "date_index": 614,
+            "raw_ic": 0.07998435187300174,
+            "industry_ic": -0.015409570154095702,
+            "q5_minus_q1": 0.006645157908046355,
+            "top_gross": -0.0026437039487063885,
+            "rows": 136
+          },
+          {
+            "date_index": 615,
+            "raw_ic": 0.06982152003747732,
+            "industry_ic": 0.04182145724046521,
+            "q5_minus_q1": 0.003950822254018147,
+            "top_gross": 0.0012235852191224694,
+            "rows": 137
+          },
+          {
+            "date_index": 616,
+            "raw_ic": 0.1115146819809153,
+            "industry_ic": -0.0506281852633151,
+            "q5_minus_q1": -0.0038547246381754312,
+            "top_gross": -0.013343583792448044,
+            "rows": 137
+          },
+          {
+            "date_index": 617,
+            "raw_ic": -0.04304945858940591,
+            "industry_ic": -0.016866647156374988,
+            "q5_minus_q1": -0.010403827804775775,
+            "top_gross": 0.0003835946263279766,
+            "rows": 135
+          },
+          {
+            "date_index": 618,
+            "raw_ic": -0.01190213898310891,
+            "industry_ic": 0.05211318092463509,
+            "q5_minus_q1": -0.01064294159687458,
+            "top_gross": 0.002021640306338668,
+            "rows": 138
+          },
+          {
+            "date_index": 619,
+            "raw_ic": -0.1711540337528046,
+            "industry_ic": -0.04351282801677885,
+            "q5_minus_q1": 0.015582325947222553,
+            "top_gross": -0.011703290976583958,
+            "rows": 135
+          },
+          {
+            "date_index": 620,
+            "raw_ic": -0.041813911279560134,
+            "industry_ic": -0.19069556397800672,
+            "q5_minus_q1": -0.034531943361440325,
+            "top_gross": -0.0004363872285466641,
+            "rows": 131
+          },
+          {
+            "date_index": 621,
+            "raw_ic": -0.14024763498147985,
+            "industry_ic": -0.3335869671251585,
+            "q5_minus_q1": -0.036996527598097365,
+            "top_gross": 0.019294198602437973,
+            "rows": 135
+          },
+          {
+            "date_index": 622,
+            "raw_ic": -0.08824462822259974,
+            "industry_ic": -0.31803162394757967,
+            "q5_minus_q1": -0.05189054401291453,
+            "top_gross": -0.006513580214232206,
+            "rows": 137
+          },
+          {
+            "date_index": 623,
+            "raw_ic": -0.17585164907309253,
+            "industry_ic": -0.34344926470756115,
+            "q5_minus_q1": -0.05208193671149072,
+            "top_gross": -0.0212564617395401,
+            "rows": 138
+          },
+          {
+            "date_index": 624,
+            "raw_ic": -0.11348603039922919,
+            "industry_ic": -0.2599650329587521,
+            "q5_minus_q1": -0.02102633456192414,
+            "top_gross": -0.003060911549255252,
+            "rows": 133
+          },
+          {
+            "date_index": 625,
+            "raw_ic": 0.006763891226923201,
+            "industry_ic": -0.11828587751604248,
+            "q5_minus_q1": 0.0017397480653465122,
+            "top_gross": 0.027677910402417183,
+            "rows": 133
+          },
+          {
+            "date_index": 626,
+            "raw_ic": 0.003628931952691459,
+            "industry_ic": -0.11512047605111697,
+            "q5_minus_q1": -0.017400927867956214,
+            "top_gross": 0.015411091968417168,
+            "rows": 135
+          },
+          {
+            "date_index": 627,
+            "raw_ic": 0.07248699966604646,
+            "industry_ic": -0.12248461428366968,
+            "q5_minus_q1": -0.0072151969592460456,
+            "top_gross": 0.015607914887368679,
+            "rows": 136
+          },
+          {
+            "date_index": 628,
+            "raw_ic": 0.12712811117565576,
+            "industry_ic": 0.02290093391125609,
+            "q5_minus_q1": -0.010923595742780654,
+            "top_gross": -0.002343191299587488,
+            "rows": 139
+          },
+          {
+            "date_index": 629,
+            "raw_ic": 0.14438549955791335,
+            "industry_ic": -0.038614259303914475,
+            "q5_minus_q1": -0.009671758248688461,
+            "top_gross": 0.017169605940580368,
+            "rows": 144
+          },
+          {
+            "date_index": 630,
+            "raw_ic": -0.056215757599646116,
+            "industry_ic": -0.10609433425903654,
+            "q5_minus_q1": -0.04530598423759617,
+            "top_gross": 0.002415320836007595,
+            "rows": 140
+          },
+          {
+            "date_index": 631,
+            "raw_ic": -0.20912865610430417,
+            "industry_ic": -0.15722141173830098,
+            "q5_minus_q1": -0.049544271587539226,
+            "top_gross": -0.03972289711236954,
+            "rows": 133
+          },
+          {
+            "date_index": 632,
+            "raw_ic": -0.17260935776925904,
+            "industry_ic": -0.05951975962866647,
+            "q5_minus_q1": -0.007527810410921406,
+            "top_gross": -0.04421290382742882,
+            "rows": 138
+          },
+          {
+            "date_index": 633,
+            "raw_ic": -0.13927409057982482,
+            "industry_ic": -0.006460036816644548,
+            "q5_minus_q1": -0.015849969489710188,
+            "top_gross": -0.04214499890804291,
+            "rows": 141
+          },
+          {
+            "date_index": 634,
+            "raw_ic": -0.09653822795060396,
+            "industry_ic": -0.03188763460036825,
+            "q5_minus_q1": -0.012661436115027413,
+            "top_gross": -0.09324324131011963,
+            "rows": 146
+          },
+          {
+            "date_index": 635,
+            "raw_ic": -0.054232005788440736,
+            "industry_ic": 0.12209426773406395,
+            "q5_minus_q1": 0.02278499982931937,
+            "top_gross": -0.05380910262465477,
+            "rows": 141
+          },
+          {
+            "date_index": 636,
+            "raw_ic": -0.12513238872191212,
+            "industry_ic": -0.027002528505319402,
+            "q5_minus_q1": 0.00014496202955406254,
+            "top_gross": -0.015464226715266705,
+            "rows": 136
+          },
+          {
+            "date_index": 637,
+            "raw_ic": -0.08651911468812877,
+            "industry_ic": -0.023566933515989555,
+            "q5_minus_q1": 0.008595800184821957,
+            "top_gross": 0.028637511655688286,
+            "rows": 141
+          },
+          {
+            "date_index": 638,
+            "raw_ic": -0.13883006664696806,
+            "industry_ic": -0.05939541678978299,
+            "q5_minus_q1": -0.0011685572283977393,
+            "top_gross": 0.012747440487146378,
+            "rows": 143
+          },
+          {
+            "date_index": 639,
+            "raw_ic": 0.028637029586057596,
+            "industry_ic": -0.0020336314534998142,
+            "q5_minus_q1": 0.010340345390102685,
+            "top_gross": 0.04572495073080063,
+            "rows": 140
+          },
+          {
+            "date_index": 640,
+            "raw_ic": -0.021555660525901434,
+            "industry_ic": -0.009030074004093844,
+            "q5_minus_q1": -0.022895546486386135,
+            "top_gross": 0.0450432151556015,
+            "rows": 145
+          },
+          {
+            "date_index": 641,
+            "raw_ic": 0.0937978141050982,
+            "industry_ic": 0.05193465760980438,
+            "q5_minus_q1": 0.0029807626607404377,
+            "top_gross": 0.035842373967170715,
+            "rows": 147
+          },
+          {
+            "date_index": 642,
+            "raw_ic": -0.11299839788466497,
+            "industry_ic": -0.19904817764355776,
+            "q5_minus_q1": -0.020744799814323686,
+            "top_gross": -0.01590721309185028,
+            "rows": 145
+          },
+          {
+            "date_index": 643,
+            "raw_ic": -0.040246267464136884,
+            "industry_ic": -0.0936836192019406,
+            "q5_minus_q1": -0.005787664657356038,
+            "top_gross": -0.005668838508427143,
+            "rows": 136
+          },
+          {
+            "date_index": 644,
+            "raw_ic": -0.10341651954914763,
+            "industry_ic": -0.11090092893017467,
+            "q5_minus_q1": -0.02693481258961953,
+            "top_gross": -0.014639542438089848,
+            "rows": 150
+          },
+          {
+            "date_index": 645,
+            "raw_ic": -0.09180130214612973,
+            "industry_ic": -0.09788602202395306,
+            "q5_minus_q1": -0.011745470243688641,
+            "top_gross": -0.011082497425377369,
+            "rows": 144
+          },
+          {
+            "date_index": 646,
+            "raw_ic": -0.13646736841222906,
+            "industry_ic": -0.0779247722610024,
+            "q5_minus_q1": -0.016160889549039815,
+            "top_gross": -0.015245860442519188,
+            "rows": 142
+          },
+          {
+            "date_index": 647,
+            "raw_ic": -0.073492435731058,
+            "industry_ic": -0.014403243583687608,
+            "q5_minus_q1": 0.0008996394223022381,
+            "top_gross": -0.005786030553281307,
+            "rows": 145
+          },
+          {
+            "date_index": 648,
+            "raw_ic": 0.036601734527425815,
+            "industry_ic": 0.052832094486274885,
+            "q5_minus_q1": 0.023351797380967217,
+            "top_gross": -0.02114095911383629,
+            "rows": 142
+          },
+          {
+            "date_index": 649,
+            "raw_ic": -0.019562417944207027,
+            "industry_ic": 0.07832720894489835,
+            "q5_minus_q1": 0.015466511049206356,
+            "top_gross": -0.0216506514698267,
+            "rows": 142
+          },
+          {
+            "date_index": 650,
+            "raw_ic": 0.02662852263413008,
+            "industry_ic": 0.1674996404019279,
+            "q5_minus_q1": 0.03025467625758272,
+            "top_gross": -0.028324555605649948,
+            "rows": 138
+          },
+          {
+            "date_index": 651,
+            "raw_ic": 0.03135628955932,
+            "industry_ic": 0.06909970461064258,
+            "q5_minus_q1": 0.015145473055358767,
+            "top_gross": -0.01524188369512558,
+            "rows": 141
+          },
+          {
+            "date_index": 652,
+            "raw_ic": 0.1488307267750767,
+            "industry_ic": 0.15078645279987563,
+            "q5_minus_q1": 0.019741741195965067,
+            "top_gross": -0.0021992705296725035,
+            "rows": 148
+          },
+          {
+            "date_index": 653,
+            "raw_ic": 0.05920935384026832,
+            "industry_ic": 0.028383372329492028,
+            "q5_minus_q1": 0.0042726748529473965,
+            "top_gross": 0.02168174274265766,
+            "rows": 140
+          },
+          {
+            "date_index": 654,
+            "raw_ic": 0.01948528959145726,
+            "industry_ic": -0.22575018877835779,
+            "q5_minus_q1": -0.007101068854215536,
+            "top_gross": 0.03483792394399643,
+            "rows": 143
+          },
+          {
+            "date_index": 655,
+            "raw_ic": -0.044539864058508426,
+            "industry_ic": -0.20427250304385455,
+            "q5_minus_q1": -0.010276021669705907,
+            "top_gross": 0.012029241770505905,
+            "rows": 142
+          }
+        ],
+        "gross_diagnostic_not_portfolio": true,
+        "requirements": {
+          "at_least_40_dates": true,
+          "coverage_at_least_80pct": true,
+          "industry_ic_above_001": false,
+          "top_group_advantage_positive": false,
+          "at_least_four_positive_blocks": false
+        },
+        "pass": false
+      },
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": false,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": false,
+          "continuous_dd_not_over50bp_worse": false,
+          "continuous_return_not_over50bp_worse": false,
+          "quality_clear": false,
+          "accounting_clear": true,
+          "industry_factor_check": false
+        },
+        "qualifies": false,
+        "mean_advantage": -0.0049173900000000215,
+        "winning_episodes": 3,
+        "lower90": -0.02295158000000001,
+        "standard_error": 0.015235629850310966,
+        "score": -0.02015301985031099
+      }
+    },
+    "tree25": {
+      "returns": [
+        0.06076272000000005,
+        -0.06244386000000013,
+        0.006811780000000045,
+        -0.0009609499999999604,
+        -0.04037218000000009,
+        -0.010740269999999996
+      ],
+      "mean_net_return": -0.007823793333333348,
+      "worst_drawdown": -0.06665904049993165,
+      "episodes": 6,
+      "trades": 84,
+      "unresolved_events": 2,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "baseline",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.017002149999999938,
+        "max_drawdown": -0.07808669964011039,
+        "es95": -0.018896913655137224,
+        "fees": 1803.24,
+        "slippage_cost": 3211.27,
+        "total_cost": 5014.51,
+        "trades": 27,
+        "turnover": 3.21126214,
+        "ending_cash": 1014777.35,
+        "ending_receivables": 2224.8,
+        "unresolved_events": 2,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 2,
+          "LOT_BUDGET_TOO_SMALL": 2
+        },
+        "solver_counts": {
+          "OPTIMAL": 10,
+          "HOLD_BETWEEN_REBALANCES": 48,
+          "CASH_NO_POSITIVE_EDGE": 5
+        },
+        "mean_exposure": 0.13232823058279217,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 63
+        },
+        "phase_days": {
+          "NORMAL": 11,
+          "CAUTION45": 1,
+          "FROZEN20": 51
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-07",
+            "state_age_before": 11,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1102351.75,
+            "drawdown": 0.05077956287546148,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-08",
+            "state_age_before": 1,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1102351.75,
+            "drawdown": 0.06445872653624396,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2611,
+      "execution_checks": 1834,
+      "ledger_sha256": "12464e2afb0654fa2240e20b6f957314155e19c9923da9a2a0270123449d6e96",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_models\\tree25.ledgers.json.gz",
+      "factor_check": {
+        "dates": 63,
+        "coverage": 0.8670531590842095,
+        "mean_raw_ic": -0.0029303890942608737,
+        "mean_industry_ic": -0.013014140022797688,
+        "mean_industry_top_bottom": -0.004971461455036131,
+        "positive_ten_signal_day_blocks": 2,
+        "block_spreads": [
+          0.009665234234251783,
+          -0.02351396929800073,
+          -0.0009192967942920724,
+          0.004066417735103157,
+          -0.021138948143122623,
+          -0.006652817438472508
+        ],
+        "last_label_end": 661,
+        "available_before": 662,
+        "daily": [
+          {
+            "date_index": 593,
+            "raw_ic": 0.10463075775177325,
+            "industry_ic": 0.23826987573573302,
+            "q5_minus_q1": 0.048363189305072544,
+            "top_gross": 0.09104260802268982,
+            "rows": 147
+          },
+          {
+            "date_index": 594,
+            "raw_ic": 0.011440346312749122,
+            "industry_ic": 0.1321544111244094,
+            "q5_minus_q1": 0.04877798475417524,
+            "top_gross": 0.09608085453510284,
+            "rows": 149
+          },
+          {
+            "date_index": 595,
+            "raw_ic": 0.18089506948277276,
+            "industry_ic": 0.15694556215852554,
+            "q5_minus_q1": 0.06299168370640838,
+            "top_gross": 0.13678453862667084,
+            "rows": 152
+          },
+          {
+            "date_index": 596,
+            "raw_ic": -0.04295340196030174,
+            "industry_ic": 0.04048923454781868,
+            "q5_minus_q1": 0.02761879485192322,
+            "top_gross": -0.01848304085433483,
+            "rows": 150
+          },
+          {
+            "date_index": 597,
+            "raw_ic": -0.047849424243694566,
+            "industry_ic": -0.036259970765923445,
+            "q5_minus_q1": -0.005737976146678234,
+            "top_gross": -0.060372788459062576,
+            "rows": 152
+          },
+          {
+            "date_index": 598,
+            "raw_ic": -0.16976962131515203,
+            "industry_ic": -0.1615991101627089,
+            "q5_minus_q1": -0.024081367124552746,
+            "top_gross": -0.0452377051115036,
+            "rows": 152
+          },
+          {
+            "date_index": 599,
+            "raw_ic": -0.12825488636786495,
+            "industry_ic": -0.14969079121953469,
+            "q5_minus_q1": -0.037121664868444315,
+            "top_gross": -0.10885433852672577,
+            "rows": 146
+          },
+          {
+            "date_index": 600,
+            "raw_ic": -0.06074246254772126,
+            "industry_ic": -0.11656049889835877,
+            "q5_minus_q1": -0.020487571914322846,
+            "top_gross": -0.10113169252872467,
+            "rows": 145
+          },
+          {
+            "date_index": 601,
+            "raw_ic": -0.1352108713678243,
+            "industry_ic": -0.09168521263009172,
+            "q5_minus_q1": -0.02473094170210208,
+            "top_gross": -0.06080145388841629,
+            "rows": 144
+          },
+          {
+            "date_index": 602,
+            "raw_ic": 0.015154637541028656,
+            "industry_ic": 0.044239640327367206,
+            "q5_minus_q1": 0.021060211481038676,
+            "top_gross": 0.0004538213834166527,
+            "rows": 135
+          },
+          {
+            "date_index": 603,
+            "raw_ic": 0.08647070172395031,
+            "industry_ic": 0.15456184152046418,
+            "q5_minus_q1": 0.029144257172944898,
+            "top_gross": -0.03136955946683884,
+            "rows": 138
+          },
+          {
+            "date_index": 604,
+            "raw_ic": 0.006136009179666872,
+            "industry_ic": -0.007026169493887226,
+            "q5_minus_q1": -0.00026992132232410426,
+            "top_gross": -0.04965706542134285,
+            "rows": 135
+          },
+          {
+            "date_index": 605,
+            "raw_ic": -0.06255324141459971,
+            "industry_ic": -0.024362250753985827,
+            "q5_minus_q1": -0.005291187764328002,
+            "top_gross": -0.01527970191091299,
+            "rows": 133
+          },
+          {
+            "date_index": 606,
+            "raw_ic": -0.14155669898608048,
+            "industry_ic": -0.2091378660579135,
+            "q5_minus_q1": -0.04397011654771195,
+            "top_gross": -0.03694015368819237,
+            "rows": 137
+          },
+          {
+            "date_index": 607,
+            "raw_ic": -0.16103682188959706,
+            "industry_ic": -0.3282619674832735,
+            "q5_minus_q1": -0.09385838880537203,
+            "top_gross": -0.158241868019104,
+            "rows": 142
+          },
+          {
+            "date_index": 608,
+            "raw_ic": -0.12591954994290624,
+            "industry_ic": -0.24086158005615405,
+            "q5_minus_q1": -0.0535794095460651,
+            "top_gross": -0.1045624166727066,
+            "rows": 138
+          },
+          {
+            "date_index": 609,
+            "raw_ic": -0.11249660175588251,
+            "industry_ic": -0.23096219862180772,
+            "q5_minus_q1": -0.05323453882488309,
+            "top_gross": -0.1133793443441391,
+            "rows": 137
+          },
+          {
+            "date_index": 610,
+            "raw_ic": 0.011544015397594328,
+            "industry_ic": -0.06500415051861555,
+            "q5_minus_q1": -0.031180458656225856,
+            "top_gross": -0.056243330240249634,
+            "rows": 131
+          },
+          {
+            "date_index": 611,
+            "raw_ic": 0.012883154348094505,
+            "industry_ic": 0.055415173562806154,
+            "q5_minus_q1": 0.0048645771423710855,
+            "top_gross": -0.0010784167097881436,
+            "rows": 129
+          },
+          {
+            "date_index": 612,
+            "raw_ic": 0.1862742873902063,
+            "industry_ic": 0.052178671048673825,
+            "q5_minus_q1": 0.0122354941715868,
+            "top_gross": -0.0024490526411682367,
+            "rows": 131
+          },
+          {
+            "date_index": 613,
+            "raw_ic": 0.07500736454180529,
+            "industry_ic": 0.14036112390183855,
+            "q5_minus_q1": 0.023476120599175462,
+            "top_gross": 0.013373679481446743,
+            "rows": 133
+          },
+          {
+            "date_index": 614,
+            "raw_ic": 0.08034225547983273,
+            "industry_ic": 0.27205318454909927,
+            "q5_minus_q1": 0.026921062701647583,
+            "top_gross": -0.00409600930288434,
+            "rows": 136
+          },
+          {
+            "date_index": 615,
+            "raw_ic": -0.08256044729193118,
+            "industry_ic": -0.18745260013818874,
+            "q5_minus_q1": -0.030128240030857352,
+            "top_gross": -0.01899891160428524,
+            "rows": 137
+          },
+          {
+            "date_index": 616,
+            "raw_ic": -0.01766727144412346,
+            "industry_ic": -0.13568383298701572,
+            "q5_minus_q1": -0.0171628073639606,
+            "top_gross": -0.03563167527318001,
+            "rows": 137
+          },
+          {
+            "date_index": 617,
+            "raw_ic": -0.0732736072349329,
+            "industry_ic": -0.13559458441188332,
+            "q5_minus_q1": -0.021266611781266695,
+            "top_gross": -0.01810944825410843,
+            "rows": 135
+          },
+          {
+            "date_index": 618,
+            "raw_ic": -0.09736373153110904,
+            "industry_ic": -0.16400486772609438,
+            "q5_minus_q1": -0.016809496502081668,
+            "top_gross": -0.011937773786485195,
+            "rows": 138
+          },
+          {
+            "date_index": 619,
+            "raw_ic": -0.03770124585561024,
+            "industry_ic": -0.1530291593859778,
+            "q5_minus_q1": -0.020472998640804665,
+            "top_gross": -0.014613602310419083,
+            "rows": 135
+          },
+          {
+            "date_index": 620,
+            "raw_ic": -0.00464421075108098,
+            "industry_ic": 0.03892595953664656,
+            "q5_minus_q1": 0.012895291569046173,
+            "top_gross": 0.009554742835462093,
+            "rows": 131
+          },
+          {
+            "date_index": 621,
+            "raw_ic": -0.026141447693345792,
+            "industry_ic": 0.1253171950508139,
+            "q5_minus_q1": 0.017217099818316674,
+            "top_gross": 0.015121321193873882,
+            "rows": 135
+          },
+          {
+            "date_index": 622,
+            "raw_ic": 0.03785450680284607,
+            "industry_ic": 0.16867447387684148,
+            "q5_minus_q1": 0.016137611687864362,
+            "top_gross": 0.005033092573285103,
+            "rows": 137
+          },
+          {
+            "date_index": 623,
+            "raw_ic": -0.0005319774377641236,
+            "industry_ic": 0.09628780631477046,
+            "q5_minus_q1": 0.008376346824739953,
+            "top_gross": -0.0070618134923279285,
+            "rows": 138
+          },
+          {
+            "date_index": 624,
+            "raw_ic": 0.04823462349222902,
+            "industry_ic": 0.009166414807057483,
+            "q5_minus_q1": -0.017672156543624026,
+            "top_gross": 0.005044018849730492,
+            "rows": 133
+          },
+          {
+            "date_index": 625,
+            "raw_ic": -0.06262808406262138,
+            "industry_ic": -0.1064582730348815,
+            "q5_minus_q1": 0.009777114298164372,
+            "top_gross": 0.02447548881173134,
+            "rows": 133
+          },
+          {
+            "date_index": 626,
+            "raw_ic": 0.02076154103172474,
+            "industry_ic": 0.1346189021048343,
+            "q5_minus_q1": 0.032887937676915065,
+            "top_gross": 0.029380828142166138,
+            "rows": 135
+          },
+          {
+            "date_index": 627,
+            "raw_ic": 0.03614331377319784,
+            "industry_ic": 0.0008778207146605601,
+            "q5_minus_q1": 0.000958310832271422,
+            "top_gross": 0.006821401417255402,
+            "rows": 136
+          },
+          {
+            "date_index": 628,
+            "raw_ic": 0.05914473390231914,
+            "industry_ic": 0.027043210152374996,
+            "q5_minus_q1": -0.0026073376990080896,
+            "top_gross": 0.00724748382344842,
+            "rows": 139
+          },
+          {
+            "date_index": 629,
+            "raw_ic": 0.04089703400048228,
+            "industry_ic": -0.012973233662888835,
+            "q5_minus_q1": 0.0022399176443383432,
+            "top_gross": 0.021287793293595314,
+            "rows": 144
+          },
+          {
+            "date_index": 630,
+            "raw_ic": 0.016142240648848127,
+            "industry_ic": 0.033640200301764664,
+            "q5_minus_q1": 0.010565446650553239,
+            "top_gross": 0.019217250868678093,
+            "rows": 140
+          },
+          {
+            "date_index": 631,
+            "raw_ic": 0.0322941002438253,
+            "industry_ic": -0.07267830362881424,
+            "q5_minus_q1": -0.02604686127580357,
+            "top_gross": -0.035449765622615814,
+            "rows": 133
+          },
+          {
+            "date_index": 632,
+            "raw_ic": 0.04460157675192756,
+            "industry_ic": 0.007513887335070059,
+            "q5_minus_q1": 0.022185458942484866,
+            "top_gross": -0.013827912509441376,
+            "rows": 138
+          },
+          {
+            "date_index": 633,
+            "raw_ic": -0.0857272204795436,
+            "industry_ic": -0.005051586112419196,
+            "q5_minus_q1": -0.00048126371001330293,
+            "top_gross": -0.023515690118074417,
+            "rows": 141
+          },
+          {
+            "date_index": 634,
+            "raw_ic": -0.19387273095350563,
+            "industry_ic": -0.3157008859282967,
+            "q5_minus_q1": -0.06654620336182715,
+            "top_gross": -0.11933168768882751,
+            "rows": 146
+          },
+          {
+            "date_index": 635,
+            "raw_ic": -0.1224073051396342,
+            "industry_ic": -0.08338969990153688,
+            "q5_minus_q1": -0.02106378570878819,
+            "top_gross": -0.04425252228975296,
+            "rows": 141
+          },
+          {
+            "date_index": 636,
+            "raw_ic": -0.23011783788941367,
+            "industry_ic": -0.16666666666666666,
+            "q5_minus_q1": -0.04859216738342092,
+            "top_gross": -0.02965291030704975,
+            "rows": 136
+          },
+          {
+            "date_index": 637,
+            "raw_ic": -0.04177404854659874,
+            "industry_ic": 0.0026585042167901023,
+            "q5_minus_q1": -0.02186128053550797,
+            "top_gross": 0.017914455384016037,
+            "rows": 141
+          },
+          {
+            "date_index": 638,
+            "raw_ic": 0.07311878262582489,
+            "industry_ic": -0.00918447749433665,
+            "q5_minus_q1": -0.0055634666486280016,
+            "top_gross": 0.007031479850411415,
+            "rows": 143
+          },
+          {
+            "date_index": 639,
+            "raw_ic": 0.04299053158688854,
+            "industry_ic": 0.04129802540945967,
+            "q5_minus_q1": -0.00039070676928970333,
+            "top_gross": 0.05503470078110695,
+            "rows": 140
+          },
+          {
+            "date_index": 640,
+            "raw_ic": 0.06609589041095891,
+            "industry_ic": -0.07459455203904897,
+            "q5_minus_q1": -0.025725869818940584,
+            "top_gross": 0.05360741168260574,
+            "rows": 145
+          },
+          {
+            "date_index": 641,
+            "raw_ic": -0.044579273660389836,
+            "industry_ic": -0.08986467597035112,
+            "q5_minus_q1": -0.015405718330937365,
+            "top_gross": 0.01251201331615448,
+            "rows": 147
+          },
+          {
+            "date_index": 642,
+            "raw_ic": -0.044729352580068556,
+            "industry_ic": -0.06663543786635577,
+            "q5_minus_q1": -0.005759019163873025,
+            "top_gross": -0.024910015985369682,
+            "rows": 145
+          },
+          {
+            "date_index": 643,
+            "raw_ic": 0.02455518476030258,
+            "industry_ic": -0.011163602838139278,
+            "q5_minus_q1": -0.016087278164482455,
+            "top_gross": -0.006045110058039427,
+            "rows": 136
+          },
+          {
+            "date_index": 644,
+            "raw_ic": -0.07526939070900761,
+            "industry_ic": -0.16323392150762256,
+            "q5_minus_q1": -0.021887559764206765,
+            "top_gross": -0.0007413588464260101,
+            "rows": 150
+          },
+          {
+            "date_index": 645,
+            "raw_ic": 0.12236970738864325,
+            "industry_ic": 0.10480478338240096,
+            "q5_minus_q1": 0.015011637590755203,
+            "top_gross": 0.008672245778143406,
+            "rows": 144
+          },
+          {
+            "date_index": 646,
+            "raw_ic": 0.048611562246563746,
+            "industry_ic": 0.047345821694038656,
+            "q5_minus_q1": -0.011405226639807139,
+            "top_gross": -0.009883487597107887,
+            "rows": 142
+          },
+          {
+            "date_index": 647,
+            "raw_ic": 0.06824345868167321,
+            "industry_ic": 0.05103148430825748,
+            "q5_minus_q1": -0.01066923736226932,
+            "top_gross": -0.0025205297861248255,
+            "rows": 145
+          },
+          {
+            "date_index": 648,
+            "raw_ic": 0.03285061207213598,
+            "industry_ic": 0.06608884073672806,
+            "q5_minus_q1": -0.004248320316216232,
+            "top_gross": -0.02368585206568241,
+            "rows": 142
+          },
+          {
+            "date_index": 649,
+            "raw_ic": 0.11894171578421255,
+            "industry_ic": 0.08110333988323484,
+            "q5_minus_q1": -0.007976753198380575,
+            "top_gross": -0.0274590402841568,
+            "rows": 142
+          },
+          {
+            "date_index": 650,
+            "raw_ic": 0.15439674785991883,
+            "industry_ic": 0.13763603382289552,
+            "q5_minus_q1": 0.00414123797148018,
+            "top_gross": -0.046436768025159836,
+            "rows": 138
+          },
+          {
+            "date_index": 651,
+            "raw_ic": 0.01973770112831138,
+            "industry_ic": 0.013656464987774388,
+            "q5_minus_q1": 0.0059038023649907855,
+            "top_gross": -0.037360887974500656,
+            "rows": 141
+          },
+          {
+            "date_index": 652,
+            "raw_ic": -0.07193817159772417,
+            "industry_ic": -0.07691125951425341,
+            "q5_minus_q1": -0.019310476866588766,
+            "top_gross": -0.020227178931236267,
+            "rows": 148
+          },
+          {
+            "date_index": 653,
+            "raw_ic": 0.08914968965224726,
+            "industry_ic": 0.09660842754367935,
+            "q5_minus_q1": 0.015850786465571087,
+            "top_gross": 0.006281717214733362,
+            "rows": 140
+          },
+          {
+            "date_index": 654,
+            "raw_ic": 0.1986512537931996,
+            "industry_ic": 0.18828198180554023,
+            "q5_minus_q1": 0.03820679098020363,
+            "top_gross": 0.04351307824254036,
+            "rows": 143
+          },
+          {
+            "date_index": 655,
+            "raw_ic": 0.15009131592384015,
+            "industry_ic": 0.11254426957840258,
+            "q5_minus_q1": 0.017674147932279005,
+            "top_gross": 0.05292065814137459,
+            "rows": 142
+          }
+        ],
+        "gross_diagnostic_not_portfolio": true,
+        "requirements": {
+          "at_least_40_dates": true,
+          "coverage_at_least_80pct": true,
+          "industry_ic_above_001": false,
+          "top_group_advantage_positive": false,
+          "at_least_four_positive_blocks": false
+        },
+        "pass": false
+      },
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": true,
+          "lower90_positive": false,
+          "episode_dd_within8": true,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": false,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true,
+          "industry_factor_check": false
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0006487533333333259,
+        "winning_episodes": 4,
+        "lower90": -0.012617616666666664,
+        "standard_error": 0.011992165610247851,
+        "score": -0.011343412276914525
+      }
+    },
+    "tree50": {
+      "returns": [
+        0.08538547000000007,
+        -0.05831197999999993,
+        0.00805015000000009,
+        -0.003961769999999976,
+        0.014474899999999957,
+        -0.006220899999999974
+      ],
+      "mean_net_return": 0.006569311666666707,
+      "worst_drawdown": -0.05831197999999993,
+      "episodes": 6,
+      "trades": 80,
+      "unresolved_events": 1,
+      "quality_issues": 0,
+      "identity": "df4df727fdbdba3cddf18275e5274bd4df9f2132fbc78f24642d79e4cd630925",
+      "config": "baseline",
+      "continuous": {
+        "start": "2026-06-22",
+        "end": "2026-09-16",
+        "sessions": 63,
+        "return": 0.05216566999999994,
+        "max_drawdown": -0.07754245217825073,
+        "es95": -0.022118333341250934,
+        "fees": 1842.6200000000001,
+        "slippage_cost": 3281.29,
+        "total_cost": 5123.91,
+        "trades": 32,
+        "turnover": 3.2813041800000002,
+        "ending_cash": 991409.67,
+        "ending_receivables": 0.0,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 27,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 5,
+          "VOLATILITY_GAP_CEILING": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 17,
+          "HOLD_BETWEEN_REBALANCES": 46
+        },
+        "mean_exposure": 0.15465108177335424,
+        "target_exposure_breach_days": 1,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 63
+        },
+        "phase_days": {
+          "NORMAL": 12,
+          "CAUTION45": 4,
+          "FROZEN20": 47
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-07-08",
+            "state_age_before": 12,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1101577.75,
+            "drawdown": 0.046954506842571964,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-14",
+            "state_age_before": 4,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1101577.75,
+            "drawdown": 0.06192858379719457,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "accounting_pass": true,
+      "accounting_checks": 2688,
+      "execution_checks": 1852,
+      "ledger_sha256": "15153a1a554024680c840ca9072d7e46e2a9ce3c722775c211a558fad3aeec5e",
+      "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\market_retraining_2026-11-20\\training\\fold_11\\inner_models\\tree50.ledgers.json.gz",
+      "factor_check": {
+        "dates": 63,
+        "coverage": 0.8670531590842095,
+        "mean_raw_ic": -0.0029303890942608737,
+        "mean_industry_ic": -0.013014140022797688,
+        "mean_industry_top_bottom": -0.004971461455036131,
+        "positive_ten_signal_day_blocks": 2,
+        "block_spreads": [
+          0.009665234234251783,
+          -0.02351396929800073,
+          -0.0009192967942920724,
+          0.004066417735103157,
+          -0.021138948143122623,
+          -0.006652817438472508
+        ],
+        "last_label_end": 661,
+        "available_before": 662,
+        "daily": [
+          {
+            "date_index": 593,
+            "raw_ic": 0.10463075775177325,
+            "industry_ic": 0.23826987573573302,
+            "q5_minus_q1": 0.048363189305072544,
+            "top_gross": 0.09104260802268982,
+            "rows": 147
+          },
+          {
+            "date_index": 594,
+            "raw_ic": 0.011440346312749122,
+            "industry_ic": 0.1321544111244094,
+            "q5_minus_q1": 0.04877798475417524,
+            "top_gross": 0.09608085453510284,
+            "rows": 149
+          },
+          {
+            "date_index": 595,
+            "raw_ic": 0.18089506948277276,
+            "industry_ic": 0.15694556215852554,
+            "q5_minus_q1": 0.06299168370640838,
+            "top_gross": 0.13678453862667084,
+            "rows": 152
+          },
+          {
+            "date_index": 596,
+            "raw_ic": -0.04295340196030174,
+            "industry_ic": 0.04048923454781868,
+            "q5_minus_q1": 0.02761879485192322,
+            "top_gross": -0.01848304085433483,
+            "rows": 150
+          },
+          {
+            "date_index": 597,
+            "raw_ic": -0.047849424243694566,
+            "industry_ic": -0.036259970765923445,
+            "q5_minus_q1": -0.005737976146678234,
+            "top_gross": -0.060372788459062576,
+            "rows": 152
+          },
+          {
+            "date_index": 598,
+            "raw_ic": -0.16976962131515203,
+            "industry_ic": -0.1615991101627089,
+            "q5_minus_q1": -0.024081367124552746,
+            "top_gross": -0.0452377051115036,
+            "rows": 152
+          },
+          {
+            "date_index": 599,
+            "raw_ic": -0.12825488636786495,
+            "industry_ic": -0.14969079121953469,
+            "q5_minus_q1": -0.037121664868444315,
+            "top_gross": -0.10885433852672577,
+            "rows": 146
+          },
+          {
+            "date_index": 600,
+            "raw_ic": -0.06074246254772126,
+            "industry_ic": -0.11656049889835877,
+            "q5_minus_q1": -0.020487571914322846,
+            "top_gross": -0.10113169252872467,
+            "rows": 145
+          },
+          {
+            "date_index": 601,
+            "raw_ic": -0.1352108713678243,
+            "industry_ic": -0.09168521263009172,
+            "q5_minus_q1": -0.02473094170210208,
+            "top_gross": -0.06080145388841629,
+            "rows": 144
+          },
+          {
+            "date_index": 602,
+            "raw_ic": 0.015154637541028656,
+            "industry_ic": 0.044239640327367206,
+            "q5_minus_q1": 0.021060211481038676,
+            "top_gross": 0.0004538213834166527,
+            "rows": 135
+          },
+          {
+            "date_index": 603,
+            "raw_ic": 0.08647070172395031,
+            "industry_ic": 0.15456184152046418,
+            "q5_minus_q1": 0.029144257172944898,
+            "top_gross": -0.03136955946683884,
+            "rows": 138
+          },
+          {
+            "date_index": 604,
+            "raw_ic": 0.006136009179666872,
+            "industry_ic": -0.007026169493887226,
+            "q5_minus_q1": -0.00026992132232410426,
+            "top_gross": -0.04965706542134285,
+            "rows": 135
+          },
+          {
+            "date_index": 605,
+            "raw_ic": -0.06255324141459971,
+            "industry_ic": -0.024362250753985827,
+            "q5_minus_q1": -0.005291187764328002,
+            "top_gross": -0.01527970191091299,
+            "rows": 133
+          },
+          {
+            "date_index": 606,
+            "raw_ic": -0.14155669898608048,
+            "industry_ic": -0.2091378660579135,
+            "q5_minus_q1": -0.04397011654771195,
+            "top_gross": -0.03694015368819237,
+            "rows": 137
+          },
+          {
+            "date_index": 607,
+            "raw_ic": -0.16103682188959706,
+            "industry_ic": -0.3282619674832735,
+            "q5_minus_q1": -0.09385838880537203,
+            "top_gross": -0.158241868019104,
+            "rows": 142
+          },
+          {
+            "date_index": 608,
+            "raw_ic": -0.12591954994290624,
+            "industry_ic": -0.24086158005615405,
+            "q5_minus_q1": -0.0535794095460651,
+            "top_gross": -0.1045624166727066,
+            "rows": 138
+          },
+          {
+            "date_index": 609,
+            "raw_ic": -0.11249660175588251,
+            "industry_ic": -0.23096219862180772,
+            "q5_minus_q1": -0.05323453882488309,
+            "top_gross": -0.1133793443441391,
+            "rows": 137
+          },
+          {
+            "date_index": 610,
+            "raw_ic": 0.011544015397594328,
+            "industry_ic": -0.06500415051861555,
+            "q5_minus_q1": -0.031180458656225856,
+            "top_gross": -0.056243330240249634,
+            "rows": 131
+          },
+          {
+            "date_index": 611,
+            "raw_ic": 0.012883154348094505,
+            "industry_ic": 0.055415173562806154,
+            "q5_minus_q1": 0.0048645771423710855,
+            "top_gross": -0.0010784167097881436,
+            "rows": 129
+          },
+          {
+            "date_index": 612,
+            "raw_ic": 0.1862742873902063,
+            "industry_ic": 0.052178671048673825,
+            "q5_minus_q1": 0.0122354941715868,
+            "top_gross": -0.0024490526411682367,
+            "rows": 131
+          },
+          {
+            "date_index": 613,
+            "raw_ic": 0.07500736454180529,
+            "industry_ic": 0.14036112390183855,
+            "q5_minus_q1": 0.023476120599175462,
+            "top_gross": 0.013373679481446743,
+            "rows": 133
+          },
+          {
+            "date_index": 614,
+            "raw_ic": 0.08034225547983273,
+            "industry_ic": 0.27205318454909927,
+            "q5_minus_q1": 0.026921062701647583,
+            "top_gross": -0.00409600930288434,
+            "rows": 136
+          },
+          {
+            "date_index": 615,
+            "raw_ic": -0.08256044729193118,
+            "industry_ic": -0.18745260013818874,
+            "q5_minus_q1": -0.030128240030857352,
+            "top_gross": -0.01899891160428524,
+            "rows": 137
+          },
+          {
+            "date_index": 616,
+            "raw_ic": -0.01766727144412346,
+            "industry_ic": -0.13568383298701572,
+            "q5_minus_q1": -0.0171628073639606,
+            "top_gross": -0.03563167527318001,
+            "rows": 137
+          },
+          {
+            "date_index": 617,
+            "raw_ic": -0.0732736072349329,
+            "industry_ic": -0.13559458441188332,
+            "q5_minus_q1": -0.021266611781266695,
+            "top_gross": -0.01810944825410843,
+            "rows": 135
+          },
+          {
+            "date_index": 618,
+            "raw_ic": -0.09736373153110904,
+            "industry_ic": -0.16400486772609438,
+            "q5_minus_q1": -0.016809496502081668,
+            "top_gross": -0.011937773786485195,
+            "rows": 138
+          },
+          {
+            "date_index": 619,
+            "raw_ic": -0.03770124585561024,
+            "industry_ic": -0.1530291593859778,
+            "q5_minus_q1": -0.020472998640804665,
+            "top_gross": -0.014613602310419083,
+            "rows": 135
+          },
+          {
+            "date_index": 620,
+            "raw_ic": -0.00464421075108098,
+            "industry_ic": 0.03892595953664656,
+            "q5_minus_q1": 0.012895291569046173,
+            "top_gross": 0.009554742835462093,
+            "rows": 131
+          },
+          {
+            "date_index": 621,
+            "raw_ic": -0.026141447693345792,
+            "industry_ic": 0.1253171950508139,
+            "q5_minus_q1": 0.017217099818316674,
+            "top_gross": 0.015121321193873882,
+            "rows": 135
+          },
+          {
+            "date_index": 622,
+            "raw_ic": 0.03785450680284607,
+            "industry_ic": 0.16867447387684148,
+            "q5_minus_q1": 0.016137611687864362,
+            "top_gross": 0.005033092573285103,
+            "rows": 137
+          },
+          {
+            "date_index": 623,
+            "raw_ic": -0.0005319774377641236,
+            "industry_ic": 0.09628780631477046,
+            "q5_minus_q1": 0.008376346824739953,
+            "top_gross": -0.0070618134923279285,
+            "rows": 138
+          },
+          {
+            "date_index": 624,
+            "raw_ic": 0.04823462349222902,
+            "industry_ic": 0.009166414807057483,
+            "q5_minus_q1": -0.017672156543624026,
+            "top_gross": 0.005044018849730492,
+            "rows": 133
+          },
+          {
+            "date_index": 625,
+            "raw_ic": -0.06262808406262138,
+            "industry_ic": -0.1064582730348815,
+            "q5_minus_q1": 0.009777114298164372,
+            "top_gross": 0.02447548881173134,
+            "rows": 133
+          },
+          {
+            "date_index": 626,
+            "raw_ic": 0.02076154103172474,
+            "industry_ic": 0.1346189021048343,
+            "q5_minus_q1": 0.032887937676915065,
+            "top_gross": 0.029380828142166138,
+            "rows": 135
+          },
+          {
+            "date_index": 627,
+            "raw_ic": 0.03614331377319784,
+            "industry_ic": 0.0008778207146605601,
+            "q5_minus_q1": 0.000958310832271422,
+            "top_gross": 0.006821401417255402,
+            "rows": 136
+          },
+          {
+            "date_index": 628,
+            "raw_ic": 0.05914473390231914,
+            "industry_ic": 0.027043210152374996,
+            "q5_minus_q1": -0.0026073376990080896,
+            "top_gross": 0.00724748382344842,
+            "rows": 139
+          },
+          {
+            "date_index": 629,
+            "raw_ic": 0.04089703400048228,
+            "industry_ic": -0.012973233662888835,
+            "q5_minus_q1": 0.0022399176443383432,
+            "top_gross": 0.021287793293595314,
+            "rows": 144
+          },
+          {
+            "date_index": 630,
+            "raw_ic": 0.016142240648848127,
+            "industry_ic": 0.033640200301764664,
+            "q5_minus_q1": 0.010565446650553239,
+            "top_gross": 0.019217250868678093,
+            "rows": 140
+          },
+          {
+            "date_index": 631,
+            "raw_ic": 0.0322941002438253,
+            "industry_ic": -0.07267830362881424,
+            "q5_minus_q1": -0.02604686127580357,
+            "top_gross": -0.035449765622615814,
+            "rows": 133
+          },
+          {
+            "date_index": 632,
+            "raw_ic": 0.04460157675192756,
+            "industry_ic": 0.007513887335070059,
+            "q5_minus_q1": 0.022185458942484866,
+            "top_gross": -0.013827912509441376,
+            "rows": 138
+          },
+          {
+            "date_index": 633,
+            "raw_ic": -0.0857272204795436,
+            "industry_ic": -0.005051586112419196,
+            "q5_minus_q1": -0.00048126371001330293,
+            "top_gross": -0.023515690118074417,
+            "rows": 141
+          },
+          {
+            "date_index": 634,
+            "raw_ic": -0.19387273095350563,
+            "industry_ic": -0.3157008859282967,
+            "q5_minus_q1": -0.06654620336182715,
+            "top_gross": -0.11933168768882751,
+            "rows": 146
+          },
+          {
+            "date_index": 635,
+            "raw_ic": -0.1224073051396342,
+            "industry_ic": -0.08338969990153688,
+            "q5_minus_q1": -0.02106378570878819,
+            "top_gross": -0.04425252228975296,
+            "rows": 141
+          },
+          {
+            "date_index": 636,
+            "raw_ic": -0.23011783788941367,
+            "industry_ic": -0.16666666666666666,
+            "q5_minus_q1": -0.04859216738342092,
+            "top_gross": -0.02965291030704975,
+            "rows": 136
+          },
+          {
+            "date_index": 637,
+            "raw_ic": -0.04177404854659874,
+            "industry_ic": 0.0026585042167901023,
+            "q5_minus_q1": -0.02186128053550797,
+            "top_gross": 0.017914455384016037,
+            "rows": 141
+          },
+          {
+            "date_index": 638,
+            "raw_ic": 0.07311878262582489,
+            "industry_ic": -0.00918447749433665,
+            "q5_minus_q1": -0.0055634666486280016,
+            "top_gross": 0.007031479850411415,
+            "rows": 143
+          },
+          {
+            "date_index": 639,
+            "raw_ic": 0.04299053158688854,
+            "industry_ic": 0.04129802540945967,
+            "q5_minus_q1": -0.00039070676928970333,
+            "top_gross": 0.05503470078110695,
+            "rows": 140
+          },
+          {
+            "date_index": 640,
+            "raw_ic": 0.06609589041095891,
+            "industry_ic": -0.07459455203904897,
+            "q5_minus_q1": -0.025725869818940584,
+            "top_gross": 0.05360741168260574,
+            "rows": 145
+          },
+          {
+            "date_index": 641,
+            "raw_ic": -0.044579273660389836,
+            "industry_ic": -0.08986467597035112,
+            "q5_minus_q1": -0.015405718330937365,
+            "top_gross": 0.01251201331615448,
+            "rows": 147
+          },
+          {
+            "date_index": 642,
+            "raw_ic": -0.044729352580068556,
+            "industry_ic": -0.06663543786635577,
+            "q5_minus_q1": -0.005759019163873025,
+            "top_gross": -0.024910015985369682,
+            "rows": 145
+          },
+          {
+            "date_index": 643,
+            "raw_ic": 0.02455518476030258,
+            "industry_ic": -0.011163602838139278,
+            "q5_minus_q1": -0.016087278164482455,
+            "top_gross": -0.006045110058039427,
+            "rows": 136
+          },
+          {
+            "date_index": 644,
+            "raw_ic": -0.07526939070900761,
+            "industry_ic": -0.16323392150762256,
+            "q5_minus_q1": -0.021887559764206765,
+            "top_gross": -0.0007413588464260101,
+            "rows": 150
+          },
+          {
+            "date_index": 645,
+            "raw_ic": 0.12236970738864325,
+            "industry_ic": 0.10480478338240096,
+            "q5_minus_q1": 0.015011637590755203,
+            "top_gross": 0.008672245778143406,
+            "rows": 144
+          },
+          {
+            "date_index": 646,
+            "raw_ic": 0.048611562246563746,
+            "industry_ic": 0.047345821694038656,
+            "q5_minus_q1": -0.011405226639807139,
+            "top_gross": -0.009883487597107887,
+            "rows": 142
+          },
+          {
+            "date_index": 647,
+            "raw_ic": 0.06824345868167321,
+            "industry_ic": 0.05103148430825748,
+            "q5_minus_q1": -0.01066923736226932,
+            "top_gross": -0.0025205297861248255,
+            "rows": 145
+          },
+          {
+            "date_index": 648,
+            "raw_ic": 0.03285061207213598,
+            "industry_ic": 0.06608884073672806,
+            "q5_minus_q1": -0.004248320316216232,
+            "top_gross": -0.02368585206568241,
+            "rows": 142
+          },
+          {
+            "date_index": 649,
+            "raw_ic": 0.11894171578421255,
+            "industry_ic": 0.08110333988323484,
+            "q5_minus_q1": -0.007976753198380575,
+            "top_gross": -0.0274590402841568,
+            "rows": 142
+          },
+          {
+            "date_index": 650,
+            "raw_ic": 0.15439674785991883,
+            "industry_ic": 0.13763603382289552,
+            "q5_minus_q1": 0.00414123797148018,
+            "top_gross": -0.046436768025159836,
+            "rows": 138
+          },
+          {
+            "date_index": 651,
+            "raw_ic": 0.01973770112831138,
+            "industry_ic": 0.013656464987774388,
+            "q5_minus_q1": 0.0059038023649907855,
+            "top_gross": -0.037360887974500656,
+            "rows": 141
+          },
+          {
+            "date_index": 652,
+            "raw_ic": -0.07193817159772417,
+            "industry_ic": -0.07691125951425341,
+            "q5_minus_q1": -0.019310476866588766,
+            "top_gross": -0.020227178931236267,
+            "rows": 148
+          },
+          {
+            "date_index": 653,
+            "raw_ic": 0.08914968965224726,
+            "industry_ic": 0.09660842754367935,
+            "q5_minus_q1": 0.015850786465571087,
+            "top_gross": 0.006281717214733362,
+            "rows": 140
+          },
+          {
+            "date_index": 654,
+            "raw_ic": 0.1986512537931996,
+            "industry_ic": 0.18828198180554023,
+            "q5_minus_q1": 0.03820679098020363,
+            "top_gross": 0.04351307824254036,
+            "rows": 143
+          },
+          {
+            "date_index": 655,
+            "raw_ic": 0.15009131592384015,
+            "industry_ic": 0.11254426957840258,
+            "q5_minus_q1": 0.017674147932279005,
+            "top_gross": 0.05292065814137459,
+            "rows": 142
+          }
+        ],
+        "gross_diagnostic_not_portfolio": true,
+        "requirements": {
+          "at_least_40_dates": true,
+          "coverage_at_least_80pct": true,
+          "industry_ic_above_001": false,
+          "top_group_advantage_positive": false,
+          "at_least_four_positive_blocks": false
+        },
+        "pass": false
+      },
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": true,
+          "wins_at_least_four": true,
+          "lower90_positive": false,
+          "episode_dd_within8": true,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": false,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true,
+          "industry_factor_check": false
+        },
+        "qualifies": false,
+        "mean_advantage": 0.01504185833333338,
+        "winning_episodes": 4,
+        "lower90": -0.002721074999999906,
+        "standard_error": 0.016967119935107286,
+        "score": -0.001925261601773906
+      }
+    }
+  },
+  "initial_calibration": {
+    "centers": [
+      0.25,
+      0.65,
+      0.8500000000000001,
+      0.925,
+      0.975
+    ],
+    "mean": [
+      0.0021039059385657313,
+      0.005558602046221495,
+      0.014822960551828147,
+      0.01670148288831115,
+      0.01670148288831115
+    ],
+    "standard_error": [
+      0.008623116564015095,
+      0.007653976953707304,
+      0.008165005867942419,
+      0.00777947544176712,
+      0.008164503656759647
+    ],
+    "days": [
+      60,
+      60,
+      60,
+      60,
+      60
+    ],
+    "gross_clip": [
+      -0.13374021798372268,
+      0.27000001072883606
+    ],
+    "available_before": 593,
+    "source_rows": 32811,
+    "last_label_end": 592,
+    "status": "RANK_TO_RETURN_ESTIMATE_NOT_PROBABILITY"
+  },
+  "outer_calibration": {
+    "centers": [
+      0.25,
+      0.65,
+      0.8500000000000001,
+      0.925,
+      0.975
+    ],
+    "mean": [
+      -0.001579424454830587,
+      -0.001579424454830587,
+      -0.001579424454830587,
+      -0.001579424454830587,
+      -0.001579424454830587
+    ],
+    "standard_error": [
+      0.011744441167977028,
+      0.005138264108727599,
+      0.004485163002859279,
+      0.004974673961625845,
+      0.005969982879157955
+    ],
+    "days": [
+      63,
+      63,
+      63,
+      63,
+      63
+    ],
+    "gross_clip": [
+      -0.1424543648958206,
+      0.2761485588550574
+    ],
+    "available_before": 662,
+    "source_rows": 33877,
+    "last_label_end": 661,
+    "status": "RANK_TO_RETURN_ESTIMATE_NOT_PROBABILITY"
+  },
+  "calibration_fit_end": 520,
+  "calibration_signal_start": 527,
+  "validation_train_rows": 138563,
+  "refit_rows": 175678,
+  "outer_rows": 11633,
+  "predictions_sha256": "7bd77844f485e96a84a57d4feea2a1a142e84f24b81057de344a161e4b5d6f25",
+  "final_fit": false,
+  "outer_results_used_for_selection": false,
+  "source_selection": "Validation only; continuous outcomes also constrain adoption."
+}

@@ -27,6 +27,6 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
   Balanced attack, the 8% alert and non-recovering risk remain in force.
 - Name strategies by behavior, not iteration numbers. Keep old identifiers only where required
   to read or trace frozen evidence; use semantic software versions for package releases.
-- The superiority gate is false. Engineering parity does not prove outperformance; data ends
-  on 2026-11-18 until a verified new snapshot is added.
+- The superiority gate is false. Engineering parity does not prove outperformance; the active
+  verified snapshot ends on 2026-11-19. Historical status and industry coverage remain incomplete.
 - Do not operate a trading app, broker account or WeChat.

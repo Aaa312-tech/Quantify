@@ -66,11 +66,27 @@ python -m quantfolio evaluate --run artifacts/experiments/reviewed_training --ou
 ## 采集后续日线
 
 ```powershell
-python -m quantfolio fetch-bars --date 2026-11-19 --output data/raw/market_review
-python -m quantfolio fetch-bars --date 2026-11-19 --retry data/raw/market_review --output data/raw/market_retry
+python -m quantfolio fetch-bars --date 2026-11-20 --output data/raw/market_review
+python -m quantfolio fetch-bars --date 2026-11-20 --retry data/raw/market_review --output data/raw/market_retry
 ```
 
 采集包含与活跃快照重叠的五个交易日，逐只留存未复权响应、请求信息、SHA-256和历史修订。请求按顺序执行，连续失败或限流时停止。仅在首批存在失败或遗漏请求时运行补采命令；它保留首批全部文件，且要求数据来源与日期相同。采集不修改活跃快照，也不从缺失日线推断停牌；当天16时之前拒绝请求当天完整日线。
+
+完成跨源抽查、公司行为核查和重叠审查后，以登记协议生成新快照：
+
+```powershell
+python -m quantfolio refresh-data --protocol configs/protocols/market_extension.json --output data/processed/market_rebuild
+```
+
+该协议固定父快照、采集与补采哈希、允许保留但不覆盖的历史修订字段及公告证据。输出包含
+`bundle.joblib`、`provenance.json`、`audit.json`和逐条标签变化。原始行情、面板、评分、资格及
+特征的历史前缀须精确相同；单纯增加未来行情允许末端标签由不可观察变为可观察。
+日期日历以基准的已观察交易日为准，不推算支付后的未知开盘日期。
+
+切换研究输入时，成套更新`bundle`、`data_cutoff`、`protocol`，按完整训练与评估命令生成新结果，
+再把`evaluation`指向已完成的对应实验；保留`reference_bundle`和原始冻结路径。
+历史窗口的模型、预测与选择如果完全相同，则新评估同时是固定预测的数据对照；否则必须
+另做固定旧预测的对照，分别归因，不能混称算法改善。
 
 ## 环境与错误
 
