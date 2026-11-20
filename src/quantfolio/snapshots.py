@@ -49,7 +49,12 @@ def repair_actions(actions, calendar, facts, declared_payment_field):
                 raise ValueError(f"Reviewed entitlement differs: {fact['symbol']} {key}")
         if action.get("record_date") != fact["record_date"]:
             raise ValueError(f"Reviewed record date differs: {fact['symbol']}")
-        if fact["cash_pay_date"] < fact["ex_date"]:
+        payment_date = fact["cash_pay_date"]
+        if fact["cash_per_share"] > 0 and not payment_date:
+            raise ValueError("Reviewed cash dividend requires a payment date")
+        if fact["cash_per_share"] == 0 and payment_date is not None:
+            raise ValueError("Non-cash action cannot have a payment date")
+        if payment_date and payment_date < fact["ex_date"]:
             raise ValueError("Payment precedes the entitlement event")
         for key in (
             "cash_pay_date",

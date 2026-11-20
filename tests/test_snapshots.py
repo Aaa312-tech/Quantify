@@ -35,6 +35,50 @@ def test_shift_declared_payments_once_and_preserve_unknowns():
     assert repeated == updated
 
 
+@pytest.mark.parametrize(
+    ("cash", "payment_date", "error"),
+    [
+        (0.0, None, None),
+        (0.0, "2026-07-08", "Non-cash action cannot have a payment date"),
+        (0.1, None, "Reviewed cash dividend requires a payment date"),
+        (0.1, "2026-07-07", "Payment precedes the entitlement event"),
+        (0.1, "2026-07-08", None),
+    ],
+)
+def test_reviewed_transfer_without_cash_has_no_payment_date(cash, payment_date, error):
+    calendar = pd.to_datetime(["2026-07-07", "2026-07-08", "2026-07-09"])
+    action = {
+        "symbol": "sz300192",
+        "record_date": "2026-07-07",
+        "ex_date": "2026-07-08",
+        "cash_per_share": cash,
+        "share_multiplier": 1.4,
+        "cash_pay_date": None,
+        "share_list_date": None,
+    }
+    original = deepcopy(action)
+    fact = dict(
+        action,
+        cash_pay_date=payment_date,
+        share_list_date="2026-07-08",
+        simulation_cash_available_date="2026-07-09" if payment_date else None,
+        source={"source": "filing", "local_pdf": "filing.pdf", "sha256": "reviewed"},
+        evidence_pages=[1, 2],
+    )
+    if error:
+        with pytest.raises(ValueError, match=error):
+            repair_actions([action], calendar, [fact], "declared_date")
+    else:
+        repaired, normalized = repair_actions([action], calendar, [fact], "declared_date")
+        assert normalized == 0
+        assert repaired[0]["share_list_date"] == "2026-07-08"
+        assert repaired[0]["cash_available_date"] == ("2026-07-09" if cash else None)
+        assert repaired[0]["cash_pay_date"] == payment_date
+        assert repaired[0]["cash_per_share"] == cash
+        assert repaired[0]["share_multiplier"] == 1.4
+    assert action == original
+
+
 @pytest.mark.parametrize("available", ["2026-01-07", None])
 def test_declared_payment_is_not_spendable_at_that_open(available):
     dates = pd.bdate_range("2026-01-05", periods=3)

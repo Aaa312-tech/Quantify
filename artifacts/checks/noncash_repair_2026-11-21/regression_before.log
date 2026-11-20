@@ -1,0 +1,200 @@
+FFF..                                                                    [100%]
+================================== FAILURES ===================================
+___ test_reviewed_transfer_without_cash_has_no_payment_date[0.0-None-None] ____
+
+cash = 0.0, payment_date = None, error = None
+
+    @pytest.mark.parametrize(
+        ("cash", "payment_date", "error"),
+        [
+            (0.0, None, None),
+            (0.0, "2026-07-08", "Non-cash action cannot have a payment date"),
+            (0.1, None, "Reviewed cash dividend requires a payment date"),
+            (0.1, "2026-07-07", "Payment precedes the entitlement event"),
+            (0.1, "2026-07-08", None),
+        ],
+    )
+    def test_reviewed_transfer_without_cash_has_no_payment_date(cash, payment_date, error):
+        calendar = pd.to_datetime(["2026-07-07", "2026-07-08", "2026-07-09"])
+        action = {
+            "symbol": "sz300192",
+            "record_date": "2026-07-07",
+            "ex_date": "2026-07-08",
+            "cash_per_share": cash,
+            "share_multiplier": 1.4,
+            "cash_pay_date": None,
+            "share_list_date": None,
+        }
+        original = deepcopy(action)
+        fact = dict(
+            action,
+            cash_pay_date=payment_date,
+            share_list_date="2026-07-08",
+            simulation_cash_available_date="2026-07-09" if payment_date else None,
+            source={"source": "filing", "local_pdf": "filing.pdf", "sha256": "reviewed"},
+            evidence_pages=[1, 2],
+        )
+        if error:
+            with pytest.raises(ValueError, match=error):
+                repair_actions([action], calendar, [fact], "declared_date")
+        else:
+>           repaired, normalized = repair_actions([action], calendar, [fact], "declared_date")
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_snapshots.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+actions = [{'cash_pay_date': None, 'cash_per_share': 0.0, 'ex_date': '2026-07-08', 'record_date': '2026-07-07', ...}]
+calendar = DatetimeIndex(['2026-07-07', '2026-07-08', '2026-07-09'], dtype='datetime64[ns]', freq=None)
+facts = [{'cash_pay_date': None, 'cash_per_share': 0.0, 'evidence_pages': [1, 2], 'ex_date': '2026-07-08', ...}]
+declared_payment_field = 'declared_date'
+
+    def repair_actions(actions, calendar, facts, declared_payment_field):
+        """Preserve entitlements; separate sourced payment dates from cash availability."""
+        repaired = deepcopy(actions)
+        normalized = 0
+        for action in repaired:
+            if (
+                action.get(declared_payment_field)
+                and action.get("cash_pay_date") != action[declared_payment_field]
+            ):
+                action["cash_pay_date"] = action[declared_payment_field]
+                normalized += 1
+        for fact in facts:
+            matches = [
+                a for a in repaired if (a["symbol"], a["ex_date"]) == (fact["symbol"], fact["ex_date"])
+            ]
+            if len(matches) != 1:
+                raise ValueError(f"Expected one reviewed corporate action: {fact['symbol']}")
+            action = matches[0]
+            for key in ("cash_per_share", "share_multiplier"):
+                if not np.isclose(action[key], fact[key], rtol=0, atol=1e-12):
+                    raise ValueError(f"Reviewed entitlement differs: {fact['symbol']} {key}")
+            if action.get("record_date") != fact["record_date"]:
+                raise ValueError(f"Reviewed record date differs: {fact['symbol']}")
+>           if fact["cash_pay_date"] < fact["ex_date"]:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: '<' not supported between instances of 'NoneType' and 'str'
+
+src\quantfolio\snapshots.py:52: TypeError
+_ test_reviewed_transfer_without_cash_has_no_payment_date[0.0-2026-07-08-Non-cash action cannot have a payment date] _
+
+cash = 0.0, payment_date = '2026-07-08'
+error = 'Non-cash action cannot have a payment date'
+
+    @pytest.mark.parametrize(
+        ("cash", "payment_date", "error"),
+        [
+            (0.0, None, None),
+            (0.0, "2026-07-08", "Non-cash action cannot have a payment date"),
+            (0.1, None, "Reviewed cash dividend requires a payment date"),
+            (0.1, "2026-07-07", "Payment precedes the entitlement event"),
+            (0.1, "2026-07-08", None),
+        ],
+    )
+    def test_reviewed_transfer_without_cash_has_no_payment_date(cash, payment_date, error):
+        calendar = pd.to_datetime(["2026-07-07", "2026-07-08", "2026-07-09"])
+        action = {
+            "symbol": "sz300192",
+            "record_date": "2026-07-07",
+            "ex_date": "2026-07-08",
+            "cash_per_share": cash,
+            "share_multiplier": 1.4,
+            "cash_pay_date": None,
+            "share_list_date": None,
+        }
+        original = deepcopy(action)
+        fact = dict(
+            action,
+            cash_pay_date=payment_date,
+            share_list_date="2026-07-08",
+            simulation_cash_available_date="2026-07-09" if payment_date else None,
+            source={"source": "filing", "local_pdf": "filing.pdf", "sha256": "reviewed"},
+            evidence_pages=[1, 2],
+        )
+        if error:
+>           with pytest.raises(ValueError, match=error):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_snapshots.py:69: Failed
+_ test_reviewed_transfer_without_cash_has_no_payment_date[0.1-None-Reviewed cash dividend requires a payment date] _
+
+cash = 0.1, payment_date = None
+error = 'Reviewed cash dividend requires a payment date'
+
+    @pytest.mark.parametrize(
+        ("cash", "payment_date", "error"),
+        [
+            (0.0, None, None),
+            (0.0, "2026-07-08", "Non-cash action cannot have a payment date"),
+            (0.1, None, "Reviewed cash dividend requires a payment date"),
+            (0.1, "2026-07-07", "Payment precedes the entitlement event"),
+            (0.1, "2026-07-08", None),
+        ],
+    )
+    def test_reviewed_transfer_without_cash_has_no_payment_date(cash, payment_date, error):
+        calendar = pd.to_datetime(["2026-07-07", "2026-07-08", "2026-07-09"])
+        action = {
+            "symbol": "sz300192",
+            "record_date": "2026-07-07",
+            "ex_date": "2026-07-08",
+            "cash_per_share": cash,
+            "share_multiplier": 1.4,
+            "cash_pay_date": None,
+            "share_list_date": None,
+        }
+        original = deepcopy(action)
+        fact = dict(
+            action,
+            cash_pay_date=payment_date,
+            share_list_date="2026-07-08",
+            simulation_cash_available_date="2026-07-09" if payment_date else None,
+            source={"source": "filing", "local_pdf": "filing.pdf", "sha256": "reviewed"},
+            evidence_pages=[1, 2],
+        )
+        if error:
+            with pytest.raises(ValueError, match=error):
+>               repair_actions([action], calendar, [fact], "declared_date")
+
+tests\test_snapshots.py:70: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+actions = [{'cash_pay_date': None, 'cash_per_share': 0.1, 'ex_date': '2026-07-08', 'record_date': '2026-07-07', ...}]
+calendar = DatetimeIndex(['2026-07-07', '2026-07-08', '2026-07-09'], dtype='datetime64[ns]', freq=None)
+facts = [{'cash_pay_date': None, 'cash_per_share': 0.1, 'evidence_pages': [1, 2], 'ex_date': '2026-07-08', ...}]
+declared_payment_field = 'declared_date'
+
+    def repair_actions(actions, calendar, facts, declared_payment_field):
+        """Preserve entitlements; separate sourced payment dates from cash availability."""
+        repaired = deepcopy(actions)
+        normalized = 0
+        for action in repaired:
+            if (
+                action.get(declared_payment_field)
+                and action.get("cash_pay_date") != action[declared_payment_field]
+            ):
+                action["cash_pay_date"] = action[declared_payment_field]
+                normalized += 1
+        for fact in facts:
+            matches = [
+                a for a in repaired if (a["symbol"], a["ex_date"]) == (fact["symbol"], fact["ex_date"])
+            ]
+            if len(matches) != 1:
+                raise ValueError(f"Expected one reviewed corporate action: {fact['symbol']}")
+            action = matches[0]
+            for key in ("cash_per_share", "share_multiplier"):
+                if not np.isclose(action[key], fact[key], rtol=0, atol=1e-12):
+                    raise ValueError(f"Reviewed entitlement differs: {fact['symbol']} {key}")
+            if action.get("record_date") != fact["record_date"]:
+                raise ValueError(f"Reviewed record date differs: {fact['symbol']}")
+>           if fact["cash_pay_date"] < fact["ex_date"]:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: '<' not supported between instances of 'NoneType' and 'str'
+
+src\quantfolio\snapshots.py:52: TypeError
+=========================== short test summary info ===========================
+FAILED tests/test_snapshots.py::test_reviewed_transfer_without_cash_has_no_payment_date[0.0-None-None]
+FAILED tests/test_snapshots.py::test_reviewed_transfer_without_cash_has_no_payment_date[0.0-2026-07-08-Non-cash action cannot have a payment date]
+FAILED tests/test_snapshots.py::test_reviewed_transfer_without_cash_has_no_payment_date[0.1-None-Reviewed cash dividend requires a payment date]
+3 failed, 2 passed, 5 deselected in 0.71s
