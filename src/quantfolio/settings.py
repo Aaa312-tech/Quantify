@@ -58,6 +58,14 @@ class Paths:
         return self._configured_path("bundle")
 
     @property
+    def reference_bundle(self) -> Path:
+        return (
+            self._configured_path("reference_bundle")
+            if "reference_bundle" in self.config
+            else self.bundle
+        )
+
+    @property
     def reference(self) -> Path:
         return self._configured_path("reference")
 

@@ -45,7 +45,7 @@ def opening_errors(trade, bundle):
         if action["symbol"] == symbol and action["ex_date"] == trade["date"]:
             reference = (
                 reference - action.get("ex_reference_cash_per_share", action["cash_per_share"])
-            ) / action["share_multiplier"]
+            ) / action.get("ex_reference_share_multiplier", action["share_multiplier"])
             if action.get("price_limit_reference") is not None:
                 reference = action["price_limit_reference"]
     tick = Decimal(".001" if meta["kind"] == "etf" else ".01")
@@ -75,6 +75,7 @@ def reconcile(detail, summary, meta, actions):
     """Reconstruct cash, shares, distributions and marked equity independently of the simulator."""
     cash = 100_000_000
     receivables = 0
+    outstanding = {}
     lots = collections.defaultdict(list)
     rights = {}
     fees = 0
@@ -103,6 +104,20 @@ def reconcile(detail, summary, meta, actions):
             s = event["symbol"]
             if event["type"] == "CASH_DIVIDEND_PAID":
                 amount = money(event["amount"])
+                matches = [
+                    key
+                    for key, claim in outstanding.items()
+                    if claim["symbol"] == s
+                    and claim["cents"] == amount
+                    and (not event.get("event_id") or key == event["event_id"])
+                ]
+                check(len(matches) == 1, day + " unique unpaid cash entitlement " + s)
+                if len(matches) == 1:
+                    claim = outstanding.pop(matches[0])
+                    check(
+                        bool(claim["available"] and claim["available"] <= day),
+                        day + " cash availability " + s,
+                    )
                 cash += amount
                 receivables -= amount
                 continue
@@ -116,6 +131,12 @@ def reconcile(detail, summary, meta, actions):
             check(money(event["cash_tax_reserve"]) == reserve, day + " dividend tax reserve")
             check(money(event["net_receivable"]) == gross - reserve, day + " net receivable")
             receivables += gross - reserve
+            if gross != reserve:
+                outstanding[action["id"]] = {
+                    "symbol": s,
+                    "cents": gross - reserve,
+                    "available": action.get("cash_available_date", action.get("cash_pay_date")),
+                }
             multiplier = Decimal(str(action["share_multiplier"]))
             if multiplier >= 1:
                 extra = int(
@@ -203,6 +224,16 @@ def reconcile(detail, summary, meta, actions):
                         remaining -= used
                 cash += gross - fee - impact
             check(cash == money(trade["cash_after"]) and cash >= 0, day + " cash after fill")
+        check(
+            not any(
+                claim["available"] and claim["available"] <= day for claim in outstanding.values()
+            ),
+            day + " due cash paid",
+        )
+        check(
+            sum(claim["cents"] for claim in outstanding.values()) == receivables,
+            day + " outstanding entitlements",
+        )
         value = 0
         for s, p in row["positions"].items():
             q = sum(x["quantity"] for x in lots[s])

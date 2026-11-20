@@ -65,9 +65,9 @@ def opening_price(meta, raw, date, previous, actions=(), side="BUY", *, status=N
     today = [a for a in actions if a["ex_date"] == str(date.date())]
     ref = old
     for a in today:
-        ref = (ref - a.get("ex_reference_cash_per_share", a["cash_per_share"])) / a[
-            "share_multiplier"
-        ]
+        ref = (ref - a.get("ex_reference_cash_per_share", a["cash_per_share"])) / a.get(
+            "ex_reference_share_multiplier", a["share_multiplier"]
+        )
         if a.get("price_limit_reference") is not None:
             ref = a["price_limit_reference"]
     tick = 0.001 if meta["kind"] == "etf" else 0.01

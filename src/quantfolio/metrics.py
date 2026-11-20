@@ -56,6 +56,7 @@ def account_stats(ledger, curve, decisions, quality, mode):
         if e["type"] == "CORPORATE_ACTION"
         and (
             e["unknown_cash_pay_date"]
+            or e.get("unknown_cash_available_date", False)
             or e["unknown_share_list_date"]
             or e["bonus_tax_not_modelled"]
             or e["fractional_shares_discarded"] > 0

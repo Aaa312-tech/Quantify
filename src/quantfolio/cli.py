@@ -20,6 +20,13 @@ def main(argv: list[str] | None = None) -> None:
     verification = commands.add_parser("verify", help="Check frozen files, features and models")
     verification.add_argument("--output", help="New directory under artifacts/checks")
     verification.add_argument("--refit", action="store_true", help="Refit fold 1's two estimators")
+    verification.add_argument(
+        "--run", help="Verify a new training run instead of the frozen reference"
+    )
+    repair = commands.add_parser(
+        "repair-data", help="Build the registered corporate-action snapshot"
+    )
+    repair.add_argument("--output", required=True, help="New directory under data/processed")
     replay = commands.add_parser(
         "replay", aliases=["backtest"], help="Compare the frozen reference accounts exactly"
     )
@@ -32,6 +39,15 @@ def main(argv: list[str] | None = None) -> None:
     bridge.add_argument("--output", required=True, help="New directory under artifacts/evaluations")
     bridge.add_argument("--cost", type=int, choices=[10, 20, 30], action="append")
     bridge.add_argument("--primary-only", action="store_true")
+    data_bridge = commands.add_parser(
+        "data-bridge", help="Compare repaired data with fixed predictions"
+    )
+    data_bridge.add_argument(
+        "--baseline", required=True, help="Completed execution bridge under artifacts/evaluations"
+    )
+    data_bridge.add_argument(
+        "--output", required=True, help="New directory under artifacts/evaluations"
+    )
     training = commands.add_parser("train", help="Train a new run using the registered protocol")
     training.add_argument(
         "--output", required=True, help="New directory under artifacts/experiments"
@@ -105,7 +121,11 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .verification import verify
 
         output = paths.output_path(args.output, "checks") if args.output else None
-        return verify(paths, output, args.refit)
+        return verify(paths, output, args.refit, args.run)
+    if args.command == "repair-data":
+        from .snapshots import repair_snapshot
+
+        return repair_snapshot(paths, args.output)
     if args.command in ("replay", "backtest"):
         from .evaluation import POLICIES, replay
 
@@ -124,6 +144,10 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         return execution_bridge(
             paths, args.output, sorted(set(args.cost or [10, 20, 30])), policies
         )
+    if args.command == "data-bridge":
+        from .evaluation import POLICIES, execution_bridge
+
+        return execution_bridge(paths, args.output, [10, 20, 30], POLICIES, baseline=args.baseline)
     if args.command == "evaluate":
         from .evaluation import evaluate
 

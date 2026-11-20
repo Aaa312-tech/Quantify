@@ -1,0 +1,35 @@
+{
+  "name": "action_repair",
+  "registered_on": "2026-11-20",
+  "parent_protocol": "configs/protocols/causal_execution.json",
+  "baseline_commit": "5f4d0f4251946159b496f5e8b980220eae607b0c",
+  "source_bundle": "data/processed/2026-11-18/bundle.joblib",
+  "source_bundle_sha256": "36cd6fa4ff4115b1992fad26db7fa6e3e88db3f3e8d09d432d89f15de0722635",
+  "review": "docs/references/corporate_action_review_2026-11-20.json",
+  "scope": "Correct sourced corporate-action facts and cash availability without changing the calendar, universe, prices, eligibility, features, model budgets or risk rules.",
+  "cash": {
+    "cash_pay_date": "Declared payment date, not an intraday availability guarantee.",
+    "cash_available_date": "First snapshot trading session strictly after the declared payment date. Unknown payment dates remain unknown; a date beyond the calendar remains unavailable.",
+    "archived_dates": "Four explicitly shifted legacy records are normalized from their preserved declared dates through configs/archive.toml, then shifted exactly once.",
+    "valuation": "Cash entitlements retain receivable value before availability. Delay affects spendable cash, not the gross wealth label.",
+    "evidence": "Retain each source and its quality. A secondary distribution-page date does not become primary-source verified through normalization."
+  },
+  "price_reference": "Use the sourced ex-reference cash and share multiplier for limits and opening-gap controls; retain the actual cash and share entitlements for accounting and total-return features.",
+  "labels": {
+    "horizons": [1, 3, 5],
+    "rebuild": "Rebuild all eligible labels with the causal opening engine on the original actions, then rebuild the five reviewed securities with corrected actions. Record both differences separately, including actual exit dates, status and delay.",
+    "ineligible": "Remain INELIGIBLE with no usable label.",
+    "purging": "Use actual legal label-end dates. No frozen-model refit parity is expected on corrected labels; reference verification always loads the original snapshot."
+  },
+  "attribution": {
+    "data_bridge": "Hold frozen predictions and the original selected rule schedule fixed. Compare all 19 policies and 10/20/30 bp costs against execution_bridge_2026-11-20, using the same 11 windows and account boundaries.",
+    "full_retraining": "Fit all 11 outer windows plus the latest fit afresh. Repeat calibration, five candidate selection and 16 turnover-rule trials using the original settings and only inner data. Evaluate all 19 policies at all three costs.",
+    "interpretation": "Data corrections were prompted by historical audit failures, not an unseen holdout. Attribute changes to facts, accounting and retraining separately; no superiority claim from a bridge."
+  },
+  "gates": {
+    "engineering": ["source hashes and expected entitlement facts match", "all original manifest hashes remain unchanged", "all price features and input ordering remain exact", "cash cannot be spent before its available date", "independent accounting and execution audits pass", "complete fresh training and comparison outputs"],
+    "research": "RESEARCH_ONLY; the superiority gate remains false. Unverified status history, industry histories, fractional allocation and unresolved actions remain disclosed.",
+    "risk": "Balanced attack, original high-water mark, latched 4/6/8 percent stages and no automatic restoration after 8 percent.",
+    "freshness": "This repair keeps the 2026-11-18 cutoff. It is not a current-market refresh and cannot justify a live next-day order."
+  }
+}

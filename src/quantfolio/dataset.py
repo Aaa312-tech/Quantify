@@ -39,19 +39,25 @@ def _lfs_pointer(path: Path) -> bool:
     )
 
 
-def load_bundle(paths: Paths) -> dict[str, Any]:
+def load_bundle(paths: Paths, *, reference: bool = False) -> dict[str, Any]:
     """Load only the local, hash-verified trusted bundle; never arbitrary downloaded pickle."""
     manifest = read(paths.manifest)
-    relative = paths.bundle.relative_to(paths.root).as_posix()
-    if _lfs_pointer(paths.bundle):
+    path = paths.reference_bundle if reference else paths.bundle
+    relative = path.relative_to(paths.root).as_posix()
+    if _lfs_pointer(path):
         raise ValueError("Dataset is a Git LFS pointer. Run 'git lfs pull' in the project.")
-    if sha(paths.bundle) != manifest["files"][relative]:
+    if sha(path) != manifest["files"][relative]:
         raise ValueError("Dataset hash mismatch; restore the verified snapshot before using it")
-    bundle = joblib.load(paths.bundle)
+    bundle = joblib.load(path)
     required = {"meta", "raws", "actions", "panels", "calendar", "table", "features", "cutoff"}
     if required - bundle.keys():
         raise ValueError(f"Missing dataset fields: {required - bundle.keys()}")
-    if str(bundle["cutoff"])[:10] != paths.config["data_cutoff"]:
+    cutoff = (
+        paths.config.get("reference_data_cutoff", paths.config["data_cutoff"])
+        if reference
+        else paths.config["data_cutoff"]
+    )
+    if str(bundle["cutoff"])[:10] != cutoff:
         raise ValueError("Dataset cutoff differs from configs/project.toml")
     aliases = paths.archive.get("features", {})
     columns = [aliases.get(name, name) for name in bundle["table"].columns]

@@ -38,9 +38,9 @@ def buy_ceiling(raw, previous, date, actions, atr):
     reference = float(raw.at[previous, "close"])
     for a in actions:
         if a["ex_date"] == str(date.date()):
-            reference = (reference - a.get("ex_reference_cash_per_share", a["cash_per_share"])) / a[
-                "share_multiplier"
-            ]
+            reference = (
+                reference - a.get("ex_reference_cash_per_share", a["cash_per_share"])
+            ) / a.get("ex_reference_share_multiplier", a["share_multiplier"])
             if a.get("price_limit_reference") is not None:
                 reference = a["price_limit_reference"]
     if not np.isfinite(atr):

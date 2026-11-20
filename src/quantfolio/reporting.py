@@ -119,6 +119,11 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
             "执行诊断：固定旧预测及旧选型，仅更换成交与成本模型。"
             "尚未重新训练，不代表选股改进或收益优势通过；未解决公司行为须继续核查。"
         )
+    if result.get("purpose") == "DATA_DIAGNOSTIC":
+        notice = (
+            "数据诊断：固定旧预测及旧选型，比较核验公司行为与现金可用时点后的结果。"
+            "尚未重新训练，不代表选股改进或收益优势通过；数据覆盖限制仍保留。"
+        )
     links = {
         "methodology_link": "docs/methodology.md",
         "reproduction_link": "docs/reproducibility.md",

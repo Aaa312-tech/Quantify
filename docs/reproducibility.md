@@ -26,7 +26,7 @@ python -m quantfolio verify --refit --output artifacts/checks/refit_check
 python -m quantfolio report
 ```
 
-`verify`校验872项冻结文件、动量与行业特征的历史前缀、48个模型的保存预测和标签可用日期。`--refit`重新拟合第1窗口的两个估计器，与冻结预测逐项比较。目录更名不改变模型、预测、账本及数据文件的内容哈希。
+`verify`校验完整性清单中的原872项证据及后来登记的快照、动量与行业特征的历史前缀、48个原模型的保存预测和标签可用日期。它始终读取`reference_bundle`，不受活跃快照切换影响。`--refit`重新拟合第1窗口的两个估计器，与冻结预测逐项比较。验证新训练使用`verify --run artifacts/experiments/<name>`，可同时加`--refit`和新的检查输出目录。
 
 原引擎的精确复现必须在提交`e11bb36`的隔离检出中运行`replay`，不能用修正后的引擎强求旧收益不变。
 已完成的1425账户复现保存在`artifacts/replays/prior_engine_2026-11-20/verification.json`。
@@ -42,6 +42,24 @@ python -m quantfolio report --run artifacts/evaluations/opening_review
 默认19项策略×3档成本×25账户；可加`--primary-only`或`--cost 10`缩小范围。
 它使用冻结预测与旧验证选型，只用于归因；完整重训必须另外运行`train`。
 新评估拒绝训练与执行模型不一致，或执行源文件在训练后变化的实验。
+
+## 公司行为修正
+
+`configs/protocols/action_repair.json`登记了修正范围和现金时点约定。以下命令只写新目录，检查公告哈希和原权益值，并重建全部1/3/5日标签：
+
+```powershell
+python -m quantfolio repair-data --output data/processed/reviewed_actions
+```
+
+检查`audit.json`与`label_changes.json.gz`后，将`configs/project.toml`的`bundle`指向新文件、`protocol`指向修正协议，保留`reference_bundle`原路径。生成器会向完整性清单追加新快照；不会自动切换活跃输入。
+
+```powershell
+python -m quantfolio data-bridge --baseline artifacts/evaluations/execution_bridge_2026-11-20 --output artifacts/evaluations/action_review
+python -m quantfolio train --include-latest --output artifacts/experiments/reviewed_training
+python -m quantfolio evaluate --run artifacts/experiments/reviewed_training --output artifacts/evaluations/reviewed_training --all-policies
+```
+
+数据对照要求日历、资格、特征及预测行完全一致。它固定旧预测，不使用重建标签重新选型。完整重训另外运行，不能把两个阶段的收益变化合并称为选股改进。
 
 不带`--run`的`report`从冻结参考结果生成 `reports/latest/index.html`，页面明确标记旧成交假设的问题。工程复现通过不增加独立市场样本，也不改变收益优势检验的结论。
 

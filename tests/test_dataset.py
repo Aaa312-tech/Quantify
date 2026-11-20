@@ -56,3 +56,35 @@ def test_archived_feature_names_preserve_values_order_and_snapshot(tmp_path, col
             original["table"][original["features"]].to_numpy(),
         )
     assert sha(tmp_path / "bundle.joblib") == checksum
+
+
+def test_reference_snapshot_remains_independent_of_active_data(tmp_path):
+    config = tmp_path / "configs"
+    config.mkdir()
+    (config / "project.toml").write_text(
+        'bundle = "active.joblib"\nreference_bundle = "reference.joblib"\n'
+        'data_cutoff = "2026-11-19"\nreference_data_cutoff = "2026-11-18"\n'
+        'manifest = "configs/manifest.json"\narchive = "configs/archive.toml"\n',
+        encoding="utf-8",
+    )
+    (config / "archive.toml").write_text("", encoding="utf-8")
+    hashes = {}
+    for name, cutoff, value in (("reference", "2026-11-18", 1.0), ("active", "2026-11-19", 2.0)):
+        bundle = {
+            "table": pd.DataFrame({"factor": [value]}),
+            "features": ["factor"],
+            "cutoff": cutoff,
+            "meta": {},
+            "raws": {},
+            "actions": [],
+            "panels": {},
+            "calendar": [],
+        }
+        path = tmp_path / f"{name}.joblib"
+        joblib.dump(bundle, path)
+        hashes[path.name] = sha(path)
+    save(config / "manifest.json", {"files": hashes})
+    paths = Paths(tmp_path)
+    assert load_bundle(paths)["table"].at[0, "factor"] == 2.0
+    assert load_bundle(paths, reference=True)["table"].at[0, "factor"] == 1.0
+    assert sha(tmp_path / "reference.joblib") == hashes["reference.joblib"]

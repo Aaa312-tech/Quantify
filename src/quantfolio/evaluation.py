@@ -244,7 +244,14 @@ def first_difference(before, after, path=""):
     return None
 
 
-def execution_bridge(paths: Paths, output: Path, costs: list[int], policies: list[str]) -> dict:
+def execution_bridge(
+    paths: Paths,
+    output: Path,
+    costs: list[int],
+    policies: list[str],
+    *,
+    baseline: str | Path | None = None,
+) -> dict:
     """Hold archived predictions and choices fixed while diagnosing corrected execution."""
     output = paths.output_path(output, "evaluations")
     if not costs or any(cost not in (10, 20, 30) for cost in costs):
@@ -252,12 +259,39 @@ def execution_bridge(paths: Paths, output: Path, costs: list[int], policies: lis
     if not policies or any(policy not in POLICIES for policy in policies):
         raise ValueError("Choose registered policies for the execution bridge")
     check_integrity(paths)
-    bundle = load_bundle(paths)
+    bundle = load_bundle(paths, reference=baseline is None)
+    comparison = (
+        paths.reference if baseline is None else paths.artifact_path(baseline, "evaluations")
+    )
+    previous = read(comparison / "evaluation_summary.json")
+    if baseline is not None:
+        if previous.get("purpose") != "EXECUTION_DIAGNOSTIC" or previous["status"] != "COMPLETE":
+            raise ValueError("Data bridge requires a completed execution diagnostic")
+        for relative, expected in previous["artifacts"].items():
+            if sha(comparison / relative) != expected:
+                raise ValueError(f"Execution diagnostic artifact changed: {relative}")
+        original = load_bundle(paths, reference=True)
+        if (
+            not original["calendar"].equals(bundle["calendar"])
+            or original["features"] != bundle["features"]
+        ):
+            raise ValueError(
+                "Fixed-prediction data bridge requires identical calendar and features"
+            )
+        import pandas as pd
+
+        columns = ["date_index", "symbol", "eligible", *bundle["features"]]
+        pd.testing.assert_frame_equal(original["table"][columns], bundle["table"][columns])
     maps, schedule, choices, start, end = load_predictions(bundle, paths.reference)
-    protocol = paths.root / "configs/protocols/causal_execution.json"
+    protocol = paths.root / (
+        "configs/protocols/causal_execution.json"
+        if baseline is None
+        else "configs/protocols/action_repair.json"
+    )
     specification = {
         "protocol_sha256": sha(protocol),
-        "data_sha256": sha(paths.bundle),
+        "data_sha256": sha(paths.reference_bundle if baseline is None else paths.bundle),
+        "comparison_summary_sha256": sha(comparison / "evaluation_summary.json"),
         "reference_manifest_sha256": sha(paths.manifest),
         "source_sha256": {
             file.name: sha(file) for file in sorted(Path(__file__).parent.glob("*.py"))
@@ -269,7 +303,7 @@ def execution_bridge(paths: Paths, output: Path, costs: list[int], policies: lis
     evaluated = evaluate_accounts(bundle, maps, schedule, start, end, costs, policies, output)
     differences = {}
     for relative in evaluated["artifacts"]:
-        old = load_gzip(paths.reference / relative)
+        old = load_gzip(comparison / relative)
         new = load_gzip(output / relative)
         old_accounts = old if isinstance(old, list) else [old]
         new_accounts = new if isinstance(new, list) else [new]
@@ -292,14 +326,15 @@ def execution_bridge(paths: Paths, output: Path, costs: list[int], policies: lis
     result = {
         "schema_version": 1,
         "status": "COMPLETE",
-        "purpose": "EXECUTION_DIAGNOSTIC",
+        "purpose": "EXECUTION_DIAGNOSTIC" if baseline is None else "DATA_DIAGNOSTIC",
         "completed_at": now(),
         "decision": "RESEARCH_ONLY",
         "superiority_assessment": "NOT_APPLICABLE_TO_FIXED_OLD_SELECTIONS",
         "execution_model": EXECUTION_MODEL,
         "source_run": paths.reference.relative_to(paths.root).as_posix(),
+        "comparison_run": comparison.relative_to(paths.root).as_posix(),
         "identity": digest(specification),
-        "data_cutoff": paths.config["data_cutoff"],
+        "data_cutoff": str(bundle["cutoff"]),
         "primary_policy": "selected_strategy",
         "trade_start": str(bundle["calendar"][start + 1].date()),
         "trade_end": str(bundle["calendar"][end + 1].date()),

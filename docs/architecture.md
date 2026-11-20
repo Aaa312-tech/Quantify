@@ -12,6 +12,7 @@ rules / allocation / risk → simulation → ledger → validation
 | --- | --- |
 | `cli`、`settings`、`storage` | 命令、根目录、输出隔离、原子写入和哈希 |
 | `dataset` | 载入快照、完整性、时间窗口及标签结束日净化 |
+| `snapshots` | 核验公司行为来源、生成独立快照、重建标签并记录差异 |
 | `features` | 价格特征、同日横截面排序、行业相对特征 |
 | `models`、`calibration` | 固定估计器、残差目标、预测混合、行业检验及历史收益校准 |
 | `training`、`selection` | 在过去验证段选择模型和规则，再重训并冻结外层预测 |

@@ -82,6 +82,13 @@ class IndependentAccountingTests(unittest.TestCase):
         next(iter(d["curve"][0]["positions"].values()))["available"] = 100
         self.assertEqual(reconcile(d, s, m, a)["status"], "FAIL")
 
+    def test_early_cash_payment_rejected_even_with_balanced_accounts(self):
+        detail, summary, meta, actions = self.fixture()
+        actions[0]["cash_available_date"] = detail["curve"][3]["date"]
+        result = reconcile(detail, summary, meta, actions)
+        self.assertEqual(result["status"], "FAIL")
+        self.assertTrue(any("cash availability" in error for error in result["errors"]))
+
 
 if __name__ == "__main__":
     unittest.main()

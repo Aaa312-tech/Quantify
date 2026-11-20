@@ -1,6 +1,6 @@
 """Integer-share, cent-cash research ledger. No account or order integration.
 
-Corporate cash is receivable until a known pay date. Bonus shares are restricted
+Corporate cash is receivable until its opening availability date. Bonus shares are restricted
 until a known listing date. Unavailable dates are never silently invented.
 """
 
@@ -240,6 +240,7 @@ class Ledger:
                         "symbol": s,
                         "cents": net,
                         "pay_date": a.get("cash_pay_date"),
+                        "available_date": a.get("cash_available_date", a.get("cash_pay_date")),
                         "event_id": a["id"],
                     }
                 )
@@ -322,15 +323,19 @@ class Ledger:
                     "extra_shares_restricted": max(0, extra_total),
                     "fractional_shares_discarded": fraction,
                     "pay_date": a.get("cash_pay_date"),
+                    "cash_available_date": a.get("cash_available_date", a.get("cash_pay_date")),
                     "share_list_date": a.get("share_list_date"),
                     "unknown_cash_pay_date": bool(net and not a.get("cash_pay_date")),
+                    "unknown_cash_available_date": bool(
+                        net and not a.get("cash_available_date", a.get("cash_pay_date"))
+                    ),
                     "unknown_share_list_date": bool(extra_total and not a.get("share_list_date")),
                     "bonus_tax_not_modelled": bool(a.get("bonus_per_share", 0) > 0),
                 }
             )
         remaining = []
         for r in self.receivables:
-            if r["pay_date"] and r["pay_date"] <= ds:
+            if r["available_date"] and r["available_date"] <= ds:
                 self.cash += r["cents"]
                 self.events.append(
                     {
@@ -338,6 +343,9 @@ class Ledger:
                         "symbol": r["symbol"],
                         "type": "CASH_DIVIDEND_PAID",
                         "amount": r["cents"] / 100,
+                        "event_id": r["event_id"],
+                        "pay_date": r["pay_date"],
+                        "cash_available_date": r["available_date"],
                     }
                 )
             else:

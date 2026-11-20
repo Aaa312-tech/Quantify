@@ -21,19 +21,27 @@ from .settings import Paths
 from .storage import now, read, save, sha
 
 
-def verify(paths: Paths, output: Path | None = None, refit: bool = False) -> dict:
+def verify(
+    paths: Paths, output: Path | None = None, refit: bool = False, run: str | Path | None = None
+) -> dict:
     """Validate every stored model against its predictions; refit only to a new output."""
     if refit and output is None:
         raise ValueError("Refit verification requires a new output directory")
     integrity = check_integrity(paths)
-    bundle = load_bundle(paths)
+    bundle = load_bundle(paths, reference=run is None)
+    source = paths.reference if run is None else paths.artifact_path(run, "experiments")
+    if run is not None:
+        from .evaluation import experiment_folds
+
+        experiment_folds(paths, bundle, source)
     table = bundle["table"]
     feature_check = validate_features(bundle)
     matrix = table[bundle["features"]].to_numpy(dtype=np.float32)
     records = []
-    for result_path in sorted(paths.reference.glob("training/fold_*/result.json")) + [
-        paths.reference / "final_fit/result.json"
-    ]:
+    result_paths = sorted(source.glob("training/fold_*/result.json"))
+    if (source / "final_fit/result.json").is_file():
+        result_paths.append(source / "final_fit/result.json")
+    for result_path in result_paths:
         result = read(result_path)
         fold = result["fold"]
         stages = [
@@ -80,7 +88,7 @@ def verify(paths: Paths, output: Path | None = None, refit: bool = False) -> dic
         fresh = {}
         for family, actual in predictions.items():
             expected = np.load(
-                paths.reference / "training/fold_01/validation_fit" / family / "predictions.npy"
+                source / "training/fold_01/validation_fit" / family / "predictions.npy"
             )
             np.testing.assert_allclose(actual, expected, rtol=0, atol=1e-12)
             fresh[family] = {
@@ -90,6 +98,8 @@ def verify(paths: Paths, output: Path | None = None, refit: bool = False) -> dic
     result = {
         "status": "PASS",
         "completed_at": now(),
+        "source_run": source.relative_to(paths.root).as_posix(),
+        "data_sha256": sha(paths.reference_bundle if run is None else paths.bundle),
         "integrity": integrity,
         "features": feature_check,
         "models_reloaded": len(records),
