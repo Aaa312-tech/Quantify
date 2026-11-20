@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-21T01:32:05.016459+08:00",
+  "source_bundle_sha256": "d523eece966153dcbbddea9027b41c73bf514bdb3e3d5ad97f6729e41a3657cc",
+  "baseline_commit": "bed46118d4718379bad2aaf24b1583c049d729d3",
+  "source_review": "docs/references/security_status/review_2026-11-21.json",
+  "source_review_sha256": "a39dfa284e7684451540a9f4390072e414ac2cce612cc609e3c2827ddd58b164",
+  "status": "KNOWN_HISTORICAL_ST_ELIGIBILITY_DEFECT",
+  "blocking": true,
+  "blocker": "HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED",
+  "securities": [
+    {
+      "symbol": "sh600777",
+      "name": "新潮能源",
+      "calendar_risk_warning_sessions": 518,
+      "eligible_risk_warning_sessions": 337,
+      "valid_label_counts": {
+        "1": 335,
+        "3": 335,
+        "5": 335
+      }
+    },
+    {
+      "symbol": "sh603389",
+      "name": "亚振家居",
+      "calendar_risk_warning_sessions": 281,
+      "eligible_risk_warning_sessions": 257,
+      "valid_label_counts": {
+        "1": 251,
+        "3": 251,
+        "5": 251
+      }
+    }
+  ],
+  "eligible_rows_in_confirmed_risk_warning_periods": 594,
+  "primary_accounts_with_in_period_trades": 3,
+  "primary_trade_count": 3,
+  "exposure_evidence": "artifacts/checks/historical_status_2026-11-21/issuer_confirmed_exposure.json",
+  "exposure_sha256": "74db91e3fe1a6c6a8f09cc1c2531fe14a222ee2404d6a7d58c1da2e268ca68de",
+  "frozen_integrity": {
+    "status": "PASS",
+    "files": 8834
+  },
+  "model_and_result_changes": false,
+  "next_required_work": [
+    "Complete vendor screening and verify additional risk-warning intervals against dated issuer notices.",
+    "Register date-aware eligibility and price-limit correction without changing risk or strategy candidate budgets.",
+    "Build a separate snapshot, refit and compare all registered accounts against the preserved same-risk baseline."
+  ],
+  "release_condition": "A registered correction and new snapshot identity must be independently verified before removing this hold. Data freshness alone cannot clear it."
+}

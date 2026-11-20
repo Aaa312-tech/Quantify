@@ -22,6 +22,20 @@
 
 开盘报价函数不能读取当日收盘、最高、最低或全日量额来决定成交。缺失开盘状态不等于已证明可成交；现有快照没有经过认证的开盘状态历史。执行输出应注明代理模型和单独的滑点成本。
 
+当前已确认具体的历史资格错误：静态证券名称不能识别新潮能源和亚振家居过去的ST期间，
+594条相应样本仍被标记为合格。公告和账户影响见
+`docs/references/security_status/review_2026-11-21.json`及
+`artifacts/checks/historical_status_2026-11-21/impact.json`。这些事实尚未应用到活跃数据，
+原回测保留；`historical_status_review`将该审查绑定到数据SHA-256并阻止新计划，
+修改行情截止日不能代替历史修正与重新训练。
+
+`fetch-status`使用可选的BaoStock依赖，采集已选股票池中沪深股票的未复权日线和
+`tradestatus/isST`，另存`data/raw`。它不覆盖北交所和ETF，不重建全市场历史成分。
+失败时停止本批请求；`--retry`另开目录，只补前批未成功的证券。
+停牌日的空量额按原样保留，不填零，也不复制为可成交报价。
+`audit-status`离线检查代码、日期、价格、缺口和ST期间的历史资格，结论始终标为
+`SOURCE_SCREENED_NOT_CERTIFIED`。日线状态没有历史发布时间，不能直接生成`opening_status`。
+
 交易规则需要生效区间。[上交所2026年修订说明](https://www.sse.com.cn/aboutus/mediacenter/hotandd/c/c_20260424_10816474.shtml)明确主板风险警示股票自7月6日起改为10%涨跌幅。当前静态元数据不能据此补写此前的ST状态；历史限幅与上市初期例外仍待按日期核查，来源保存在`docs/references/exchange_rules_2026`。
 
 修正公司行为保留`cash_pay_date`公告日期，另用`cash_available_date`表达开盘可用时间；缺失值保持未知。`ex_reference_cash_per_share`与`ex_reference_share_multiplier`只调整价格参考，不能替代实际权益。来源哈希、页码、标签变化与未解决限制随快照归档。

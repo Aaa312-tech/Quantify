@@ -327,6 +327,42 @@ def test_expired_plan_does_not_emit_instructions_or_resolve(tmp_path, monkeypatc
     assert not (tmp_path / "artifacts/plans/invalid").exists()
 
 
+@pytest.mark.parametrize("fault", [None, "changed_hash", "wrong_snapshot", "inconsistent_decision"])
+def test_fresh_data_does_not_clear_a_known_historical_eligibility_defect(
+    tmp_path, monkeypatch, fault
+):
+    paths, _, _, _ = paper_project(tmp_path, monkeypatch)
+    relative = "artifacts/checks/status_review/impact.json"
+    paths.config["historical_status_review"] = relative
+    review = {
+        "source_bundle_sha256": sha(paths.bundle),
+        "status": "KNOWN_HISTORICAL_ST_ELIGIBILITY_DEFECT",
+        "blocking": True,
+    }
+    if fault == "wrong_snapshot":
+        review["source_bundle_sha256"] = "0" * 64
+    if fault == "inconsistent_decision":
+        review["blocking"] = False
+    save(tmp_path / relative, review)
+    manifest = read(paths.manifest)
+    manifest["files"][relative] = sha(tmp_path / relative)
+    save(paths.manifest, manifest)
+    if fault == "changed_hash":
+        save(tmp_path / relative, {**review, "blocking": False})
+    if fault:
+        with pytest.raises(ValueError):
+            freeze_plan(paths, "account.json", "artifacts/plans/rejected")
+        assert not (tmp_path / "artifacts/plans/rejected").exists()
+    else:
+        result = freeze_plan(paths, "account.json", "artifacts/plans/eligibility_hold")
+        plan = read(result["plan"])
+        assert result["blockers"] == ["HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED"]
+        assert result["status"] == "BLOCKED" and plan["orders"] == []
+        assert "intent" not in plan
+        assert plan["input_sha256"][relative] == sha(tmp_path / relative)
+        assert plan["historical_status_review"]["blocking"]
+
+
 def test_late_quote_review_is_labelled_retrospective_and_changed_inputs_fail(tmp_path, monkeypatch):
     paths, _, _, clock = paper_project(tmp_path, monkeypatch)
     result = freeze_plan(paths, "account.json", "artifacts/plans/early")

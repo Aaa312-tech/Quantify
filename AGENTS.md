@@ -30,4 +30,7 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
   to read or trace frozen evidence; use semantic software versions for package releases.
 - The superiority gate is false. Engineering parity does not prove outperformance; the active
   verified snapshot ends on 2026-11-19. Historical status and industry coverage remain incomplete.
+- Issuer notices confirm historical ST eligibility errors and simulated buys. The frozen
+  `historical_status_review` blocks new plans even when fresh bars arrive. Complete a registered
+  date-aware correction and retraining before clearing it; retain the old models and ledgers.
 - Do not operate a trading app, broker account or WeChat.

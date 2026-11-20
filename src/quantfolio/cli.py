@@ -56,6 +56,20 @@ def main(argv: list[str] | None = None) -> None:
     collection.add_argument(
         "--retry", help="Completed raw collection with failed or missing requests"
     )
+    status_collection = commands.add_parser(
+        "fetch-status", help="Collect retrospective daily flags for separate source review"
+    )
+    status_collection.add_argument("--output", required=True, help="New directory under data/raw")
+    status_collection.add_argument("--retry", help="Finished collection with missing histories")
+    status_audit = commands.add_parser(
+        "audit-status", help="Compare daily flags with frozen history"
+    )
+    status_audit.add_argument(
+        "--collection", required=True, action="append", help="Finished raw batch"
+    )
+    status_audit.add_argument(
+        "--output", required=True, help="New directory under artifacts/checks"
+    )
     replay = commands.add_parser(
         "replay", aliases=["backtest"], help="Compare the frozen reference accounts exactly"
     )
@@ -188,6 +202,7 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         return close_account(paths, args.resolution, args.quotes, args.output)
     if args.command == "status":
         from .market import EXECUTION_MODEL
+        from .status_data import load_status_review
 
         active = paths.config.get("evaluation")
         source = paths.artifact_path(active, "evaluations") if active else paths.reference
@@ -222,6 +237,7 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
             "corrected_retraining_completed": corrected,
             "source_evaluation": source.relative_to(paths.root).as_posix(),
             "data_cutoff": paths.config["data_cutoff"],
+            "historical_status_review": load_status_review(paths),
             "test_start": result["trade_start"],
             "test_end": result["trade_end"],
             "gates": result.get("gates", {"superiority": False}),
@@ -249,6 +265,14 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .market_data import fetch_bars
 
         return fetch_bars(paths, args.date, args.output, args.retry)
+    if args.command == "fetch-status":
+        from .status_data import fetch_status_history
+
+        return fetch_status_history(paths, args.output, args.retry)
+    if args.command == "audit-status":
+        from .status_data import audit_status_history
+
+        return audit_status_history(paths, args.collection, args.output)
     if args.command == "refresh-data":
         from .refresh import refresh_snapshot
 

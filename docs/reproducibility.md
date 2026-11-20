@@ -137,6 +137,26 @@ python -m quantfolio refresh-data --protocol configs/protocols/market_extension.
 
 输入、缓存及优化约束使用显式异常，Python的`-O`不会关闭这些检查。普通错误写入stderr并返回1，参数错误返回2；排查时在子命令前加`--debug`查看堆栈。LFS文件未下载时会提示 `git lfs pull`。
 
+## 历史状态筛查
+
+历史状态的外部采集使用独立可选依赖，训练和回测不需要它：
+
+```powershell
+python -m pip install -e '.[status-data]'
+python -m quantfolio fetch-status --output data/raw/status_history_example
+python -m quantfolio fetch-status --retry data/raw/status_history_example --output data/raw/status_history_retry
+python -m quantfolio audit-status --collection data/raw/status_history_example --collection data/raw/status_history_retry --output artifacts/checks/status_history_example
+```
+
+仅当前批未成功时运行补采；没有缺项时命令拒绝创建目录。采集保存原始字段、响应哈希、
+数据身份与请求范围；离线核查可重复传入不重叠的成功批次。数据提供方的日线标记只能
+帮助定位历史状态问题；当前两只证券的公告核验与1425账户排查、三只证券的训练输入
+核查及546只沪深股票的全范围来源比较保存在`artifacts/checks/historical_status_2026-11-21`。
+其中10只带历史ST标记，三只已核实公告，另七只须补证；这些材料不会自动覆盖历史资格、
+模型或回测。前3个采集批次记录了开发期间的源码哈希，但未保存各中间版本的完整源码；
+最后一批另存`collector_source.py`并核对其哈希。最终离线核查重新解析了全部原始响应。
+接口用法和依赖来源见[BaoStock维护者发布页](https://pypi.org/project/baostock/0.9.4/)。
+
 ## 安装包检查
 
 ```powershell

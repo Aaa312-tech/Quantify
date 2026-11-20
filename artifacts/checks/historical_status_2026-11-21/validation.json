@@ -1,0 +1,77 @@
+{
+  "checked_at": "2026-11-21T01:56:03.944264+08:00",
+  "status": "ENGINEERING_PASS_RESEARCH_HOLD",
+  "baseline_commit": "bed46118d4718379bad2aaf24b1583c049d729d3",
+  "source_bundle_sha256": "d523eece966153dcbbddea9027b41c73bf514bdb3e3d5ad97f6729e41a3657cc",
+  "baseline_frozen_files_unchanged": 8834,
+  "integrity_before_summary": {
+    "status": "PASS",
+    "files": 9432
+  },
+  "format_and_lint": "PASS",
+  "tests": {
+    "passed": 189,
+    "skipped": 1,
+    "skip_reason": "Host does not permit directory symlinks"
+  },
+  "package": {
+    "version": "0.15.0",
+    "sdist_and_wheel_built": true,
+    "optional_status_dependency_packaged": true
+  },
+  "model_prediction_parity": {
+    "models": 48,
+    "max_error": 0.0,
+    "refitted": false
+  },
+  "paper_parity": {
+    "sessions": 1386,
+    "reconciliation_checks": 26810,
+    "execution_checks": 42845,
+    "paper_fill_checks": 13239
+  },
+  "paper_accounts_equal": 75,
+  "unchanged_numerical_modules": 14,
+  "historical_equity_curve_unchanged": true,
+  "local_markdown_links_checked": 31,
+  "provider_screening": {
+    "screened_securities": 546,
+    "universe_securities": 594,
+    "st_securities": 10,
+    "st_sessions": 2755,
+    "st_eligible_sessions": 1634,
+    "ohlc_comparisons": 1489064,
+    "ohlc_mismatches": 0,
+    "activated": false,
+    "known_at_established": false
+  },
+  "source_review_queue": {
+    "issuer_confirmed_securities": 3,
+    "pending_securities": 7,
+    "path": "artifacts/checks/historical_status_2026-11-21/source_review_queue.json"
+  },
+  "training_exposure": {
+    "models_verified": 48,
+    "stages": 24,
+    "stages_with_flagged_fit_rows": 24,
+    "unique_flagged_industry_reference_rows": 794,
+    "unique_flagged_fitted_rows": 296,
+    "fit_row_occurrences": 4845
+  },
+  "readiness": {
+    "status": "BLOCKED",
+    "blockers": [
+      "HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED",
+      "ACCOUNT_DATE_DIFFERS_FROM_DATA",
+      "NEXT_OPEN_ALREADY_OCCURRED_OR_DATA_STALE"
+    ],
+    "orders": 0
+  },
+  "collector_provenance_limit": "Batches record intermediate development-file hashes. Exact source snapshots for those intermediate revisions were not archived; all retained responses were independently reparsed and compared by the final auditor.",
+  "next_required_work": [
+    "Register and implement date-aware ST eligibility and price-limit facts, retaining unknown publication times.",
+    "Build a separate corrected snapshot and rebuild ranks, labels and training inputs.",
+    "Refit all registered models and compare complete accounts with the preserved same-risk momentum baseline.",
+    "Keep the plan hold until the repair and refreshed data are verified; no new forward observations have been added."
+  ]
+}

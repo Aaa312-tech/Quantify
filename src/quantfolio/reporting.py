@@ -16,6 +16,7 @@ import pandas as pd
 
 from .dataset import check_integrity
 from .settings import Paths
+from .status_data import load_status_review
 from .storage import load_gzip, read, sha
 
 
@@ -154,6 +155,14 @@ def build_report(paths: Paths, run: str | Path | None = None, *, reference: bool
             "数据诊断：固定旧预测及旧选型，比较核验公司行为与现金可用时点后的结果。"
             "尚未重新训练，不代表选股改进或收益优势通过；数据覆盖限制仍保留。"
         )
+    active = paths.config.get("evaluation")
+    if active and source == paths.artifact_path(active, "evaluations"):
+        review = load_status_review(paths)
+        if review is not None and review["blocking"]:
+            notice = (
+                "历史数据待修正：已确认ST期间仍有样本通过资格筛选，且影响实际模拟买入。"
+                "此处保留原回测结果；修正与重新训练尚未完成，次日建议已暂停。 " + notice
+            )
     links = {
         "methodology_link": "docs/methodology.md",
         "reproduction_link": "docs/reproducibility.md",

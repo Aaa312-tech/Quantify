@@ -25,6 +25,7 @@ from .market import board_limit, regime
 from .models import prediction_map
 from .risk import RiskState, healthy_market
 from .simulation import _Execution, buy_ceiling
+from .status_data import load_status_review
 from .storage import digest, now, read, save, sha
 
 SOURCE_MODULES = (
@@ -36,6 +37,7 @@ SOURCE_MODULES = (
     "risk",
     "rules",
     "simulation",
+    "status_data",
 )
 
 
@@ -502,6 +504,9 @@ def freeze_plan(paths, account_file, output, cost=10):
     if timestamp(account["created_at"]) > created:
         raise ValueError("The account snapshot was created in the future")
     blockers = []
+    status_review = load_status_review(paths)
+    if status_review is not None and status_review["blocking"]:
+        blockers.append("HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED")
     if account["as_of"] != cutoff:
         blockers.append("ACCOUNT_DATE_DIFFERS_FROM_DATA")
     if any(item["available_date"] is None for item in account["receivables"]):
@@ -521,6 +526,8 @@ def freeze_plan(paths, account_file, output, cost=10):
             paths.root / "configs/competition.json",
         ]
     )
+    if status_review is not None:
+        files.append(paths.root / status_review["path"])
     record = {
         "schema_version": 1,
         "created_at": created.isoformat(),
@@ -539,6 +546,7 @@ def freeze_plan(paths, account_file, output, cost=10):
         "input_sha256": {p.relative_to(paths.root).as_posix(): sha(p) for p in files},
         "calendar": calendar,
         "orders": [],
+        "historical_status_review": status_review,
         "signal_horizon_sessions": 5,
         "limitations": [
             "Historical superiority has not passed.",
@@ -613,6 +621,7 @@ def write_plan_report(plan, path):
             "ACCOUNT_DATE_DIFFERS_FROM_DATA": "账户估值日期与行情截止日不一致。",
             "UNRESOLVED_RECEIVABLE_AVAILABILITY": "应收款的可用日期尚未核实。",
             "SIGNAL_SESSION_NOT_COMPLETE": "信号日尚未达到完整日线的核验时点。",
+            "HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED": "已确认历史ST期间的资格筛选错误，需修正数据、重训并验收后再生成建议。",
             "NEXT_OPEN_ALREADY_OCCURRED_OR_DATA_STALE": "对应开盘已经发生，现有数据不足以生成新的前向计划。",
         }
         lines += ["当前不生成买卖建议：", ""] + [
