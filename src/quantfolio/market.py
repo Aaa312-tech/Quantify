@@ -1,11 +1,13 @@
-"""Completed-close regime classification and conservative daily-bar execution."""
+"""Completed-close regime classification and opening-price proxy execution."""
 
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 
-from .ledger import nearest_tick, tick_price
+from .ledger import nearest_tick
+
+EXECUTION_MODEL = "opening_proxy_separate_cost"
 
 
 def board_limit(m, date):
@@ -34,15 +36,32 @@ def regime(panels, date):
     return 0.60, float(breadth), "震荡"
 
 
-def opening_price(meta, raw, date, previous, actions=(), side="BUY", slippage=0.0, check_bar=False):
-    """A daily-bar approximation, with explicit refusal instead of queue fills."""
+def opening_price(meta, raw, date, previous, actions=(), side="BUY", *, status=None):
+    """Use only the opening quote and information available by the opening auction.
+
+    Daily volume and the eventual high/low cannot establish opening tradability.
+    Without timestamped status or auction depth, a valid quote is only a proxy.
+    Execution costs are charged separately by the ledger, never in this price.
+    """
+    if side not in {"BUY", "SELL"}:
+        raise ValueError("Opening side must be BUY or SELL")
+    if status is not None:
+        known_at = pd.Timestamp(status.get("known_at"))
+        opening_time = pd.Timestamp(date).tz_localize("Asia/Shanghai") + pd.Timedelta(
+            hours=9, minutes=25
+        )
+        if pd.isna(known_at) or known_at.tzinfo is None or known_at > opening_time:
+            return None, "STATUS_NOT_AVAILABLE_AT_OPEN"
+        if not isinstance(status.get("suspended"), bool):
+            return None, "INVALID_OPENING_STATUS"
+        if status["suspended"]:
+            return None, "SUSPENDED_AT_OPEN"
     if date not in raw.index or previous not in raw.index:
         return None, "NO_QUOTE"
-    bar = raw.loc[date]
     old = float(raw.at[previous, "close"])
-    o = float(bar.open)
-    if not np.isfinite(o) or o <= 0 or not np.isfinite(bar.volume_lots) or bar.volume_lots <= 0:
-        return None, "NO_VOLUME"
+    o = float(raw.at[date, "open"])
+    if not np.isfinite(o) or o <= 0 or not np.isfinite(old) or old <= 0:
+        return None, "INVALID_OPENING_REFERENCE"
     today = [a for a in actions if a["ex_date"] == str(date.date())]
     ref = old
     for a in today:
@@ -52,21 +71,20 @@ def opening_price(meta, raw, date, previous, actions=(), side="BUY", slippage=0.
         if a.get("price_limit_reference") is not None:
             ref = a["price_limit_reference"]
     tick = 0.001 if meta["kind"] == "etf" else 0.01
+    if not np.isfinite(ref) or ref <= 0:
+        return None, "INVALID_OPENING_REFERENCE"
+    if abs(o - nearest_tick(o, tick)) > tick * 1e-6:
+        return None, "OFF_TICK_OPENING_QUOTE"
     lim = board_limit(meta, date)
     upper = nearest_tick(ref * (1 + lim), tick)
     lower = nearest_tick(ref * (1 - lim), tick)
+    if not lower <= o <= upper:
+        return None, "OPEN_OUTSIDE_ASSUMED_LIMIT"
     if side == "BUY" and o >= upper - tick * 0.51:
         return None, "OPEN_AT_UPPER_LIMIT"
     if side == "SELL" and o <= lower + tick * 0.51:
         return None, "OPEN_AT_LOWER_LIMIT"
-    price = tick_price(
-        o * (1 + slippage if side == "BUY" else 1 - slippage), tick, up=side == "BUY"
-    )
-    if not lower <= price <= upper:
-        return None, "MODEL_SLIPPAGE_OUTSIDE_LIMIT"
-    if check_bar and (price > bar.high + tick * 0.1 or price < bar.low - tick * 0.1):
-        return None, "MODEL_SLIPPAGE_OUTSIDE_BAR"
-    return float(price), None
+    return o, None
 
 
 def gross_entitlement(entry, exit_date, exit_price, actions):
@@ -120,12 +138,12 @@ def legal_label(meta, raw, calendar, index, horizon, actions):
     if target >= len(calendar):
         return np.nan, -1, LABEL_STATUS["RIGHT_CENSORED"], 0
     entry = calendar[entry_index]
-    buy, reason = opening_price(meta, raw, entry, calendar[index], actions, "BUY", 0.0)
+    buy, reason = opening_price(meta, raw, entry, calendar[index], actions, "BUY")
     if reason:
         return np.nan, -1, LABEL_STATUS["NO_ENTRY"], 0
     for j in range(target, len(calendar)):
         exit_date = calendar[j]
-        sell, reason = opening_price(meta, raw, exit_date, calendar[j - 1], actions, "SELL", 0.0)
+        sell, reason = opening_price(meta, raw, exit_date, calendar[j - 1], actions, "SELL")
         if reason:
             continue
         wealth, listing, problem = gross_entitlement(entry, exit_date, sell, actions)

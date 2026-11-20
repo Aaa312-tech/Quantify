@@ -8,12 +8,13 @@ from typing import Any
 import numpy as np
 
 from .dataset import check_integrity, eligible_rows, load_bundle, walk_forward_folds
+from .market import EXECUTION_MODEL
 from .metrics import episode_stats
 from .models import CANDIDATES, prediction_map
 from .rules import CONFIGS
 from .settings import Paths
 from .simulation import episodes, simulate
-from .storage import digest, dump_gzip, log, now, read, save, sha
+from .storage import digest, dump_gzip, load_gzip, log, now, read, save, sha
 from .validation import execution_audit, reconcile
 
 POLICIES = ["selected_strategy", "matched_momentum", "selected_baseline_rules"] + [
@@ -124,6 +125,43 @@ def evaluate(
     status, folds = experiment_folds(paths, bundle, run)
     maps, schedule, choices, start, end = load_predictions(bundle, run, folds, status["identity"])
     policies = POLICIES if all_policies else ["selected_strategy", "matched_momentum"]
+    evaluated = evaluate_accounts(bundle, maps, schedule, start, end, costs, policies, output)
+    input_files = [run / "protocol.json", run / "training_status.json"]
+    for fold in folds:
+        input_files.extend(
+            run / "training" / f"fold_{fold['fold']:02d}" / name
+            for name in ("result.json", "outer_predictions.npz")
+        )
+    result = {
+        "schema_version": 1,
+        "status": status["status"],
+        "completed_at": now(),
+        "decision": "RESEARCH_ONLY",
+        "superiority_assessment": "NOT_PERFORMED",
+        "execution_model": EXECUTION_MODEL,
+        "source_run": run.relative_to(paths.root).as_posix(),
+        "identity": status["identity"],
+        "data_cutoff": paths.config["data_cutoff"],
+        "primary_policy": "selected_strategy",
+        "trade_start": str(bundle["calendar"][start + 1].date()),
+        "trade_end": str(bundle["calendar"][end + 1].date()),
+        "outer_signal_sessions": end - start + 1,
+        "folds": len(folds),
+        "fold_choices": [
+            {key: choice[key] for key in ("fold", "selected_candidate", "selected_rules")}
+            for choice in choices
+        ],
+        **evaluated,
+        "input_sha256": {
+            path.relative_to(paths.root).as_posix(): sha(path) for path in input_files
+        },
+    }
+    save(output / "evaluation_summary.json", result, immutable=True)
+    return result
+
+
+def evaluate_accounts(bundle, maps, schedule, start, end, costs, policies, output):
+    """Persist the same audited account matrix for retraining and execution diagnosis."""
     results, continuous, artifacts = {}, {}, {}
     reconciliation_checks = execution_checks = accounts = 0
     for cost in sorted(set(costs)):
@@ -157,40 +195,101 @@ def evaluate(
                 artifacts[relative] = sha(path)
             results[key][policy] = {"aggregate": episode_stats(episodes_result)}
             continuous[key][policy] = {"summary": summary}
-            log("Evaluated training run", cost=key, policy=policy, folds=len(folds))
-    input_files = [run / "protocol.json", run / "training_status.json"]
-    for fold in folds:
-        input_files.extend(
-            run / "training" / f"fold_{fold['fold']:02d}" / name
-            for name in ("result.json", "outer_predictions.npz")
-        )
-    result = {
-        "schema_version": 1,
-        "status": status["status"],
-        "completed_at": now(),
-        "decision": "RESEARCH_ONLY",
-        "superiority_assessment": "NOT_PERFORMED",
-        "source_run": run.relative_to(paths.root).as_posix(),
-        "identity": status["identity"],
-        "data_cutoff": paths.config["data_cutoff"],
-        "primary_policy": "selected_strategy",
-        "trade_start": str(bundle["calendar"][start + 1].date()),
-        "trade_end": str(bundle["calendar"][end + 1].date()),
-        "outer_signal_sessions": end - start + 1,
-        "folds": len(folds),
-        "fold_choices": [
-            {key: choice[key] for key in ("fold", "selected_candidate", "selected_rules")}
-            for choice in choices
-        ],
+            log("Evaluated accounts", cost=key, policy=policy, accounts=len(episodes_result) + 1)
+    return {
         "results": results,
         "continuous": continuous,
         "accounts": accounts,
         "reconciliation_checks": reconciliation_checks,
         "execution_checks": execution_checks,
-        "input_sha256": {
-            path.relative_to(paths.root).as_posix(): sha(path) for path in input_files
-        },
         "artifacts": artifacts,
+    }
+
+
+def first_difference(before, after, path=""):
+    """Find the first changed existing field, ignoring newly added audit metadata."""
+    if isinstance(before, dict) and isinstance(after, dict):
+        for key in before:
+            difference = first_difference(before[key], after.get(key), f"{path}/{key}")
+            if difference:
+                return difference
+        return None
+    if isinstance(before, list) and isinstance(after, list):
+        for index, (old, new) in enumerate(zip(before, after)):
+            difference = first_difference(old, new, f"{path}/{index}")
+            if difference:
+                return difference
+        if len(before) == len(after):
+            return None
+        return {"path": path + "/length", "before": len(before), "after": len(after)}
+    if before != after:
+        return {"path": path, "before": before, "after": after}
+    return None
+
+
+def execution_bridge(paths: Paths, output: Path, costs: list[int], policies: list[str]) -> dict:
+    """Hold archived predictions and choices fixed while diagnosing corrected execution."""
+    output = paths.output_path(output, "evaluations")
+    check_integrity(paths)
+    bundle = load_bundle(paths)
+    maps, schedule, choices, start, end = load_predictions(bundle, paths.reference)
+    protocol = paths.root / "configs/protocols/causal_execution.json"
+    specification = {
+        "protocol_sha256": sha(protocol),
+        "data_sha256": sha(paths.bundle),
+        "reference_manifest_sha256": sha(paths.manifest),
+        "source_sha256": {
+            file.name: sha(file) for file in sorted(Path(__file__).parent.glob("*.py"))
+        },
+        "costs_bps": costs,
+        "policies": policies,
+    }
+    save(output / "protocol.json", specification, immutable=True)
+    evaluated = evaluate_accounts(bundle, maps, schedule, start, end, costs, policies, output)
+    differences = {}
+    for relative in evaluated["artifacts"]:
+        old = load_gzip(paths.reference / relative)
+        new = load_gzip(output / relative)
+        old_accounts = old if isinstance(old, list) else [old]
+        new_accounts = new if isinstance(new, list) else [new]
+        if len(old_accounts) != len(new_accounts):
+            raise ValueError(f"Bridge account boundaries differ: {relative}")
+        differences[relative] = [
+            {
+                "account": index,
+                "start": prior["summary"]["start"],
+                "before": prior["summary"],
+                "after": current["summary"],
+                "first_difference": {
+                    section: first_difference(prior["ledger"][section], current["ledger"][section])
+                    for section in ("decisions", "trades", "rejections", "curve")
+                },
+            }
+            for index, (prior, current) in enumerate(zip(old_accounts, new_accounts))
+        ]
+    save(output / "differences.json", differences, immutable=True)
+    result = {
+        "schema_version": 1,
+        "status": "COMPLETE",
+        "purpose": "EXECUTION_DIAGNOSTIC",
+        "completed_at": now(),
+        "decision": "RESEARCH_ONLY",
+        "superiority_assessment": "NOT_APPLICABLE_TO_FIXED_OLD_SELECTIONS",
+        "execution_model": EXECUTION_MODEL,
+        "source_run": paths.reference.relative_to(paths.root).as_posix(),
+        "identity": digest(specification),
+        "data_cutoff": paths.config["data_cutoff"],
+        "primary_policy": "selected_strategy",
+        "trade_start": str(bundle["calendar"][start + 1].date()),
+        "trade_end": str(bundle["calendar"][end + 1].date()),
+        "outer_signal_sessions": end - start + 1,
+        "folds": len(choices),
+        "fold_choices": [
+            {key: choice[key] for key in ("fold", "selected_candidate", "selected_rules")}
+            for choice in choices
+        ],
+        "differences_sha256": sha(output / "differences.json"),
+        **evaluated,
     }
     save(output / "evaluation_summary.json", result, immutable=True)
     return result

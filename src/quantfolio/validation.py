@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import collections
 import datetime as dt
+import math
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal
 
 import pandas as pd
@@ -16,6 +17,60 @@ def money(value):
     return int((Decimal(str(value)) * 100).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
 
 
+def opening_errors(trade, bundle):
+    """Check the proxy independently; deliberately do not call the quote generator."""
+    symbol = trade["symbol"]
+    date = pd.Timestamp(trade["date"])
+    previous = bundle["calendar"][bundle["calendar"].get_loc(date) - 1]
+    meta = bundle["meta"][symbol]
+    raw = bundle["raws"][symbol]
+    if date not in raw.index or previous not in raw.index:
+        return ["MISSING_OPENING_QUOTE"]
+    opening = float(raw.at[date, "open"])
+    reference = float(raw.at[previous, "close"])
+    if not math.isfinite(opening) or opening <= 0 or not math.isfinite(reference) or reference <= 0:
+        return ["INVALID_OPENING_REFERENCE"]
+    failures = []
+    if trade["price"] != opening:
+        failures.append("NOT_OPENING_PROXY")
+    status = bundle.get("opening_status", {}).get(trade["date"], {}).get(symbol)
+    if status is not None:
+        known = pd.Timestamp(status.get("known_at"))
+        deadline = date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=9, minutes=25)
+        if pd.isna(known) or known.tzinfo is None or known > deadline:
+            failures.append("STATUS_NOT_AVAILABLE_AT_OPEN")
+        if status.get("suspended") is not False:
+            failures.append("SUSPENDED_OR_INVALID_STATUS")
+    for action in bundle["actions"]:
+        if action["symbol"] == symbol and action["ex_date"] == trade["date"]:
+            reference = (
+                reference - action.get("ex_reference_cash_per_share", action["cash_per_share"])
+            ) / action["share_multiplier"]
+            if action.get("price_limit_reference") is not None:
+                reference = action["price_limit_reference"]
+    tick = Decimal(".001" if meta["kind"] == "etf" else ".01")
+    if meta["kind"] == "etf":
+        limit = meta.get("observed_limit", 0.20 if meta["code"] in ["159915", "588000"] else 0.10)
+    elif symbol.startswith("bj"):
+        limit = 0.30
+    elif meta["code"].startswith(("300", "301", "688", "689")):
+        limit = 0.20
+    else:
+        limit = 0.10
+    upper = (Decimal(str(reference * (1 + limit))) / tick).quantize(
+        Decimal("1"), rounding=ROUND_HALF_UP
+    ) * tick
+    lower = (Decimal(str(reference * (1 - limit))) / tick).quantize(
+        Decimal("1"), rounding=ROUND_HALF_UP
+    ) * tick
+    price = Decimal(str(opening))
+    if price % tick != 0 or price < lower or price > upper:
+        failures.append("INVALID_PROXY_TICK_OR_LIMIT")
+    if (trade["side"] == "BUY" and price >= upper) or (trade["side"] == "SELL" and price <= lower):
+        failures.append("DIRECTIONAL_LIMIT_FILL")
+    return failures
+
+
 def reconcile(detail, summary, meta, actions):
     """Reconstruct cash, shares, distributions and marked equity independently of the simulator."""
     cash = 100_000_000
@@ -23,6 +78,7 @@ def reconcile(detail, summary, meta, actions):
     lots = collections.defaultdict(list)
     rights = {}
     fees = 0
+    slippage = 0
     previous = 100_000_000
     events = collections.defaultdict(list)
     trades = collections.defaultdict(list)
@@ -110,6 +166,10 @@ def reconcile(detail, summary, meta, actions):
                 )
             check(fee == money(trade["fee"]), day + " fees")
             fees += fee
+            impact = money(gross / 100 * trade.get("slippage_rate", 0.0))
+            check(impact == money(trade.get("slippage_cost", 0.0)), day + " slippage cost")
+            check(impact >= 0, day + " nonnegative slippage")
+            slippage += impact
             if trade["side"] == "BUY":
                 minimum = (
                     200 if m["kind"] == "stock" and m["code"].startswith(("688", "689")) else 100
@@ -121,7 +181,7 @@ def reconcile(detail, summary, meta, actions):
                     else 100
                 )
                 check(q >= minimum and q % step == 0, day + " lot rule")
-                cash -= gross + fee
+                cash -= gross + fee + impact
                 lots[s].append(
                     {
                         "quantity": q,
@@ -141,7 +201,7 @@ def reconcile(detail, summary, meta, actions):
                         used = min(lot["quantity"], remaining)
                         lot["quantity"] -= used
                         remaining -= used
-                cash += gross - fee
+                cash += gross - fee - impact
             check(cash == money(trade["cash_after"]) and cash >= 0, day + " cash after fill")
         value = 0
         for s, p in row["positions"].items():
@@ -165,6 +225,9 @@ def reconcile(detail, summary, meta, actions):
             rights[(s, day)] = [dict(x) for x in lots[s] if x["quantity"] > 0]
         previous = money(row["nav"])
     check(fees == money(summary["fees"]), "fee total")
+    check(slippage == money(summary.get("slippage_cost", 0.0)), "slippage total")
+    if "total_cost" in summary:
+        check(fees + slippage == money(summary["total_cost"]), "total execution costs")
     check(abs(summary["return"] - (previous / 100_000_000 - 1)) < 1e-12, "terminal return")
     return {"status": "PASS" if not errors else "FAIL", "checks": checks, "errors": errors}
 
@@ -181,6 +244,13 @@ def execution_audit(ledger, bundle):
     marks = {(x["date"], x["after_fill"]): x for x in ledger["intermediate_weights"]}
     decisions = {decision["execution_date"]: decision for decision in ledger["decisions"]}
     previous_phase = "NORMAL"
+    execution = ledger.get("execution")
+    if execution is None or (
+        execution.get("model") != "opening_proxy_separate_cost"
+        or not math.isfinite(execution.get("slippage_rate", float("nan")))
+        or execution["slippage_rate"] < 0
+    ):
+        return {"status": "FAIL", "checks": checks, "errors": [["INVALID_EXECUTION_MODEL"]]}
     for row, decision in zip(ledger["curve"], ledger["decisions"]):
         state = decision["recovery"]
         if state["phase"] not in CAPS:
@@ -220,6 +290,14 @@ def execution_audit(ledger, bundle):
             errors.append(["ADV_LIMIT", trade])
         if trade["cash_after"] < 0:
             errors.append(["NEGATIVE_CASH", trade])
+        if execution is not None:
+            checks += 3
+            errors.extend([reason, trade] for reason in opening_errors(trade, bundle))
+            if trade.get("slippage_rate") != execution["slippage_rate"]:
+                errors.append(["SLIPPAGE_RATE_MISMATCH", trade])
+            expected_cost = money(trade["gross"] * execution["slippage_rate"])
+            if money(trade.get("slippage_cost", -1)) != expected_cost:
+                errors.append(["SLIPPAGE_COST_MISMATCH", trade])
         if trade["side"] == "BUY":
             checks += 4
             weights = marks[trade["date"], i + 1]

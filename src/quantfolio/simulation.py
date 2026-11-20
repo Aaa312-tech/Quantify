@@ -10,8 +10,8 @@ import numpy as np
 import pandas as pd
 
 from .allocation import allocate
-from .ledger import Ledger, buy_quantity, fees_cents, lot_rule
-from .market import opening_price, regime
+from .ledger import Ledger, buy_quantity, cents, fees_cents, lot_rule, slippage_cents
+from .market import EXECUTION_MODEL, opening_price, regime
 from .metrics import account_stats
 from .risk import RiskState, healthy_market
 from .rules import config_for
@@ -50,7 +50,7 @@ def buy_ceiling(raw, previous, date, actions, atr):
 
 @dataclass
 class _Execution:
-    """Fill one opening session; prices include earlier fills in the same session."""
+    """Execute prior-close targets at opening proxies with separately debited costs."""
 
     ledger: Ledger
     bundle: dict
@@ -73,8 +73,7 @@ class _Execution:
             self.previous,
             self.actions[symbol],
             side,
-            self.slippage,
-            True,
+            status=self.bundle.get("opening_status", {}).get(str(self.date.date()), {}).get(symbol),
         )
 
     def _observe(self):
@@ -121,7 +120,9 @@ class _Execution:
             )
             if desired == 0:
                 quantity = min(self.ledger.quantity(symbol), math.floor(adv * 0.01 / price))
-            self.ledger.sell(self.date, symbol, quantity, price, self.previous)
+            self.ledger.sell(
+                self.date, symbol, quantity, price, self.previous, slippage=self.slippage
+            )
             self.prices[symbol] = price
             self._observe()
 
@@ -166,7 +167,11 @@ class _Execution:
                 max(0.0, 0.30 * nav - industry),
                 max(0.0, self.cap * nav - sum(position_values.values())),
             )
-            quantity = buy_quantity(budget, price, self.ledger.meta[symbol]) if budget >= 100 else 0
+            quantity = (
+                buy_quantity(budget, price, self.ledger.meta[symbol], slippage=self.slippage)
+                if budget >= 100
+                else 0
+            )
             if not quantity:
                 self.ledger.reject(self.date, symbol, "BUY", "LOT_BUDGET_TOO_SMALL")
                 continue
@@ -176,18 +181,20 @@ class _Execution:
                 continue
             initial = quantity
             while quantity >= minimum:
-                fee = fees_cents(quantity * price, self.ledger.meta[symbol], "BUY") / 100
-                after_fee_nav = nav - fee
+                gross = cents(quantity * price) / 100
+                fee = fees_cents(gross, self.ledger.meta[symbol], "BUY") / 100
+                impact = slippage_cents(gross, self.slippage) / 100
+                after_fee_nav = nav - fee - impact
                 if (
                     post_buy_limits(
                         position_values,
                         self.ledger.meta,
                         symbol,
-                        quantity * price,
+                        gross,
                         after_fee_nav,
                         self.cap,
                     )
-                    and quantity * price + fee <= self.ledger.cash / 100 + 1e-8
+                    and gross + fee + impact <= self.ledger.cash / 100 + 1e-8
                 ):
                     break
                 quantity -= step
@@ -205,7 +212,9 @@ class _Execution:
             ):
                 self.ledger.reject(self.date, symbol, "BUY", "EXACT_FEES_EXCEED_EDGE")
                 continue
-            if self.ledger.buy(self.date, symbol, quantity, price, self.previous):
+            if self.ledger.buy(
+                self.date, symbol, quantity, price, self.previous, slippage=self.slippage
+            ):
                 if quantity != initial:
                     decision.setdefault("resized_buys", []).append(
                         {"symbol": symbol, "from": initial, "to": quantity}
@@ -316,6 +325,7 @@ def simulate(
         )
         decision["recovery"] = state
         decision["rule_config"] = active_config
+        decision["target_weights"] = dict(target_weights)
         decisions.append(decision)
         for action in ex_dates[day]:
             if ledger.quantity(action["symbol"]) and (
@@ -407,6 +417,7 @@ def simulate(
             raise ValueError("Negative cash")
     summary = account_stats(ledger, curve, decisions, quality, mode)
     full = {
+        "execution": {"model": EXECUTION_MODEL, "slippage_rate": slippage},
         "curve": curve,
         "trades": ledger.trades,
         "events": ledger.events,

@@ -1,0 +1,59 @@
+{
+  "name": "causal_execution",
+  "registered_on": "2026-11-20",
+  "purpose": "Repair the information boundary of opening execution before further strategy selection.",
+  "baseline_commit": "e11bb36b06a1d55954eb718fed897867b406fed8",
+  "reference": "artifacts/reference/2026-11-19",
+  "reference_protocol": "configs/experiment.json",
+  "data_snapshot": "data/processed/2026-11-18/bundle.joblib",
+  "constraints": {
+    "risk_preference": "balanced_attack",
+    "drawdown_alert": 0.08,
+    "risk_controller": "latched; original high-water mark; no restoration after 8%",
+    "initial_cash": 1000000,
+    "preserve_reference_bytes": true,
+    "no_app_or_account_operations": true
+  },
+  "execution": {
+    "model": "opening_proxy_separate_cost",
+    "order_information": "Prior completed close, preceding available labels, prior ADV and ATR, predeclared risk and allocation rules.",
+    "opening_information": "Current opening quote, prior close, announced ex-date reference adjustments. No same-day high, low, close, amount or full-session volume.",
+    "fill": "Tick-valid opening-price proxy; refuse missing, invalid, explicitly suspended or directionally limit-blocked openings. This is not an observed auction fill or queue simulation.",
+    "slippage": "Separate nonnegative cent-rounded cash cost on executed gross at 10/20/30 bps per side. Do not also shift the execution price.",
+    "fees": "Existing commission, minimum commission, transfer and stamp assumptions on proxy gross; dividend conventions unchanged.",
+    "unknown_status": "Record absent point-in-time suspension, ST and listing coverage as a data limitation; never infer opening tradability from full-day volume."
+  },
+  "comparisons": [
+    {
+      "name": "execution_bridge",
+      "inputs": "Frozen outer predictions, calibration, selected rule schedule and original data.",
+      "changes": "Execution and separately booked slippage only.",
+      "interpretation": "Diagnostic attribution; original inner selections may contain execution bias."
+    },
+    {
+      "name": "data_bridge",
+      "inputs": "Same frozen predictions and research rules, corrected engine.",
+      "changes": "Only verified data corrections, if available; report changed coverage and labels."
+    },
+    {
+      "name": "causal_retraining",
+      "inputs": "All 11 windows plus latest fit; original candidate and turnover budgets, model hyperparameters and selection thresholds.",
+      "changes": "Repeat fitting, calibration and validation selection with corrected execution. No reuse of old validation account caches."
+    }
+  ],
+  "evaluation": {
+    "policies": ["selected_strategy", "matched_momentum", "selected_baseline_rules", "all 16 fixed turnover configurations"],
+    "cost_bps_per_side": [10, 20, 30],
+    "scope": "11 outer folds, 23 complete 10-session accounts, one partial tail and a 231-session continuous account per policy and cost on the original calendar.",
+    "attribution": ["first differing decision and trade", "return", "drawdown", "fees", "slippage cost", "turnover", "exposure", "phase days", "rejections", "unresolved actions"],
+    "inference": "The historical period has already been inspected. No pristine holdout or prospective claim; costs are separate path scenarios, not independent samples.",
+    "correctness_gate": "Opening perturbation invariance, integer-cash reconciliation, independent fill/cost audit, T+1 and risk/cap checks must pass before interpreting returns.",
+    "superiority_gate": "Diagnostic bridge cannot certify alpha. Keep original research-only decision until separately preregistered comparative and forward gates pass.",
+    "failure_policy": "Keep corrected causality even if returns decline. Persist failures and investigate, without changing thresholds after outer results."
+  },
+  "later_research": {
+    "budget": "At most 6 separately preregistered single changes, then at most 2 combinations chosen only on inner data.",
+    "scope": ["industry-aware selection and calibrated ranking", "drawdown recovery as an isolated candidate", "necessary exits versus discretionary turnover"],
+    "registration_required": "Register concrete hypotheses, thresholds and multiplicity treatment before running new candidate outcomes."
+  }
+}

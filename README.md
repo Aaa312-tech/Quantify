@@ -4,7 +4,9 @@
 
 A股模拟投资研究项目，Python包与命令名为`quantfolio`。当前采用**滚动选型动量**策略：动量候选池、行业残差模型、滚动验证选型、次日开盘模拟。使用均衡进攻和8%回撤预警；仓位降级后不恢复。
 
-**收益优势验证未通过。** 主策略与同风控动量的结果相同，新增选股模型尚未证明有稳定增益。
+**收益优势验证未通过，正在修正执行与数据基线。** 已去除开盘成交对当天后续高低价、全天成交量的依赖，改用开盘价代理与单独记账的滑点成本。旧模型选择也受到旧成交器影响，必须重新训练与验证，不能把执行修正当作选股增益。进度与验收见[修正计划](docs/remediation.md)。
+
+下面是**修正前的冻结记录**，用于追溯，不能当作当前成交模型的有效收益验证：
 
 | 每边10bp滑点，另计交易费 | 滚动选型动量 | 同风控动量 | 历史基准（不恢复仓位） |
 | --- | ---: | ---: | ---: |
@@ -68,6 +70,6 @@ scripts/check.ps1 -Python '.\.venv\Scripts\python'
 scripts/sync.ps1 -Python '.\.venv\Scripts\python' -Message 'refactor: describe the change'
 ```
 
-同步脚本依次检查、提交、推送并等待CI。CI构建并安装wheel，在Windows和Ubuntu上测试；完整历史验证需本地LFS数据。涉及数值或成交逻辑的修改必须重放冻结账本。
+同步脚本依次检查、提交、推送并等待CI。CI构建并安装wheel，在Windows和Ubuntu上测试；完整历史验证需本地LFS数据。重构应保持账本相同；成交错误修正必须保留旧引擎复现证据，并单独记录新模型的差异。
 
 [代码约定与参考实现](CONTRIBUTING.md) · [架构](docs/architecture.md) · [方法](docs/methodology.md) · [仓库维护](docs/repository.md) · [本地报告](reports/latest/index.html) · [变更记录](CHANGELOG.md)

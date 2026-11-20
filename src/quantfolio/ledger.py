@@ -42,20 +42,20 @@ def lot_rule(m):
     return 100, 100
 
 
-def buy_quantity(budget, price, m, commission=0.0003, minimum=5, transfer=0.00001):
+def buy_quantity(budget, price, m, commission=0.0003, minimum=5, transfer=0.00001, *, slippage=0.0):
     """Find an affordable legal buy quantity including minimum commissions."""
     if budget <= 0 or price <= 0:
         return 0
     minimum_qty, step = lot_rule(m)
     tr = transfer if m["kind"] == "stock" else 0
-    q = max(0, math.floor((budget - minimum) / (price * (1 + commission + tr))))
+    q = max(0, math.floor((budget - minimum) / (price * (1 + commission + tr + slippage))))
     if step > 1:
         q = q // step * step
     if q < minimum_qty:
         return 0
     while q and cents(price * q) + fees_cents(
         price * q, m, "BUY", commission, minimum, transfer
-    ) > cents(budget):
+    ) + slippage_cents(cents(price * q) / 100, slippage) > cents(budget):
         q -= step
     return q if q >= minimum_qty else 0
 
@@ -69,6 +69,13 @@ def fees_cents(gross, m, side, commission=0.0003, minimum=5, transfer=0.00001, s
         + cents(gross * transfer if m["kind"] == "stock" else 0)
         + cents(gross * stamp if side == "SELL" and m["kind"] == "stock" else 0)
     )
+
+
+def slippage_cents(gross, rate):
+    """Debit one declared cost on proxy gross; the quote itself is not displaced."""
+    if not math.isfinite(rate) or rate < 0 or not math.isfinite(gross) or gross < 0:
+        raise ValueError("Slippage rate and gross must be finite and nonnegative")
+    return cents(gross * rate)
 
 
 @dataclass
@@ -125,16 +132,17 @@ class Ledger:
             {"date": str(date.date()), "symbol": s, "side": side, "reason": reason}
         )
 
-    def buy(self, date, s, quantity, price, signal_date=None):
+    def buy(self, date, s, quantity, price, signal_date=None, *, slippage=0.0):
         mn, step = lot_rule(self.meta[s])
         if quantity < mn or quantity % step:
             raise ValueError("Illegal buy quantity")
         gross = cents(quantity * price)
         fee = fees_cents(gross / 100, self.meta[s], "BUY")
-        if gross + fee > self.cash:
+        impact = slippage_cents(gross / 100, slippage)
+        if gross + fee + impact > self.cash:
             self.reject(date, s, "BUY", "INSUFFICIENT_CASH")
             return False
-        self.cash -= gross + fee
+        self.cash -= gross + fee + impact
         self.lots.setdefault(s, []).append(
             Lot(self.next_id, quantity, date, date + pd.Timedelta(days=1), price)
         )
@@ -149,12 +157,14 @@ class Ledger:
                 "price": price,
                 "gross": gross / 100,
                 "fee": fee / 100,
+                "slippage_rate": slippage,
+                "slippage_cost": impact / 100,
                 "cash_after": self.cash / 100,
             }
         )
         return True
 
-    def sell(self, date, s, requested, price, signal_date=None):
+    def sell(self, date, s, requested, price, signal_date=None, *, slippage=0.0):
         available = self.available(s, date)
         q = min(int(requested), available)
         mn, step = lot_rule(self.meta[s])
@@ -168,7 +178,8 @@ class Ledger:
             return 0
         gross = cents(q * price)
         fee = fees_cents(gross / 100, self.meta[s], "SELL")
-        if self.cash + gross - fee < 0:
+        impact = slippage_cents(gross / 100, slippage)
+        if self.cash + gross - fee - impact < 0:
             self.reject(date, s, "SELL", "FEES_EXCEED_CASH")
             return 0
         remain = q
@@ -180,7 +191,7 @@ class Ledger:
         self.lots[s] = [x for x in self.lots[s] if x.quantity]
         if not self.lots[s]:
             self.lots.pop(s)
-        self.cash += gross - fee
+        self.cash += gross - fee - impact
         self.trades.append(
             {
                 "date": str(date.date()),
@@ -191,6 +202,8 @@ class Ledger:
                 "price": price,
                 "gross": gross / 100,
                 "fee": fee / 100,
+                "slippage_rate": slippage,
+                "slippage_cost": impact / 100,
                 "cash_after": self.cash / 100,
             }
         )

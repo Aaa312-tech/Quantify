@@ -26,6 +26,12 @@ def main(argv: list[str] | None = None) -> None:
     replay.add_argument("--output", required=True, help="New directory under artifacts/replays")
     replay.add_argument("--cost", type=int, choices=[10, 20, 30], action="append")
     replay.add_argument("--primary-only", action="store_true")
+    bridge = commands.add_parser(
+        "execution-bridge", help="Diagnose execution with frozen predictions"
+    )
+    bridge.add_argument("--output", required=True, help="New directory under artifacts/evaluations")
+    bridge.add_argument("--cost", type=int, choices=[10, 20, 30], action="append")
+    bridge.add_argument("--primary-only", action="store_true")
     training = commands.add_parser("train", help="Train a new run using the registered protocol")
     training.add_argument(
         "--output", required=True, help="New directory under artifacts/experiments"
@@ -106,6 +112,13 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
 
         output = paths.output_path(args.output, "experiments")
         return run_training(paths, output, args.first, args.last, args.include_latest)
+    if args.command == "execution-bridge":
+        from .evaluation import POLICIES, execution_bridge
+
+        policies = ["selected_strategy", "matched_momentum"] if args.primary_only else POLICIES
+        return execution_bridge(
+            paths, args.output, sorted(set(args.cost or [10, 20, 30])), policies
+        )
     if args.command == "evaluate":
         from .evaluation import evaluate
 
