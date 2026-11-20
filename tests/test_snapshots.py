@@ -30,6 +30,9 @@ def test_shift_declared_payments_once_and_preserve_unknowns():
     assert [a["cash_available_date"] for a in updated] == ["2026-06-08", "2026-06-08", None, None]
     assert next_opening(calendar, "2026-06-06") == "2026-06-08"
     assert actions == original
+    repeated, count = repair_actions(updated, calendar, [], "declared_date")
+    assert count == 0
+    assert repeated == updated
 
 
 @pytest.mark.parametrize("available", ["2026-01-07", None])

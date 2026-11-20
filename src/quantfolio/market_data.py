@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 from .dataset import load_bundle
-from .storage import log, now, save, sha
+from .storage import log, now, read, save, sha
 
 ENDPOINT = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
 PROVIDER_REFERENCE = (
@@ -92,7 +92,7 @@ def inspect_bars(payload, meta, start, end, existing):
     }
 
 
-def fetch_bars(paths, date, output):
+def fetch_bars(paths, date, output, retry=None):
     """Fetch sequentially; preserve responses and never activate an incomplete snapshot."""
     target_date = dt.date.fromisoformat(date)
     current = dt.datetime.fromisoformat(now())
@@ -113,6 +113,32 @@ def fetch_bars(paths, date, output):
     if target_date <= calendar[-1].date():
         raise ValueError("Collection must extend the active snapshot")
     start = str(calendar[max(0, len(calendar) - 5)].date())
+    symbols = sorted(bundle["meta"])
+    retry_source = None
+    if retry is not None:
+        previous = (paths.root / retry).resolve()
+        if not previous.is_relative_to(parent) or previous == parent:
+            raise ValueError("Retry source must be a named directory under data/raw")
+        registration = read(previous / "protocol.json")
+        collection = read(previous / "collection.json")
+        if (
+            registration["source_bundle_sha256"] != sha(paths.bundle)
+            or registration["requested_completed_date"] != date
+            or collection["requested_completed_date"] != date
+        ):
+            raise ValueError("Retry source belongs to another dataset or requested date")
+        completed = {r["symbol"] for r in collection["records"] if r["status"] != "FAILED"}
+        requested = set(registration.get("symbols", symbols))
+        if not requested <= set(symbols) or not completed <= requested:
+            raise ValueError("Retry source contains unknown instruments")
+        symbols = sorted(requested - completed)
+        if not symbols:
+            raise ValueError("No missing requests to retry")
+        retry_source = {
+            "path": previous.relative_to(paths.root).as_posix(),
+            "protocol_sha256": sha(previous / "protocol.json"),
+            "collection_sha256": sha(previous / "collection.json"),
+        }
     specification = {
         "registered_at": now(),
         "requested_completed_date": date,
@@ -124,12 +150,14 @@ def fetch_bars(paths, date, output):
         "amount_unit": "CNY",
         "historical_overlap_start": start,
         "activated": False,
+        "symbols": symbols,
+        "retry_source": retry_source,
         "publication_gate": "A raw download is not a verified processed snapshot. Revisions, missing sessions, corporate actions and security status need separate review.",
     }
     save(target / "protocol.json", specification, immutable=True)
     records = []
     failures = 0
-    for symbol in sorted(bundle["meta"]):
+    for symbol in symbols:
         meta = bundle["meta"][symbol]
         market = 1 if symbol.startswith("sh") else 0
         params = {
@@ -160,7 +188,7 @@ def fetch_bars(paths, date, output):
             log(
                 "Raw bars collected",
                 requested=len(records),
-                expected=len(bundle["meta"]),
+                expected=len(symbols),
                 consecutive_failures=failures,
             )
         if failures >= 3 or record.get("error", "").startswith(
@@ -169,10 +197,10 @@ def fetch_bars(paths, date, output):
             break
         time.sleep(0.8)
     result = {
-        "status": "COMPLETE" if len(records) == len(bundle["meta"]) else "PARTIAL",
+        "status": "COMPLETE" if len(records) == len(symbols) else "PARTIAL",
         "completed_at": now(),
         "requested_completed_date": date,
-        "instruments_expected": len(bundle["meta"]),
+        "instruments_expected": len(symbols),
         "instruments_requested": len(records),
         "consistent": sum(r["status"] == "CONSISTENT" for r in records),
         "review": sum(r["status"] == "REVIEW" for r in records),

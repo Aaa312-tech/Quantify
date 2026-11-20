@@ -41,8 +41,21 @@ def _lfs_pointer(path: Path) -> bool:
 
 def load_bundle(paths: Paths, *, reference: bool = False) -> dict[str, Any]:
     """Load only the local, hash-verified trusted bundle; never arbitrary downloaded pickle."""
-    manifest = read(paths.manifest)
     path = paths.reference_bundle if reference else paths.bundle
+    cutoff = (
+        paths.config.get("reference_data_cutoff", paths.config["data_cutoff"])
+        if reference
+        else paths.config["data_cutoff"]
+    )
+    return load_snapshot(paths, path, cutoff)
+
+
+def load_snapshot(paths: Paths, path: Path, cutoff: str) -> dict[str, Any]:
+    """Load a registered local snapshot against its expected cutoff and frozen hash."""
+    path = path.resolve()
+    if not path.is_relative_to(paths.root):
+        raise ValueError("Dataset must stay inside the project")
+    manifest = read(paths.manifest)
     relative = path.relative_to(paths.root).as_posix()
     if _lfs_pointer(path):
         raise ValueError("Dataset is a Git LFS pointer. Run 'git lfs pull' in the project.")
@@ -52,13 +65,8 @@ def load_bundle(paths: Paths, *, reference: bool = False) -> dict[str, Any]:
     required = {"meta", "raws", "actions", "panels", "calendar", "table", "features", "cutoff"}
     if required - bundle.keys():
         raise ValueError(f"Missing dataset fields: {required - bundle.keys()}")
-    cutoff = (
-        paths.config.get("reference_data_cutoff", paths.config["data_cutoff"])
-        if reference
-        else paths.config["data_cutoff"]
-    )
     if str(bundle["cutoff"])[:10] != cutoff:
-        raise ValueError("Dataset cutoff differs from configs/project.toml")
+        raise ValueError("Dataset cutoff differs from the registered inputs")
     aliases = paths.archive.get("features", {})
     columns = [aliases.get(name, name) for name in bundle["table"].columns]
     features = [aliases.get(name, name) for name in bundle["features"]]

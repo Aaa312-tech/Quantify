@@ -27,11 +27,19 @@ def main(argv: list[str] | None = None) -> None:
         "repair-data", help="Build the registered corporate-action snapshot"
     )
     repair.add_argument("--output", required=True, help="New directory under data/processed")
+    repair.add_argument(
+        "--protocol",
+        default="configs/protocols/action_repair.json",
+        help="Registered repair protocol",
+    )
     collection = commands.add_parser(
         "fetch-bars", help="Collect completed daily bars for separate review"
     )
     collection.add_argument("--date", required=True, help="Completed session in YYYY-MM-DD form")
     collection.add_argument("--output", required=True, help="New directory under data/raw")
+    collection.add_argument(
+        "--retry", help="Completed raw collection with failed or missing requests"
+    )
     replay = commands.add_parser(
         "replay", aliases=["backtest"], help="Compare the frozen reference accounts exactly"
     )
@@ -156,11 +164,11 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
     if args.command == "repair-data":
         from .snapshots import repair_snapshot
 
-        return repair_snapshot(paths, args.output)
+        return repair_snapshot(paths, args.output, args.protocol)
     if args.command == "fetch-bars":
         from .market_data import fetch_bars
 
-        return fetch_bars(paths, args.date, args.output)
+        return fetch_bars(paths, args.date, args.output, args.retry)
     if args.command in ("replay", "backtest"):
         from .evaluation import POLICIES, replay
 

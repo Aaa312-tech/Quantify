@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from quantfolio.dataset import load_bundle
+from quantfolio.dataset import load_bundle, load_snapshot
 from quantfolio.settings import Paths
 from quantfolio.storage import save, sha
 
@@ -88,3 +88,10 @@ def test_reference_snapshot_remains_independent_of_active_data(tmp_path):
     assert load_bundle(paths)["table"].at[0, "factor"] == 2.0
     assert load_bundle(paths, reference=True)["table"].at[0, "factor"] == 1.0
     assert sha(tmp_path / "reference.joblib") == hashes["reference.joblib"]
+    assert (
+        load_snapshot(paths, tmp_path / "reference.joblib", "2026-11-18")["cutoff"] == "2026-11-18"
+    )
+    with pytest.raises(ValueError, match="cutoff"):
+        load_snapshot(paths, tmp_path / "reference.joblib", "2026-11-19")
+    with pytest.raises(ValueError, match="inside"):
+        load_snapshot(paths, tmp_path.parent / "outside.joblib", "2026-11-18")

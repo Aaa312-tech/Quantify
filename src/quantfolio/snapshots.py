@@ -10,7 +10,7 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from .dataset import check_integrity, load_bundle, validate_features
+from .dataset import check_integrity, load_snapshot, validate_features
 from .market import LABEL_STATUS, legal_label
 from .storage import array_sha, dump_gzip, log, now, read, save, sha
 
@@ -31,7 +31,10 @@ def repair_actions(actions, calendar, facts, declared_payment_field):
     repaired = deepcopy(actions)
     normalized = 0
     for action in repaired:
-        if action.get(declared_payment_field):
+        if (
+            action.get(declared_payment_field)
+            and action.get("cash_pay_date") != action[declared_payment_field]
+        ):
             action["cash_pay_date"] = action[declared_payment_field]
             normalized += 1
     for fact in facts:
@@ -145,7 +148,7 @@ def label_changes(before, after):
     return summary, records
 
 
-def repair_snapshot(paths, output):
+def repair_snapshot(paths, output, protocol="configs/protocols/action_repair.json"):
     """Create and register a new snapshot; never activate it or overwrite old inputs."""
     target = (paths.root / output).resolve()
     parent = (paths.root / "data/processed").resolve()
@@ -158,11 +161,18 @@ def repair_snapshot(paths, output):
     if target.exists():
         raise FileExistsError(f"Snapshot already exists: {target}")
     integrity = check_integrity(paths)
-    protocol_path = paths.root / "configs/protocols/action_repair.json"
+    protocol_path = (paths.root / protocol).resolve()
+    if not protocol_path.is_relative_to((paths.root / "configs/protocols").resolve()):
+        raise ValueError("Repair protocol must stay under configs/protocols")
     protocol = read(protocol_path)
-    review_path = paths.root / protocol["review"]
+    review_path = (paths.root / protocol["review"]).resolve()
+    source_path = (paths.root / protocol["source_bundle"]).resolve()
+    if not review_path.is_relative_to(paths.root) or not source_path.is_relative_to(paths.root):
+        raise ValueError("Repair inputs must stay inside the project")
     review = read(review_path)
-    source_hash = sha(paths.reference_bundle)
+    if protocol.get("review_sha256", sha(review_path)) != sha(review_path):
+        raise ValueError("Review differs from the registered protocol")
+    source_hash = sha(source_path)
     if (
         source_hash != protocol["source_bundle_sha256"]
         or source_hash != review["data_snapshot_sha256"]
@@ -178,14 +188,16 @@ def repair_snapshot(paths, output):
         "protocol_sha256": sha(protocol_path),
         "parent_protocol_sha256": sha(paths.root / protocol["parent_protocol"]),
         "review_sha256": sha(review_path),
-        "source_bundle": paths.reference_bundle.relative_to(paths.root).as_posix(),
+        "source_bundle": source_path.relative_to(paths.root).as_posix(),
         "source_bundle_sha256": source_hash,
         "source_sha256": {
             file.name: sha(file) for file in sorted(Path(__file__).parent.glob("*.py"))
         },
     }
     save(target / "provenance.json", provenance, immutable=True)
-    original = load_bundle(paths, reference=True)
+    original = load_snapshot(
+        paths, source_path, protocol.get("source_data_cutoff", paths.config["data_cutoff"])
+    )
     causal_table = rebuild_labels(original)
     repaired = {
         key: original[key]
@@ -221,7 +233,7 @@ def repair_snapshot(paths, output):
         "unresolved_data_audit": "artifacts/checks/causal_execution_2026-11-20/data_audit.json",
     }
     joblib.dump(repaired, target / "bundle.joblib", compress=3)
-    if sha(paths.reference_bundle) != source_hash:
+    if sha(source_path) != source_hash:
         raise ValueError("Source snapshot changed during repair")
     audit = {
         "status": "PASS",

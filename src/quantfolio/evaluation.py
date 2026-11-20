@@ -265,8 +265,12 @@ def execution_bridge(
     )
     previous = read(comparison / "evaluation_summary.json")
     if baseline is not None:
-        if previous.get("purpose") != "EXECUTION_DIAGNOSTIC" or previous["status"] != "COMPLETE":
-            raise ValueError("Data bridge requires a completed execution diagnostic")
+        if (
+            previous.get("purpose") not in {"EXECUTION_DIAGNOSTIC", "DATA_DIAGNOSTIC"}
+            or previous["status"] != "COMPLETE"
+            or previous["source_run"] != paths.reference.relative_to(paths.root).as_posix()
+        ):
+            raise ValueError("Data bridge requires a completed diagnostic with frozen predictions")
         for relative, expected in previous["artifacts"].items():
             if sha(comparison / relative) != expected:
                 raise ValueError(f"Execution diagnostic artifact changed: {relative}")
@@ -283,10 +287,10 @@ def execution_bridge(
         columns = ["date_index", "symbol", "eligible", *bundle["features"]]
         pd.testing.assert_frame_equal(original["table"][columns], bundle["table"][columns])
     maps, schedule, choices, start, end = load_predictions(bundle, paths.reference)
-    protocol = paths.root / (
-        "configs/protocols/causal_execution.json"
+    protocol = (
+        paths.root / "configs/protocols/causal_execution.json"
         if baseline is None
-        else "configs/protocols/action_repair.json"
+        else paths.protocol
     )
     specification = {
         "protocol_sha256": sha(protocol),
