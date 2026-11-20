@@ -49,6 +49,19 @@ python -m quantfolio report --run artifacts/evaluations/opening_review
 它使用冻结预测与旧验证选型，只用于归因；完整重训必须另外运行`train`。
 新评估拒绝训练与执行模型不一致，或执行源文件在训练后变化的实验。
 
+## 纸面账户验证
+
+```powershell
+python -m quantfolio verify-paper --output artifacts/checks/paper_replay
+```
+
+这将活跃主策略三档成本的全部75个历史账户逐日通过纸面流程推进，比较完整摘要与账本，
+并独立核账。它不是新一轮训练，也不生成前向观察。手工输入与时效要求见[纸面流程](paper_workflow.md)。
+
+`evaluate-study`严格校验登记时的研究源码。复现既有`strategy_study_2026-11-20`研究时，
+须在`70ff3bc`的隔离检出中运行；新增加的CLI与验证代码不会反向改写该研究的源码身份。
+当前包可继续核验其模型、运行`verify-paper`及读取已冻结的评估报告。
+
 ## 公司行为修正
 
 `configs/protocols/action_repair.json`登记首次修正；`dividend_review.json`在其快照上登记后续5项分红补证。以下命令按协议中的源快照生成新目录，检查公告哈希和原权益值，并重建全部1/3/5日标签：

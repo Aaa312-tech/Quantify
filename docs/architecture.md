@@ -24,8 +24,10 @@ rules / allocation / risk → simulation → ledger → validation
 | `simulation` | 信号和每日估值；内部 `_Execution`按先卖后买处理成交 |
 | `ledger` | 整数股、T+1、分币现金、单独滑点成本、应收款和公司行为 |
 | `validation` | 独立重建账务，核对信号时序、风险状态及成交后仓位 |
+| `accounts` | 手工及纸面账户格式、持仓批次与风险结转、独立开盘成交核算 |
+| `planning` | 有限交易日历、最新预测与输入核验、冻结次日意向、报价处理及收盘归档 |
 | `metrics`、`evaluation` | 单账户与10日账户统计、新实验评估与冻结账本精确重放 |
-| `verification`、`reporting` | 模型重载与重训核验、从冻结结果或指定实验生成HTML报告 |
+| `verification`、`reporting` | 模型重载与重训核验、纸面流程完整历史重放、研究HTML报告 |
 
 模型只读取信号日已知数据，订单在下一交易日开盘处理。`_Execution`按开盘报价代理估值，较早成交扣除的佣金和滑点降低现金及净值，后续买单重新检查上限。`validation`不复用`Ledger`的金额计算或`market`的报价函数，独立检查现金、开盘代理价格、方向涨跌停和成本。
 

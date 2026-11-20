@@ -18,6 +18,9 @@ scripts/sync.ps1 -Python '.\.venv\Scripts\python' -Message 'fix: describe the co
 
 冻结参考放`artifacts/reference/<date>`。新训练放 `artifacts/experiments/<name>`，对应评估放 `artifacts/evaluations/<name>`；这些输出目录由命令创建，无需空占位文件。名称说明用途，避免迭代编号、`final`、`new`等易失效标记。
 
+纸面收盘账户放`artifacts/accounts/<purpose_date>`，计划及开盘核算放`artifacts/plans/<purpose_date>`。
+手工报价另存具名目录，来源与时刻随输入保留；生成文件自动加入完整性清单，后续只能新建记录。
+
 工程校验保留在`artifacts/checks`，完整重放保留在`artifacts/replays`。新检查完整覆盖旧检查后，将重复产物移出工作目录，旧记录仍可从对应Git提交查阅。机器探针、回收站清单、重复流程演示和一次性清理脚本不属于发布产物。
 
 软件发布使用语义版本号，在 `src/quantfolio/__init__.py`维护，构建元数据自动读取。策略按方法命名：`walk_forward_momentum`（滚动选型动量），由`configs/project.toml`标明。软件版本和研究策略是两个不同字段。

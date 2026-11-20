@@ -52,6 +52,12 @@ python -m venv .venv
 
 示例仅运行一个窗口，结果会标为`PARTIAL`。完整训练、成本选择和冻结重放见[复现指南](docs/reproducibility.md)。新实验不会自动替换主策略；报告可从对应的`reports/experiments`目录打开。
 
+## 纸面观察
+
+`account-init → plan → resolve-plan → account-close`连接收盘账户、提前冻结的次日意向、手工开盘报价与收盘结转。它复用原策略并保留风险高水位，已通过75个历史账户、1386个交易日的完整账本对比；这不构成新增前向样本。
+
+当前11月19日数据在11月20日开盘后已过期。下一次有效计划须完成11月20日行情核验和对应最新拟合；不会回填已经发生的开盘建议。输入格式、时点和已知换手限制见[纸面流程](docs/paper_workflow.md)。
+
 ## 目录
 
 | 路径 | 内容 |
@@ -63,6 +69,7 @@ python -m venv .venv
 | `data/raw/` | 按截止日归档的行情响应、覆盖和修订检查；不会自动用于研究 |
 | `artifacts/reference/2026-11-19/` | 冻结训练、预测和回测账本 |
 | `artifacts/experiments/`、`artifacts/evaluations/` | 新训练及对应评估；每次使用新名称 |
+| `artifacts/accounts/`、`artifacts/plans/` | 纸面收盘账户、条件式计划、手工报价及开盘核算；按账户与日期归档 |
 | `artifacts/checks/`、`artifacts/replays/` | 当前模型校验、迁移核对和完整账本重放结果 |
 | `docs/` | 方法、架构、复现说明及来源材料 |
 | `reports/latest/` | 当前配置的研究评估报告与净值图 |

@@ -83,7 +83,7 @@ class Paths:
 
     def artifact_path(self, path: str | Path, category: str) -> Path:
         """Resolve an artifact path, including symlinks, inside its project category."""
-        if category not in {"checks", "replays", "experiments", "evaluations"}:
+        if category not in {"checks", "replays", "experiments", "evaluations", "accounts", "plans"}:
             raise ValueError(f"Unknown artifact category: {category}")
         target = Path(path)
         if not target.is_absolute():

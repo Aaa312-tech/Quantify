@@ -1,0 +1,63 @@
+{
+  "status": "PASS",
+  "completed_at": "2026-11-20T15:33:03.252599+08:00",
+  "software_version": "0.13.0",
+  "scope": "Offline paper workflow engineering acceptance. No new return study or forward observation.",
+  "baseline_commit": "3476bf1d7e87ce72a1136829083499badef9872c",
+  "unchanged_frozen_inputs": 5105,
+  "checks": {
+    "ruff_format": "PASS",
+    "ruff_check": "PASS",
+    "pytest": {
+      "passed": 156,
+      "skipped": 1,
+      "skip_reason": "Windows host does not permit directory symlinks"
+    },
+    "active_models": 48,
+    "model_prediction_max_error": 0,
+    "historical_accounts": 75,
+    "historical_sessions": 1386,
+    "full_ledger_parity": "PASS"
+  },
+  "sources": {
+    "accounts": "58471a024b2c331e434676ae9e263d18500cdbe4a7286bfd604b1a56070971ce",
+    "planning": "46c148dc65fd320a0a1ad783634e267b5c02e5a18e9b292c6d7219e6345734c3",
+    "allocation": "eb048fce8da892c259c21335be4964be130df889a1fd93d5035290c28bab2695",
+    "ledger": "d8b464016b32cb0b55b6960f0bbeb7189f8e99404527cd3a5b85dffe9248f0c5",
+    "market": "00456b0347cd30f1e5060e31a213d7e3af978c2ace945c9a93d3a8003617bf83",
+    "risk": "a20ee6dce02d9c755396f41e311589802b3794932c757387c1c2b9a9f5df8877",
+    "rules": "c59a1d5e4090a157971133fe1ec5c72fd1efd96e3c929675874690b5af0b0a75",
+    "simulation": "6c8d5182f68a3e50aff5dab48b4f86685a95eb1c28b92ed86aebdaea0d566169",
+    "verification": "69e412c135dc83c8bb1d8f9c4925654406dd5e96b7d14f1acc1e6456360f1ebc"
+  },
+  "evidence": {
+    "artifacts/checks/paper_workflow_2026-11-20/known_limitations.json": "cf0c0e51e5f5c825ed88b4dfa2a209e9820badbc1589a8a71f9f1bf7d79e2ace",
+    "artifacts/checks/paper_workflow_2026-11-20/models/verification.json": "e030f9742d55ffa0ed2ebe70b7859bcf05614fe8160c5533cbbe3edcb375c81b",
+    "artifacts/checks/paper_workflow_2026-11-20/strategy_parity.json": "8ea33daf9a7878fdcb23bf247f9bd81728341e26854e3be8c3168f7284fa3290",
+    "artifacts/checks/paper_workflow_2026-11-20/verification.json": "7b608b890c5d69f078739d1c0260c7b2a7db77abb0df69de0ec9cc86989ce81c"
+  },
+  "readiness": {
+    "path": "artifacts/plans/readiness_2026-11-20/plan.json",
+    "sha256": "5596377ccb1f702652ad48edf4475ee4f3c012d31faf1bfd4f88615b104d7f44",
+    "status": "BLOCKED",
+    "blockers": [
+      "NEXT_OPEN_ALREADY_OCCURRED_OR_DATA_STALE"
+    ],
+    "next_review": {
+      "execution_date": "2026-11-23",
+      "required_data_cutoff": "2026-11-20",
+      "data_ready_after": "2026-11-20T16:00:00+08:00"
+    }
+  },
+  "strategy": {
+    "logic_changed": false,
+    "balanced_attack": true,
+    "drawdown_alert": 0.08,
+    "risk_mode": "latched",
+    "superiority_gate": false,
+    "forward_observations": 0,
+    "contest_execution_fully_confirmed": false
+  },
+  "known_optimizer_limit": "known_limitations.json",
+  "publication": "Actual GitHub Actions result is recorded by the commit checks, not inferred from local validation."
+}

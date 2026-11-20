@@ -92,6 +92,32 @@ def main(argv: list[str] | None = None) -> None:
     evaluation.add_argument(
         "--all-policies", action="store_true", help="Include all 19 rule comparisons"
     )
+    account = commands.add_parser("account-init", help="Create an initial virtual cash account")
+    paper_check = commands.add_parser(
+        "verify-paper", help="Compare daily paper workflow with all active frozen accounts"
+    )
+    paper_check.add_argument("--output", required=True, help="New directory under artifacts/checks")
+    account.add_argument("--account-id", required=True)
+    account.add_argument("--as-of", help="Completed closing date; defaults to the active cutoff")
+    account.add_argument("--output", required=True, help="New directory under artifacts/accounts")
+    plan = commands.add_parser("plan", help="Freeze a conditional next-opening paper plan")
+    plan.add_argument("--account", required=True, help="Manual or paper closing-account JSON")
+    plan.add_argument("--cost", type=int, choices=[10, 20, 30], default=10)
+    plan.add_argument("--output", required=True, help="New directory under artifacts/plans")
+    resolve = commands.add_parser(
+        "resolve-plan", help="Recalculate paper quantities at supplied opening quotes"
+    )
+    resolve.add_argument("--plan", required=True, help="Frozen plan.json")
+    resolve.add_argument("--quotes", required=True, help="Manually supplied opening quotes JSON")
+    resolve.add_argument("--output", required=True, help="New directory under artifacts/plans")
+    closing = commands.add_parser(
+        "account-close", help="Mark paper positions and carry account state forward"
+    )
+    closing.add_argument("--resolution", required=True, help="Frozen resolution.json")
+    closing.add_argument(
+        "--quotes", required=True, help="Manually supplied completed closing quotes JSON"
+    )
+    closing.add_argument("--output", required=True, help="New directory under artifacts/accounts")
     report = commands.add_parser(
         "report", help="Render reference results or an evaluated experiment"
     )
@@ -119,6 +145,26 @@ def main(argv: list[str] | None = None) -> None:
 def run(args: argparse.Namespace, paths: Paths) -> dict:
     from .storage import read, sha
 
+    if args.command == "account-init":
+        from .planning import initialize_account
+
+        return initialize_account(paths, args.output, args.account_id, args.as_of)
+    if args.command == "verify-paper":
+        from .verification import verify_paper
+
+        return verify_paper(paths, args.output)
+    if args.command == "plan":
+        from .planning import freeze_plan
+
+        return freeze_plan(paths, args.account, args.output, args.cost)
+    if args.command == "resolve-plan":
+        from .planning import resolve_plan
+
+        return resolve_plan(paths, args.plan, args.quotes, args.output)
+    if args.command == "account-close":
+        from .planning import close_account
+
+        return close_account(paths, args.resolution, args.quotes, args.output)
     if args.command == "status":
         from .market import EXECUTION_MODEL
 

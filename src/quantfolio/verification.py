@@ -1,4 +1,4 @@
-"""Reload saved estimators, check label purging and optionally fit one window afresh."""
+"""Reload saved estimators and compare paper-account execution with frozen ledgers."""
 
 from __future__ import annotations
 
@@ -109,3 +109,205 @@ def verify(
     if output:
         save(output / "verification.json", result, immutable=True)
     return result
+
+
+def _paper_account(bundle, forecasts, rules, reference, cost):
+    """Replay a complete stored account through daily manual-account round trips."""
+    from .accounts import new_account, restore_account, snapshot_account
+    from .market import EXECUTION_MODEL
+    from .metrics import account_stats
+    from .planning import make_intent, resolve_intent
+    from .rules import config_for
+
+    dates = {str(day.date()): index for index, day in enumerate(bundle["calendar"])}
+    start, end = dates[reference["summary"]["start"]], dates[reference["summary"]["end"]]
+    account = new_account(str(bundle["calendar"][start - 1].date()), "historical_diagnostic")
+    calendar = {"sessions": list(dates)}
+    curve, trades, events, rejections, decisions, marks = [], [], [], [], [], []
+    paper_checks = 0
+    for index in range(start, end + 1):
+        date, previous = bundle["calendar"][index], bundle["calendar"][index - 1]
+        day, signal = str(date.date()), str(previous.date())
+        view = {**bundle, "calendar": bundle["calendar"][:index]}
+        config = config_for(rules, index - 1)
+        intent = make_intent(view, account, forecasts[index - 1], config, day, cost)
+        actions = [
+            {**action, "paper_meta": bundle["meta"][action["symbol"]]}
+            for action in bundle["actions"]
+            if action["ex_date"] == day or action.get("record_date") in (signal, day)
+        ]
+        quotes = {}
+        for symbol in intent["contracts"]:
+            raw = bundle["raws"][symbol]
+            quote = raw.at[date, "open"] if date in raw.index else np.nan
+            quotes[symbol] = {
+                "open": float(quote) if np.isfinite(quote) else None,
+                "market_at": day + "T09:25:00+08:00",
+                "suspended": bundle.get("opening_status", {})
+                .get(day, {})
+                .get(symbol, {})
+                .get("suspended", False),
+            }
+        result = resolve_intent(intent, account, actions, calendar, quotes)
+        paper_checks += result["audit"]["checks"]
+        # Per-day executors count fills from zero; the frozen account counts cumulatively.
+        marks.extend(
+            {**mark, "after_fill": mark["after_fill"] + len(trades)}
+            for mark in result["intermediate_weights"]
+        )
+        trades.extend(result["trades"])
+        events.extend(result["events"])
+        rejections.extend(result["rejections"])
+        decision = result["decision"]
+        decision.update(
+            signal_date=signal,
+            execution_date=day,
+            drawdown=intent["state"]["drawdown"],
+            scheduled=intent["scheduled"],
+            forced=intent["forced"],
+            recovery=intent["state"],
+            rule_config=config,
+            target_weights=intent["target_weights"],
+        )
+        decisions.append(decision)
+        book, risk = restore_account(result["opening_account"], bundle["meta"])
+        closing = {s: float(bundle["raws"][s].at[date, "close"]) for s in book.lots}
+        if not all(np.isfinite(value) and value > 0 for value in closing.values()):
+            raise ValueError("Paper replay needs an observed closing mark for every holding")
+        book.snapshot_record_dates(date, actions)
+        values, nav = book.values(closing), book.nav(closing)
+        state = intent["state"]
+        curve.append(
+            {
+                "date": day,
+                "prior_close_nav": intent["prior_close_nav"],
+                "nav": nav,
+                "cash": book.cash / 100,
+                "holdings_value": sum(values.values()),
+                "receivables": sum(r["cents"] for r in book.receivables) / 100,
+                "positions": {
+                    s: {
+                        "quantity": book.quantity(s),
+                        "available": book.available(s, date),
+                        "close": closing[s],
+                        "value": value,
+                    }
+                    for s, value in values.items()
+                },
+                "risk_level": state["level"],
+                "max_nav_weight": max(values.values(), default=0) / nav,
+                "risk_cap": intent["cap"],
+                "risk_phase": state["phase"],
+                "risk_peak": state["peak"],
+                "risk_drawdown": state["drawdown"],
+                "can_buy": state["can_buy"],
+                "exposure_above_target": sum(values.values()) / nav > intent["cap"] + 0.01,
+            }
+        )
+        account = snapshot_account(
+            book, result["opening_account"], day, risk, index - start + 1, None
+        )
+        account["valuation"] = {"nav": nav, "positions": values, "quotes": closing}
+    book.trades, book.events, book.rejections = trades, events, rejections
+    ledger = {
+        "execution": {"model": EXECUTION_MODEL, "slippage_rate": cost},
+        "curve": curve,
+        "trades": trades,
+        "events": events,
+        "rejections": rejections,
+        "quality": [],
+        "decisions": decisions,
+        "intermediate_weights": marks,
+    }
+    return {
+        "summary": account_stats(book, curve, decisions, [], "latched"),
+        "ledger": ledger,
+    }, paper_checks
+
+
+def verify_paper(paths: Paths, output: Path) -> dict:
+    """Compare all 75 active-policy accounts, not just individual fills or final returns."""
+    from .evaluation import experiment_folds, first_difference, load_predictions
+    from .planning import source_hashes
+    from .storage import digest, load_gzip, log
+    from .validation import execution_audit, reconcile
+
+    output = paths.output_path(output, "checks")
+    integrity = check_integrity(paths)
+    bundle = load_bundle(paths)
+    evaluation = paths.artifact_path(paths.config["evaluation"], "evaluations")
+    result = read(evaluation / "evaluation_summary.json")
+    run = paths.artifact_path(result["source_run"], "experiments")
+    status, folds = experiment_folds(paths, bundle, run)
+    forecasts, rules, _, _, _ = load_predictions(bundle, run, folds, status["identity"])
+    records = []
+    accounting_checks = execution_checks = paper_checks = 0
+    for cost in (10, 20, 30):
+        key = f"{cost:02d}bps"
+        names = [
+            f"evaluation/{key}/selected_strategy.ledgers.json.gz",
+            f"evaluation/continuous/{key}/selected_strategy.json.gz",
+        ]
+        for relative in names:
+            file = evaluation / relative
+            if sha(file) != result["artifacts"][relative]:
+                raise ValueError("Frozen paper comparison account changed")
+            stored = load_gzip(file)
+            references = stored if isinstance(stored, list) else [stored]
+            for index, reference in enumerate(references):
+                expected = {k: reference[k] for k in ("summary", "ledger")}
+                actual, checks = _paper_account(
+                    bundle, forecasts["selected"], rules, expected, cost / 10000
+                )
+                audit = execution_audit(actual["ledger"], bundle)
+                reconciliation = reconcile(
+                    actual["ledger"], actual["summary"], bundle["meta"], bundle["actions"]
+                )
+                record = {
+                    "path": relative,
+                    "account_index": index,
+                    "sessions": actual["summary"]["sessions"],
+                    "full_account_equal": actual == expected,
+                    "expected_sha256": digest(expected),
+                    "actual_sha256": digest(actual),
+                    "first_difference": first_difference(expected, actual),
+                    "reconciliation": reconciliation,
+                    "execution_audit": audit,
+                    "paper_fill_checks": checks,
+                }
+                records.append(record)
+                accounting_checks += reconciliation["checks"]
+                execution_checks += audit["checks"]
+                paper_checks += checks
+                if (
+                    actual != expected
+                    or audit["status"] != "PASS"
+                    or reconciliation["status"] != "PASS"
+                ):
+                    save(
+                        output / "verification.json",
+                        {"status": "FAIL", "records": records},
+                        immutable=True,
+                    )
+                    raise ValueError(
+                        f"Paper workflow differs from its frozen baseline: {relative}/{index}: {record['first_difference']}"
+                    )
+            log("Paper workflow account comparison complete", cost=key, source=relative)
+    report = {
+        "status": "PASS",
+        "completed_at": now(),
+        "scope": "Historical integration replay, not a forward recommendation or observation.",
+        "source_evaluation": evaluation.relative_to(paths.root).as_posix(),
+        "evaluation_sha256": sha(evaluation / "evaluation_summary.json"),
+        "data_sha256": sha(paths.bundle),
+        "source_sha256": {**source_hashes(), "verification": sha(Path(__file__))},
+        "accounts": len(records),
+        "sessions": sum(r["sessions"] for r in records),
+        "integrity": integrity,
+        "reconciliation_checks": accounting_checks,
+        "execution_checks": execution_checks,
+        "paper_fill_checks": paper_checks,
+        "records": records,
+    }
+    save(output / "verification.json", report, immutable=True)
+    return {k: v for k, v in report.items() if k != "records"}
