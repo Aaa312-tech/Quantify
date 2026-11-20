@@ -38,4 +38,7 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
 - Candidate raw sources now cover all 594 securities for November 20, but the active snapshot
   still ends November 19. Source adapters and full extension validation remain pending; preserve
   the original failed checks, ETF turnover differences and stale-data plan block.
+- `configs/protocols/daily_source_extension.json` registers the source adapters, exact historical
+  preservation and full extension validation, including the sourced next-session Jiangbolong event.
+  Complete that protocol before activating November 20 data or issuing a November 23 plan.
 - Do not operate a trading app, broker account or WeChat.
