@@ -1,0 +1,54 @@
+{
+  "name": "inner_event_repair",
+  "registered_at": "2026-11-21T03:14:49.262878+08:00",
+  "baseline_commit": "9f0b57ca360688c5e1eea08a168e9043601d4b20",
+  "parent_protocol": "configs/protocols/historical_status_repair.json",
+  "parent_protocol_sha256": "4eab80cd11c94ad538929df352e5d73c18f6f653dcca706a4a851d7e0dbf1a43",
+  "source_bundle": "data/processed/2026-11-19-reviewed-status/bundle.joblib",
+  "source_bundle_sha256": "da9b53e289e3a0ed08a3ced9f1ade1ccf340dc47803a6b988ae2b22bf2d4f706",
+  "source_data_cutoff": "2026-11-19",
+  "review": "docs/references/status_followup_2026-11-21.json",
+  "review_sha256": "63702f86848c5e4590e223173714321ee46a138adeb692ce20ba9728bbd80078",
+  "source_selection": "Every one of the six corporate actions in the frozen status-followup inner-trial queue, independent of subsequent returns. Do not extend the event queue or change any strategy candidate during this run.",
+  "scope": "Apply six sourced cash payment dates, one unrestricted-share listing date and the explicitly reviewed ex-reference values. Preserve actual entitlements, raw prices, all dated ST metadata, calendar, universe, non-label columns and feature contract. Rebuild all labels; do not extend market dates.",
+  "cash_availability": "First observed trading session strictly after the sourced payment date; not a statement of intraday simulator cash availability.",
+  "baseline_run": "artifacts/experiments/historical_status_repair_2026-11-21",
+  "baseline_evaluation": "artifacts/evaluations/historical_status_repair_2026-11-21",
+  "snapshot_output": "data/processed/2026-11-19-reviewed-inner-events",
+  "training_output": "artifacts/experiments/inner_event_repair_2026-11-21",
+  "evaluation_output": "artifacts/evaluations/inner_event_repair_2026-11-21",
+  "checks_output": "artifacts/checks/inner_event_repair_2026-11-21",
+  "selection_mode": "positive_score",
+  "turnover_policy": "legacy",
+  "risk": "Balanced attack; latched 4/6/8 percent drawdown stages; original high-water mark; no automatic recovery.",
+  "retraining": {
+    "windows": 11,
+    "include_latest": true,
+    "fits": 48,
+    "slippage_bps": [
+      10,
+      20,
+      30
+    ],
+    "policies": 19,
+    "evaluation_accounts": 1425,
+    "selection": "All existing candidates, calibration and adoption thresholds unchanged; inner validation only."
+  },
+  "comparison": "Compare every model, saved forecast array and candidate/rule choice. If all forecast arrays and choices are exactly equal, the full new evaluation also serves as the fixed-forecast data bridge; otherwise replay all 1425 fixed-old-forecast accounts separately before attributing retraining changes.",
+  "verification": "Check original frozen bytes, exact raw/metadata/calendar/non-label parity, all labels, 48 model reloads, every outer account with independent cash and execution audits, before/after inner-trial quality and model adoption, and 75 paper accounts. Reverify the ten ST intervals and bind any nonblocking status decision to the new dataset hash.",
+  "adoption": "Retain every source-verified correction regardless of return direction. Activate research inputs only after the registered checks complete. No claim of superiority or valid next-day advice follows from engineering validation.",
+  "suspension_handling": "Do not infer pre-open availability, fill missing bars or clear carried-price quality flags for the five source-confirmed sz002348 suspended sessions. Store their retrospective evidence separately; flags may only disappear naturally if a different simulated path no longer holds the stock.",
+  "prerequisites": {
+    "source_review.json": "611f4a0fda295aa73d8d7a9be12e3622eeac84b09da7757ad774b2ae972b1046",
+    "baseline_ci.json": "bed7e46b4b123bf9a509bb0366c92a44a0d97801cda8f8c9668c15b8e823f20f",
+    "baseline_remote_lfs.json": "3ffbf640b7ddc7445c94a3da8814216759a0ffd73d902dc15415d00c6e4d1ab9"
+  },
+  "limitations": [
+    "Retrospective repair on repeatedly inspected windows; no independent forward observations.",
+    "Unreviewed corporate actions, fractional-share allocation, historical industry/universe coverage and security statuses remain incomplete.",
+    "Retrospective suspension notices and daily provider flags do not establish historical pre-open availability.",
+    "Opening prices remain proxies; competition fee and matching details are unconfirmed.",
+    "The market cutoff remains 2026-11-19; a valid next-day plan requires complete current market data and a matching account."
+  ],
+  "decision": "RESEARCH_ONLY"
+}
