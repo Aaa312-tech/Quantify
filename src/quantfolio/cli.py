@@ -17,6 +17,19 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--debug", action="store_true", help="Show traceback on research errors")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("status", help="Show the active strategy and validation status")
+    exit_study = commands.add_parser(
+        "exit-study", help="Train the registered sell-budget comparison"
+    )
+    exit_study.add_argument(
+        "--output", required=True, help="New directory under artifacts/experiments"
+    )
+    exit_evaluation = commands.add_parser(
+        "evaluate-exits", help="Evaluate the registered sell-budget comparison"
+    )
+    exit_evaluation.add_argument("--run", required=True, help="Completed exit-study experiment")
+    exit_evaluation.add_argument(
+        "--output", required=True, help="New directory under artifacts/evaluations"
+    )
     verification = commands.add_parser("verify", help="Check frozen files, features and models")
     verification.add_argument("--output", help="New directory under artifacts/checks")
     verification.add_argument("--refit", action="store_true", help="Refit fold 1's two estimators")
@@ -145,6 +158,14 @@ def main(argv: list[str] | None = None) -> None:
 def run(args: argparse.Namespace, paths: Paths) -> dict:
     from .storage import read, sha
 
+    if args.command == "exit-study":
+        from .feasibility import run_exit_study
+
+        return run_exit_study(paths, args.output)
+    if args.command == "evaluate-exits":
+        from .feasibility import evaluate_exit_study
+
+        return evaluate_exit_study(paths, args.run, args.output)
     if args.command == "account-init":
         from .planning import initialize_account
 

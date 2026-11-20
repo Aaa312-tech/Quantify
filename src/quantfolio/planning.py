@@ -137,6 +137,7 @@ def latest_forecasts(paths, bundle):
         or result["identity"] != status["identity"]
         or result["fold"]["test_start"] != index
         or result["fold"]["test_end"] != index
+        or result.get("turnover_policy", "legacy") != paths.config.get("turnover_policy", "legacy")
     ):
         raise ValueError("The latest model is stale or belongs to another experiment")
     file = folder / "outer_predictions.npz"
@@ -171,7 +172,7 @@ def latest_forecasts(paths, bundle):
 
 
 @pd.option_context("compute.use_numexpr", False)
-def make_intent(bundle, account, forecasts, config, execute_on, slippage):
+def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, turnover="legacy"):
     """Calculate the same completed-close targets as the historical strategy, before quotes."""
     book, risk = restore_account(account, bundle["meta"])
     signal = date_only(account["as_of"])
@@ -225,6 +226,7 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage):
             slippage,
             sum(r["cents"] for r in book.receivables) / 100 / prior,
             config=config,
+            turnover=turnover,
         )
     else:
         targets, decision = (
@@ -296,6 +298,7 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage):
         "cap": cap,
         "stopped": stopped,
         "rule_config": config,
+        "turnover_policy": turnover,
         "target_weights": targets,
         "decision": decision,
         "contracts": contracts,
@@ -565,7 +568,13 @@ def freeze_plan(paths, account_file, output, cost=10):
             action["paper_meta"] = bundle["meta"][action["symbol"]]
         try:
             intent = make_intent(
-                bundle, account, forecasts, fitted["selected_rules"], execute_on, cost / 10000
+                bundle,
+                account,
+                forecasts,
+                fitted["selected_rules"],
+                execute_on,
+                cost / 10000,
+                turnover=fitted.get("turnover_policy", "legacy"),
             )
             preview = resolve_intent(intent, account, actions, calendar, {}, preview=True)
         except ValueError as error:

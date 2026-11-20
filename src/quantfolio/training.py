@@ -16,7 +16,7 @@ from .models import (
     forecasts_by_date,
     neutral_scores,
 )
-from .rules import CONFIGS
+from .rules import CONFIGS, TURNOVER_POLICIES
 from .selection import clip_for, objective, select_model, select_rules
 from .simulation import episodes, simulate
 from .storage import dump_gzip, log, now, read, save, sha
@@ -43,6 +43,9 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
     selection_mode = paths.config.get("selection_mode", "legacy")
     if selection_mode not in ("legacy", "positive_score"):
         raise ValueError("Unknown model adoption policy")
+    turnover = paths.config.get("turnover_policy", "legacy")
+    if turnover not in TURNOVER_POLICIES:
+        raise ValueError("Unknown turnover policy")
     folds = walk_forward_folds(bundle["calendar"])
     if not 1 <= first <= last <= len(folds):
         raise ValueError(f"Require 1 <= first <= last <= {len(folds)}")
@@ -59,6 +62,7 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
         "include_latest": include_latest,
         "execution_model": EXECUTION_MODEL,
         "selection_mode": selection_mode,
+        "turnover_policy": turnover,
     }
     identity = digest(specification)
     save(
@@ -74,6 +78,7 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
                 output / "training" / f"fold_{fold['fold']:02d}",
                 identity,
                 positive_score=selection_mode == "positive_score",
+                turnover=turnover,
             )
     if include_latest:
         latest = len(bundle["calendar"]) - 1
@@ -96,6 +101,7 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
             identity,
             final=True,
             positive_score=selection_mode == "positive_score",
+            turnover=turnover,
         )
     result = {
         "status": "COMPLETE" if first == 1 and last == len(folds) else "PARTIAL",
@@ -173,7 +179,9 @@ def trial(bundle, fold, forecasts, config, path, identity, *, mode="latched", tu
 
 
 @pd.option_context("compute.use_numexpr", False)
-def run_window(bundle, fold, folder, identity, final=False, *, positive_score=False):
+def run_window(
+    bundle, fold, folder, identity, final=False, *, positive_score=False, turnover="legacy"
+):
     """Select rules and models on validation data, refit, then freeze outer predictions."""
     folder.mkdir(parents=True, exist_ok=True)
     table = bundle["table"]
@@ -223,7 +231,13 @@ def run_window(bundle, fold, folder, identity, final=False, *, positive_score=Fa
     rules = {}
     for config in CONFIGS:
         rules[config] = trial(
-            bundle, fold, forecasts, config, folder / "inner_rules" / config, identity
+            bundle,
+            fold,
+            forecasts,
+            config,
+            folder / "inner_rules" / config,
+            identity,
+            turnover=turnover,
         )
     selected_rules = select_rules(rules, positive_score=positive_score)
     log("Rules selected from past validation", window=fold["fold"], config=selected_rules)
@@ -258,6 +272,7 @@ def run_window(bundle, fold, folder, identity, final=False, *, positive_score=Fa
                 selected_rules,
                 folder / "inner_models" / name,
                 identity,
+                turnover=turnover,
             )
         result["factor_check"] = factors["momentum" if name == "momentum" else name[:-2]]
         models[name] = result
@@ -303,6 +318,7 @@ def run_window(bundle, fold, folder, identity, final=False, *, positive_score=Fa
         "fold": fold,
         "selected_candidate": selected,
         "selected_rules": selected_rules,
+        "turnover_policy": turnover,
         "inner_rules": rules,
         "inner_candidates": models,
         "initial_calibration": initial_calibration,

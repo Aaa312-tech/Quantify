@@ -104,6 +104,10 @@ def experiment_folds(paths: Paths, bundle: dict, run: Path) -> tuple[dict, list]
         "selection_mode", "legacy"
     ):
         raise ValueError("Training used another model adoption policy")
+    if specification.get("turnover_policy", "legacy") != paths.config.get(
+        "turnover_policy", "legacy"
+    ):
+        raise ValueError("Training used another turnover policy")
     for name in (
         "simulation",
         "ledger",
@@ -146,7 +150,12 @@ def evaluate(
     status, folds = experiment_folds(paths, bundle, run)
     maps, schedule, choices, start, end = load_predictions(bundle, run, folds, status["identity"])
     policies = POLICIES if all_policies else ["selected_strategy", "matched_momentum"]
-    evaluated = evaluate_accounts(bundle, maps, schedule, start, end, costs, policies, output)
+    turnover = paths.config.get("turnover_policy", "legacy")
+    if any(choice.get("turnover_policy", "legacy") != turnover for choice in choices):
+        raise ValueError("Training windows disagree about the turnover policy")
+    evaluated = evaluate_accounts(
+        bundle, maps, schedule, start, end, costs, policies, output, turnover=turnover
+    )
     input_files = [run / "protocol.json", run / "training_status.json"]
     for fold in folds:
         input_files.extend(
@@ -164,6 +173,7 @@ def evaluate(
         "identity": status["identity"],
         "data_cutoff": paths.config["data_cutoff"],
         "primary_policy": "selected_strategy",
+        "turnover_policy": turnover,
         "trade_start": str(bundle["calendar"][start + 1].date()),
         "trade_end": str(bundle["calendar"][end + 1].date()),
         "outer_signal_sessions": end - start + 1,
@@ -181,7 +191,9 @@ def evaluate(
     return result
 
 
-def evaluate_accounts(bundle, maps, schedule, start, end, costs, policies, output):
+def evaluate_accounts(
+    bundle, maps, schedule, start, end, costs, policies, output, *, turnover="legacy"
+):
     """Persist the same audited account matrix for retraining and execution diagnosis."""
     results, continuous, artifacts = {}, {}, {}
     reconciliation_checks = execution_checks = accounts = 0
@@ -191,10 +203,17 @@ def evaluate_accounts(bundle, maps, schedule, start, end, costs, policies, outpu
         for policy in policies:
             forecasts, rules = policy_inputs(policy, maps, schedule)
             episodes_result = episodes(
-                bundle, start, end, forecasts, cost / 10000, True, rules=rules
+                bundle, start, end, forecasts, cost / 10000, True, rules=rules, turnover=turnover
             )
             summary, ledger = simulate(
-                bundle, start + 1, end + 1, forecasts, cost / 10000, True, rules=rules
+                bundle,
+                start + 1,
+                end + 1,
+                forecasts,
+                cost / 10000,
+                True,
+                rules=rules,
+                turnover=turnover,
             )
             account = {"summary": summary, "ledger": ledger}
             for current in [*episodes_result, account]:

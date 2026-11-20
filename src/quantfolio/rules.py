@@ -25,7 +25,7 @@ CONFIGS["all_on"] = {r: True for r in RULES}
 for r in RULES:
     CONFIGS["remove_" + r] = {k: k != r for k in RULES}
 
-TURNOVER_POLICIES = ("legacy", "cost_penalty", "cost_band")
+TURNOVER_POLICIES = ("legacy", "cost_penalty", "cost_band", "exit_priority")
 
 
 def turnover_for(schedule, date_index):

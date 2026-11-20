@@ -111,7 +111,7 @@ def verify(
     return result
 
 
-def _paper_account(bundle, forecasts, rules, reference, cost):
+def _paper_account(bundle, forecasts, rules, reference, cost, *, turnover="legacy"):
     """Replay a complete stored account through daily manual-account round trips."""
     from .accounts import new_account, restore_account, snapshot_account
     from .market import EXECUTION_MODEL
@@ -130,7 +130,9 @@ def _paper_account(bundle, forecasts, rules, reference, cost):
         day, signal = str(date.date()), str(previous.date())
         view = {**bundle, "calendar": bundle["calendar"][:index]}
         config = config_for(rules, index - 1)
-        intent = make_intent(view, account, forecasts[index - 1], config, day, cost)
+        intent = make_intent(
+            view, account, forecasts[index - 1], config, day, cost, turnover=turnover
+        )
         actions = [
             {**action, "paper_meta": bundle["meta"][action["symbol"]]}
             for action in bundle["actions"]
@@ -170,6 +172,8 @@ def _paper_account(bundle, forecasts, rules, reference, cost):
             target_weights=intent["target_weights"],
         )
         decisions.append(decision)
+        if turnover != "legacy":
+            decision["turnover_policy"] = turnover
         book, risk = restore_account(result["opening_account"], bundle["meta"])
         closing = {s: float(bundle["raws"][s].at[date, "close"]) for s in book.lots}
         if not all(np.isfinite(value) and value > 0 for value in closing.values()):
@@ -219,6 +223,8 @@ def _paper_account(bundle, forecasts, rules, reference, cost):
         "decisions": decisions,
         "intermediate_weights": marks,
     }
+    if turnover != "legacy":
+        ledger["execution"]["turnover_policy"] = turnover
     return {
         "summary": account_stats(book, curve, decisions, [], "latched"),
         "ledger": ledger,
@@ -257,7 +263,12 @@ def verify_paper(paths: Paths, output: Path) -> dict:
             for index, reference in enumerate(references):
                 expected = {k: reference[k] for k in ("summary", "ledger")}
                 actual, checks = _paper_account(
-                    bundle, forecasts["selected"], rules, expected, cost / 10000
+                    bundle,
+                    forecasts["selected"],
+                    rules,
+                    expected,
+                    cost / 10000,
+                    turnover=paths.config.get("turnover_policy", "legacy"),
                 )
                 audit = execution_audit(actual["ledger"], bundle)
                 reconciliation = reconcile(

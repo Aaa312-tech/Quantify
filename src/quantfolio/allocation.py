@@ -203,8 +203,7 @@ def allocate(
     if budget is not None:
         add({n + i: 1 for i in range(n)}, budget)
         add({2 * n + i: 1 for i in range(n)}, budget)
-    result = linprog(
-        objective,
+    problem = dict(
         A_ub=np.array(A),
         b_ub=np.array(rhs),
         A_eq=eq,
@@ -212,6 +211,31 @@ def allocate(
         bounds=bounds,
         method="highs",
     )
+    result = linprog(objective, **problem)
+    sell_budget = budget
+    if turnover == "exit_priority" and result.status == 2 and budget is not None:
+        # The final inequality is the sell budget. All other constraints remain binding.
+        minimum = linprog(
+            problem["A_ub"][-1],
+            **{**problem, "A_ub": problem["A_ub"][:-1], "b_ub": problem["b_ub"][:-1]},
+        )
+        if not minimum.success and minimum.status != 2:
+            raise ValueError("Cannot establish the minimum feasible sell budget")
+        common["feasibility"] = {
+            "original_sell_budget": budget,
+            "hard_constraints_feasible": bool(minimum.success),
+            "minimum_selling": float(minimum.fun) if minimum.success else None,
+        }
+        if minimum.success:
+            if minimum.fun <= budget + 1e-7:
+                raise ValueError("Solver feasibility results disagree; do not relax constraints")
+            sell_budget = float(minimum.fun) + 1e-9
+            rhs[-1] = sell_budget
+            problem["b_ub"] = np.array(rhs)
+            result = linprog(objective, **problem)
+            if not result.success:
+                raise ValueError("The minimally relaxed sell budget did not restore feasibility")
+            common["feasibility"]["effective_sell_budget"] = sell_budget
     if not result.success:
         scale = min(1.0, cap / max(sum(previous.values()), 1e-12))
         return {s: w * scale for s, w in previous.items()}, {
@@ -238,7 +262,7 @@ def allocate(
     audit.update(
         buffered_positions=buffered,
         buy_budget_binding=budget is not None and x[n : 2 * n].sum() >= budget - 1e-7,
-        sell_budget_binding=budget is not None and x[2 * n :].sum() >= budget - 1e-7,
+        sell_budget_binding=sell_budget is not None and x[2 * n :].sum() >= sell_budget - 1e-7,
         extra_penalty_rate=penalty if turnover != "cost_penalty" else None,
     )
     if turnover == "cost_penalty":
