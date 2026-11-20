@@ -10,6 +10,7 @@ from conftest import fixture
 
 from quantfolio import cli, evaluation, reporting
 from quantfolio.dataset import eligible_rows
+from quantfolio.market import EXECUTION_MODEL
 from quantfolio.settings import Paths
 from quantfolio.simulation import simulate
 from quantfolio.storage import digest, read, save, sha
@@ -57,6 +58,10 @@ def experiment(tmp_path, monkeypatch):
         "plan_sha256": sha(tmp_path / "configs/experiment.json"),
         "folds": folds,
         "selected_folds": [1, 1],
+        "execution_model": EXECUTION_MODEL,
+        "source_sha256": {
+            file.name: sha(file) for file in Path(evaluation.__file__).parent.glob("*.py")
+        },
     }
     identity = digest(specification)
     save(run / "protocol.json", {"identity": identity, "specification": specification})
@@ -162,6 +167,26 @@ def test_rejects_inconsistent_training_metadata(experiment, field, value, messag
     with pytest.raises(ValueError, match=message):
         evaluation.evaluate(paths, run, output, [10])
     assert not output.exists()
+
+
+@pytest.mark.parametrize(
+    "field,value,message",
+    [
+        ("execution_model", "archived_full_bar_filter", "another execution model"),
+        ("source_sha256", {}, "Execution source changed"),
+    ],
+)
+def test_rejects_training_from_another_execution_engine(experiment, field, value, message):
+    paths, bundle, run, _ = experiment
+    protocol = read(run / "protocol.json")
+    protocol["specification"][field] = value
+    protocol["identity"] = digest(protocol["specification"])
+    status = read(run / "training_status.json")
+    status["identity"] = protocol["identity"]
+    save(run / "protocol.json", protocol)
+    save(run / "training_status.json", status)
+    with pytest.raises(ValueError, match=message):
+        evaluation.experiment_folds(paths, bundle, run)
 
 
 @pytest.mark.parametrize(

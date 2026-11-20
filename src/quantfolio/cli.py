@@ -74,6 +74,8 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
     from .storage import read, sha
 
     if args.command == "status":
+        from .market import EXECUTION_MODEL
+
         path = paths.reference / "evaluation_summary.json"
         manifest = read(paths.manifest)
         if sha(path) != manifest["files"][path.relative_to(paths.root).as_posix()]:
@@ -84,6 +86,9 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
             "strategy": paths.config["strategy"],
             "strategy_name": paths.config["strategy_name"],
             "decision": result["decision"],
+            "execution_model": EXECUTION_MODEL,
+            "displayed_results_scope": "ARCHIVED_EXECUTION_WITH_KNOWN_CAUSALITY_DEFECT",
+            "corrected_retraining_completed": False,
             "data_cutoff": paths.config["data_cutoff"],
             "test_start": result["trade_start"],
             "test_end": result["trade_end"],

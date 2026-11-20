@@ -107,12 +107,18 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
     template = files("quantfolio").joinpath("templates/report.html").read_text("utf-8")
     title = f"{paths.config['strategy_name']}回测" if reference else f"实验回测：{source.name}"
     notice = (
-        "收益优势验证未通过。主策略与同风控动量结果相同，新增选股模型尚未带来可验证的增益。"
+        "修正前的冻结记录：原成交器使用了开盘后才可知的高低价和全天成交量。"
+        "这些结果只用于追溯，不能作为修正后的收益验证。原收益优势检验也未通过。"
         if reference
         else "此实验尚未进行收益优势检验，结果用于研究。"
     )
     if not reference and result["status"] == "PARTIAL":
         notice = "部分窗口回测。" + notice
+    if result.get("purpose") == "EXECUTION_DIAGNOSTIC":
+        notice = (
+            "执行诊断：固定旧预测及旧选型，仅更换成交与成本模型。"
+            "尚未重新训练，不代表选股改进或收益优势通过；未解决公司行为须继续核查。"
+        )
     links = {
         "methodology_link": "docs/methodology.md",
         "reproduction_link": "docs/reproducibility.md",

@@ -7,6 +7,7 @@ import pandas as pd
 
 from .calibration import calibrate, map_calibration, rank_by_date
 from .dataset import eligible_rows, label_mask
+from .market import EXECUTION_MODEL
 from .models import (
     CANDIDATES,
     candidate_scores,
@@ -53,6 +54,7 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
         "rule_configs": CONFIGS,
         "selected_folds": [first, last],
         "include_latest": include_latest,
+        "execution_model": EXECUTION_MODEL,
     }
     identity = digest(specification)
     save(

@@ -98,6 +98,23 @@ def experiment_folds(paths: Paths, bundle: dict, run: Path) -> tuple[dict, list]
         paths.protocol
     ):
         raise ValueError("Training used a different dataset or experiment protocol")
+    if specification.get("execution_model") != EXECUTION_MODEL:
+        raise ValueError("Training used another execution model; retrain before evaluating")
+    for name in (
+        "simulation",
+        "ledger",
+        "market",
+        "allocation",
+        "risk",
+        "rules",
+        "metrics",
+        "validation",
+    ):
+        filename = name + ".py"
+        if specification.get("source_sha256", {}).get(filename) != sha(
+            Path(__file__).parent / filename
+        ):
+            raise ValueError(f"Execution source changed since training: {filename}")
     available = walk_forward_folds(bundle["calendar"])
     if specification["folds"] != available:
         raise ValueError("Registered training windows differ from the dataset calendar")
@@ -230,6 +247,10 @@ def first_difference(before, after, path=""):
 def execution_bridge(paths: Paths, output: Path, costs: list[int], policies: list[str]) -> dict:
     """Hold archived predictions and choices fixed while diagnosing corrected execution."""
     output = paths.output_path(output, "evaluations")
+    if not costs or any(cost not in (10, 20, 30) for cost in costs):
+        raise ValueError("Choose one or more slippage costs from 10, 20, 30 bps")
+    if not policies or any(policy not in POLICIES for policy in policies):
+        raise ValueError("Choose registered policies for the execution bridge")
     check_integrity(paths)
     bundle = load_bundle(paths)
     maps, schedule, choices, start, end = load_predictions(bundle, paths.reference)
@@ -313,6 +334,12 @@ def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) ->
     from .storage import load_gzip
 
     integrity = check_integrity(paths)
+    reference_protocol = read(paths.reference / "protocol.json")
+    if reference_protocol.get("specification", {}).get("execution_model") != EXECUTION_MODEL:
+        raise ValueError(
+            "The frozen reference uses the archived execution engine. "
+            "Use revision e11bb36 for exact replay, or execution-bridge for corrected execution."
+        )
     bundle = load_bundle(paths)
     maps, schedule, folds, start, end = load_predictions(bundle, paths.reference)
     results = {}

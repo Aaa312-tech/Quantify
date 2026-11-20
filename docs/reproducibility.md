@@ -23,15 +23,27 @@ python -m quantfolio report --run artifacts/evaluations/example_run
 ```powershell
 python -m quantfolio verify
 python -m quantfolio verify --refit --output artifacts/checks/refit_check
-python -m quantfolio replay --output artifacts/replays/full_check
 python -m quantfolio report
 ```
 
 `verify`校验872项冻结文件、动量与行业特征的历史前缀、48个模型的保存预测和标签可用日期。`--refit`重新拟合第1窗口的两个估计器，与冻结预测逐项比较。目录更名不改变模型、预测、账本及数据文件的内容哈希。
 
-`replay`重放19项策略×3档成本×25个账户，共1425个账户，并比较完整摘要和账本；差异会导致非零退出码。可加 `--primary-only`或 `--cost 10`缩小检查范围。旧命令 `backtest`是`replay`的兼容别名。
+原引擎的精确复现必须在提交`e11bb36`的隔离检出中运行`replay`，不能用修正后的引擎强求旧收益不变。
+已完成的1425账户复现保存在`artifacts/replays/prior_engine_2026-11-20/verification.json`。
+当前代码会拒绝用另一成交模型重放旧实验；旧命令`backtest`仍是`replay`的兼容别名。
 
-不带`--run`的`report`从冻结参考结果生成 `reports/latest/index.html`。工程复现通过不增加独立市场样本，也不改变收益优势检验的结论。
+修正引擎的固定预测诊断使用：
+
+```powershell
+python -m quantfolio execution-bridge --output artifacts/evaluations/opening_review
+python -m quantfolio report --run artifacts/evaluations/opening_review
+```
+
+默认19项策略×3档成本×25账户；可加`--primary-only`或`--cost 10`缩小范围。
+它使用冻结预测与旧验证选型，只用于归因；完整重训必须另外运行`train`。
+新评估拒绝训练与执行模型不一致，或执行源文件在训练后变化的实验。
+
+不带`--run`的`report`从冻结参考结果生成 `reports/latest/index.html`，页面明确标记旧成交假设的问题。工程复现通过不增加独立市场样本，也不改变收益优势检验的结论。
 
 ## 环境与错误
 
