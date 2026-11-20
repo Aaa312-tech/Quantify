@@ -1,16 +1,18 @@
 """Turn reviewed raw collections into an immutable, historically stable snapshot."""
 
+import datetime as dt
 from copy import deepcopy
 from pathlib import Path
 
 import joblib
 import pandas as pd
 
+from .daily_sources import baostock_bars, compare_target, quote_entries, tencent_beijing_bar
 from .dataset import check_integrity, load_snapshot
 from .market_data import append_bars, inspect_bars, parse_bars
 from .preprocessing import build_dataset, compare_history
 from .snapshots import label_changes, next_opening, repair_actions
-from .storage import array_sha, dump_gzip, now, read, save, sha
+from .storage import array_sha, digest, dump_gzip, load_gzip, now, read, save, sha
 
 
 def _checked_path(paths, relative, expected):
@@ -77,11 +79,202 @@ def reviewed_actions(actions, calendar, reviews, meta):
     return updated
 
 
-def _reviewed_raws(paths, protocol, parent, collection_parent):
+def _collection_metadata(paths, protocol, parent, collection_parent):
+    """Permit only explicitly reviewed status additions to older collection metadata."""
+    if set(parent["raws"]) != set(collection_parent["raws"]):
+        raise ValueError("Collection raw universe differs from the processed parent")
     if parent["meta"] != collection_parent["meta"]:
-        raise ValueError("Collection universe differs from the processed parent")
+        item = protocol.get("collection_metadata_review")
+        if item is None:
+            raise ValueError("Collection universe differs from the processed parent")
+        review = read(_checked_path(paths, item["path"], item["sha256"]))
+        if (
+            review["status"] != "DATED_STATUS_ADDITIONS_VERIFIED"
+            or review["before_meta_sha256"] != digest(collection_parent["meta"])
+            or review["after_meta_sha256"] != digest(parent["meta"])
+            or review["before_bundle_sha256"] != protocol["collection_source_sha256"]
+            or review["after_bundle_sha256"] != protocol["source_bundle_sha256"]
+        ):
+            raise ValueError("Collection metadata review belongs to another input")
+        _checked_path(paths, review["source_review"], review["source_review_sha256"])
+        stripped = deepcopy(parent["meta"])
+        for symbol, periods in review["added_risk_warning_periods"].items():
+            if (
+                symbol not in stripped
+                or stripped[symbol].pop("risk_warning_periods", None) != periods
+            ):
+                raise ValueError("Collection metadata status additions differ from review")
+        if stripped != collection_parent["meta"]:
+            raise ValueError("Unreviewed collection metadata difference")
     for symbol, raw in parent["raws"].items():
         pd.testing.assert_frame_equal(raw, collection_parent["raws"][symbol], check_exact=True)
+
+
+def _daily_collection(paths, item, date, parent_sha, provider):
+    registration = read(
+        _checked_path(paths, f"{item['path']}/protocol.json", item["protocol_sha256"])
+    )
+    collection = read(
+        _checked_path(paths, f"{item['path']}/collection.json", item["collection_sha256"])
+    )
+    if (
+        registration["target_date"] != date
+        or registration["source_bundle_sha256"] != parent_sha
+        or registration["provider"] != provider
+        or collection["status"] != "COMPLETE"
+        or not collection["records"]
+    ):
+        raise ValueError("Daily fallback collection identity or status differs")
+    if "collector_sha256" in registration:
+        _checked_path(
+            paths, f"{item['path']}/collector_source.py", registration["collector_sha256"]
+        )
+    return registration, collection
+
+
+def _closing_quotes(paths, item, protocol):
+    registration, collection = _daily_collection(
+        paths,
+        item,
+        protocol["completed_date"],
+        protocol["collection_source_sha256"],
+        "tencent_closing_quote",
+    )
+    quotes, sources = {}, {}
+    for record in collection["records"]:
+        acquired = dt.datetime.fromisoformat(record["requested_at"])
+        if acquired.tzinfo is None:
+            raise ValueError("Closing-quote acquisition timestamp needs a timezone")
+        acquired = acquired.astimezone(dt.timezone(dt.timedelta(hours=8)))
+        if (
+            record["status"] != "RECEIVED"
+            or acquired.date().isoformat() < protocol["completed_date"]
+            or (acquired.date().isoformat() == protocol["completed_date"] and acquired.hour < 16)
+        ):
+            raise ValueError("Closing quotes were incomplete or collected before market close")
+        parsed = quote_entries(_checked_path(paths, record["file"], record["sha256"]).read_bytes())
+        if (
+            list(parsed) != record["symbols"]
+            or list(parsed) != record["returned_symbols"]
+            or set(parsed) & set(quotes)
+        ):
+            raise ValueError("Closing-quote batch membership differs")
+        quotes.update(parsed)
+        sources.update({s: record["sha256"] for s in parsed})
+    if set(quotes) != set(registration["symbols"]):
+        raise ValueError("Closing-quote collection does not cover its registered universe")
+    return quotes, sources
+
+
+def _fallback_raws(paths, protocol, parent, received):
+    file = _checked_path(
+        paths, protocol["fallback_source_bundle"], protocol["fallback_source_sha256"]
+    )
+    collection_parent = load_snapshot(paths, file, protocol["source_data_cutoff"])
+    if (
+        collection_parent["meta"] != parent["meta"]
+        or set(collection_parent["raws"]) != set(parent["raws"])
+        or not collection_parent["calendar"].equals(parent["calendar"])
+    ):
+        raise ValueError("Fallback collection metadata differs from the processed parent")
+    for symbol, frame in parent["raws"].items():
+        pd.testing.assert_frame_equal(frame, collection_parent["raws"][symbol], check_exact=True)
+    date = protocol["completed_date"]
+    records, used_providers = [], set()
+    for item in protocol["fallback_collections"]:
+        provider = item["provider"]
+        expected = {"baostock_daily": "baostock", "tencent_beijing": "tencent_daily_bars"}
+        if provider not in expected or provider in used_providers:
+            raise ValueError("Unknown or duplicate fallback provider")
+        used_providers.add(provider)
+        registration, collection = _daily_collection(
+            paths, item, date, protocol["fallback_source_sha256"], expected[provider]
+        )
+        selected = set(item["use_symbols"])
+        if (
+            len(selected) != len(item["use_symbols"])
+            or not selected <= set(parent["meta"])
+            or selected & set(received)
+        ):
+            raise ValueError("Fallback selection duplicates or replaces an existing symbol")
+        converted, hashes = {}, {}
+        if provider == "baostock_daily":
+            kinds = set()
+            for record in collection["records"]:
+                if record["kind"] in kinds or record["error_code"] != "0":
+                    raise ValueError("Duplicate or unsuccessful BaoStock daily batch")
+                kinds.add(record["kind"])
+                raw = load_gzip(_checked_path(paths, record["response"], record["response_sha256"]))
+                if (
+                    len(raw["rows"]) != record["rows"]
+                    or raw["fields"] != record["fields"]
+                    or raw["kind"] != record["kind"]
+                ):
+                    raise ValueError("BaoStock batch metadata differs from its response")
+                parsed = baostock_bars(raw, parent["meta"], date)
+                if set(parsed) & set(converted):
+                    raise ValueError("Duplicate BaoStock symbol across daily batches")
+                converted.update(parsed)
+                hashes.update({s: {"response_sha256": record["response_sha256"]} for s in parsed})
+            expected_symbols = {s for s, m in parent["meta"].items() if s.startswith(("sh", "sz"))}
+            if kinds != {"stocks", "funds"} or set(converted) != expected_symbols:
+                raise ValueError("BaoStock feed does not cover the Shanghai/Shenzhen universe")
+        else:
+            quotes, quote_hashes = _closing_quotes(paths, item["closing_quotes"], protocol)
+            for record in collection["records"]:
+                symbol = record["symbol"]
+                if (
+                    record["status"] != "RECEIVED"
+                    or symbol not in parent["meta"]
+                    or symbol in converted
+                ):
+                    raise ValueError("Unknown, duplicate or unsuccessful Tencent daily symbol")
+                raw = _checked_path(
+                    paths, f"{item['path']}/{symbol}.txt", record["response_sha256"]
+                )
+                converted[symbol] = tencent_beijing_bar(
+                    raw.read_bytes(),
+                    quotes[symbol],
+                    parent["meta"][symbol],
+                    registration["start"],
+                    date,
+                    parent["raws"][symbol],
+                )
+                hashes[symbol] = {
+                    "response_sha256": record["response_sha256"],
+                    "closing_quote_sha256": quote_hashes[symbol],
+                }
+            expected_symbols = {s for s in parent["meta"] if s.startswith("bj")}
+            if (
+                set(converted) != expected_symbols
+                or set(registration["symbols"]) != expected_symbols
+            ):
+                raise ValueError("Tencent daily feed does not cover the Beijing universe")
+        if selected != set(converted) - set(received):
+            raise ValueError("Fallback use differs from the fixed missing-symbol selection")
+        for symbol, (frame, details) in converted.items():
+            if symbol in received:
+                differences = compare_target(
+                    received[symbol].loc[pd.Timestamp(date)], details, provider
+                )
+                if differences:
+                    raise ValueError(f"Conflicting fallback target fields: {symbol}/{differences}")
+            else:
+                received[symbol] = append_bars(parent["raws"][symbol], frame, date)
+            records.append(
+                {
+                    "symbol": symbol,
+                    "provider": provider,
+                    "used": symbol in selected,
+                    **hashes[symbol],
+                    **details,
+                }
+            )
+    return records
+
+
+def _reviewed_raws(paths, protocol, parent, collection_parent):
+    _collection_metadata(paths, protocol, parent, collection_parent)
     received, records = {}, []
     for source in protocol["collections"]:
         registration = read(
@@ -135,6 +328,21 @@ def _reviewed_raws(paths, protocol, parent, collection_parent):
                     "added_bars": len(received[symbol]) - len(parent["raws"][symbol]),
                 }
             )
+    if protocol.get("fallback_collections"):
+        assigned = {r["symbol"]: "eastmoney" for r in records}
+        fallback_records = _fallback_raws(paths, protocol, parent, received)
+        names = {"baostock_daily": "baostock", "tencent_beijing": "tencent"}
+        assigned.update({r["symbol"]: names[r["provider"]] for r in fallback_records if r["used"]})
+        item = protocol["source_assignment"]
+        assignment = read(_checked_path(paths, item["path"], item["sha256"]))
+        planned = {r["symbol"]: r["provider"] for r in assignment["assignments"]}
+        if (
+            assignment["parent_bundle_sha256"] != protocol["source_bundle_sha256"]
+            or len(planned) != len(assignment["assignments"])
+            or planned != assigned
+        ):
+            raise ValueError("Actual source assignment differs from registration")
+        records = [{**r, "provider": "eastmoney", "used": True} for r in records] + fallback_records
     if set(received) != set(parent["meta"]):
         raise ValueError("Raw collections do not cover the complete registered universe")
     # Source insertion order is part of the frozen panel contract.

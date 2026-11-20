@@ -192,8 +192,15 @@ python -m quantfolio repair-data --protocol configs/protocols/inner_event_repair
 
 11月20日新增备用行情原始响应及采集源码归档于`data/raw/baostock_close_2026-11-19`、
 `data/raw/baostock_close_2026-11-20`和`data/raw/tencent_beijing_daily_2026-11-20`。
-它们未接入生产生成器；来源差异审查位于`artifacts/checks/market_close_2026-11-20`，不能据此
-省略新适配器的登记、字段测试及完整快照验证。
+来源差异审查位于`artifacts/checks/market_close_2026-11-20`。适配器按登记来源读取原始响应，
+复核所有哈希、字段和来源分工；构建新快照使用：
+
+```powershell
+python -m quantfolio refresh-data --protocol configs/protocols/daily_source_extension.json --output data/processed/2026-11-20-reviewed-sources
+```
+
+已有目录不可覆盖；复现时在协议副本中使用新输出并记录哈希。该命令只构建独立快照，
+不会切换活跃配置，仍需完整训练、账户核验、新数据绑定的ST审查及计划有效期检查。
 
 ## 安装包检查
 

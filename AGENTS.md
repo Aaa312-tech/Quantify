@@ -35,9 +35,9 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
   requires a new matching review; retain the old models, ledgers and impact reports.
 - The six sourced inner-trial corporate actions are applied and fully retrained. Five suspended
   sessions still have 40 carried-price flags in inner rule trials; pre-open availability is unverified.
-- Candidate raw sources now cover all 594 securities for November 20, but the active snapshot
-  still ends November 19. Source adapters and full extension validation remain pending; preserve
-  the original failed checks, ETF turnover differences and stale-data plan block.
+- The November 20 source adapters and new snapshot passed historical-prefix checks. On old
+  inputs, all 48 models, 1425 complete accounts and 75 paper accounts remain exact. Full new-data
+  validation is running; active inputs still end November 19. Preserve original failed source checks.
 - `configs/protocols/daily_source_extension.json` registers the source adapters, exact historical
   preservation and full extension validation, including the sourced next-session Jiangbolong event.
   Complete that protocol before activating November 20 data or issuing a November 23 plan.

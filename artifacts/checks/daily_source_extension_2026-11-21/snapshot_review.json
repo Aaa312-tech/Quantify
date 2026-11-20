@@ -1,0 +1,176 @@
+{
+  "status": "PASS",
+  "checked_at": "2026-11-21T04:25:42.377019+08:00",
+  "bundle_sha256": "feba98f0fa48dc86f7ecdf992e97fb331ffeaeb532900a3140309261fd8b3735",
+  "snapshot_audit_sha256": "e7402722f8c9bd2c76bde62020221d64e76256b19ec83e4487306e6508c1933f",
+  "provenance_sha256": "4edc7c8af2d4d774ae9d7e06ab5ca0c4545a1cd57b08be0cd7789e6c6dc47f68",
+  "historical_prefix": {
+    "status": "PASS",
+    "securities": 594,
+    "sessions": 697,
+    "rows": 414018,
+    "columns": 94,
+    "model_features": 57,
+    "panels": 21,
+    "scores": 3,
+    "labels_compared": false,
+    "equality": "exact values, missingness, ordering and stored dtypes"
+  },
+  "dated_status_and_opening_status_exact": true,
+  "universe": 594,
+  "sessions": 698,
+  "rows": 414612,
+  "model_features": 57,
+  "used_providers": {
+    "eastmoney": 414,
+    "baostock_daily": 178,
+    "tencent_beijing": 2
+  },
+  "labels": {
+    "1": {
+      "changed_rows": 575,
+      "changed_fields": {
+        "y": 569,
+        "end": 569,
+        "status": 569,
+        "delay": 6
+      },
+      "status_transitions": {
+        "3->0": 569,
+        "3->3": 6
+      }
+    },
+    "3": {
+      "changed_rows": 571,
+      "changed_fields": {
+        "y": 566,
+        "end": 566,
+        "status": 566,
+        "delay": 5
+      },
+      "status_transitions": {
+        "3->0": 566,
+        "3->3": 5
+      }
+    },
+    "5": {
+      "changed_rows": 569,
+      "changed_fields": {
+        "y": 561,
+        "end": 561,
+        "status": 564,
+        "delay": 5
+      },
+      "status_transitions": {
+        "3->3": 5,
+        "3->0": 561,
+        "3->2": 3
+      }
+    }
+  },
+  "label_change_entries": 1715,
+  "earliest_changed_date_index": 690,
+  "all_previous_label_statuses_right_censored": true,
+  "all_new_observed_label_exit_indices": [
+    697
+  ],
+  "new_unresolved_label_events": 0,
+  "new_no_entry_labels": [
+    {
+      "symbol": "sh600467",
+      "date_index": 691,
+      "horizon": 5,
+      "before": [
+        null,
+        -1.0,
+        3.0,
+        0.0
+      ],
+      "after": [
+        null,
+        -1.0,
+        2.0,
+        0.0
+      ]
+    },
+    {
+      "symbol": "sh603725",
+      "date_index": 691,
+      "horizon": 5,
+      "before": [
+        null,
+        -1.0,
+        3.0,
+        0.0
+      ],
+      "after": [
+        null,
+        -1.0,
+        2.0,
+        0.0
+      ]
+    },
+    {
+      "symbol": "sz002843",
+      "date_index": 691,
+      "horizon": 5,
+      "before": [
+        null,
+        -1.0,
+        3.0,
+        0.0
+      ],
+      "after": [
+        null,
+        -1.0,
+        2.0,
+        0.0
+      ]
+    }
+  ],
+  "existing_action_availability_changes": [
+    {
+      "symbol": "sz002281",
+      "ex_date": "2026-11-19",
+      "pay_date": "2026-11-19",
+      "before": null,
+      "after": "2026-11-20"
+    }
+  ],
+  "new_action": {
+    "symbol": "sz301308",
+    "notice_date": "2026-11-16",
+    "record_date": "2026-11-20",
+    "ex_date": "2026-11-23",
+    "cash_pay_date": "2026-11-23",
+    "cash_per_share": 2.18,
+    "share_multiplier": 1.0,
+    "share_list_date": null,
+    "ex_reference_cash_per_share": 2.1683782,
+    "ex_reference_share_multiplier": 1.0,
+    "id": "sz301308:2026-11-23",
+    "code": "301308",
+    "name": "江波龙",
+    "source": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-16/12708600.PDF",
+    "verified_source": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-16/12708600.PDF",
+    "date_status": "PRIMARY_FILING_REVIEWED",
+    "source_evidence": {
+      "path": "docs/references/corporate_actions/sz301308_2026-11-16.pdf",
+      "sha256": "85667d8c84510ac037d8be0b8543cd4028d3e34111b53e78fcfff7d1458f83b9",
+      "pages": [
+        1,
+        3,
+        5
+      ]
+    },
+    "cash_available_date": null
+  },
+  "scope": "All old non-label values and metadata remain exact. Only previously right-censored historical labels changed after the newly observed close; new actionable entries are not inferred from labels.",
+  "limitations": [
+    "Two Beijing target bars have same-provider daily/closing corroboration only; their source-confidence limitation remains explicit.",
+    "Eighteen prior-date ETF turnover fields disagree across providers; denominator dates are not certified. All frozen historical values remain unchanged, and native precision of new fallback turnover is declared.",
+    "Historic universe, industry, other security status and unreviewed action coverage remain incomplete; existing suspension-carried marks are retained.",
+    "Daily status does not establish pre-open availability. Opening prices are proxies and contest fee/matching details remain unconfirmed.",
+    "Retrospective data and repeatedly examined windows are not new forward performance observations."
+  ]
+}
