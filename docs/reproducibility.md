@@ -114,7 +114,7 @@ python -m quantfolio refresh-data --protocol configs/protocols/market_extension.
 复现实验应使用登记时提交`d7eabaa`、相同依赖与新输出目录，不覆盖完成记录。
 本轮`legacy`组作为后续分红修正的基准保留，与此前1425个基线账户完全一致。
 
-当前活跃研究使用`configs/protocols/inner_dividend_repair.json`登记的4项补证，登记提交为
+前一次研究使用`configs/protocols/inner_dividend_repair.json`登记的4项补证，登记提交为
 `2f49fd243fee30cb021c39fb9996d9ecd8b8fb6e`。数据、训练和评估分别位于
 `data/processed/2026-11-19-inner-dividends`、
 `artifacts/experiments/inner_dividend_repair_2026-11-21`及
@@ -122,6 +122,16 @@ python -m quantfolio refresh-data --protocol configs/protocols/market_extension.
 `train --include-latest`、`evaluate --all-policies`和`verify-paper`，复现时另取新输出目录。
 48个模型文件、12组预测及全部选择精确一致，因此新评估也构成固定预测的数据对照，
 1425个完整账户未变；验收和启用记录保存在同名`artifacts/checks`目录。
+
+当前研究使用`configs/protocols/inner_action_review.json`登记的剩余29项事实，登记提交为
+`7ccab04989aebcb6b9b1105af4fb3d75a564fdb5`。快照为
+`data/processed/2026-11-19-inner-actions`，训练、评估和检查使用各自目录下的
+`inner_action_review_2026-11-21`。同样先运行`repair-data --protocol`并指定新输出目录，
+再配置对应数据与协议，运行`train --include-latest`、`evaluate --all-policies`和`verify-paper`。
+本次14个模型、5组预测改变，不能省略固定旧预测的对照；
+`artifacts/evaluations/inner_action_review_2026-11-21/fixed_forecasts`保存完整1425账户，
+与前次基线精确一致。重训评估另有1425账户，差异及一个高成本主策略账户的归因保存在
+`artifacts/checks/inner_action_review_2026-11-21/attribution.json`。已有目录仍不得覆盖。
 
 冻结数值参考来自Windows、Python 3.13.2及`pyproject.toml`中的依赖版本。核心数值操作在局部pandas配置中关闭numexpr，退出后恢复调用者设置。其他平台的单元测试通过不等于所有历史浮点结果逐位相同。
 

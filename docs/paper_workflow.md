@@ -123,9 +123,9 @@ python -m quantfolio verify-paper --output artifacts/checks/paper_replay
 随后已完成[最低卖出预算研究](exit_budget_repair.md)：修正未通过收益与回撤条件，
 因此纸面主策略仍保留原换手政策；新训练来源再次通过75账户、1386交易日的完整重放。
 
-4项内层分红补证后，[最新纸面验证](../artifacts/checks/inner_dividend_repair_2026-11-21/paper/verification.json)
-再次通过全部75个账户对比。行情截止日仍为11月19日，11月21日凌晨的
-[就绪检查](../artifacts/plans/market_readiness_2026-11-23/plan.json)因数据过期和账户日期不一致而
+剩余29项内层事件补证及重新训练后，[最新纸面验证](../artifacts/checks/inner_action_review_2026-11-21/paper/verification.json)
+再次通过全部75个账户、1386个交易日对比。行情截止日仍为11月19日，11月21日凌晨的
+[就绪检查](../artifacts/plans/action_review_readiness_2026-11-23/plan.json)因数据过期和账户日期不一致而
 阻止生成订单。该记录指向11月23日的下一次检查，不能当作有效的11月23日交易计划。
 
 模型收益优势仍未通过，历史证券状态、行业时点与选样偏差仍有缺口。`FROZEN_CONDITIONAL_PLAN`
