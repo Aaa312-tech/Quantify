@@ -17,12 +17,12 @@
 当前活跃数据截止2026-11-19。11月20日09:25以后，它不能生成有效的新计划。
 研究11月23日开盘，需要先完成11月20日行情核验、对应最新拟合与评估，不能只修改日期。
 
-11月21日另已确认历史ST期间的资格筛选错误。`historical_status_review`必须指向冻结、
-数据哈希一致的审查；存在该问题时，计划返回`HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED`
-并保留空订单。不同快照、审查文件被改写或不一致的解除决定会被拒绝。
-[最新就绪检查](../artifacts/plans/historical_status_readiness_2026-11-23/plan.json)同时记录了
-历史资格、账户日期和行情过期三项原因。必须先完成登记的历史修正及重训验收，
-仅补上11月20日行情不能解除这项暂停。
+`historical_status_review`必须指向冻结、数据哈希一致的审查；确认历史资格错误时，
+计划返回`HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED`并保留空订单。不同快照、
+审查文件被改写或不一致的解除决定会被拒绝。
+十只已核验证券的日期修正已完成完整重训与账户验收，相关暂停仅对当前快照解除。
+[最新就绪检查](../artifacts/plans/reviewed_status_readiness_2026-11-23/plan.json)仍记录
+账户日期不一致与行情过期，订单为空。未来新快照还须另做绑定审查，不能直接复用解除决定。
 
 ## 从账户到收盘
 
@@ -130,10 +130,11 @@ python -m quantfolio verify-paper --output artifacts/checks/paper_replay
 随后已完成[最低卖出预算研究](exit_budget_repair.md)：修正未通过收益与回撤条件，
 因此纸面主策略仍保留原换手政策；新训练来源再次通过75账户、1386交易日的完整重放。
 
-新增历史ST资格暂停条件后，[最新纸面验证](../artifacts/checks/historical_status_2026-11-21/paper/verification.json)
-仍通过全部75个账户、1386个交易日对比。这证明历史流程保持一致，不能作为历史资格
-修正已完成的依据。行情截止日仍为11月19日，当前就绪检查同时受历史资格错误和数据
-时效限制；11月23日是下一次检查日期，尚无有效交易计划。
+历史ST数据修正并重训后，[最新纸面验证](../artifacts/checks/historical_status_repair_2026-11-21/paper/verification.json)
+通过全部75个账户、1386个交易日对比，证明纸面流程与本轮回测账本一致。
+历史资格修正另由训练样本和逐笔买入核查验证，不能只靠纸面重放作结论。
+行情截止日仍为11月19日，当前就绪检查受账户日期与行情时效限制；
+11月23日是下一次检查日期，尚无有效交易计划。
 
 模型收益优势仍未通过，历史证券状态、行业时点与选样偏差仍有缺口。`FROZEN_CONDITIONAL_PLAN`
 表示时间与输入检查通过；`BLOCKED`表示没有有效操作建议；二者都不表示收益保证。

@@ -30,7 +30,10 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
   to read or trace frozen evidence; use semantic software versions for package releases.
 - The superiority gate is false. Engineering parity does not prove outperformance; the active
   verified snapshot ends on 2026-11-19. Historical status and industry coverage remain incomplete.
-- Issuer notices confirm historical ST eligibility errors and simulated buys. The frozen
-  `historical_status_review` blocks new plans even when fresh bars arrive. Complete a registered
-  date-aware correction and retraining before clearing it; retain the old models and ledgers.
+- The registered ten-security historical ST correction passed full retraining and account checks.
+  `historical_status_review` clears only that defect for its bound dataset hash. A new snapshot
+  requires a new matching review; retain the old models, ledgers and impact reports.
+- Six additional inner-trial corporate actions have reviewed sources but are not yet applied.
+  Five suspended sessions retain carried-price quality flags; historical pre-open availability
+  is unverified. Keep these limitations and the stale-market-data plan block explicit.
 - Do not operate a trading app, broker account or WeChat.

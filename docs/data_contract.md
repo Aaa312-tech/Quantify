@@ -1,6 +1,6 @@
 # 数据契约
 
-`configs/project.toml`声明活跃快照`bundle`、冻结核验快照`reference_bundle`、研究评估`evaluation`及完整性清单。当前活跃快照位于`data/processed/2026-11-19-inner-actions`，在父快照`2026-11-19-inner-dividends`上应用29项公告事实；行情截止日不变。父快照、此前公司行为修正与原快照`2026-11-18`均保留。载入前检查SHA-256及各自截止日期；joblib仅用于本地受信任的快照和模型。
+`configs/project.toml`声明活跃快照`bundle`、冻结核验快照`reference_bundle`、研究评估`evaluation`及完整性清单。当前活跃快照位于`data/processed/2026-11-19-reviewed-status`，在父快照`2026-11-19-inner-actions`上应用十只股票的历史ST区间；行情截止日不变。父快照、此前公司行为修正与原快照`2026-11-18`均保留。载入前检查SHA-256及各自截止日期；joblib仅用于本地受信任的快照和模型。
 
 | 字段 | 内容 |
 | --- | --- |
@@ -22,12 +22,12 @@
 
 开盘报价函数不能读取当日收盘、最高、最低或全日量额来决定成交。缺失开盘状态不等于已证明可成交；现有快照没有经过认证的开盘状态历史。执行输出应注明代理模型和单独的滑点成本。
 
-当前已确认具体的历史资格错误：静态证券名称不能识别新潮能源和亚振家居过去的ST期间，
-594条相应样本仍被标记为合格。公告和账户影响见
-`docs/references/security_status/review_2026-11-21.json`及
-`artifacts/checks/historical_status_2026-11-21/impact.json`。这些事实尚未应用到活跃数据，
-原回测保留；`historical_status_review`将该审查绑定到数据SHA-256并阻止新计划，
-修改行情截止日不能代替历史修正与重新训练。
+最初确认新潮能源和亚振家居的594条历史样本违反ST剔除约定，原诊断保存在
+`artifacts/checks/historical_status_2026-11-21/impact.json`，统计范围与文件均未改写。
+当前快照已应用全部十只已核验证券的日期修正；训练和成交检查通过后，
+`historical_status_review`指向`artifacts/checks/historical_status_repair_2026-11-21/status_review.json`。
+解除决定只适用于绑定的数据SHA-256；未来新快照必须另做一致性审查，不能沿用旧哈希或
+仅修改行情截止日。其他历史状态未知项仍保留。
 
 `fetch-status`使用可选的BaoStock依赖，采集已选股票池中沪深股票的未复权日线和
 `tradestatus/isST`，另存`data/raw`。它不覆盖北交所和ETF，不重建全市场历史成分。
@@ -51,14 +51,20 @@
 行顺序与57列特征契约须不变；资格、排名和标签的变化分别记录。新快照不自动启用，
 也不能只删几笔成交而保留受污染的旧训练结果。
 
-交易规则需要生效区间。[上交所2026年修订说明](https://www.sse.com.cn/aboutus/mediacenter/hotandd/c/c_20260424_10816474.shtml)明确主板风险警示股票自7月6日起改为10%涨跌幅。当前静态元数据不能据此补写此前的ST状态；历史限幅与上市初期例外仍待按日期核查，来源保存在`docs/references/exchange_rules_2026`。
+交易规则需要生效区间。[上交所2026年修订说明](https://www.sse.com.cn/aboutus/mediacenter/hotandd/c/c_20260424_10816474.shtml)明确主板风险警示股票自7月6日起改为10%涨跌幅。本次八只主板证券的已核验ST区间均在该日前结束，按各自公告使用5%限幅；两只创业板证券使用20%。不能从当前名称或新规倒推其他历史状态，未核实区间与上市初期例外仍须单独核查，来源保存在`docs/references/exchange_rules_2026`。
 
 修正公司行为保留`cash_pay_date`公告日期，另用`cash_available_date`表达开盘可用时间；缺失值保持未知。`ex_reference_cash_per_share`与`ex_reference_share_multiplier`只调整价格参考，不能替代实际权益。来源哈希、页码、标签变化与未解决限制随快照归档。
 
 已核验的现金分红须有不早于除息日的支付日期；纯转增没有现金支付，两项现金日期均保留空值。
 新增股份的上市日单独记录，不能用它填充现金支付日，也不能据此认定零碎股已准确分配到每个账户。
 
-本批修正新增28项现金支付日期和两项股份上市日。已知支付日期共121项，118项能确定下一个已观察开盘；1/3/5日标签分别有2/6/10条由公司行为未明确变为可计算，非标签列完全一致。完整表的1838项事件中，仍有1700项现金支付日期、106项股份上市日未知，不能将已核验的内层队列推广为全库认证，详见`artifacts/checks/inner_action_review_2026-11-21/coverage.json`。
+此前公司行为修正新增28项现金支付日期和两项股份上市日。已知支付日期共121项，118项能确定下一个已观察开盘；1/3/5日标签分别有2/6/10条由公司行为未明确变为可计算，非标签列完全一致。完整表的1838项事件中，仍有1700项现金支付日期、106项股份上市日未知，不能将已核验的内层队列推广为全库认证，详见`artifacts/checks/inner_action_review_2026-11-21/coverage.json`。
+
+ST修正后的内层路径另出现六项公司行为、九次未核实事件，以及高乐股份五个停牌日的
+40次价格延用记录。六项支付日期、一项股份上市日及差异化除息参考已核实，保存于
+`docs/references/status_followup_2026-11-21.json`，尚未应用到活跃快照。
+停牌核验保存在`docs/references/security_status/gaole_suspension_review_2026-11-21.json`；
+公告日期不能证明当日开盘前可用，未生成`opening_status`，也未移除价格延用质量标记。
 
 `fetch-bars`把未复权日线响应写到`data/raw/<date>`，核对证券身份、字段、时间范围、OHLC和历史重叠；成交量单位为手、成交额为元。缺失目标日期、历史修订和下载失败分别保留。下载完成不代表数据已通过研究验收，仍需核查公司行为、证券状态和跨源差异后另建处理快照。
 

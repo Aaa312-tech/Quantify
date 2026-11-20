@@ -123,7 +123,7 @@ python -m quantfolio refresh-data --protocol configs/protocols/market_extension.
 48个模型文件、12组预测及全部选择精确一致，因此新评估也构成固定预测的数据对照，
 1425个完整账户未变；验收和启用记录保存在同名`artifacts/checks`目录。
 
-当前研究使用`configs/protocols/inner_action_review.json`登记的剩余29项事实，登记提交为
+此前公司行为研究使用`configs/protocols/inner_action_review.json`登记的剩余29项事实，登记提交为
 `7ccab04989aebcb6b9b1105af4fb3d75a564fdb5`。快照为
 `data/processed/2026-11-19-inner-actions`，训练、评估和检查使用各自目录下的
 `inner_action_review_2026-11-21`。同样先运行`repair-data --protocol`并指定新输出目录，
@@ -157,7 +157,8 @@ python -m quantfolio audit-status --collection data/raw/status_history_example -
 最后一批另存`collector_source.py`并核对其哈希。最终离线核查重新解析了全部原始响应。
 接口用法和依赖来源见[BaoStock维护者发布页](https://pypi.org/project/baostock/0.9.4/)。
 
-日期修正按`configs/protocols/historical_status_repair.json`执行：
+当前研究按`configs/protocols/historical_status_repair.json`执行，登记提交为
+`e9fa763b102a199c68adb33b6d5197d0d3951d4a`：
 
 ```powershell
 python -m quantfolio repair-status --protocol configs/protocols/historical_status_repair.json --output data/processed/2026-11-19-reviewed-status
@@ -168,6 +169,12 @@ python -m quantfolio repair-status --protocol configs/protocols/historical_statu
 `train --include-latest`、`evaluate --all-policies`及`verify-paper`。
 重训固定48次拟合、19种原政策与三档滑点，不新增候选。固定旧预测的1425账户须单独比较：
 旧预测先按旧快照验证行身份，再在修正快照上执行；它只用于定位修正影响，不能代替新训练。
+本轮已完成两组各1425账户及75个纸面账户核对，检查记录在
+`artifacts/checks/historical_status_repair_2026-11-21`。48个模型和12组预测均改变，
+必须保留固定旧预测对照；`training_status_exposure.json`与`warning_buy_comparison.json`
+单独验证十只证券的训练及买入剔除。原两只、三只证券的较早诊断保持原统计范围。
+新发现的六项公司行为补证只归档于`status_followup_2026-11-21`，没有混入本轮输入。
+
 
 ## 安装包检查
 

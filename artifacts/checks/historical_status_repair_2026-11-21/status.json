@@ -1,0 +1,83 @@
+{
+  "software_version": "0.16.0",
+  "strategy": "walk_forward_momentum",
+  "strategy_name": "滚动选型动量",
+  "decision": "RESEARCH_ONLY",
+  "execution_model": "opening_proxy_separate_cost",
+  "displayed_results_scope": "CAUSAL_RETRAINING",
+  "corrected_retraining_completed": true,
+  "source_evaluation": "artifacts/evaluations/historical_status_repair_2026-11-21",
+  "data_cutoff": "2026-11-19",
+  "historical_status_review": {
+    "status": "REGISTERED_STATUS_REPAIR_VERIFIED",
+    "blocking": false,
+    "reviewed_at": "2026-11-21T03:05:19.784114+08:00",
+    "source_bundle_sha256": "da9b53e289e3a0ed08a3ced9f1ade1ccf340dc47803a6b988ae2b22bf2d4f706",
+    "registration_commit": "e9fa763b102a199c68adb33b6d5197d0d3951d4a",
+    "previous_review": "artifacts/checks/historical_status_2026-11-21/impact.json",
+    "previous_review_sha256": "f1e6c0df21c455e8a6b7b2f81c9e003d53a743027b7af21c0fdd2c22cb973505",
+    "source_review": "docs/references/security_status/dated_review_2026-11-21.json",
+    "source_review_sha256": "e476056e7dd2e19ec310ae9a70031fa3d9062795173f19da35434765507f1293",
+    "corrected_securities": 10,
+    "warning_sessions": 2755,
+    "removed_eligible_rows": 1634,
+    "models_reloaded": 48,
+    "new_account_audits": 1425,
+    "fixed_forecast_account_audits": 1425,
+    "paper_accounts_exact": 75,
+    "remaining_reviewed_warning_training_rows": 0,
+    "remaining_reviewed_warning_buy_occurrences": 0,
+    "evidence": {
+      "validation.json": "9639c3caceef94566e06b791b53edb8ab9df4f54aa4352ba9d3fb528cf03ce94",
+      "training_status_exposure.json": "1298e4d3ebe1a859c568848b65a9bc6ed0c9d04ccfedd34d0f42c6500ac410e5",
+      "warning_buy_comparison.json": "00bc9dfef5ec03a2319bed7d0cea40ed88ce8c727678141a0d226cb03cc6174d",
+      "fit_comparison.json": "432c5d63e827ffc6a463becd3b1c10088a1f02cdcbe7a0fb4e9e1071d7d39873",
+      "account_comparison.json": "51c8c0b9c3a2c29bf01291bf1a3d39132266ec04cad84001a8d4f82a1ed1c4b0",
+      "fixed_forecast_comparison.json": "d32d98e3de095f94a0273ac8ab631ca13b736b456927f1f53cde135049c8b1dc",
+      "retraining_comparison.json": "27c6f0ad6540be300c6761639c9d125d6179df1a9b1c2834e558f7f6cab8a18f",
+      "paper/verification.json": "2682ca15e85edbfa3ff157b362c6c1a8c3abaf1cb55dc0a4969ae014013bf8dd",
+      "implementation_ci.json": "ef9daa2c4a0c3a343c96e068a695262752c9e44a72a0fd28414df026b360d504",
+      "model_adoption.json": "0dabfaebc8cceb3706b8b6c99c991215c7455052803b69bbf593117d56d1a31a",
+      "attribution.json": "d17a8d5bb3ff61670a2d9df32aaf189feacdc1f6fd9926af8f99d6e22780f0af"
+    },
+    "scope": "Clears only the confirmed ten-interval eligibility defect after source correction and full registered validation. It does not certify all historical security status, establish superiority, or provide fresh market data.",
+    "limitations": [
+      "Retrospective research on repeatedly inspected windows; no independent forward performance evidence.",
+      "The ten positive intervals are source-reviewed; negative vendor flags, full historical listings/delistings, industries, Beijing stocks and funds are not certified.",
+      "Calendar publication dates do not prove an exact intraday public-availability time; daily suspension flags do not certify opening status.",
+      "Other historical corporate-action dates and fractional-share allocation remain incomplete outside the reviewed queue.",
+      "Opening prices are proxies; queue, liquidity, competition fees and matching remain unconfirmed.",
+      "No market-date extension. The 2026-11-20 complete-data gate and forward observation remain pending.",
+      "The corrected inner trial paths expose six additional unresolved corporate actions (nine occurrences) and five suspended sessions with carried marks (40 occurrences). Sources were reviewed separately; no values or quality flags changed during this experiment.",
+      "Nonmonotonic cost outcomes result from rerunning cost-dependent orders and risk paths; a higher-cost scenario is not an improvement guarantee."
+    ],
+    "path": "artifacts/checks/historical_status_repair_2026-11-21/status_review.json",
+    "sha256": "2b1fab0d6783f82543c2d42f9bb91deaba6087264ac9019e2220208de1264622"
+  },
+  "test_start": "2025-11-18",
+  "test_end": "2026-11-02",
+  "gates": {
+    "superiority": false
+  },
+  "superiority_assessment": "NO_POSITIVE_EXCESS_TO_MATCHED_MOMENTUM",
+  "continuous": {
+    "10bps": {
+      "return": 0.3652545199999999,
+      "max_drawdown": -0.0662758377246887,
+      "trades": 169,
+      "fees": 10153.81
+    },
+    "20bps": {
+      "return": 0.06404319000000003,
+      "max_drawdown": -0.06407450840159912,
+      "trades": 89,
+      "fees": 4305.45
+    },
+    "30bps": {
+      "return": 0.12022655000000015,
+      "max_drawdown": -0.06499857878397164,
+      "trades": 113,
+      "fees": 6612.16
+    }
+  }
+}
