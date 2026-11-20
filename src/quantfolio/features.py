@@ -96,6 +96,13 @@ def feature_frame(raw, causal, splits, benchmark):
     normalized = raw.copy()
     normalized["volume_lots"] = raw.volume_lots / splits
     f = price_features(normalized, causal, benchmark)
+    return base_features(raw, f)
+
+
+@pd.option_context("compute.use_numexpr", False)
+def base_features(raw, prices):
+    """Select model inputs from an already computed trailing-price frame."""
+    f = prices
     x = f[BASE_FEATURES].copy()
     x["log_adv20"] = np.log1p(f.adv20)
     x["amount_ratio"] = raw.amount / f.adv20

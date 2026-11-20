@@ -34,8 +34,8 @@ COLUMNS = (
 )
 
 
-def inspect_bars(payload, meta, start, end, existing):
-    """Reject malformed bars; flag gaps and historical revisions without imputing them."""
+def parse_bars(payload, meta, start, end):
+    """Parse and validate a dated, unadjusted provider response without filling gaps."""
     data = json.loads(payload).get("data")
     if not data or not data.get("klines"):
         raise ValueError("Provider returned no bars")
@@ -64,6 +64,12 @@ def inspect_bars(payload, meta, start, end, existing):
         raise ValueError("Daily OHLC bounds are inconsistent")
     if (frame[["volume_lots", "amount", "turnover"]] < 0).any().any():
         raise ValueError("Negative trading activity")
+    return frame
+
+
+def inspect_bars(payload, meta, start, end, existing):
+    """Reject malformed bars; flag gaps and historical revisions without imputing them."""
+    frame = parse_bars(payload, meta, start, end)
     overlap = frame.index.intersection(existing.index)
     revisions = []
     for date in overlap:
@@ -90,6 +96,25 @@ def inspect_bars(payload, meta, start, end, existing):
         "missing_baseline_fields": int(existing.reindex(overlap)[list(COLUMNS)].isna().sum().sum()),
         "status": "CONSISTENT" if target_present and not revisions else "REVIEW",
     }
+
+
+def append_bars(existing, collected, cutoff):
+    """Append completed bars without revising old values, missingness or storage types."""
+    cutoff = pd.Timestamp(cutoff)
+    added = collected.loc[
+        (collected.index > existing.index[-1]) & (collected.index <= cutoff)
+    ].copy()
+    if cutoff not in added.index:
+        raise ValueError("Completed target bar is missing")
+    if list(existing) != list(added):
+        raise ValueError("Collected fields differ from the historical raw schema")
+    converted = added.astype(existing.dtypes)
+    if not np.array_equal(added.to_numpy(), converted.to_numpy(), equal_nan=True):
+        raise ValueError("New values cannot be stored without precision loss")
+    converted.index.name = existing.index.name
+    result = pd.concat([existing, converted])
+    pd.testing.assert_frame_equal(existing, result.loc[existing.index], check_exact=True)
+    return result
 
 
 def fetch_bars(paths, date, output, retry=None):

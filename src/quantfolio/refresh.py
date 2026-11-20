@@ -1,0 +1,232 @@
+"""Turn reviewed raw collections into an immutable, historically stable snapshot."""
+
+from copy import deepcopy
+from pathlib import Path
+
+import joblib
+import pandas as pd
+
+from .dataset import check_integrity, load_snapshot
+from .market_data import append_bars, inspect_bars, parse_bars
+from .preprocessing import build_dataset, compare_history
+from .snapshots import label_changes, next_opening, repair_actions
+from .storage import array_sha, dump_gzip, now, read, save, sha
+
+
+def _checked_path(paths, relative, expected):
+    path = (paths.root / relative).resolve()
+    if not path.is_relative_to(paths.root) or sha(path) != expected:
+        raise ValueError(f"Registered source changed or escaped the project: {relative}")
+    return path
+
+
+def reviewed_actions(actions, calendar, reviews, meta):
+    """Apply dated evidence and add announced events without inventing payment availability."""
+    updated = deepcopy(actions)
+    for review in reviews:
+        if review["mode"] == "amend":
+            updated, _ = repair_actions(updated, calendar, review["facts"], "cash_pay_date")
+            continue
+        if review["mode"] != "append":
+            raise ValueError("Unknown corporate-action review mode")
+        for fact in review["facts"]:
+            symbol = fact["symbol"]
+            if symbol not in meta or any(
+                (a["symbol"], a["ex_date"]) == (symbol, fact["ex_date"]) for a in updated
+            ):
+                raise ValueError(f"Unknown or duplicate reviewed event: {symbol}")
+            if not (
+                fact["notice_date"] <= str(calendar[-1].date())
+                and fact["notice_date"]
+                <= fact["record_date"]
+                <= fact["ex_date"]
+                <= fact["cash_pay_date"]
+                and fact["cash_per_share"] >= 0
+                and fact["share_multiplier"] > 0
+            ):
+                raise ValueError(f"Invalid dates or entitlements in reviewed event: {symbol}")
+            action = {
+                key: value
+                for key, value in fact.items()
+                if key
+                not in {
+                    "source",
+                    "simulation_cash_available_date",
+                    "evidence_pages",
+                    "review_status",
+                    "availability_status",
+                }
+            }
+            source = fact["source"]
+            action.update(
+                id=f"{symbol}:{fact['ex_date']}",
+                code=meta[symbol]["code"],
+                name=meta[symbol]["name"],
+                source=source["source"],
+                verified_source=source["source"],
+                date_status="PRIMARY_FILING_REVIEWED",
+                source_evidence={
+                    "path": source["local_pdf"],
+                    "sha256": source["sha256"],
+                    "pages": fact["evidence_pages"],
+                },
+            )
+            updated.append(action)
+    for action in updated:
+        action["cash_available_date"] = next_opening(calendar, action.get("cash_pay_date"))
+    return updated
+
+
+def _reviewed_raws(paths, protocol, parent, collection_parent):
+    if parent["meta"] != collection_parent["meta"]:
+        raise ValueError("Collection universe differs from the processed parent")
+    for symbol, raw in parent["raws"].items():
+        pd.testing.assert_frame_equal(raw, collection_parent["raws"][symbol], check_exact=True)
+    received, records = {}, []
+    for source in protocol["collections"]:
+        registration = read(
+            _checked_path(paths, f"{source['path']}/protocol.json", source["protocol_sha256"])
+        )
+        collection = read(
+            _checked_path(paths, f"{source['path']}/collection.json", source["collection_sha256"])
+        )
+        if (
+            registration["source_bundle_sha256"] != protocol["collection_source_sha256"]
+            or registration["requested_completed_date"] != protocol["completed_date"]
+            or collection["requested_completed_date"] != protocol["completed_date"]
+            or registration["adjustment"] != "unadjusted"
+            or collection["status"] != "COMPLETE"
+        ):
+            raise ValueError("Raw collection identity, adjustment or completion differs")
+        for record in collection["records"]:
+            if record["status"] == "FAILED":
+                continue
+            symbol = record["symbol"]
+            if symbol not in parent["meta"] or symbol in received:
+                raise ValueError("Unknown or duplicate completed response")
+            response = _checked_path(
+                paths, f"{source['path']}/{symbol}.json", record["response_sha256"]
+            ).read_bytes()
+            arguments = (
+                response,
+                parent["meta"][symbol],
+                registration["historical_overlap_start"],
+                protocol["completed_date"],
+            )
+            audit = inspect_bars(*arguments, collection_parent["raws"][symbol])
+            if any(audit[key] != record[key] for key in audit):
+                raise ValueError(f"Recomputed collection audit differs: {symbol}")
+            if not audit["target_present"] or any(
+                change["field"] not in protocol["approved_overlap_fields"]
+                for change in audit["historical_revisions"]
+            ):
+                raise ValueError(f"Unreviewed price revision or missing target: {symbol}")
+            frame = parse_bars(*arguments)
+            # A suspended security may end before the parent cutoff; do not backfill its tail.
+            frame = frame.loc[frame.index > parent["calendar"][-1]]
+            received[symbol] = append_bars(
+                parent["raws"][symbol], frame, protocol["completed_date"]
+            )
+            records.append(
+                {
+                    "symbol": symbol,
+                    "response_sha256": record["response_sha256"],
+                    "retained_overlap_revisions": len(audit["historical_revisions"]),
+                    "added_bars": len(received[symbol]) - len(parent["raws"][symbol]),
+                }
+            )
+    if set(received) != set(parent["meta"]):
+        raise ValueError("Raw collections do not cover the complete registered universe")
+    # Source insertion order is part of the frozen panel contract.
+    return {symbol: received[symbol] for symbol in parent["raws"]}, records
+
+
+def refresh_snapshot(paths, output, protocol_path):
+    """Build a new registered snapshot; activation and model fitting remain separate steps."""
+    target = (paths.root / output).resolve()
+    directory = (paths.root / "data/processed").resolve()
+    if (
+        not directory.is_relative_to(paths.root)
+        or not target.is_relative_to(directory)
+        or target == directory
+    ):
+        raise ValueError("Snapshot must be a named directory under data/processed")
+    if target.exists():
+        raise FileExistsError(f"Snapshot already exists: {target}")
+    protocol_path = (paths.root / protocol_path).resolve()
+    if not protocol_path.is_relative_to((paths.root / "configs/protocols").resolve()):
+        raise ValueError("Refresh protocol must stay under configs/protocols")
+    integrity = check_integrity(paths)
+    protocol = read(protocol_path)
+    parent_path = _checked_path(paths, protocol["source_bundle"], protocol["source_bundle_sha256"])
+    source = load_snapshot(paths, parent_path, protocol["source_data_cutoff"])
+    collection_path = _checked_path(
+        paths, protocol["collection_source_bundle"], protocol["collection_source_sha256"]
+    )
+    collection_source = load_snapshot(paths, collection_path, protocol["source_data_cutoff"])
+    if protocol["completed_date"] <= protocol["source_data_cutoff"]:
+        raise ValueError("Refresh must extend the processed cutoff")
+    for name, checksum in protocol["review_evidence_sha256"].items():
+        _checked_path(paths, name, checksum)
+    reviews = []
+    for item in protocol["action_reviews"]:
+        review = read(_checked_path(paths, item["path"], item["sha256"]))
+        if item["mode"] == "amend" and review["data_snapshot_sha256"] != sha(parent_path):
+            raise ValueError("Amended action review belongs to a different parent")
+        for fact in review["facts"]:
+            _checked_path(paths, fact["source"]["local_pdf"], fact["source"]["sha256"])
+        reviews.append({"mode": item["mode"], "facts": review["facts"]})
+    raws, collection_audit = _reviewed_raws(paths, protocol, source, collection_source)
+    actions = reviewed_actions(source["actions"], raws["sh510300"].index, reviews, source["meta"])
+    provenance = {
+        "registered_at": now(),
+        "protocol_sha256": sha(protocol_path),
+        "source_bundle_sha256": sha(parent_path),
+        "source_sha256": {p.name: sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))},
+    }
+    save(target / "provenance.json", provenance, immutable=True)
+    result = build_dataset(source["meta"], raws, actions, quarantined=protocol["quarantined"])
+    if "opening_status" in source:
+        result["opening_status"] = deepcopy(source["opening_status"])
+    prefix = compare_history(source, result, labels=False)
+    previous_rows = result["table"].loc[result["table"].date_index < len(source["calendar"])]
+    changes, details = label_changes(source["table"], previous_rows)
+    dump_gzip(target / "label_changes.json.gz", details)
+    result["provenance"] = {
+        "schema_version": 1,
+        "purpose": "reviewed_market_extension",
+        "protocol_sha256": sha(protocol_path),
+        "source_bundle_sha256": sha(parent_path),
+        "created_at": now(),
+        "quarantined": protocol["quarantined"],
+        "historical_status_point_in_time_certified": False,
+        "industry_point_in_time_certified": False,
+    }
+    joblib.dump(result, target / "bundle.joblib", compress=3)
+    audit = {
+        "status": "PASS",
+        "scope": "RAW_BUILD_AND_HISTORICAL_PARITY",
+        "completed_at": now(),
+        "activated": False,
+        "data_cutoff": result["cutoff"],
+        "source_integrity": integrity,
+        "bundle_sha256": sha(target / "bundle.joblib"),
+        "historical_prefix": prefix,
+        "rows": len(result["table"]),
+        "features": len(result["features"]),
+        "eligible_rows": int(result["table"].eligible.sum()),
+        "feature_values_sha256": array_sha(result["table"][result["features"]].to_numpy()),
+        "raw_collection": collection_audit,
+        "actions": len(actions),
+        "known_payment_dates": sum(bool(a.get("cash_pay_date")) for a in actions),
+        "historical_label_changes": changes,
+        "label_changes_sha256": sha(target / "label_changes.json.gz"),
+        "quarantined": protocol["quarantined"],
+        "limitations": protocol["limitations"],
+    }
+    save(target / "audit.json", audit, immutable=True)
+    manifest = read(paths.manifest)
+    for path in sorted(target.iterdir()):
+        manifest["files"][path.relative_to(paths.root).as_posix()] = sha(path)
+    save(paths.manifest, manifest)
+    return {key: value for key, value in audit.items() if key != "raw_collection"}

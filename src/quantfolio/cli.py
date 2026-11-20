@@ -32,6 +32,9 @@ def main(argv: list[str] | None = None) -> None:
         default="configs/protocols/action_repair.json",
         help="Registered repair protocol",
     )
+    refresh = commands.add_parser("refresh-data", help="Build a reviewed market-data extension")
+    refresh.add_argument("--output", required=True, help="New directory under data/processed")
+    refresh.add_argument("--protocol", required=True, help="Registered market refresh protocol")
     collection = commands.add_parser(
         "fetch-bars", help="Collect completed daily bars for separate review"
     )
@@ -169,6 +172,10 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .market_data import fetch_bars
 
         return fetch_bars(paths, args.date, args.output, args.retry)
+    if args.command == "refresh-data":
+        from .refresh import refresh_snapshot
+
+        return refresh_snapshot(paths, args.output, args.protocol)
     if args.command in ("replay", "backtest"):
         from .evaluation import POLICIES, replay
 

@@ -3,11 +3,12 @@
 import json
 from io import BytesIO
 
+import numpy as np
 import pandas as pd
 import pytest
 
 from quantfolio import market_data
-from quantfolio.market_data import COLUMNS, fetch_bars, inspect_bars
+from quantfolio.market_data import COLUMNS, append_bars, fetch_bars, inspect_bars, parse_bars
 from quantfolio.settings import Paths
 from quantfolio.storage import read, save, sha
 
@@ -51,6 +52,22 @@ def test_missing_target_and_revised_history_are_flagged():
     result = check(payload, meta, existing)
     assert result["status"] == "REVIEW"
     assert result["historical_revisions"][0]["field"] == "open"
+
+
+def test_append_preserves_revised_and_missing_history_and_integer_volume():
+    payload, meta, existing = sample()
+    existing["volume_lots"] = existing.volume_lots.astype("int64")
+    existing.iloc[0, existing.columns.get_loc("turnover")] = np.nan
+    old = existing.copy(deep=True)
+    collected = parse_bars(json.dumps(payload), meta, "2026-11-18", "2026-11-19")
+    result = append_bars(existing, collected, "2026-11-19")
+    pd.testing.assert_frame_equal(result.iloc[:-1], old, check_exact=True)
+    assert result.volume_lots.dtype == existing.volume_lots.dtype
+    assert result.iloc[-1].turnover == 0.2
+    assert pd.isna(result.iloc[0].turnover)
+    collected.iloc[-1, collected.columns.get_loc("volume_lots")] = 1000.5
+    with pytest.raises(ValueError, match="precision"):
+        append_bars(existing, collected, "2026-11-19")
 
 
 @pytest.mark.parametrize("fault", ["security", "future", "duplicate", "ohlc", "schema"])
