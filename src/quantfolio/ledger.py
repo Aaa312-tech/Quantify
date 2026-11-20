@@ -231,7 +231,17 @@ class Ledger:
             tax = self.dividend_tax if self.meta[s]["kind"] == "stock" else 0
             # In these ten-session resets, held lots are all <=1 month. This is a tax
             # scenario, not an assertion of the competition's tax policy.
-            gross = cents(q * a["cash_per_share"])
+            rounding = a.get("cash_rounding")
+            if rounding == "FLOOR_TO_CENT":
+                gross = int(
+                    (Decimal(q) * Decimal(str(a["cash_per_share"])) * 100).to_integral_value(
+                        rounding=ROUND_FLOOR
+                    )
+                )
+            elif rounding is None:
+                gross = cents(q * a["cash_per_share"])
+            else:
+                raise ValueError(f"Unsupported cash rounding: {rounding}")
             reserve = cents(gross / 100 * tax)
             net = gross - reserve
             if net:

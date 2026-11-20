@@ -45,6 +45,10 @@ def main(argv: list[str] | None = None) -> None:
         default="configs/protocols/action_repair.json",
         help="Registered repair protocol",
     )
+    distribution_review = commands.add_parser(
+        "review-distributions", help="Review the registered dividend source inventory"
+    )
+    distribution_review.add_argument("--protocol", required=True)
     status_repair = commands.add_parser(
         "repair-status", help="Rebuild eligibility from reviewed historical warning notices"
     )
@@ -280,6 +284,10 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .snapshots import repair_snapshot
 
         return repair_snapshot(paths, args.output, args.protocol)
+    if args.command == "review-distributions":
+        from .distributions import review_distributions
+
+        return review_distributions(paths, args.protocol)
     if args.command == "repair-status":
         from .status_repair import repair_status_snapshot
 

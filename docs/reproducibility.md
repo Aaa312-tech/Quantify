@@ -257,3 +257,19 @@ python -m quantfolio fetch-disclosures --retry data/raw/issuer_notices --output 
 只有已结束批次才加入冻结清单。补采先核验原批次及输入哈希，复用已有成功文件并按年份
 重查失败范围。采集不切换训练数据，也不生成已核验的历史事实。
 当前关键词范围及核验要求见[数据契约](data_contract.md#整池公告补证)。
+
+## 登记的整池分红修正
+
+```powershell
+python -m pip install -e ".[disclosures]"
+python -m quantfolio review-distributions --protocol configs/protocols/distribution_repair.json
+python -m quantfolio repair-data --protocol configs/protocols/distribution_repair.json --output data/processed/2026-11-20-reviewed-distributions
+```
+
+先将完整来源核验结果加入冻结清单，再构建独立快照。已有输出不能覆盖；复现须复制协议、
+登记新的输出路径及哈希。修正命令核对解析器身份、全部原事件身份和逐字段来源，先精确
+重建父快照，再重建受现金权益影响的特征与标签。命令不会自动切换研究配置。
+
+数值验收包括旧输入的48个模型、1425个完整账户及75个纸面账户；新输入完整拟合48次，
+另评估1425个重训账户与1425个固定旧预测账户。普通评估继续拒绝执行源码不同的旧训练。
+固定旧预测仅作为独立归因诊断，不伪装成当前执行代码训练出的模型。

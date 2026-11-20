@@ -165,7 +165,12 @@ def reconcile(detail, summary, meta, actions):
             owned = rights.get((s, action.get("record_date")), [])
             qty = sum(x["quantity"] for x in owned)
             check(event["entitled_quantity"] == qty, day + " record-date entitlement " + s)
-            gross = money(qty * action["cash_per_share"])
+            if action.get("cash_rounding") == "FLOOR_TO_CENT":
+                cash_claim = Decimal(str(action["cash_per_share"])) * Decimal(qty)
+                gross = int((cash_claim * 100).quantize(Decimal("1"), rounding=ROUND_FLOOR))
+            else:
+                check(action.get("cash_rounding") is None, day + " supported cash rounding")
+                gross = money(qty * action["cash_per_share"])
             reserve = money(gross / 100 * 0.2) if meta[s]["kind"] == "stock" else 0
             check(money(event["cash_gross"]) == gross, day + " gross cash distribution")
             check(money(event["cash_tax_reserve"]) == reserve, day + " dividend tax reserve")

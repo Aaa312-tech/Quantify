@@ -1,5 +1,21 @@
 # 数据契约
 
+## 分红字段的来源范围
+
+`distribution_review`记录每项已核验字段、来源文件哈希、证据页码、核验方法和保守可用时间。
+`LABELLED_PRIMARY_AND_STRUCTURED`表示受支持版式的机器逐字段核验，
+`MANUAL_PRIMARY_REVIEW`表示已有全文与相关页面图像核验；两者均不认证未列明的条款。
+原始`date_status`保留其原来源含义，新增核验范围由`distribution_review.fields`明确列出。
+
+全量核验不依赖持仓、预测或收益。自动处理要求单一实施公告、明确日期角色、实施方案税前
+金额及独立来源一致；未支持的版式、修订、多重匹配和冲突另列，不把显示精度接近视为通过。
+目录日期后的零点仅为回顾研究的保守可用时间约定，不宣称掌握当时盘中发布时间。
+
+`cash_pay_date`是公告支付日，`cash_available_date`是其后第一个已观察开盘。已知支付日
+不证明送转股可卖；缺少独立上市依据时`share_list_date`继续为空。`cash_rounding`缺省保留
+历史四舍五入，明确的`FLOOR_TO_CENT`先汇总全部应计股数再舍去不足一分部分，随后沿用既有
+税额保留情景。每十股分红比例的舍尾不等同于账户现金舍尾，连续收益标签不按账户分位处理。
+
 `configs/project.toml`声明活跃快照`bundle`、冻结核验快照`reference_bundle`、研究评估`evaluation`及完整性清单。当前活跃快照位于`data/processed/2026-11-20-reviewed-sources`，在`2026-11-19-reviewed-inner-events`上追加已核验行情与下一交易日分红。十只股票的历史ST区间、既有行情和非标签特征不变。父快照及历次修正均保留；载入前检查SHA-256及各自截止日期。joblib仅用于本地受信任的快照和模型。
 
 | 字段 | 内容 |

@@ -7,7 +7,15 @@ from quantfolio.validation import reconcile
 
 
 class IndependentAccountingTests(unittest.TestCase):
-    def fixture(self, multiplier=1.0, kind="stock", rounding=None):
+    def fixture(
+        self,
+        multiplier=1.0,
+        kind="stock",
+        rounding=None,
+        cash=0.1,
+        cash_rounding=None,
+        quantity=100,
+    ):
         s = "sh600001" if kind == "stock" else "sh510001"
         meta = {s: {"kind": kind, "code": s[2:]}}
         book = Ledger(meta)
@@ -21,7 +29,8 @@ class IndependentAccountingTests(unittest.TestCase):
             "ex_date": str(dates[1].date()),
             "share_list_date": str(dates[3].date()),
             "cash_pay_date": str(dates[2].date()),
-            "cash_per_share": 0.1,
+            "cash_per_share": cash,
+            "cash_rounding": cash_rounding,
             "share_multiplier": multiplier,
             "fractional_rounding": rounding,
         }
@@ -30,7 +39,7 @@ class IndependentAccountingTests(unittest.TestCase):
             book.apply_actions(d, [a] if i == 1 else [])
             px = 10.0 if i == 0 else 9.9 / multiplier
             if i == 0:
-                book.buy(d, s, 100, 10.0, d - pd.Timedelta(days=1))
+                book.buy(d, s, quantity, 10.0, d - pd.Timedelta(days=1))
             if i == 4:
                 book.sell(d, s, book.quantity(s), round(px, 3 if kind == "etf" else 2), dates[3])
             prices = {s: px} if book.quantity(s) else {}
@@ -63,6 +72,43 @@ class IndependentAccountingTests(unittest.TestCase):
 
     def test_cash_receivable_and_payment(self):
         self.assertEqual(reconcile(*self.fixture())["status"], "PASS")
+
+    def test_declared_cash_truncation_is_independently_reconciled(self):
+        fixture = self.fixture(cash=0.9907442, cash_rounding="FLOOR_TO_CENT", quantity=200)
+        self.assertEqual(fixture[0]["events"][0]["cash_gross"], 198.14)
+        self.assertEqual(reconcile(*fixture)["status"], "PASS")
+        wrong = self.fixture(cash=0.9907442, quantity=200)
+        self.assertEqual(wrong[0]["events"][0]["cash_gross"], 198.15)
+        wrong[3][0]["cash_rounding"] = "FLOOR_TO_CENT"
+        self.assertEqual(reconcile(*wrong)["status"], "FAIL")
+
+    def test_decimal_cash_boundary_is_not_truncated_by_float_error(self):
+        fixture = self.fixture(cash=0.29, cash_rounding="FLOOR_TO_CENT")
+        self.assertEqual(fixture[0]["events"][0]["cash_gross"], 29.0)
+        self.assertEqual(reconcile(*fixture)["status"], "PASS")
+
+    def test_unsupported_cash_rounding_is_not_silently_half_up(self):
+        with self.assertRaisesRegex(ValueError, "cash rounding"):
+            self.fixture(cash_rounding="UNKNOWN")
+
+    def test_truncation_applies_once_to_all_entitled_lots(self):
+        symbol = "sh600001"
+        book = Ledger({symbol: {"kind": "stock", "code": "600001"}})
+        record = pd.Timestamp("2024-03-28")
+        for _ in range(2):
+            book.buy(record, symbol, 100, 10, record - pd.Timedelta(days=1))
+        action = {
+            "id": "aggregate",
+            "symbol": symbol,
+            "record_date": "2024-03-28",
+            "ex_date": "2024-03-29",
+            "cash_per_share": 0.99079,
+            "share_multiplier": 1.0,
+            "cash_rounding": "FLOOR_TO_CENT",
+        }
+        book.snapshot_record_dates(record, [action])
+        book.apply_actions(pd.Timestamp("2024-03-29"), [action])
+        self.assertEqual(book.events[0]["cash_gross"], 198.15)
 
     def test_bonus_listing_restrictions(self):
         self.assertEqual(reconcile(*self.fixture(1.5))["status"], "PASS")

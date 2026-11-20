@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 from copy import deepcopy
+from decimal import Decimal
 from pathlib import Path
 
 import joblib
@@ -12,7 +13,7 @@ import pandas as pd
 
 from .dataset import check_integrity, load_snapshot, validate_features
 from .market import LABEL_STATUS, legal_label
-from .storage import array_sha, dump_gzip, log, now, read, save, sha
+from .storage import array_sha, digest, dump_gzip, log, now, read, save, sha
 
 HORIZONS = (1, 3, 5)
 LABEL_FIELDS = ("y", "end", "status", "delay")
@@ -171,6 +172,8 @@ def repair_snapshot(paths, output, protocol="configs/protocols/action_repair.jso
     if not protocol_path.is_relative_to((paths.root / "configs/protocols").resolve()):
         raise ValueError("Repair protocol must stay under configs/protocols")
     protocol = read(protocol_path)
+    if protocol.get("name") == "distribution_repair":
+        return repair_distribution_snapshot(paths, target, protocol_path, integrity)
     review_path = (paths.root / protocol["review"]).resolve()
     source_path = (paths.root / protocol["source_bundle"]).resolve()
     if not review_path.is_relative_to(paths.root) or not source_path.is_relative_to(paths.root):
@@ -270,6 +273,190 @@ def repair_snapshot(paths, output, protocol="configs/protocols/action_repair.jso
     }
     save(target / "audit.json", audit, immutable=True)
     manifest = read(paths.manifest)
+    for file in sorted(target.iterdir()):
+        manifest["files"][file.relative_to(paths.root).as_posix()] = sha(file)
+    save(paths.manifest, manifest)
+    return audit
+
+
+def reviewed_distribution_actions(actions, calendar, facts):
+    """Apply only individually verified fields; retain opaque event identities and source bytes."""
+    from .distributions import FIELDS
+
+    repaired = deepcopy(actions)
+    index = {(a["symbol"], a["ex_date"]): a for a in repaired}
+    seen, changes = set(), []
+    for fact in facts:
+        key = (fact["symbol"], fact["ex_date"])
+        if key in seen or key not in index:
+            raise ValueError("Duplicate or absent reviewed distribution")
+        seen.add(key)
+        action = index[key]
+        if digest(action) != fact["original_action_sha256"]:
+            raise ValueError("Reviewed action identity mismatch")
+        fields = fact["verified_fields"]
+        if not fields or not set(fields) <= FIELDS:
+            raise ValueError("Unregistered distribution field")
+        changed = {}
+        for field, value in fields.items():
+            previous = action.get(field)
+            if field in ("cash_per_share", "ex_reference_cash_per_share"):
+                number = Decimal(str(value))
+                if not number.is_finite() or number < 0:
+                    raise ValueError("Invalid cash entitlement")
+                if previous is not None and abs(number - Decimal(str(previous))) <= Decimal(
+                    "1e-12"
+                ):
+                    continue
+                value = float(number)
+            elif field == "cash_rounding":
+                if value != "FLOOR_TO_CENT":
+                    raise ValueError("Unregistered cash rounding")
+            elif (
+                value is None
+                or str(pd.Timestamp(value).date()) != value
+                or value < action["ex_date"]
+            ):
+                raise ValueError("Invalid reviewed availability date")
+            if previous != value:
+                action[field] = value
+                changed[field] = {"before": previous, "after": value}
+        if action.get("cash_pay_date") and action["cash_per_share"] <= 0:
+            raise ValueError("Non-cash action has a payment date")
+        action["cash_available_date"] = next_opening(calendar, action.get("cash_pay_date"))
+        action["distribution_review"] = {
+            "method": fact["method"],
+            "fields": sorted(fields),
+            "source": fact["source"],
+            "pages": fact["evidence_pages"],
+            "known_at": fact["known_at"],
+        }
+        if changed:
+            changes.append({"symbol": key[0], "ex_date": key[1], "fields": changed})
+    return repaired, changes
+
+
+def repair_distribution_snapshot(paths, target, protocol_path, integrity):
+    """Reconstruct the complete dataset after an entitlement change, without activation."""
+    from . import distributions
+    from .preprocessing import build_dataset, compare_history
+
+    protocol, _ = distributions.registered_inputs(paths, protocol_path)
+    if target != (paths.root / protocol["snapshot_output"]).resolve():
+        raise ValueError("Snapshot output differs from registration")
+    manifest = read(paths.manifest)
+    review_path = distributions.checked_path(
+        paths.root, protocol["review"], manifest["files"][protocol["review"]]
+    )
+    review = read(review_path)
+    source_path = distributions.checked_path(
+        paths.root, protocol["source_bundle"], protocol["source_bundle_sha256"]
+    )
+    if (
+        review["protocol_sha256"] != sha(protocol_path)
+        or review["data_snapshot_sha256"] != sha(source_path)
+        or review["extractor_sha256"] != sha(Path(distributions.__file__))
+        or review["source_inputs"] != protocol["source_inputs"]
+    ):
+        raise ValueError("Frozen source review binding differs")
+    for fact in review["facts"]:
+        distributions.checked_path(paths.root, fact["source"]["path"], fact["source"]["sha256"])
+    original = load_snapshot(paths, source_path, protocol["source_data_cutoff"])
+    if review["original_actions_sha256"] != digest(original["actions"]):
+        raise ValueError("Source review does not bind the full action inventory")
+    provenance = {
+        "started_at": now(),
+        "protocol_sha256": sha(protocol_path),
+        "review_sha256": sha(review_path),
+        "source_bundle_sha256": sha(source_path),
+        "source_sha256": {f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))},
+    }
+    save(target / "provenance.json", provenance, immutable=True)
+    rebuild_args = {"opening_status": original.get("opening_status")}
+    parent = build_dataset(original["meta"], original["raws"], original["actions"], **rebuild_args)
+    parent_check = compare_history(original, parent)
+    actions, changes = reviewed_distribution_actions(
+        original["actions"], original["calendar"], review["facts"]
+    )
+    repaired = build_dataset(original["meta"], original["raws"], actions, **rebuild_args)
+    if repaired["meta"] != original["meta"] or repaired.get("opening_status") != original.get(
+        "opening_status"
+    ):
+        raise ValueError("Unregistered metadata or opening status change")
+    pd.testing.assert_frame_equal(
+        original["panels"]["eligible"], repaired["panels"]["eligible"], check_exact=True
+    )
+    for symbol, raw in original["raws"].items():
+        pd.testing.assert_frame_equal(raw, repaired["raws"][symbol], check_exact=True)
+    pd.testing.assert_index_equal(original["calendar"], repaired["calendar"], exact=True)
+    entitlement_dates = [c["ex_date"] for c in changes if "cash_per_share" in c["fields"]]
+    boundary = (
+        original["calendar"].searchsorted(min(entitlement_dates))
+        if entitlement_dates
+        else len(original["calendar"])
+    )
+    columns = [
+        c for c in original["table"] if c not in {f"{f}{h}" for f in LABEL_FIELDS for h in HORIZONS}
+    ]
+    prefix = original["table"].date_index < boundary
+    pd.testing.assert_frame_equal(
+        original["table"].loc[prefix, columns],
+        repaired["table"].loc[prefix, columns],
+        check_exact=True,
+    )
+    label_summary, labels = label_changes(original["table"], repaired["table"])
+    field_changes = {}
+    for section in ("panels", "scores"):
+        field_changes[section] = {}
+        for name, old in original[section].items():
+            new = repaired[section][name]
+            pd.testing.assert_frame_equal(
+                old.iloc[:boundary], new.iloc[:boundary], check_exact=True
+            )
+            field_changes[section][name] = int(
+                (~(old.eq(new) | (old.isna() & new.isna()))).to_numpy().sum()
+            )
+    field_changes["table"] = {}
+    for name in original["table"]:
+        old, new = original["table"][name], repaired["table"][name]
+        field_changes["table"][name] = int((~(old.eq(new) | (old.isna() & new.isna()))).sum())
+    features = validate_features(repaired)
+    repaired["provenance"] = {
+        **provenance,
+        "purpose": "reviewed_distributions",
+        "cash_availability": "first observed opening strictly after declared payment date",
+    }
+    dump_gzip(target / "label_changes.json.gz", labels)
+    save(target / "action_changes.json", changes, immutable=True)
+    save(target / "field_changes.json", field_changes, immutable=True)
+    joblib.dump(repaired, target / "bundle.joblib", compress=3)
+    if provenance["source_sha256"] != {
+        f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))
+    }:
+        raise ValueError("Implementation changed during snapshot construction")
+    audit = {
+        "status": "PASS",
+        "completed_at": now(),
+        "source_integrity": integrity,
+        "bundle_sha256": sha(target / "bundle.joblib"),
+        "parent_exact_rebuild": parent_check,
+        "data_cutoff": str(repaired["cutoff"]),
+        "review_sha256": sha(review_path),
+        "reviewed_events": len(review["facts"]),
+        "changed_events": len(changes),
+        "non_label_prefix_boundary_index": int(boundary),
+        "first_changed_entitlement": min(entitlement_dates) if entitlement_dates else None,
+        "raw_calendar_metadata_eligibility_exact": True,
+        "non_label_prefix_exact": True,
+        "known_payment_dates": sum(bool(a.get("cash_pay_date")) for a in actions),
+        "known_share_listing_dates": sum(bool(a.get("share_list_date")) for a in actions),
+        "features": features,
+        "label_changes": label_summary,
+        "limitations": protocol["limitations"],
+    }
+    save(target / "audit.json", audit, immutable=True)
+    if sha(source_path) != protocol["source_bundle_sha256"]:
+        raise ValueError("Source bundle changed during construction")
     for file in sorted(target.iterdir()):
         manifest["files"][file.relative_to(paths.root).as_posix()] = sha(file)
     save(paths.manifest, manifest)
