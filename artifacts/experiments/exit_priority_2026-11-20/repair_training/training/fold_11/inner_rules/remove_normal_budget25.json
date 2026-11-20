@@ -1,0 +1,105 @@
+{
+  "returns": [
+    0.04206349000000009,
+    0.020735589999999915,
+    0.014331410000000044,
+    -0.05687691000000006,
+    -0.05606838999999997,
+    -0.01122361999999999
+  ],
+  "mean_net_return": -0.007839738333333327,
+  "worst_drawdown": -0.08604803658579452,
+  "episodes": 6,
+  "trades": 83,
+  "unresolved_events": 1,
+  "quality_issues": 0,
+  "identity": "9bc84ee86e51efeba704846841939eb5bbe77b25705ccb7c3251c7fb3949c2c8",
+  "config": "remove_normal_budget25",
+  "continuous": {
+    "start": "2026-06-22",
+    "end": "2026-09-16",
+    "sessions": 63,
+    "return": 0.04219689999999998,
+    "max_drawdown": -0.06227000571044283,
+    "es95": -0.019328859074157313,
+    "fees": 4256.75,
+    "slippage_cost": 7585.0199999999995,
+    "total_cost": 11841.77,
+    "trades": 73,
+    "turnover": 7.58499207,
+    "ending_cash": 916171.7,
+    "ending_receivables": 265.2,
+    "unresolved_events": 1,
+    "quality_issues": 0,
+    "rejection_counts": {
+      "VOLATILITY_GAP_CEILING": 1,
+      "LOT_BUDGET_TOO_SMALL": 4,
+      "T1_OR_MINIMUM_QUANTITY": 4,
+      "OPEN_AT_LOWER_LIMIT": 1
+    },
+    "solver_counts": {
+      "OPTIMAL": 19,
+      "HOLD_BETWEEN_REBALANCES": 44
+    },
+    "mean_exposure": 0.3034894184023276,
+    "target_exposure_breach_days": 4,
+    "risk_mode": "latched",
+    "rule_config_days": {
+      "remove_normal_budget25": 63
+    },
+    "phase_days": {
+      "NORMAL": 33,
+      "CAUTION45": 12,
+      "FROZEN20": 18
+    },
+    "recovery_transitions": [
+      {
+        "date": "2026-08-06",
+        "state_age_before": 33,
+        "healthy_streak_before": 0,
+        "previous_phase": "NORMAL",
+        "probe_anchor_before": null,
+        "phase": "CAUTION45",
+        "level": 1,
+        "cap": 0.45,
+        "can_buy": true,
+        "changed": true,
+        "reason": "GLOBAL_DRAWDOWN_4",
+        "peak": 1092874.96,
+        "drawdown": 0.04200454917550678,
+        "state_age": 0,
+        "healthy_streak": 0,
+        "probe_anchor": null,
+        "healthy": false,
+        "mode": "latched"
+      },
+      {
+        "date": "2026-08-24",
+        "state_age_before": 12,
+        "healthy_streak_before": 0,
+        "previous_phase": "CAUTION45",
+        "probe_anchor_before": null,
+        "phase": "FROZEN20",
+        "level": 2,
+        "cap": 0.2,
+        "can_buy": false,
+        "changed": true,
+        "reason": "GLOBAL_DRAWDOWN_6",
+        "peak": 1092874.96,
+        "drawdown": 0.06227000571044283,
+        "state_age": 0,
+        "healthy_streak": 0,
+        "probe_anchor": null,
+        "healthy": false,
+        "mode": "latched"
+      }
+    ],
+    "probe_entries": 0,
+    "probe_failures": 0
+  },
+  "accounting_pass": true,
+  "accounting_checks": 3143,
+  "execution_checks": 4322,
+  "ledger_sha256": "a619d6cf14024c474b220de0d66759b345ebdb3856cfd8224bff5d0e0db24ae7",
+  "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\exit_priority_2026-11-20\\repair_training\\training\\fold_11\\inner_rules\\remove_normal_budget25.ledgers.json.gz"
+}

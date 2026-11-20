@@ -109,6 +109,11 @@ python -m quantfolio refresh-data --protocol configs/protocols/market_extension.
 
 ## 环境与错误
 
+卖出预算研究的登记、双组完整训练、固定预测比较和验收见
+[研究说明](exit_budget_repair.md)。已完成目录中的源码与数据哈希必须匹配才能重评；
+复现实验应使用登记时提交`d7eabaa`、相同依赖与新输出目录，不覆盖完成记录。
+当前活跃评估为本轮`legacy`组，它与此前1425个基线账户完全一致。
+
 冻结数值参考来自Windows、Python 3.13.2及`pyproject.toml`中的依赖版本。核心数值操作在局部pandas配置中关闭numexpr，退出后恢复调用者设置。其他平台的单元测试通过不等于所有历史浮点结果逐位相同。
 
 输入、缓存及优化约束使用显式异常，Python的`-O`不会关闭这些检查。普通错误写入stderr并返回1，参数错误返回2；排查时在子命令前加`--debug`查看堆栈。LFS文件未下载时会提示 `git lfs pull`。

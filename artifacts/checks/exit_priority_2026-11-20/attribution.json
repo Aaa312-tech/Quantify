@@ -1,0 +1,2321 @@
+{
+  "completed_at": "2026-11-20T16:11:23.170597+08:00",
+  "scope": "Observed path attribution; no independent causal separation or counterfactual return.",
+  "source_ledger_sha256": {
+    "legacy": "a53fa926eb4f89a3f5afc9971d4ae8def665fadc32518b730686ef6857d1c7c9",
+    "exit_priority": "90bc914ea1446aac76eb8a49e7b7c515b22789674f762d654505922727c47d9f"
+  },
+  "first_economic_difference": {
+    "trades": {
+      "path": "/25/date",
+      "before": "2025-12-19",
+      "after": "2025-12-16"
+    },
+    "events": {
+      "path": "/length",
+      "before": 14,
+      "after": 0
+    },
+    "rejections": {
+      "path": "/5/date",
+      "before": "2025-12-16",
+      "after": "2025-12-23"
+    },
+    "curve": {
+      "path": "/20/nav",
+      "before": 993183.8599999999,
+      "after": 985109.15
+    }
+  },
+  "paths": {
+    "legacy": {
+      "summary": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.3103216000000002,
+        "max_drawdown": -0.06527260879566499,
+        "es95": -0.02090345772960278,
+        "fees": 10432.09,
+        "slippage_cost": 18951.07,
+        "total_cost": 29383.16,
+        "trades": 167,
+        "turnover": 18.95104532,
+        "ending_cash": 1310321.6,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 3,
+          "OPEN_AT_UPPER_LIMIT": 2,
+          "T1_OR_MINIMUM_QUANTITY": 35,
+          "LOT_BUDGET_TOO_SMALL": 18,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 2,
+          "EXACT_FEES_EXCEED_EDGE": 2,
+          "OPEN_AT_LOWER_LIMIT": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 38,
+          "HOLD_BETWEEN_REBALANCES": 173,
+          "INFEASIBLE_REDUCE_ONLY": 9,
+          "CASH_NO_POSITIVE_EDGE": 11
+        },
+        "mean_exposure": 0.27604534956956384,
+        "target_exposure_breach_days": 5,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 53,
+          "CAUTION45": 77,
+          "FROZEN20": 101
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-02-03",
+            "state_age_before": 53,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1236906.1400000001,
+            "drawdown": 0.04404699616092134,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-06-04",
+            "state_age_before": 77,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1398690.38,
+            "drawdown": 0.06148863338861321,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "key_closes": [
+        {
+          "date": "2025-12-16",
+          "prior_close_nav": 995357.72,
+          "nav": 993183.8599999999,
+          "cash": 396001.67,
+          "holdings_value": 597182.19,
+          "receivables": 0.0,
+          "positions": {
+            "sh601100": {
+              "quantity": 1300,
+              "available": 1300,
+              "close": 108.2,
+              "value": 140660.0
+            },
+            "sz002565": {
+              "quantity": 2900,
+              "available": 2900,
+              "close": 16.85,
+              "value": 48865.0
+            },
+            "sh601318": {
+              "quantity": 2100,
+              "available": 2100,
+              "close": 67.0,
+              "value": 140700.0
+            },
+            "sz000408": {
+              "quantity": 1900,
+              "available": 1900,
+              "close": 72.69,
+              "value": 138111.0
+            },
+            "sh688702": {
+              "quantity": 979,
+              "available": 979,
+              "close": 131.61,
+              "value": 128846.19
+            }
+          },
+          "risk_level": 0,
+          "max_nav_weight": 0.14166561264900138,
+          "risk_cap": 0.6,
+          "risk_phase": "NORMAL",
+          "risk_peak": 1000464.97,
+          "risk_drawdown": 0.005104876385626955,
+          "can_buy": true,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-01-08",
+          "prior_close_nav": 1146494.48,
+          "nav": 1136616.48,
+          "cash": 361854.48,
+          "holdings_value": 774314.0,
+          "receivables": 448.0,
+          "positions": {
+            "sz000408": {
+              "quantity": 1800,
+              "available": 1800,
+              "close": 88.0,
+              "value": 158400.0
+            },
+            "sz000657": {
+              "quantity": 2700,
+              "available": 2700,
+              "close": 31.02,
+              "value": 83754.0
+            },
+            "sh600118": {
+              "quantity": 2200,
+              "available": 2200,
+              "close": 102.0,
+              "value": 224400.0
+            },
+            "sz002851": {
+              "quantity": 1600,
+              "available": 1600,
+              "close": 97.5,
+              "value": 156000.0
+            },
+            "sh601208": {
+              "quantity": 5600,
+              "available": 5600,
+              "close": 27.1,
+              "value": 151760.0
+            }
+          },
+          "risk_level": 0,
+          "max_nav_weight": 0.19742807178020153,
+          "risk_cap": 0.9,
+          "risk_phase": "NORMAL",
+          "risk_peak": 1146494.48,
+          "risk_drawdown": 0.0,
+          "can_buy": true,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-01-19",
+          "prior_close_nav": 1162986.48,
+          "nav": 1194322.48,
+          "cash": 362302.48,
+          "holdings_value": 832020.0,
+          "receivables": 0.0,
+          "positions": {
+            "sz000408": {
+              "quantity": 1800,
+              "available": 1800,
+              "close": 90.0,
+              "value": 162000.0
+            },
+            "sz000657": {
+              "quantity": 2700,
+              "available": 2700,
+              "close": 40.26,
+              "value": 108702.0
+            },
+            "sh600118": {
+              "quantity": 2200,
+              "available": 2200,
+              "close": 104.89,
+              "value": 230758.0
+            },
+            "sz002851": {
+              "quantity": 1600,
+              "available": 1600,
+              "close": 106.5,
+              "value": 170400.0
+            },
+            "sh601208": {
+              "quantity": 5600,
+              "available": 5600,
+              "close": 28.6,
+              "value": 160160.0
+            }
+          },
+          "risk_level": 0,
+          "max_nav_weight": 0.19321247306673822,
+          "risk_cap": 0.9,
+          "risk_phase": "NORMAL",
+          "risk_peak": 1183155.48,
+          "risk_drawdown": 0.01704678746025834,
+          "can_buy": true,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-01-20",
+          "prior_close_nav": 1194322.48,
+          "nav": 1159967.48,
+          "cash": 362302.48,
+          "holdings_value": 797665.0,
+          "receivables": 0.0,
+          "positions": {
+            "sz000408": {
+              "quantity": 1800,
+              "available": 1800,
+              "close": 91.45,
+              "value": 164610.0
+            },
+            "sz000657": {
+              "quantity": 2700,
+              "available": 2700,
+              "close": 37.89,
+              "value": 102303.0
+            },
+            "sh600118": {
+              "quantity": 2200,
+              "available": 2200,
+              "close": 98.04,
+              "value": 215688.0
+            },
+            "sz002851": {
+              "quantity": 1600,
+              "available": 1600,
+              "close": 103.5,
+              "value": 165600.0
+            },
+            "sh601208": {
+              "quantity": 5600,
+              "available": 5600,
+              "close": 26.69,
+              "value": 149464.0
+            }
+          },
+          "risk_level": 0,
+          "max_nav_weight": 0.18594314385434324,
+          "risk_cap": 0.9,
+          "risk_phase": "NORMAL",
+          "risk_peak": 1194322.48,
+          "risk_drawdown": 0.0,
+          "can_buy": true,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-02-03",
+          "prior_close_nav": 1182424.1400000001,
+          "nav": 1213487.77,
+          "cash": 846758.77,
+          "holdings_value": 366729.0,
+          "receivables": 0.0,
+          "positions": {
+            "sh600487": {
+              "quantity": 600,
+              "available": 0,
+              "close": 36.28,
+              "value": 21768.0
+            },
+            "sz002969": {
+              "quantity": 6900,
+              "available": 0,
+              "close": 23.79,
+              "value": 164151.0
+            },
+            "sh603629": {
+              "quantity": 4100,
+              "available": 0,
+              "close": 44.1,
+              "value": 180810.0
+            }
+          },
+          "risk_level": 1,
+          "max_nav_weight": 0.1490002655733399,
+          "risk_cap": 0.3,
+          "risk_phase": "CAUTION45",
+          "risk_peak": 1236906.1400000001,
+          "risk_drawdown": 0.04404699616092134,
+          "can_buy": true,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-06-04",
+          "prior_close_nav": 1312686.8199999998,
+          "nav": 1312078.3599999999,
+          "cash": 1077223.43,
+          "holdings_value": 234854.93,
+          "receivables": 0.0,
+          "positions": {
+            "bj920438": {
+              "quantity": 1,
+              "available": 1,
+              "close": 82.93,
+              "value": 82.93
+            },
+            "sh600593": {
+              "quantity": 600,
+              "available": 600,
+              "close": 38.38,
+              "value": 23028.0
+            },
+            "sh600900": {
+              "quantity": 6600,
+              "available": 6600,
+              "close": 27.72,
+              "value": 182952.0
+            },
+            "sh600183": {
+              "quantity": 200,
+              "available": 200,
+              "close": 143.96,
+              "value": 28792.0
+            }
+          },
+          "risk_level": 2,
+          "max_nav_weight": 0.13943679400367523,
+          "risk_cap": 0.2,
+          "risk_phase": "FROZEN20",
+          "risk_peak": 1398690.38,
+          "risk_drawdown": 0.06148863338861321,
+          "can_buy": false,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-07-20",
+          "prior_close_nav": 1316003.71,
+          "nav": 1318895.71,
+          "cash": 1081522.71,
+          "holdings_value": 237373.0,
+          "receivables": 0.0,
+          "positions": {
+            "bj920438": {
+              "quantity": 1,
+              "available": 1,
+              "close": 101.0,
+              "value": 101.0
+            },
+            "sh600593": {
+              "quantity": 600,
+              "available": 600,
+              "close": 35.56,
+              "value": 21336.0
+            },
+            "sh600900": {
+              "quantity": 6600,
+              "available": 6600,
+              "close": 28.98,
+              "value": 191268.0
+            },
+            "sh600183": {
+              "quantity": 200,
+              "available": 200,
+              "close": 123.34,
+              "value": 24668.0
+            }
+          },
+          "risk_level": 2,
+          "max_nav_weight": 0.14502132242131563,
+          "risk_cap": 0.2,
+          "risk_phase": "FROZEN20",
+          "risk_peak": 1398690.38,
+          "risk_drawdown": 0.05911720791273334,
+          "can_buy": false,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-07-21",
+          "prior_close_nav": 1318895.71,
+          "nav": 1320175.3199999998,
+          "cash": 1081522.71,
+          "holdings_value": 238652.61,
+          "receivables": 0.0,
+          "positions": {
+            "bj920438": {
+              "quantity": 1,
+              "available": 1,
+              "close": 126.61,
+              "value": 126.61
+            },
+            "sh600593": {
+              "quantity": 600,
+              "available": 600,
+              "close": 36.29,
+              "value": 21774.0
+            },
+            "sh600900": {
+              "quantity": 6600,
+              "available": 6600,
+              "close": 28.73,
+              "value": 189618.0
+            },
+            "sh600183": {
+              "quantity": 200,
+              "available": 200,
+              "close": 135.67,
+              "value": 27134.0
+            }
+          },
+          "risk_level": 2,
+          "max_nav_weight": 0.14363092320192747,
+          "risk_cap": 0.2,
+          "risk_phase": "FROZEN20",
+          "risk_peak": 1398690.38,
+          "risk_drawdown": 0.057049559460042865,
+          "can_buy": false,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-11-02",
+          "prior_close_nav": 1310321.6,
+          "nav": 1310321.6,
+          "cash": 1310321.6,
+          "holdings_value": 0,
+          "receivables": 0.0,
+          "positions": {},
+          "risk_level": 2,
+          "max_nav_weight": 0.0,
+          "risk_cap": 0.2,
+          "risk_phase": "FROZEN20",
+          "risk_peak": 1398690.38,
+          "risk_drawdown": 0.06317965810274595,
+          "can_buy": false,
+          "exposure_above_target": false
+        }
+      ],
+      "risk_transitions": [
+        {
+          "cap": 0.3,
+          "level": 1,
+          "selected": [
+            "sh601869",
+            "sz000428",
+            "sh600963",
+            "sh600487",
+            "sz002969",
+            "sh603629"
+          ],
+          "rule_config": "baseline",
+          "rule_activity": {
+            "retained_beyond12": 0,
+            "replacements": 0,
+            "blocked_by_count": 0,
+            "blocked_by_rank_gap": 0,
+            "buffered_positions": 0,
+            "buy_budget_binding": false,
+            "sell_budget_binding": false,
+            "extra_penalty_rate": 0.0
+          },
+          "status": "OPTIMAL",
+          "positive_targets": 3,
+          "predicted_net_objective": -0.00045461505471324957,
+          "turnover_budget": null,
+          "signal_date": "2026-02-02",
+          "execution_date": "2026-02-03",
+          "drawdown": 0.04404699616092134,
+          "scheduled": false,
+          "forced": true,
+          "recovery": {
+            "state_age_before": 53,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1236906.1400000001,
+            "drawdown": 0.04404699616092134,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          "target_weights": {
+            "sh601869": 0.0,
+            "sz000428": 0.0,
+            "sh600963": 0.0,
+            "sh600487": 0.019999999999999962,
+            "sz002969": 0.14,
+            "sh603629": 0.14,
+            "sz000408": 0.0,
+            "sz000657": 0.0,
+            "sh600118": 0.0,
+            "sz002851": 0.0,
+            "sh601208": 0.0
+          }
+        },
+        {
+          "cap": 0.2,
+          "level": 2,
+          "selected": [
+            "bj920438",
+            "sh600593",
+            "sh600900",
+            "sh600183"
+          ],
+          "rule_config": "baseline",
+          "rule_activity": {
+            "buffered_positions": 0,
+            "buy_budget_binding": false,
+            "sell_budget_binding": false,
+            "extra_penalty_rate": 0.0
+          },
+          "status": "OPTIMAL",
+          "positive_targets": 3,
+          "predicted_net_objective": 0.0019214759567517585,
+          "turnover_budget": null,
+          "signal_date": "2026-06-03",
+          "execution_date": "2026-06-04",
+          "drawdown": 0.06148863338861321,
+          "scheduled": true,
+          "forced": true,
+          "recovery": {
+            "state_age_before": 77,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1398690.38,
+            "drawdown": 0.06148863338861321,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          "target_weights": {
+            "bj920438": 5.438463989453327e-05,
+            "sh600593": 0.017597495189294276,
+            "sh600900": 0.14,
+            "sh600183": 0.02149636879876649
+          }
+        }
+      ],
+      "budget_relaxations": [],
+      "first_divergence_date_trades": []
+    },
+    "exit_priority": {
+      "summary": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.07312841999999997,
+        "max_drawdown": -0.0812063771200574,
+        "es95": -0.01542824792355483,
+        "fees": 5170.19,
+        "slippage_cost": 9318.69,
+        "total_cost": 14488.88,
+        "trades": 84,
+        "turnover": 9.31862044,
+        "ending_cash": 1073128.42,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 2,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 42,
+          "LOT_BUDGET_TOO_SMALL": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 46,
+          "HOLD_BETWEEN_REBALANCES": 170,
+          "RISK_EXIT": 15
+        },
+        "mean_exposure": 0.1667205119031334,
+        "target_exposure_breach_days": 12,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 42,
+          "CAUTION45": 1,
+          "FROZEN20": 119,
+          "HALTED0": 69
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-01-19",
+            "state_age_before": 42,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1094344.73,
+            "drawdown": 0.053128651700090845,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-01-20",
+            "state_age_before": 1,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1094344.73,
+            "drawdown": 0.06004116271478732,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-21",
+            "state_age_before": 119,
+            "healthy_streak_before": 0,
+            "previous_phase": "FROZEN20",
+            "probe_anchor_before": null,
+            "phase": "HALTED0",
+            "level": 3,
+            "cap": 0.0,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_8",
+            "peak": 1162039.28,
+            "drawdown": 0.0812063771200574,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "key_closes": [
+        {
+          "date": "2025-12-16",
+          "prior_close_nav": 995357.72,
+          "nav": 985109.15,
+          "cash": 507814.15,
+          "holdings_value": 477295.0,
+          "receivables": 0.0,
+          "positions": {
+            "sh605376": {
+              "quantity": 1300,
+              "available": 0,
+              "close": 55.4,
+              "value": 72020.0
+            },
+            "sh688120": {
+              "quantity": 905,
+              "available": 0,
+              "close": 155.0,
+              "value": 140275.0
+            },
+            "sh603650": {
+              "quantity": 2800,
+              "available": 0,
+              "close": 47.0,
+              "value": 131600.0
+            },
+            "sh600066": {
+              "quantity": 4000,
+              "available": 0,
+              "close": 33.35,
+              "value": 133400.0
+            }
+          },
+          "risk_level": 0,
+          "max_nav_weight": 0.14239538836889293,
+          "risk_cap": 0.6,
+          "risk_phase": "NORMAL",
+          "risk_peak": 1000464.97,
+          "risk_drawdown": 0.005104876385626955,
+          "can_buy": true,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-01-08",
+          "prior_close_nav": 1082444.03,
+          "nav": 1070744.38,
+          "cash": 548331.38,
+          "holdings_value": 522413.0,
+          "receivables": 0.0,
+          "positions": {
+            "sh688120": {
+              "quantity": 500,
+              "available": 0,
+              "close": 173.88,
+              "value": 86940.0
+            },
+            "sh601601": {
+              "quantity": 3100,
+              "available": 0,
+              "close": 46.95,
+              "value": 145545.0
+            },
+            "sh603799": {
+              "quantity": 1900,
+              "available": 0,
+              "close": 75.62,
+              "value": 143678.0
+            },
+            "sz002851": {
+              "quantity": 1500,
+              "available": 0,
+              "close": 97.5,
+              "value": 146250.0
+            }
+          },
+          "risk_level": 0,
+          "max_nav_weight": 0.1365872216859079,
+          "risk_cap": 0.9,
+          "risk_phase": "NORMAL",
+          "risk_peak": 1094344.73,
+          "risk_drawdown": 0.010874726833106751,
+          "can_buy": true,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-01-19",
+          "prior_close_nav": 1036203.67,
+          "nav": 1028639.0,
+          "cash": 593180.0,
+          "holdings_value": 435459.0,
+          "receivables": 0.0,
+          "positions": {
+            "sh603993": {
+              "quantity": 1200,
+              "available": 0,
+              "close": 23.31,
+              "value": 27972.0
+            },
+            "sh600176": {
+              "quantity": 7600,
+              "available": 0,
+              "close": 19.06,
+              "value": 144856.0
+            },
+            "sz300757": {
+              "quantity": 400,
+              "available": 0,
+              "close": 306.65,
+              "value": 122660.0
+            },
+            "sz300905": {
+              "quantity": 3900,
+              "available": 0,
+              "close": 35.89,
+              "value": 139971.0
+            }
+          },
+          "risk_level": 1,
+          "max_nav_weight": 0.1408229709353816,
+          "risk_cap": 0.45,
+          "risk_phase": "CAUTION45",
+          "risk_peak": 1094344.73,
+          "risk_drawdown": 0.053128651700090845,
+          "can_buy": true,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-01-20",
+          "prior_close_nav": 1028639.0,
+          "nav": 1023860.09,
+          "cash": 821440.09,
+          "holdings_value": 202420.0,
+          "receivables": 0.0,
+          "positions": {
+            "sh603993": {
+              "quantity": 1200,
+              "available": 1200,
+              "close": 23.07,
+              "value": 27684.0
+            },
+            "sz300757": {
+              "quantity": 400,
+              "available": 400,
+              "close": 292.0,
+              "value": 116800.0
+            },
+            "sz300905": {
+              "quantity": 1600,
+              "available": 1600,
+              "close": 36.21,
+              "value": 57936.0
+            }
+          },
+          "risk_level": 2,
+          "max_nav_weight": 0.11407808658700624,
+          "risk_cap": 0.2,
+          "risk_phase": "FROZEN20",
+          "risk_peak": 1094344.73,
+          "risk_drawdown": 0.06004116271478732,
+          "can_buy": false,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-02-03",
+          "prior_close_nav": 1048444.32,
+          "nav": 1078607.12,
+          "cash": 850495.12,
+          "holdings_value": 228112.0,
+          "receivables": 0.0,
+          "positions": {
+            "sz300757": {
+              "quantity": 400,
+              "available": 400,
+              "close": 424.8,
+              "value": 169920.0
+            },
+            "sz300905": {
+              "quantity": 1600,
+              "available": 1600,
+              "close": 36.37,
+              "value": 58192.0
+            }
+          },
+          "risk_level": 2,
+          "max_nav_weight": 0.1575365087521395,
+          "risk_cap": 0.2,
+          "risk_phase": "FROZEN20",
+          "risk_peak": 1094344.73,
+          "risk_drawdown": 0.04194328235125688,
+          "can_buy": false,
+          "exposure_above_target": true
+        },
+        {
+          "date": "2026-06-04",
+          "prior_close_nav": 1162039.28,
+          "nav": 1161436.28,
+          "cash": 955744.28,
+          "holdings_value": 205692.0,
+          "receivables": 0.0,
+          "positions": {
+            "sz300757": {
+              "quantity": 300,
+              "available": 300,
+              "close": 685.64,
+              "value": 205692.0
+            }
+          },
+          "risk_level": 2,
+          "max_nav_weight": 0.17710140757786558,
+          "risk_cap": 0.2,
+          "risk_phase": "FROZEN20",
+          "risk_peak": 1162039.28,
+          "risk_drawdown": 0.0,
+          "can_buy": false,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-07-20",
+          "prior_close_nav": 1079644.28,
+          "nav": 1067674.28,
+          "cash": 955744.28,
+          "holdings_value": 111930.0,
+          "receivables": 0.0,
+          "positions": {
+            "sz300757": {
+              "quantity": 300,
+              "available": 300,
+              "close": 373.1,
+              "value": 111930.0
+            }
+          },
+          "risk_level": 2,
+          "max_nav_weight": 0.10483534360310712,
+          "risk_cap": 0.2,
+          "risk_phase": "FROZEN20",
+          "risk_peak": 1162039.28,
+          "risk_drawdown": 0.07090552050873877,
+          "can_buy": false,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-07-21",
+          "prior_close_nav": 1067674.28,
+          "nav": 1073128.42,
+          "cash": 1073128.42,
+          "holdings_value": 0,
+          "receivables": 0.0,
+          "positions": {},
+          "risk_level": 3,
+          "max_nav_weight": 0.0,
+          "risk_cap": 0.0,
+          "risk_phase": "HALTED0",
+          "risk_peak": 1162039.28,
+          "risk_drawdown": 0.0812063771200574,
+          "can_buy": false,
+          "exposure_above_target": false
+        },
+        {
+          "date": "2026-11-02",
+          "prior_close_nav": 1073128.42,
+          "nav": 1073128.42,
+          "cash": 1073128.42,
+          "holdings_value": 0,
+          "receivables": 0.0,
+          "positions": {},
+          "risk_level": 3,
+          "max_nav_weight": 0.0,
+          "risk_cap": 0.0,
+          "risk_phase": "HALTED0",
+          "risk_peak": 1162039.28,
+          "risk_drawdown": 0.07651278362982716,
+          "can_buy": false,
+          "exposure_above_target": false
+        }
+      ],
+      "risk_transitions": [
+        {
+          "cap": 0.45,
+          "level": 1,
+          "selected": [
+            "sh688200",
+            "sz300666",
+            "sh603993",
+            "sh600176",
+            "sz300757",
+            "sz300905"
+          ],
+          "rule_config": "baseline",
+          "rule_activity": {
+            "retained_beyond12": 0,
+            "replacements": 0,
+            "blocked_by_count": 0,
+            "blocked_by_rank_gap": 0,
+            "buffered_positions": 0,
+            "buy_budget_binding": false,
+            "sell_budget_binding": false,
+            "extra_penalty_rate": 0.0
+          },
+          "turnover_policy": "exit_priority",
+          "status": "OPTIMAL",
+          "positive_targets": 4,
+          "predicted_net_objective": 0.00028087964755507287,
+          "turnover_budget": null,
+          "signal_date": "2026-01-16",
+          "execution_date": "2026-01-19",
+          "drawdown": 0.053128651700090845,
+          "scheduled": false,
+          "forced": true,
+          "recovery": {
+            "state_age_before": 42,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1094344.73,
+            "drawdown": 0.053128651700090845,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          "target_weights": {
+            "sh688200": 0.0,
+            "sz300666": 0.0,
+            "sh603993": 0.02999999999999997,
+            "sh600176": 0.14,
+            "sz300757": 0.14,
+            "sz300905": 0.14,
+            "sh688521": 0.0,
+            "sz300911": 0.0,
+            "sh600026": 0.0
+          }
+        },
+        {
+          "cap": 0.2,
+          "level": 2,
+          "selected": [
+            "sh603993",
+            "sh600176",
+            "sz300757",
+            "sz300905"
+          ],
+          "rule_config": "baseline",
+          "rule_activity": {
+            "buffered_positions": 0,
+            "buy_budget_binding": false,
+            "sell_budget_binding": false,
+            "extra_penalty_rate": 0.0
+          },
+          "turnover_policy": "exit_priority",
+          "status": "OPTIMAL",
+          "positive_targets": 3,
+          "predicted_net_objective": 0.0004745989047050722,
+          "turnover_budget": null,
+          "signal_date": "2026-01-19",
+          "execution_date": "2026-01-20",
+          "drawdown": 0.06004116271478732,
+          "scheduled": false,
+          "forced": true,
+          "recovery": {
+            "state_age_before": 1,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1094344.73,
+            "drawdown": 0.06004116271478732,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          "target_weights": {
+            "sh603993": 0.02719321355694272,
+            "sh600176": 0.0,
+            "sz300757": 0.11924494404742578,
+            "sz300905": 0.053561842395631526
+          }
+        },
+        {
+          "status": "RISK_EXIT",
+          "cap": 0.0,
+          "level": 3,
+          "selected": [],
+          "rule_config": "baseline",
+          "signal_date": "2026-07-20",
+          "execution_date": "2026-07-21",
+          "drawdown": 0.0812063771200574,
+          "scheduled": false,
+          "forced": true,
+          "recovery": {
+            "state_age_before": 119,
+            "healthy_streak_before": 0,
+            "previous_phase": "FROZEN20",
+            "probe_anchor_before": null,
+            "phase": "HALTED0",
+            "level": 3,
+            "cap": 0.0,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_8",
+            "peak": 1162039.28,
+            "drawdown": 0.0812063771200574,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          "turnover_policy": "exit_priority",
+          "target_weights": {
+            "sz300757": 0.0
+          }
+        }
+      ],
+      "budget_relaxations": [
+        {
+          "cap": 0.6,
+          "level": 0,
+          "selected": [
+            "sh601066",
+            "sh600201",
+            "sh605376",
+            "sh688120",
+            "sh603650",
+            "sh600066"
+          ],
+          "rule_config": "baseline",
+          "rule_activity": {
+            "retained_beyond12": 0,
+            "replacements": 0,
+            "blocked_by_count": 0,
+            "blocked_by_rank_gap": 0,
+            "buffered_positions": 0,
+            "buy_budget_binding": true,
+            "sell_budget_binding": true,
+            "extra_penalty_rate": 0.0
+          },
+          "turnover_policy": "exit_priority",
+          "feasibility": {
+            "original_sell_budget": 0.5,
+            "hard_constraints_feasible": true,
+            "minimum_selling": 0.6021514054263828,
+            "effective_sell_budget": 0.6021514064263828
+          },
+          "status": "OPTIMAL",
+          "positive_targets": 4,
+          "predicted_net_objective": 0.006568856330420387,
+          "turnover_budget": 0.5,
+          "signal_date": "2025-12-15",
+          "execution_date": "2025-12-16",
+          "drawdown": 0.005104876385626955,
+          "scheduled": true,
+          "forced": false,
+          "recovery": {
+            "state_age_before": 20,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "NORMAL",
+            "level": 0,
+            "cap": 0.9,
+            "can_buy": true,
+            "changed": false,
+            "reason": "UNCHANGED",
+            "peak": 1000464.97,
+            "drawdown": 0.005104876385626955,
+            "state_age": 20,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          "target_weights": {
+            "sh601066": 0.0,
+            "sh600201": 0.0,
+            "sh605376": 0.07999999999999996,
+            "sh688120": 0.14,
+            "sh603650": 0.14,
+            "sh600066": 0.14,
+            "sh601100": 0.0,
+            "sz002565": 0.0,
+            "sh601318": 0.0,
+            "sz000408": 0.0,
+            "sh688702": 0.0
+          }
+        },
+        {
+          "cap": 0.9,
+          "level": 0,
+          "selected": [
+            "sz300857",
+            "sz300604",
+            "sh688120",
+            "sh601601",
+            "sh603799",
+            "sz002851"
+          ],
+          "rule_config": "baseline",
+          "rule_activity": {
+            "retained_beyond12": 0,
+            "replacements": 0,
+            "blocked_by_count": 0,
+            "blocked_by_rank_gap": 0,
+            "buffered_positions": 0,
+            "buy_budget_binding": true,
+            "sell_budget_binding": true,
+            "extra_penalty_rate": 0.0
+          },
+          "turnover_policy": "exit_priority",
+          "feasibility": {
+            "original_sell_budget": 0.5,
+            "hard_constraints_feasible": true,
+            "minimum_selling": 0.6128529342990603,
+            "effective_sell_budget": 0.6128529352990603
+          },
+          "status": "OPTIMAL",
+          "positive_targets": 4,
+          "predicted_net_objective": -0.0003306943928005621,
+          "turnover_budget": 0.5,
+          "signal_date": "2026-01-07",
+          "execution_date": "2026-01-08",
+          "drawdown": 0.010874726833106751,
+          "scheduled": true,
+          "forced": false,
+          "recovery": {
+            "state_age_before": 35,
+            "healthy_streak_before": 3,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "NORMAL",
+            "level": 0,
+            "cap": 0.9,
+            "can_buy": true,
+            "changed": false,
+            "reason": "UNCHANGED",
+            "peak": 1094344.73,
+            "drawdown": 0.010874726833106751,
+            "state_age": 35,
+            "healthy_streak": 3,
+            "probe_anchor": null,
+            "healthy": true,
+            "mode": "latched"
+          },
+          "target_weights": {
+            "sz300857": 0.0,
+            "sz300604": 0.0,
+            "sh688120": 0.07999999999999996,
+            "sh601601": 0.14,
+            "sh603799": 0.14,
+            "sz002851": 0.14,
+            "sh605376": 0.0,
+            "sh600118": 0.0,
+            "sh512660": 0.0,
+            "sz000967": 0.0,
+            "sh601108": 0.0
+          }
+        }
+      ],
+      "first_divergence_date_trades": [
+        {
+          "date": "2025-12-16",
+          "signal_date": "2025-12-15",
+          "symbol": "sh601100",
+          "side": "SELL",
+          "quantity": 1300,
+          "price": 110.27,
+          "gross": 143351.0,
+          "fee": 116.12,
+          "slippage_rate": 0.001,
+          "slippage_cost": 143.35,
+          "cash_after": 539093.2
+        },
+        {
+          "date": "2025-12-16",
+          "signal_date": "2025-12-15",
+          "symbol": "sz002565",
+          "side": "SELL",
+          "quantity": 2900,
+          "price": 16.5,
+          "gross": 47850.0,
+          "fee": 38.76,
+          "slippage_rate": 0.001,
+          "slippage_cost": 47.85,
+          "cash_after": 586856.59
+        },
+        {
+          "date": "2025-12-16",
+          "signal_date": "2025-12-15",
+          "symbol": "sh601318",
+          "side": "SELL",
+          "quantity": 2100,
+          "price": 66.71,
+          "gross": 140091.0,
+          "fee": 113.48,
+          "slippage_rate": 0.001,
+          "slippage_cost": 140.09,
+          "cash_after": 726694.02
+        },
+        {
+          "date": "2025-12-16",
+          "signal_date": "2025-12-15",
+          "symbol": "sz000408",
+          "side": "SELL",
+          "quantity": 1900,
+          "price": 72.72,
+          "gross": 138168.0,
+          "fee": 111.91,
+          "slippage_rate": 0.001,
+          "slippage_cost": 138.17,
+          "cash_after": 864611.94
+        },
+        {
+          "date": "2025-12-16",
+          "signal_date": "2025-12-15",
+          "symbol": "sh688702",
+          "side": "SELL",
+          "quantity": 979,
+          "price": 134.33,
+          "gross": 131509.07,
+          "fee": 106.52,
+          "slippage_rate": 0.001,
+          "slippage_cost": 131.51,
+          "cash_after": 995882.98
+        },
+        {
+          "date": "2025-12-16",
+          "signal_date": "2025-12-15",
+          "symbol": "sh605376",
+          "side": "BUY",
+          "quantity": 1300,
+          "price": 57.59,
+          "gross": 74867.0,
+          "fee": 23.21,
+          "slippage_rate": 0.001,
+          "slippage_cost": 74.87,
+          "cash_after": 920917.9
+        },
+        {
+          "date": "2025-12-16",
+          "signal_date": "2025-12-15",
+          "symbol": "sh688120",
+          "side": "BUY",
+          "quantity": 905,
+          "price": 153.86,
+          "gross": 139243.3,
+          "fee": 43.16,
+          "slippage_rate": 0.001,
+          "slippage_cost": 139.24,
+          "cash_after": 781492.2
+        },
+        {
+          "date": "2025-12-16",
+          "signal_date": "2025-12-15",
+          "symbol": "sh603650",
+          "side": "BUY",
+          "quantity": 2800,
+          "price": 49.0,
+          "gross": 137200.0,
+          "fee": 42.53,
+          "slippage_rate": 0.001,
+          "slippage_cost": 137.2,
+          "cash_after": 644112.47
+        },
+        {
+          "date": "2025-12-16",
+          "signal_date": "2025-12-15",
+          "symbol": "sh600066",
+          "side": "BUY",
+          "quantity": 4000,
+          "price": 34.03,
+          "gross": 136120.0,
+          "fee": 42.2,
+          "slippage_rate": 0.001,
+          "slippage_cost": 136.12,
+          "cash_after": 507814.15
+        }
+      ]
+    }
+  },
+  "terminal_wealth_identity_cny": {
+    "net_wealth_change": -237193.18,
+    "modelled_cost_change": -14894.28,
+    "path_gain_before_modelled_cost_change": -252087.46,
+    "definition": "Both start at CNY 1,000,000 and end in cash. Net wealth = initial cash + path gain before modelled costs - modelled costs. Changed exposure and risk timing remain inseparable."
+  },
+  "changed_primary_ten_day_accounts": [
+    {
+      "path": "evaluation/10bps/selected_strategy.ledgers.json.gz",
+      "account_index": 3,
+      "full_account_equal": false,
+      "before": {
+        "start": "2025-12-30",
+        "end": "2026-01-14",
+        "sessions": 10,
+        "return": 0.04252673000000007,
+        "max_drawdown": -0.01691893357383578,
+        "es95": -0.011418192481148337,
+        "fees": 355.18,
+        "slippage_cost": 951.09,
+        "total_cost": 1306.27,
+        "trades": 7,
+        "turnover": 0.951089,
+        "ending_cash": 294564.73,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 1,
+          "LOT_BUDGET_TOO_SMALL": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 1,
+          "HOLD_BETWEEN_REBALANCES": 8,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.7252762824183426,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "after": {
+        "start": "2025-12-30",
+        "end": "2026-01-14",
+        "sessions": 10,
+        "return": 0.0059066599999999525,
+        "max_drawdown": -0.02661094498345873,
+        "es95": -0.011418192481148337,
+        "fees": 1018.49,
+        "slippage_cost": 2172.27,
+        "total_cost": 3190.76,
+        "trades": 16,
+        "turnover": 2.172265,
+        "ending_cash": 514360.24,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {},
+        "solver_counts": {
+          "OPTIMAL": 2,
+          "HOLD_BETWEEN_REBALANCES": 8
+        },
+        "mean_exposure": 0.6117433820225349,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "first_economic_difference": {
+        "trades": {
+          "path": "/length",
+          "before": 7,
+          "after": 16
+        },
+        "events": null,
+        "rejections": {
+          "path": "/length",
+          "before": 4,
+          "after": 0
+        },
+        "curve": {
+          "path": "/5/nav",
+          "before": 1019224.73,
+          "after": 1009723.72
+        }
+      }
+    },
+    {
+      "path": "evaluation/10bps/selected_strategy.ledgers.json.gz",
+      "account_index": 4,
+      "full_account_equal": false,
+      "before": {
+        "start": "2026-01-15",
+        "end": "2026-01-28",
+        "sessions": 10,
+        "return": 0.03766581000000002,
+        "max_drawdown": -0.015252990000000022,
+        "es95": -0.011106247290953867,
+        "fees": 817.89,
+        "slippage_cost": 1514.6399999999999,
+        "total_cost": 2332.53,
+        "trades": 15,
+        "turnover": 1.51464566,
+        "ending_cash": 868379.81,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 6,
+          "LOT_BUDGET_TOO_SMALL": 1,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 4
+        },
+        "solver_counts": {
+          "OPTIMAL": 2,
+          "HOLD_BETWEEN_REBALANCES": 6,
+          "INFEASIBLE_REDUCE_ONLY": 2
+        },
+        "mean_exposure": 0.6022660308185084,
+        "target_exposure_breach_days": 1,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "after": {
+        "start": "2026-01-15",
+        "end": "2026-01-28",
+        "sessions": 10,
+        "return": 0.03225265999999993,
+        "max_drawdown": -0.015252990000000022,
+        "es95": -0.011106247290953867,
+        "fees": 1070.54,
+        "slippage_cost": 2128.74,
+        "total_cost": 3199.2799999999997,
+        "trades": 16,
+        "turnover": 2.1287486600000003,
+        "ending_cash": 510484.06,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {},
+        "solver_counts": {
+          "OPTIMAL": 2,
+          "HOLD_BETWEEN_REBALANCES": 8
+        },
+        "mean_exposure": 0.6110367231201903,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "first_economic_difference": {
+        "trades": {
+          "path": "/7/date",
+          "before": "2026-01-26",
+          "after": "2026-01-22"
+        },
+        "events": null,
+        "rejections": {
+          "path": "/length",
+          "before": 11,
+          "after": 0
+        },
+        "curve": {
+          "path": "/5/nav",
+          "before": 1002426.59,
+          "after": 997950.11
+        }
+      }
+    },
+    {
+      "path": "evaluation/10bps/selected_strategy.ledgers.json.gz",
+      "account_index": 10,
+      "full_account_equal": false,
+      "before": {
+        "start": "2026-04-20",
+        "end": "2026-05-06",
+        "sessions": 10,
+        "return": 0.20052983000000002,
+        "max_drawdown": -0.004895255333690729,
+        "es95": -0.004895255333690773,
+        "fees": 240.01999999999998,
+        "slippage_cost": 778.75,
+        "total_cost": 1018.77,
+        "trades": 6,
+        "turnover": 0.7787488,
+        "ending_cash": 220312.43,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 3,
+          "LOT_BUDGET_TOO_SMALL": 2,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 1,
+          "HOLD_BETWEEN_REBALANCES": 8,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.7959512604267738,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 5,
+          "add_penalty10": 5
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "after": {
+        "start": "2026-04-20",
+        "end": "2026-05-06",
+        "sessions": 10,
+        "return": 0.11445295999999994,
+        "max_drawdown": -0.004895255333690729,
+        "es95": -0.004895255333690773,
+        "fees": 895.77,
+        "slippage_cost": 2002.32,
+        "total_cost": 2898.09,
+        "trades": 15,
+        "turnover": 2.0023139,
+        "ending_cash": 389825.21,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 2,
+          "HOLD_BETWEEN_REBALANCES": 8
+        },
+        "mean_exposure": 0.7138926234699485,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 5,
+          "add_penalty10": 5
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "first_economic_difference": {
+        "trades": {
+          "path": "/length",
+          "before": 6,
+          "after": 15
+        },
+        "events": {
+          "path": "/length",
+          "before": 2,
+          "after": 0
+        },
+        "rejections": {
+          "path": "/0/symbol",
+          "before": "sh603389",
+          "after": "sz002466"
+        },
+        "curve": {
+          "path": "/5/nav",
+          "before": 1077492.43,
+          "after": 1061480.81
+        }
+      }
+    },
+    {
+      "path": "evaluation/10bps/selected_strategy.ledgers.json.gz",
+      "account_index": 11,
+      "full_account_equal": false,
+      "before": {
+        "start": "2026-05-07",
+        "end": "2026-05-20",
+        "sessions": 10,
+        "return": 0.11611550000000004,
+        "max_drawdown": -0.01153866783074231,
+        "es95": -0.011538667830742318,
+        "fees": 778.04,
+        "slippage_cost": 1731.94,
+        "total_cost": 2509.98,
+        "trades": 21,
+        "turnover": 1.73193242,
+        "ending_cash": 450301.0,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 1,
+          "T1_OR_MINIMUM_QUANTITY": 4,
+          "LOT_BUDGET_TOO_SMALL": 2,
+          "EXACT_FEES_EXCEED_EDGE": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 2,
+          "HOLD_BETWEEN_REBALANCES": 5,
+          "INFEASIBLE_REDUCE_ONLY": 3
+        },
+        "mean_exposure": 0.6413580261581389,
+        "target_exposure_breach_days": 2,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "add_penalty10": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "after": {
+        "start": "2026-05-07",
+        "end": "2026-05-20",
+        "sessions": 10,
+        "return": 0.09255772000000007,
+        "max_drawdown": -0.01922615278637063,
+        "es95": -0.011538667830742318,
+        "fees": 709.36,
+        "slippage_cost": 1555.1200000000001,
+        "total_cost": 2264.48,
+        "trades": 11,
+        "turnover": 1.5551058,
+        "ending_cash": 664201.72,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 2,
+          "LOT_BUDGET_TOO_SMALL": 1,
+          "OPEN_AT_UPPER_LIMIT": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 2,
+          "HOLD_BETWEEN_REBALANCES": 8
+        },
+        "mean_exposure": 0.5210779853856745,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "add_penalty10": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "first_economic_difference": {
+        "trades": {
+          "path": "/5/quantity",
+          "before": 600,
+          "after": 79800
+        },
+        "events": {
+          "path": "/length",
+          "before": 0,
+          "after": 2
+        },
+        "rejections": {
+          "path": "/1/symbol",
+          "before": "sz002348",
+          "after": "sz301308"
+        },
+        "curve": {
+          "path": "/5/nav",
+          "before": 1068478.88,
+          "after": 1071514.12
+        }
+      }
+    },
+    {
+      "path": "evaluation/10bps/selected_strategy.ledgers.json.gz",
+      "account_index": 17,
+      "full_account_equal": false,
+      "before": {
+        "start": "2026-07-31",
+        "end": "2026-08-13",
+        "sessions": 10,
+        "return": -0.02537951999999999,
+        "max_drawdown": -0.035993249863795596,
+        "es95": -0.015614075701204898,
+        "fees": 182.33,
+        "slippage_cost": 588.19,
+        "total_cost": 770.52,
+        "trades": 5,
+        "turnover": 0.588184,
+        "ending_cash": 411045.48,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 1,
+          "LOT_BUDGET_TOO_SMALL": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 1,
+          "HOLD_BETWEEN_REBALANCES": 8,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.5800102711416751,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "after": {
+        "start": "2026-07-31",
+        "end": "2026-08-13",
+        "sessions": 10,
+        "return": 0.010434000000000054,
+        "max_drawdown": -0.027902401520237374,
+        "es95": -0.017146825775099166,
+        "fees": 783.52,
+        "slippage_cost": 1624.48,
+        "total_cost": 2408.0,
+        "trades": 14,
+        "turnover": 1.624473,
+        "ending_cash": 492841.0,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {},
+        "solver_counts": {
+          "OPTIMAL": 2,
+          "HOLD_BETWEEN_REBALANCES": 8
+        },
+        "mean_exposure": 0.5459799690414466,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "first_economic_difference": {
+        "trades": {
+          "path": "/length",
+          "before": 5,
+          "after": 14
+        },
+        "events": null,
+        "rejections": {
+          "path": "/length",
+          "before": 4,
+          "after": 0
+        },
+        "curve": {
+          "path": "/5/nav",
+          "before": 966169.48,
+          "after": 981227.0
+        }
+      }
+    },
+    {
+      "path": "evaluation/20bps/selected_strategy.ledgers.json.gz",
+      "account_index": 4,
+      "full_account_equal": false,
+      "before": {
+        "start": "2026-01-15",
+        "end": "2026-01-28",
+        "sessions": 10,
+        "return": 0.02027840999999997,
+        "max_drawdown": -0.010666122201742123,
+        "es95": -0.010666122201742092,
+        "fees": 485.99,
+        "slippage_cost": 2207.8,
+        "total_cost": 2693.79,
+        "trades": 13,
+        "turnover": 1.103899,
+        "ending_cash": 455973.21,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 5
+        },
+        "solver_counts": {
+          "CASH_NO_POSITIVE_EDGE": 1,
+          "HOLD_BETWEEN_REBALANCES": 6,
+          "OPTIMAL": 1,
+          "INFEASIBLE_REDUCE_ONLY": 2
+        },
+        "mean_exposure": 0.338880179405655,
+        "target_exposure_breach_days": 1,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "after": {
+        "start": "2026-01-15",
+        "end": "2026-01-28",
+        "sessions": 10,
+        "return": 0.01604348,
+        "max_drawdown": -0.00561389000000001,
+        "es95": -0.005613890000000014,
+        "fees": 1072.59,
+        "slippage_cost": 4272.73,
+        "total_cost": 5345.32,
+        "trades": 16,
+        "turnover": 2.1363627999999997,
+        "ending_cash": 499659.88,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {},
+        "solver_counts": {
+          "CASH_NO_POSITIVE_EDGE": 1,
+          "HOLD_BETWEEN_REBALANCES": 7,
+          "OPTIMAL": 2
+        },
+        "mean_exposure": 0.31638774571006756,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "first_economic_difference": {
+        "trades": {
+          "path": "/6/quantity",
+          "before": 1800,
+          "after": 6600
+        },
+        "events": null,
+        "rejections": {
+          "path": "/length",
+          "before": 5,
+          "after": 0
+        },
+        "curve": {
+          "path": "/7/nav",
+          "before": 990621.11,
+          "after": 1004042.6799999999
+        }
+      }
+    },
+    {
+      "path": "evaluation/20bps/selected_strategy.ledgers.json.gz",
+      "account_index": 10,
+      "full_account_equal": false,
+      "before": {
+        "start": "2026-04-20",
+        "end": "2026-05-06",
+        "sessions": 10,
+        "return": 0.19825762999999985,
+        "max_drawdown": -0.0048434086015477495,
+        "es95": -0.004843408601547719,
+        "fees": 238.39,
+        "slippage_cost": 1546.98,
+        "total_cost": 1785.37,
+        "trades": 6,
+        "turnover": 0.773493,
+        "ending_cash": 224801.63,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 3,
+          "LOT_BUDGET_TOO_SMALL": 2,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 1,
+          "HOLD_BETWEEN_REBALANCES": 8,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.7915421411748729,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 5,
+          "add_penalty10": 5
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "after": {
+        "start": "2026-04-20",
+        "end": "2026-05-06",
+        "sessions": 10,
+        "return": 0.08623687000000002,
+        "max_drawdown": -0.0048434086015477495,
+        "es95": -0.004843408601547719,
+        "fees": 726.5600000000001,
+        "slippage_cost": 2930.5699999999997,
+        "total_cost": 3657.1299999999997,
+        "trades": 11,
+        "turnover": 1.465289,
+        "ending_cash": 914645.87,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 2,
+          "HOLD_BETWEEN_REBALANCES": 8
+        },
+        "mean_exposure": 0.46694161151008035,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 5,
+          "add_penalty10": 5
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "first_economic_difference": {
+        "trades": {
+          "path": "/length",
+          "before": 6,
+          "after": 11
+        },
+        "events": {
+          "path": "/length",
+          "before": 2,
+          "after": 0
+        },
+        "rejections": {
+          "path": "/0/symbol",
+          "before": "sh603389",
+          "after": "sz002466"
+        },
+        "curve": {
+          "path": "/5/nav",
+          "before": 1076294.63,
+          "after": 1069310.87
+        }
+      }
+    },
+    {
+      "path": "evaluation/20bps/selected_strategy.ledgers.json.gz",
+      "account_index": 17,
+      "full_account_equal": false,
+      "before": {
+        "start": "2026-07-31",
+        "end": "2026-08-13",
+        "sessions": 10,
+        "return": -0.025967699999999927,
+        "max_drawdown": -0.0360143853878675,
+        "es95": -0.015623313580886205,
+        "fees": 182.33,
+        "slippage_cost": 1176.3700000000001,
+        "total_cost": 1358.7,
+        "trades": 5,
+        "turnover": 0.588184,
+        "ending_cash": 410457.3,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 1,
+          "LOT_BUDGET_TOO_SMALL": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 1,
+          "HOLD_BETWEEN_REBALANCES": 8,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.5803590263718312,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "after": {
+        "start": "2026-07-31",
+        "end": "2026-08-13",
+        "sessions": 10,
+        "return": 0.008689979999999986,
+        "max_drawdown": -0.02791878603347875,
+        "es95": -0.017154895218433965,
+        "fees": 783.3100000000001,
+        "slippage_cost": 3247.71,
+        "total_cost": 4031.02,
+        "trades": 14,
+        "turnover": 1.623855,
+        "ending_cash": 491835.98,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {},
+        "solver_counts": {
+          "OPTIMAL": 2,
+          "HOLD_BETWEEN_REBALANCES": 8
+        },
+        "mean_exposure": 0.5462364744047234,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 10
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "first_economic_difference": {
+        "trades": {
+          "path": "/length",
+          "before": 5,
+          "after": 14
+        },
+        "events": null,
+        "rejections": {
+          "path": "/length",
+          "before": 4,
+          "after": 0
+        },
+        "curve": {
+          "path": "/5/nav",
+          "before": 965581.3,
+          "after": 979575.98
+        }
+      }
+    },
+    {
+      "path": "evaluation/30bps/selected_strategy.ledgers.json.gz",
+      "account_index": 10,
+      "full_account_equal": false,
+      "before": {
+        "start": "2026-04-20",
+        "end": "2026-05-06",
+        "sessions": 10,
+        "return": 0.1974822599999999,
+        "max_drawdown": -0.004845380863035542,
+        "es95": -0.004845380863035533,
+        "fees": 238.35,
+        "slippage_cost": 2320.09,
+        "total_cost": 2558.44,
+        "trades": 6,
+        "turnover": 0.7733601,
+        "ending_cash": 224161.46,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 3,
+          "LOT_BUDGET_TOO_SMALL": 2,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 1,
+          "HOLD_BETWEEN_REBALANCES": 8,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.7919860256999876,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 5,
+          "add_penalty10": 5
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "after": {
+        "start": "2026-04-20",
+        "end": "2026-05-06",
+        "sessions": 10,
+        "return": 0.08477054000000006,
+        "max_drawdown": -0.004845380863035542,
+        "es95": -0.004845380863035533,
+        "fees": 726.48,
+        "slippage_cost": 4395.08,
+        "total_cost": 5121.56,
+        "trades": 11,
+        "turnover": 1.4650213,
+        "ending_cash": 913179.54,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "T1_OR_MINIMUM_QUANTITY": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 2,
+          "HOLD_BETWEEN_REBALANCES": 8
+        },
+        "mean_exposure": 0.4672707764874107,
+        "target_exposure_breach_days": 0,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 5,
+          "add_penalty10": 5
+        },
+        "phase_days": {
+          "NORMAL": 10
+        },
+        "recovery_transitions": [],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "first_economic_difference": {
+        "trades": {
+          "path": "/length",
+          "before": 6,
+          "after": 11
+        },
+        "events": {
+          "path": "/length",
+          "before": 2,
+          "after": 0
+        },
+        "rejections": {
+          "path": "/0/symbol",
+          "before": "sh603389",
+          "after": "sz002466"
+        },
+        "curve": {
+          "path": "/5/nav",
+          "before": 1075518.96,
+          "after": 1067844.54
+        }
+      }
+    }
+  ],
+  "interpretation": [
+    "Forecast arrays, estimators and selected rules are unchanged; only sell-budget feasibility handling changes.",
+    "Minimum-budget repair changes holdings from 2025-12-16 and accelerates 4/6 percent latched risk transitions to 2026-01-19/20.",
+    "The repaired 10bp path permanently halts on 2026-07-21; observed maximum drawdown is worse than the 8 percent alert.",
+    "Final cost is lower because the entire holding and risk path changes; higher total fees do not explain the lower return.",
+    "All three complete ten-session means decline. Repeated historical inspection is not prospective evidence."
+  ]
+}

@@ -19,6 +19,7 @@ rules / allocation / risk → simulation → ledger → validation
 | `models`、`calibration` | 固定估计器、残差目标、预测混合、行业检验及历史收益校准 |
 | `training`、`selection` | 在过去验证段选择模型和规则，再重训并冻结外层预测 |
 | `study` | 执行登记的六项改动和两项组合，冻结内层选择，分别评估恢复与同风控基准 |
+| `feasibility` | 单独比较原换手与最低卖出预算修正，核对模型、固定预测和完整基线账户 |
 | `rules`、`allocation` | 换手开关、选股和线性规划仓位 |
 | `risk`、`market` | 风险降级、市场状态、仅依赖开盘可用信息的报价代理 |
 | `simulation` | 信号和每日估值；内部 `_Execution`按先卖后买处理成交 |
@@ -34,5 +35,8 @@ rules / allocation / risk → simulation → ledger → validation
 主策略默认使用`latched`。`staged_restore`和`probe_restore`只在注册研究中显式启用，独立核验恢复等待期、市场条件、仓位与永久退出。运行时特征使用`rank_*`、`industry_*`等含义明确的名称；`dataset.load_bundle`在读取后按`configs/archive.toml`转换历史列名，保持值、类型及模型输入顺序。历史文件本身不改写。主策略使用`selected_strategy`，固定基准换手规则的对照使用`selected_baseline_rules`。
 
 行情与实验在包外，报告模板在包内。新行情遵循[数据契约](data_contract.md)，新实验写入独立目录；[冻结参考文件](../configs/integrity_manifest.json)不随工程整理改写。路径调整只更新清单中的键，保留原SHA-256值；归档名称映射记录原路径。
+
+换手政策进入训练身份、内层验证、外层评估和纸面计划。活跃政策为`legacy`；
+`exit_priority`只用于登记研究，因收益与回撤验收失败而未启用。
 
 `train → evaluate → report --run`按实验目录传递结果；评估检查训练时成交模型和执行源码。`execution-bridge`固定旧预测，比较新执行的账本差异；原冻结数值回归须用原提交的`replay`。项目路径和截止日期由`configs/project.toml`提供，运行时校验与输入一致。包导入不修改全局pandas设置。

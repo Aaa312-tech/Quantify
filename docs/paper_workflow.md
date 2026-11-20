@@ -120,5 +120,8 @@ python -m quantfolio verify-paper --output artifacts/checks/paper_replay
 保留输入与输出。8%退出不走此路径；本轮保持历史策略逻辑，后续须将退出与换手预算的
 优先关系单独登记、修改并评估，不能把未知改善计入当前收益。
 
+随后已完成[最低卖出预算研究](exit_budget_repair.md)：修正未通过收益与回撤条件，
+因此纸面主策略仍保留原换手政策；新训练来源再次通过75账户、1386交易日的完整重放。
+
 模型收益优势仍未通过，历史证券状态、行业时点与选样偏差仍有缺口。`FROZEN_CONDITIONAL_PLAN`
 表示时间与输入检查通过；`BLOCKED`表示没有有效操作建议；二者都不表示收益保证。
