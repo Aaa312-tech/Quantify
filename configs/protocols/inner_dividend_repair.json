@@ -1,0 +1,46 @@
+{
+  "name": "inner_dividend_repair",
+  "registered_at": "2026-11-21T00:02:54.558819+08:00",
+  "baseline_commit": "968382a570abc109d8286e82290ce74352f0d702",
+  "parent_protocol": "configs/protocols/exit_budget_repair.json",
+  "source_bundle": "data/processed/2026-11-19/bundle.joblib",
+  "source_bundle_sha256": "f387f259843397187afde08ea24a7e4348f6960fd23b3862348299e70fc8e40c",
+  "source_data_cutoff": "2026-11-19",
+  "review": "docs/references/inner_dividend_review_2026-11-20.json",
+  "review_sha256": "37138365fbff5d0513a9f6f0c3c66c3df44e09b2afe04b05a6710aacb2d8af9f",
+  "scope": "Apply only the four previously source-reviewed dividends. Preserve prices, calendar, universe, features and entitlements. Rebuild all labels and record every changed value. No November 20 market extension or new strategy candidates.",
+  "source_selection": "First four events by the occurrence ordering frozen in artifacts/checks/inner_event_sources_2026-11-20/protocol.json, before this repair is evaluated. Remaining 29 events remain unverified.",
+  "cash_availability": "First observed trading session strictly after the sourced payment date.",
+  "baseline_run": "artifacts/experiments/exit_priority_2026-11-20/legacy_training",
+  "baseline_evaluation": "artifacts/evaluations/exit_priority_2026-11-20/legacy",
+  "snapshot_output": "data/processed/2026-11-19-inner-dividends",
+  "training_output": "artifacts/experiments/inner_dividend_repair_2026-11-21",
+  "evaluation_output": "artifacts/evaluations/inner_dividend_repair_2026-11-21",
+  "checks_output": "artifacts/checks/inner_dividend_repair_2026-11-21",
+  "selection_mode": "positive_score",
+  "turnover_policy": "legacy",
+  "risk": "Balanced attack; latched 4/6/8 percent drawdown stages; original high-water mark; no automatic recovery.",
+  "retraining": {
+    "windows": 11,
+    "include_latest": true,
+    "fits": 48,
+    "slippage_bps": [
+      10,
+      20,
+      30
+    ],
+    "policies": 19,
+    "evaluation_accounts": 1425,
+    "selection": "All original candidate, calibration and adoption thresholds unchanged; selection uses inner validation only."
+  },
+  "comparison": "Compare all model bytes, all saved forecasts and choices. If every forecast and choice is identical, the complete new account matrix is also the fixed-forecast data bridge. Otherwise run all 1425 fixed-old-forecast accounts separately, then attribute reselection differences.",
+  "verification": "Check frozen integrity, exact non-label input and raw parity, full label deltas, all 48 model reloads, all accounts with independent cash and execution audits, complete prior-account comparison and inner event coverage.",
+  "adoption": "Verified data corrections are retained irrespective of whether historical returns improve. Switch the active research inputs only after the complete chain validates; no claim of new alpha or valid next-day advice without fresh market data.",
+  "limitations": [
+    "Retrospective source repair on repeatedly researched data, not independent forward validation.",
+    "Historical security status, industry history, unexplained gaps and unresolved events remain.",
+    "Competition fee and actual matching details remain unconfirmed.",
+    "No current market-data extension; the active plan freshness gate remains in force."
+  ],
+  "decision": "RESEARCH_ONLY"
+}
