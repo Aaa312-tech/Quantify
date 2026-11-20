@@ -33,7 +33,9 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
 - The registered ten-security historical ST correction passed full retraining and account checks.
   `historical_status_review` clears only that defect for its bound dataset hash. A new snapshot
   requires a new matching review; retain the old models, ledgers and impact reports.
-- Six additional inner-trial corporate actions have reviewed sources but are not yet applied.
-  Five suspended sessions retain carried-price quality flags; historical pre-open availability
-  is unverified. Keep these limitations and the stale-market-data plan block explicit.
+- The six sourced inner-trial corporate actions are applied and fully retrained. Five suspended
+  sessions still have 40 carried-price flags in inner rule trials; pre-open availability is unverified.
+- Candidate raw sources now cover all 594 securities for November 20, but the active snapshot
+  still ends November 19. Source adapters and full extension validation remain pending; preserve
+  the original failed checks, ETF turnover differences and stale-data plan block.
 - Do not operate a trading app, broker account or WeChat.

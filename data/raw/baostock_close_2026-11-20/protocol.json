@@ -1,0 +1,23 @@
+{
+  "registered_at": "2026-11-21T03:19:39.924426+08:00",
+  "provider": "baostock",
+  "provider_version": "0.9.4",
+  "target_date": "2026-11-20",
+  "source_bundle_sha256": "da9b53e289e3a0ed08a3ced9f1ade1ccf340dc47803a6b988ae2b22bf2d4f706",
+  "provider_reference": "https://baostock.com/mainContent?file=DailyUpdates.md",
+  "package_reference": "https://pypi.org/project/baostock/0.9.4/",
+  "implementation_sha256": "fe653aa09c0f07e9f9479407c8f2f5455b4ec60c3a9571c652cd9343f7d0094f",
+  "collector_sha256": "f45860bee9a3f563b385d864666e6285a8b32fe56945ad425cc5caba67c54823",
+  "requests": [
+    "query_daily_history_k_AStock",
+    "query_daily_history_k_ETF"
+  ],
+  "max_requests": 2,
+  "socket_timeout_seconds": 20,
+  "request_spacing_seconds": 0.5,
+  "retries": 0,
+  "stop_on_first_provider_error": true,
+  "purpose": "Source review of the full target-date response against frozen raw history, all existing primary bars and the failed closing-quote comparison. No parser gate is relaxed and no new data are activated by collection.",
+  "scope": "Retrospective completed daily quotes, not evidence of availability before that day opening.",
+  "activated": false
+}

@@ -1,0 +1,21 @@
+{
+  "registered_at": "2026-11-21T03:21:50.551335+08:00",
+  "source_collection_sha256": "d282ff927efcef9448bbae4d57406080e4975fa941d1f43635500e030b12b4a9",
+  "source_bundle_sha256": "da9b53e289e3a0ed08a3ced9f1ade1ccf340dc47803a6b988ae2b22bf2d4f706",
+  "target_date": "2026-11-20",
+  "comparison": "All overlapping selected securities with archived primary target-date bars; retain every disagreement. This diagnostic does not activate an alternative source or override the failed Tencent comparison.",
+  "candidate_mapping": {
+    "volume_lots": "Source shares divided by 100, rounded half-up to whole lots.",
+    "amount": "Source CNY value, no rounding.",
+    "turnover": "Source turn percentage rounded half-up to two decimals.",
+    "pct": "Source pctChg percentage rounded half-up to two decimals.",
+    "change": "close minus the source preclose, preserving decimal arithmetic.",
+    "amplitude": "(high-low)/source preclose*100, rounded half-up to two decimals."
+  },
+  "unchanged_comparison_limits": {
+    "amount_absolute_difference": "strictly below CNY 1",
+    "all_other_fields_absolute_difference": "at most 1e-7"
+  },
+  "mapping_status": "A candidate mapping to verify across the full overlap, not a certified source equivalence.",
+  "activated": false
+}

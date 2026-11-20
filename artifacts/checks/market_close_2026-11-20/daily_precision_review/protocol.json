@@ -1,0 +1,22 @@
+{
+  "registered_at": "2026-11-21T03:25:22.351651+08:00",
+  "source_bundle_sha256": "da9b53e289e3a0ed08a3ced9f1ade1ccf340dc47803a6b988ae2b22bf2d4f706",
+  "dates": [
+    "2026-11-19",
+    "2026-11-20"
+  ],
+  "reference": "https://baostock.com/mainContent?file=DailyUpdates.md",
+  "scope": "Compare units and decimal precision on the target date and a separately collected preceding date. Preserve every original strict failure; this is not a replacement acceptance gate or snapshot activation.",
+  "rules": {
+    "prices": "Exact to 1e-7 after numeric parsing.",
+    "volume": "Shares/100 must round half-up to the archived whole-lot value.",
+    "amount": "Difference strictly below CNY 1; keep missing original fields unknown.",
+    "pct": "Derive 100*(close/preclose-1) from Decimal prices. Compare to the primary reported percent at its two-decimal precision, at most 0.005 percentage points.",
+    "amplitude": "Derive 100*(high-low)/preclose; same two-decimal compatibility interval.",
+    "change": "Decimal close minus preclose; compare at most 1e-7.",
+    "turnover": "Test overlap of rounding intervals: primary two decimals +/-0.005 percentage points and observed source stock four decimals +/-0.00005 (ETF six +/-0.0000005). This is a compatibility test, not proof of the underlying float denominator or rounding algorithm.",
+    "source_pct_consistency": "Reported source pctChg should differ from the exact price-derived percent by at most 0.00005 percentage points."
+  },
+  "data_selection": "Every security in the fixed universe present in the full source response; no symbol exceptions selected from returns.",
+  "no_active_data_change": true
+}

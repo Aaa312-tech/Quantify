@@ -157,7 +157,7 @@ python -m quantfolio audit-status --collection data/raw/status_history_example -
 最后一批另存`collector_source.py`并核对其哈希。最终离线核查重新解析了全部原始响应。
 接口用法和依赖来源见[BaoStock维护者发布页](https://pypi.org/project/baostock/0.9.4/)。
 
-当前研究按`configs/protocols/historical_status_repair.json`执行，登记提交为
+前一轮历史ST修正按`configs/protocols/historical_status_repair.json`执行，登记提交为
 `e9fa763b102a199c68adb33b6d5197d0d3951d4a`：
 
 ```powershell
@@ -175,6 +175,25 @@ python -m quantfolio repair-status --protocol configs/protocols/historical_statu
 单独验证十只证券的训练及买入剔除。原两只、三只证券的较早诊断保持原统计范围。
 新发现的六项公司行为补证只归档于`status_followup_2026-11-21`，没有混入本轮输入。
 
+
+## 六项公司行为修正
+
+当前研究按`configs/protocols/inner_event_repair.json`执行，登记提交为
+`f53744dddaeffd48c09933349fc0f0d201eae80d`。保留前一轮日期化ST区间及全部非标签输入：
+
+```powershell
+python -m quantfolio repair-data --protocol configs/protocols/inner_event_repair.json --output data/processed/2026-11-19-reviewed-inner-events
+```
+
+已有目录不可覆盖；复现时在协议副本中指定新输出，并记录新哈希。随后按上节顺序进行48次拟合、
+全政策评估与纸面验证。14个模型、5组预测发生变化，选型不变，因此实际另跑1425个固定旧预测
+账户；不能用选型相同代替预测数组及账本比较。原始行情、日期化ST状态、非标签输入均精确一致。
+检查和归因位于`artifacts/checks/inner_event_repair_2026-11-21`。
+
+11月20日新增备用行情原始响应及采集源码归档于`data/raw/baostock_close_2026-11-19`、
+`data/raw/baostock_close_2026-11-20`和`data/raw/tencent_beijing_daily_2026-11-20`。
+它们未接入生产生成器；来源差异审查位于`artifacts/checks/market_close_2026-11-20`，不能据此
+省略新适配器的登记、字段测试及完整快照验证。
 
 ## 安装包检查
 

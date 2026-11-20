@@ -130,7 +130,7 @@ python -m quantfolio verify-paper --output artifacts/checks/paper_replay
 随后已完成[最低卖出预算研究](exit_budget_repair.md)：修正未通过收益与回撤条件，
 因此纸面主策略仍保留原换手政策；新训练来源再次通过75账户、1386交易日的完整重放。
 
-历史ST数据修正并重训后，[最新纸面验证](../artifacts/checks/historical_status_repair_2026-11-21/paper/verification.json)
+历史ST及后续六项公司行为修正并重训后，[最新纸面验证](../artifacts/checks/inner_event_repair_2026-11-21/paper/verification.json)
 通过全部75个账户、1386个交易日对比，证明纸面流程与本轮回测账本一致。
 历史资格修正另由训练样本和逐笔买入核查验证，不能只靠纸面重放作结论。
 行情截止日仍为11月19日，当前就绪检查受账户日期与行情时效限制；

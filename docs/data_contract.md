@@ -25,7 +25,7 @@
 最初确认新潮能源和亚振家居的594条历史样本违反ST剔除约定，原诊断保存在
 `artifacts/checks/historical_status_2026-11-21/impact.json`，统计范围与文件均未改写。
 当前快照已应用全部十只已核验证券的日期修正；训练和成交检查通过后，
-`historical_status_review`指向`artifacts/checks/historical_status_repair_2026-11-21/status_review.json`。
+`historical_status_review`指向`artifacts/checks/inner_event_repair_2026-11-21/status_review.json`。
 解除决定只适用于绑定的数据SHA-256；未来新快照必须另做一致性审查，不能沿用旧哈希或
 仅修改行情截止日。其他历史状态未知项仍保留。
 
@@ -62,7 +62,10 @@
 
 ST修正后的内层路径另出现六项公司行为、九次未核实事件，以及高乐股份五个停牌日的
 40次价格延用记录。六项支付日期、一项股份上市日及差异化除息参考已核实，保存于
-`docs/references/status_followup_2026-11-21.json`，尚未应用到活跃快照。
+`docs/references/status_followup_2026-11-21.json`，已在独立登记的快照中应用并完成重训。
+原始行情、证券状态、资格与非标签特征精确不变，1/3/5日标签分别修正1/3/5条。
+全表现金支付日期已知127项，开盘可用日期已知124项；仍有1694项现金支付日期和105项股份上市日未知。
+覆盖统计包含基金份额合并，见`artifacts/checks/inner_event_repair_2026-11-21/coverage.json`。
 停牌核验保存在`docs/references/security_status/gaole_suspension_review_2026-11-21.json`；
 公告日期不能证明当日开盘前可用，未生成`opening_status`，也未移除价格延用质量标记。
 
@@ -75,3 +78,17 @@ ST修正后的内层路径另出现六项公司行为、九次未核实事件，
 `preprocessing.build_dataset`从原始行情和公司行为生成全部面板、资格、评分、57个模型输入及1/3/5日标签。资格门槛、评分权重和先转换float32再排名的顺序沿用原始契约；594只证券、696日及413424行的全部106列已精确复现，见`artifacts/checks/market_pipeline_2026-11-20/rebuild.json`。这项复现不代表历史证券状态或行业信息已获时点认证。
 
 `refresh-data --protocol configs/protocols/market_extension.json --output data/processed/<new-name>`只接收登记的采集、补采和公告证据。历史重叠和缺失值保留原样，新行情只从父快照截止日之后追加；缺失历史金额的绿的谐波继续隔离。生成后要求历史原始行情、面板、评分及非标签列完全相同，标签新增可观察结果单独记录。新目录不能覆盖，也不会自动切换活跃快照；切换前须完成对应训练、评估和身份核验。
+
+11月20日的候选备用源保留原生精度：BaoStock成交量为股、金额为元，转换成手时必须声明舍入规则。
+其`preclose`在除息日可能是除息参考价；不能把派息调整误判成OHLC修订。11月19日光迅科技的
+参考价差0.37元与已核验公告吻合。两日价格、量额核对未解决所有换手率口径问题：前一日18只ETF
+存在差异，22只ETF按次日隐含份额重新计算均与原历史显示精度兼容，但这只支持分母日期差异的
+推断，不能证明任一来源的真实分母。历史换手率保持原样，模型确实使用该字段。
+
+腾讯北交所日线与腾讯收盘报价属于同一提供方；另两只缺少主来源目标日数据的证券仍无独立
+交叉证明。全池来源覆盖、字段转换诊断及其限制见`artifacts/checks/market_close_2026-11-20/source_readiness_review.json`。
+这些响应尚未接入`refresh-data`，原严格失败记录不变，新快照仍须登记、测试、重建和回测。
+
+目标日568只沪深证券的参考价已与前收盘及既有公告核对，中国中免和嘉美包装的除息调整匹配。
+546只股票的日线`isST=0`只作来源筛查；22只ETF的同名字段不映射为股票风险警示。
+检查见`artifacts/checks/market_close_2026-11-20/target_reference_review.json`，不据此生成开盘状态。
