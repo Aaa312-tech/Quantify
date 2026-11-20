@@ -44,6 +44,14 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
 - 73 securities have 640 internal missing sessions; 111 other gap endpoints remain for
   source review. Do not turn missing bars into suspension, opening capacity or closing marks.
   Original failed source checks, ETF denominators and broader coverage limits remain.
+- Whole-queue issuer acquisition now covers 625 completed queries and 2596 documents;
+  the initial 15 failed queries and all original responses are preserved. Collection does not
+  certify event facts. The structured comparison covers all 1839 stored actions.
+- Five primary fact reviews are in `docs/references/distribution_reconciliation_2026-11-21.json`.
+  SF's 2024 special dividend is missing from current inputs; Jiangbolong's declared cash
+  truncation also needs a registered repair. No new facts or industry assignments are applied.
+  Seven CAPCO industry tables are archived; taxonomy, historical availability, aliases and
+  the incomplete guideline source remain separate open issues.
 - `artifacts/plans/reviewed_resumption_2026-11-23` is the current frozen conditional paper
   plan with no orders, expiring November 23 at 09:25 Shanghai time. The earlier plan is kept
   unchanged; it uses older inputs. No fills or forward returns exist yet. Do not fabricate

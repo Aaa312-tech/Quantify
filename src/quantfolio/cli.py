@@ -77,6 +77,9 @@ def main(argv: list[str] | None = None) -> None:
         "fetch-disclosures", help="Archive issuer notices for unresolved historical events"
     )
     disclosures.add_argument("--output", required=True, help="New directory under data/raw")
+    disclosures.add_argument(
+        "--retry", help="Finished source collection with failed or missing requests"
+    )
     status_audit = commands.add_parser(
         "audit-status", help="Compare daily flags with frozen history"
     )
@@ -296,7 +299,7 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
     if args.command == "fetch-disclosures":
         from .disclosures import collect_disclosures
 
-        return collect_disclosures(paths, args.output)
+        return collect_disclosures(paths, args.output, args.retry)
     if args.command == "audit-status":
         from .status_data import audit_status_history
 

@@ -18,6 +18,8 @@ A股模拟投资研究项目，Python包与命令名为`quantfolio`。当前采�
 
 历史行业、股票池、其他证券状态及公司行为仍有缺口。本轮只修复一个已核验停复牌区间；其余111个行情缺口结束点待核验。内层试验保留54次价格延用和1次未核实到账日期的分红记录，相关候选未获采用。
 
+全表公司行为交叉核查另确认顺丰2024年一次特别分红漏记，相关金额、日期与除息参考已按公告归档，尚未写入活跃快照。上表仍是修正前结果；[来源核对](docs/references/distribution_reconciliation_2026-11-21.json)与[整表检查](artifacts/checks/disclosure_sources_2026-11-21/all_structured_actions.json)不代表新的收益验证。
+
 11月23日[条件式纸面计划](artifacts/plans/reviewed_resumption_2026-11-23/plan.md)已提前冻结，建议保持100万元模拟现金。567个合格标的均未通过当前模型的净收益建仓门槛，暂无买入意向。
 
 行情、账户和最新拟合均对应11月20日，计划有效期止于11月23日09:25。前向收益尚未发生，超额收益门槛仍未通过。数据限制与后续工作见[数据契约](docs/data_contract.md)和[修正记录](docs/remediation.md)。

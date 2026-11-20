@@ -14,7 +14,7 @@ scripts/sync.ps1 -Python '.\.venv\Scripts\python' -Message 'fix: describe the co
 
 ## 数据与产物
 
-`.joblib`使用Git LFS。克隆后执行 `git lfs pull`，再运行 `python -m quantfolio verify`确认实际对象和冻结文件。`.gitattributes`保留研究证据的原始换行；不要批量格式化数据及冻结实验。
+`.joblib`以及批量公告、行业分类采集中的PDF使用Git LFS；来源索引、哈希与核查结论直接保存在Git中。克隆后执行 `git lfs pull`，再运行 `python -m quantfolio verify`确认实际对象和冻结文件。`.gitattributes`保留研究证据的原始换行；不要批量格式化数据及冻结实验。
 
 冻结参考放`artifacts/reference/<date>`。新训练放 `artifacts/experiments/<name>`，对应评估放 `artifacts/evaluations/<name>`；这些输出目录由命令创建，无需空占位文件。名称说明用途，避免迭代编号、`final`、`new`等易失效标记。
 

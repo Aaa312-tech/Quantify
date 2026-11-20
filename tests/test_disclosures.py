@@ -93,6 +93,26 @@ def test_historical_code_is_kept_under_the_same_issuer_without_inventing_publica
     assert records[0]["catalog_date"] == "2026-01-05" and "known_at" not in records[0]
 
 
+def test_irrelevant_text_notice_does_not_invalidate_the_issuer_catalogue():
+    item = notice(title="关于部分股改限售股上市流通的公告")
+    item.update(adjunctUrl="finalpage/2026-01-05/cninfo123.js", adjunctType="TXT")
+    records, total, more = disclosures.parse_page(
+        page([item]), "issuer", "分", "2026-01-01", "2026-01-12"
+    )
+    assert total == 1 and more is False
+    assert records[0]["document_type"] == "TXT" and records[0]["kind"] is None
+    item["adjunctType"] = "UNKNOWN"
+    with pytest.raises(ValueError, match="source type"):
+        disclosures.parse_page(page([item]), "issuer", "分", "2026-01-01", "2026-01-12")
+
+
+def test_cash_distribution_titles_are_collected_without_certifying_proposal_terms():
+    assert disclosures.notice_kind("2025年中期分红A股实施公告") == "distribution"
+    assert disclosures.notice_kind("2023年度回报股东特别分红实施公告") == "distribution"
+    assert disclosures.notice_kind("关于特别分红方案的更正公告") == "amendment"
+    assert disclosures.notice_kind("2025年中期分红方案") is None
+
+
 @pytest.mark.parametrize("fault", ["issuer", "filter", "date", "path", "total", "empty_page"])
 def test_invalid_index_responses_are_not_accepted(fault):
     data = page([notice()])
@@ -165,13 +185,21 @@ def test_collection_freezes_sources_without_modifying_dataset_or_certifying_fact
     paths = Paths(tmp_path)
     data = bundle()
     calls = []
+    classify = disclosures.notice_kind
+    monkeypatch.setattr(
+        disclosures, "notice_kind", lambda title: None if "分红" in title else classify(title)
+    )
 
     def download(url, form=None):
         calls.append((url, form))
         if url == disclosures.LOOKUP_URL:
             return json.dumps({"stockList": [{"code": "920001", "orgId": "issuer"}]}).encode()
         if form is not None:
-            records = [notice()] if form["searchkey"] == "分" else []
+            records = (
+                [notice(), notice("124", title="2025年中期分红A股实施公告")]
+                if form["searchkey"] == "分"
+                else []
+            )
             return json.dumps(page(records)).encode()
         return b"%PDF-1.4\narchived source fixture"
 
@@ -189,8 +217,101 @@ def test_collection_freezes_sources_without_modifying_dataset_or_certifying_fact
     assert receipt["review_status"] == "NOT_REVIEWED" and receipt["published_code"] == "832001"
     with pytest.raises(FileExistsError):
         disclosures.collect_disclosures(paths, "data/raw/notices")
+    original_hashes = dict(manifest)
+    monkeypatch.setattr(disclosures, "notice_kind", classify)
+    repeated = disclosures.collect_disclosures(paths, "data/raw/retry", "data/raw/notices")
+    assert repeated["status"] == "COLLECTED"
+    assert repeated["queries_reused"] == 2 and repeated["documents_reused"] == 1
+    assert repeated["document_status"] == {"RECEIVED": 2}
+    assert len(calls) == 6  # Refresh issuer lookup and collect the previously missed notice.
+    assert (tmp_path / "data/raw/retry/documents/124.pdf").is_file()
+    assert not (tmp_path / "data/raw/retry/documents/123.pdf").exists()
+    assert all(sha(tmp_path / name) == value for name, value in original_hashes.items())
+    data["actions"][0]["share_multiplier"] = 1.2
+    with pytest.raises(ValueError, match="different input queue"):
+        disclosures.collect_disclosures(paths, "data/raw/wrong_queue", "data/raw/notices")
+    assert not (tmp_path / "data/raw/wrong_queue").exists()
 
 
 def test_collection_path_cannot_escape_raw_storage(tmp_path):
     with pytest.raises(ValueError, match="data/raw"):
         disclosures.collect_disclosures(SimpleNamespace(root=tmp_path), "../elsewhere")
+
+
+@pytest.mark.parametrize("duplicate", [False, True])
+def test_retry_partitions_dates_without_claiming_duplicate_records_are_complete(
+    tmp_path, monkeypatch, duplicate
+):
+    calls = []
+
+    def collect(root, target, query, issuer, start, end):
+        calls.append((start, end))
+        return {
+            "status": "COMPLETE",
+            "pages": [],
+            "records": [{"id": "same" if duplicate else start, "published_code": "832001"}],
+        }
+
+    monkeypatch.setattr(disclosures, "_collect_query", collect)
+    result = disclosures._partitioned_query(
+        tmp_path,
+        tmp_path / "retry",
+        {"symbol": "bj920001", "term": "分"},
+        {"code": "920001", "orgId": "issuer"},
+        "2025-12-05",
+        "2026-01-12",
+    )
+    assert calls == [("2025-12-05", "2025-12-31"), ("2026-01-01", "2026-01-12")]
+    assert result["status"] == ("FAILED" if duplicate else "COMPLETE")
+
+
+def test_retry_rejects_a_collection_that_has_not_been_frozen(tmp_path):
+    (tmp_path / "configs").mkdir()
+    (tmp_path / "configs/project.toml").write_text(
+        'manifest="configs/integrity_manifest.json"\n', encoding="utf-8"
+    )
+    save(tmp_path / "configs/integrity_manifest.json", {"files": {}})
+    save(tmp_path / "data/raw/live/collection.json", {"status": "PARTIAL"})
+    with pytest.raises(ValueError, match="finished, frozen"):
+        disclosures._previous_collection(Paths(tmp_path), "data/raw/live", {})
+
+
+def test_failed_catalogue_is_recovered_in_a_new_frozen_batch(tmp_path, monkeypatch):
+    (tmp_path / "configs").mkdir()
+    (tmp_path / "configs/project.toml").write_text(
+        'bundle="bundle.joblib"\nmanifest="configs/integrity_manifest.json"\n', encoding="utf-8"
+    )
+    (tmp_path / "bundle.joblib").write_bytes(b"fixture")
+    save(
+        tmp_path / "configs/integrity_manifest.json",
+        {"files": {"bundle.joblib": sha(tmp_path / "bundle.joblib")}},
+    )
+    paths = Paths(tmp_path)
+    queries = []
+
+    def download(url, form=None):
+        if url == disclosures.LOOKUP_URL:
+            return json.dumps({"stockList": [{"code": "920001", "orgId": "issuer"}]}).encode()
+        if form is None:
+            return b"%PDF-1.4\nsource"
+        queries.append((form["searchkey"], form["seDate"]))
+        if form["searchkey"] == "牌" or form["seDate"].endswith("2025-12-31"):
+            return json.dumps(page([])).encode()
+        if form["seDate"].startswith("2025-"):
+            return json.dumps(page([notice()], total=2)).encode()  # Provider omitted a record.
+        return json.dumps(page([notice(), notice("124")])).encode()
+
+    monkeypatch.setattr(disclosures, "load_bundle", lambda _: bundle())
+    monkeypatch.setattr(disclosures, "_download", download)
+    monkeypatch.setattr(disclosures.time, "sleep", lambda _: None)
+    initial = disclosures.collect_disclosures(paths, "data/raw/partial")
+    assert initial["status"] == "PARTIAL" and initial["query_status"] == {
+        "FAILED": 1,
+        "COMPLETE": 1,
+    }
+    original = dict(read(paths.manifest)["files"])
+    retry = disclosures.collect_disclosures(paths, "data/raw/recovered", "data/raw/partial")
+    assert retry["status"] == "COLLECTED" and retry["queries_reused"] == 1
+    assert retry["document_status"] == {"RECEIVED": 2}
+    assert queries[-2:] == [("分", "2025-12-05~2025-12-31"), ("分", "2026-01-01~2026-01-12")]
+    assert all(sha(tmp_path / name) == value for name, value in original.items())

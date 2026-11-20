@@ -249,9 +249,11 @@ python -m quantfolio repair-resumption --protocol configs/protocols/resumption_r
 
 ```powershell
 python -m quantfolio fetch-disclosures --output data/raw/issuer_notices
+python -m quantfolio fetch-disclosures --retry data/raw/issuer_notices --output data/raw/issuer_notices_retry
 ```
 
 输出必须是不存在的新目录。命令先保存绑定输入哈希的完整待核验队列，再逐组分页采集
 公告和原始PDF；网络失败保留原记录。`collection.json`汇总完成、失败和未处理范围，
-只有已结束批次才加入冻结清单。采集不切换训练数据，也不生成已核验的历史事实。
+只有已结束批次才加入冻结清单。补采先核验原批次及输入哈希，复用已有成功文件并按年份
+重查失败范围。采集不切换训练数据，也不生成已核验的历史事实。
 当前关键词范围及核验要求见[数据契约](data_contract.md#整池公告补证)。

@@ -14,8 +14,8 @@ from urllib.request import Request, urlopen
 
 import pandas as pd
 
-from .dataset import load_bundle
-from .storage import digest, log, now, save, sha
+from .dataset import check_integrity, load_bundle
+from .storage import digest, log, now, read, save, sha
 
 LOOKUP_URL = "https://www.cninfo.com.cn/new/data/szse_stock.json"
 QUERY_URL = "https://www.cninfo.com.cn/new/hisAnnouncement/query"
@@ -95,7 +95,7 @@ def notice_kind(title):
     title = html.unescape(re.sub(r"<[^>]+>", "", title)).replace(" ", "")
     if any(word in title for word in ("停牌", "复牌")) and "公告" in title:
         return "suspension"
-    distribution = any(word in title for word in ("分配", "分派", "派息", "转增", "送股"))
+    distribution = any(word in title for word in ("分配", "分派", "分红", "派息", "转增", "送股"))
     if distribution and "公告" in title:
         if "实施" in title:
             return "distribution"
@@ -123,8 +123,11 @@ def parse_page(payload, org_id, term, start, end):
         if not identifier.isdigit() or term not in title:
             raise ValueError("Announcement identity or title filter is inconsistent")
         relative = row.get("adjunctUrl", "")
-        if not re.fullmatch(r"finalpage/\d{4}-\d{2}-\d{2}/[\w-]+\.[Pp][Dd][Ff]", relative):
+        if not re.fullmatch(r"finalpage/\d{4}-\d{2}-\d{2}/[\w-]+\.(?:[Pp][Dd][Ff]|js)", relative):
             raise ValueError("Announcement has an unsupported document path")
+        document_type = "PDF" if relative.lower().endswith(".pdf") else "TXT"
+        if document_type == "TXT" and row.get("adjunctType") != "TXT":
+            raise ValueError("Text announcement has an inconsistent source type")
         date = str(
             pd.Timestamp(row["announcementTime"], unit="ms", tz="UTC")
             .tz_convert("Asia/Shanghai")
@@ -141,6 +144,7 @@ def parse_page(payload, org_id, term, start, end):
                 "catalog_date": date,
                 "url": DOCUMENT_ROOT + relative,
                 "kind": notice_kind(title),
+                "document_type": document_type,
             }
         )
     return records, total, more
@@ -241,7 +245,91 @@ def _collect_query(root, target, query, issuer, start, end):
     return result
 
 
-def collect_disclosures(paths, output):
+def _partitioned_query(root, target, query, issuer, start, end):
+    """Retry failed full-range indexes in disjoint years, preserving every attempt."""
+    parts = []
+    for year in range(int(start[:4]), int(end[:4]) + 1):
+        lower, upper = max(start, f"{year}-01-01"), min(end, f"{year}-12-31")
+        result = _collect_query(root, target / str(year), query, issuer, lower, upper)
+        parts.append(result)
+        if result.get("access_blocked"):
+            break
+    complete = len(parts) == int(end[:4]) - int(start[:4]) + 1 and all(
+        row["status"] == "COMPLETE" for row in parts
+    )
+    records = [
+        notice for part in parts if part["status"] == "COMPLETE" for notice in part["records"]
+    ]
+    unique = {(row["id"], row["published_code"]) for row in records}
+    result = {
+        **query,
+        "org_id": issuer["orgId"],
+        "completed_at": now(),
+        "status": "COMPLETE" if complete and len(unique) == len(records) else "FAILED",
+        "partition": "disjoint_calendar_years",
+        "records": records,
+        "total": len(records),
+        "pages": [page for part in parts for page in part["pages"]],
+        "access_blocked": any(part.get("access_blocked") for part in parts),
+        "partitions": [
+            {"year": int(start[:4]) + i, "status": part["status"], "error": part.get("error")}
+            for i, part in enumerate(parts)
+        ],
+    }
+    if result["status"] != "COMPLETE":
+        result["error"] = "At least one yearly partition is incomplete or duplicates another"
+    save(target / "query.json", result, immutable=True)
+    return result
+
+
+def _previous_collection(paths, relative, queue):
+    folder = (paths.root / relative).resolve()
+    parent = (paths.root / "data/raw").resolve()
+    if folder == parent or not folder.is_relative_to(parent):
+        raise ValueError("Disclosure retry source must be a named directory under data/raw")
+    manifest = read(paths.manifest)["files"]
+
+    def frozen(name):
+        file = (paths.root / name).resolve()
+        if (
+            not file.is_relative_to(paths.root)
+            or name not in manifest
+            or sha(file) != manifest[name]
+        ):
+            raise ValueError("Disclosure retry requires finished, frozen source files")
+        return file
+
+    file = frozen((folder / "collection.json").relative_to(paths.root).as_posix())
+    collection = read(file)
+    if collection["status"] not in ("COLLECTED", "PARTIAL"):
+        raise ValueError("Disclosure retry source is not terminal")
+    if collection["source_bundle_sha256"] != sha(paths.bundle) or collection[
+        "queue_sha256"
+    ] != digest(queue):
+        raise ValueError("Disclosure retry belongs to a different input queue")
+    check_integrity(paths)
+    queries, documents = {}, {}
+    for item in collection["queries"]:
+        if item["status"] == "COMPLETE":
+            result = read(frozen(item["path"]))
+            for page in result["pages"]:
+                if sha(frozen(page["path"])) != page["sha256"]:
+                    raise ValueError("Frozen announcement page differs from its receipt")
+            queries[(item["symbol"], item["term"])] = (result, item["path"])
+    for item in collection["documents"]:
+        if item["status"] == "RECEIVED":
+            receipt = read(frozen(item["receipt"]))
+            if sha(frozen(receipt["path"])) != receipt["sha256"]:
+                raise ValueError("Frozen document differs from its receipt")
+            documents[item["id"]] = (receipt, item["receipt"])
+    return (
+        queries,
+        documents,
+        {"path": file.relative_to(paths.root).as_posix(), "sha256": sha(file)},
+    )
+
+
+def collect_disclosures(paths, output, retry=None):
     """Collect a complete, bounded source queue without changing research inputs."""
     target = (paths.root / output).resolve()
     parent = (paths.root / "data/raw").resolve()
@@ -255,6 +343,9 @@ def collect_disclosures(paths, output):
         raise FileExistsError(f"Disclosure collection already exists: {target}")
     bundle = load_bundle(paths)
     queue = source_queue(bundle)
+    previous_queries, previous_documents, parent_receipt = (
+        _previous_collection(paths, retry, queue) if retry else ({}, {}, None)
+    )
     start = str((bundle["calendar"][0] - pd.Timedelta(days=31)).date())
     end = str(bundle["cutoff"])[:10]
     save(target / "queue.json", queue, immutable=True)
@@ -263,6 +354,8 @@ def collect_disclosures(paths, output):
         "bundle_sha256": sha(paths.bundle),
         "queue_sha256": digest(queue),
         "collector_sha256": sha(Path(__file__)),
+        "retry_source": parent_receipt,
+        "retry_policy": "Reuse frozen completed queries and documents; split other queries by calendar year.",
         "start": start,
         "end": end,
         "lookup_url": LOOKUP_URL,
@@ -287,20 +380,27 @@ def collect_disclosures(paths, output):
     for number, query in enumerate(queue["queries"], 1):
         issuer = by_code.get(query["symbol"][2:], [])
         folder = target / "indexes" / query["symbol"] / QUERY_TOPICS[query["term"]]
-        if len(issuer) != 1:
+        reused = previous_queries.get((query["symbol"], query["term"]))
+        result_path = (folder / "query.json").relative_to(paths.root).as_posix()
+        if reused:
+            result, result_path = reused
+        elif len(issuer) != 1:
             result = {**query, "status": "FAILED", "error": "Issuer lookup is absent or ambiguous"}
             save(folder / "query.json", result, immutable=True)
         else:
-            result = _collect_query(paths.root, folder, query, issuer[0], start, end)
+            collect = _partitioned_query if retry else _collect_query
+            result = collect(paths.root, folder, query, issuer[0], start, end)
         results.append(
             {
                 **query,
                 "status": result["status"],
-                "path": (folder / "query.json").relative_to(paths.root).as_posix(),
+                "path": result_path,
+                "reused": reused is not None,
             }
         )
         if result["status"] == "COMPLETE":
             for notice in result["records"]:
+                notice = {**notice, "kind": notice_kind(notice["title"])}
                 if notice["kind"] is None:
                     continue
                 prior = documents.setdefault(notice["id"], {**notice, "requested_symbols": []})
@@ -321,17 +421,30 @@ def collect_disclosures(paths, output):
     downloads = []
     if not blocked:
         for number, notice in enumerate(documents.values(), 1):
-            file = target / "documents" / (notice["id"] + ".pdf")
-            receipt = _capture(paths.root, file, notice["url"])
-            if receipt["status"] == "RECEIVED" and not file.read_bytes().startswith(b"%PDF"):
-                receipt.update(status="INVALID_DOCUMENT", error="Source response is not a PDF")
-            receipt = {**notice, **receipt, "review_status": "NOT_REVIEWED"}
-            save(file.with_suffix(".json"), receipt, immutable=True)
+            reused = previous_documents.get(notice["id"])
+            if reused:
+                receipt, receipt_path = reused
+                if receipt["url"] != notice["url"] or receipt["org_id"] != notice["org_id"]:
+                    raise ValueError("A reused document does not match the current issuer index")
+            else:
+                extension = ".pdf" if notice.get("document_type", "PDF") == "PDF" else ".txt"
+                file = target / "documents" / (notice["id"] + extension)
+                receipt = _capture(paths.root, file, notice["url"])
+                if (
+                    extension == ".pdf"
+                    and receipt["status"] == "RECEIVED"
+                    and not file.read_bytes().startswith(b"%PDF")
+                ):
+                    receipt.update(status="INVALID_DOCUMENT", error="Source response is not a PDF")
+                receipt = {**notice, **receipt, "review_status": "NOT_REVIEWED"}
+                save(file.with_suffix(".json"), receipt, immutable=True)
+                receipt_path = file.with_suffix(".json").relative_to(paths.root).as_posix()
             downloads.append(
                 {
                     "id": notice["id"],
                     "status": receipt["status"],
-                    "receipt": file.with_suffix(".json").relative_to(paths.root).as_posix(),
+                    "receipt": receipt_path,
+                    "reused": reused is not None,
                 }
             )
             if number % 50 == 0:
@@ -355,10 +468,12 @@ def collect_disclosures(paths, output):
         "gap_endpoints": len(queue["gaps"]),
         "requested_queries": len(queue["queries"]),
         "query_status": dict(Counter(row["status"] for row in results)),
+        "queries_reused": sum(row.get("reused", False) for row in results),
         "queries": results,
         "selected_documents": len(documents),
         "documents": downloads,
         "document_status": dict(Counter(row["status"] for row in downloads)),
+        "documents_reused": sum(row.get("reused", False) for row in downloads),
         "access_blocked": blocked,
         "facts_applied": 0,
         "quality_flags_cleared": 0,
