@@ -117,9 +117,9 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
             raise ValueError("Configured evaluation summary hash mismatch")
         result = read(path)
         corrected = False
-        same_returns = all(
+        no_positive_excess = all(
             values[result["primary_policy"]]["summary"]["return"]
-            == values["matched_momentum"]["summary"]["return"]
+            <= values["matched_momentum"]["summary"]["return"]
             for values in result["continuous"].values()
         )
         if active:
@@ -146,7 +146,7 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
             "test_end": result["trade_end"],
             "gates": result.get("gates", {"superiority": False}),
             "superiority_assessment": "NO_POSITIVE_EXCESS_TO_MATCHED_MOMENTUM"
-            if active and same_returns
+            if active and no_positive_excess
             else result.get("superiority_assessment", "NOT_PASSED"),
             "continuous": {
                 key: {

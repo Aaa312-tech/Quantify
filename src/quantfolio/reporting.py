@@ -129,6 +129,21 @@ def build_report(paths: Paths, run: str | Path | None = None, *, reference: bool
         notice = (
             "当前各档连续账户收益与同风控动量相同，未显示超额收益；工程验收通过不代表预测有效。"
         )
+    elif (
+        not reference
+        and result["status"] == "COMPLETE"
+        and all(
+            values[primary_policy]["summary"]["return"]
+            < values["matched_momentum"]["summary"]["return"]
+            for values in result["continuous"].values()
+        )
+    ):
+        notice = "当前各档连续账户收益均低于同风控动量，未通过收益优势要求。"
+    if not reference and any(
+        values[primary_policy]["summary"]["max_drawdown"] < -0.08
+        for values in result["continuous"].values()
+    ):
+        notice += " 已观察到超过8%的回撤；预警线不是保证的损失上限。"
     if result.get("purpose") == "EXECUTION_DIAGNOSTIC":
         notice = (
             "执行诊断：固定旧预测及旧选型，仅更换成交与成本模型。"

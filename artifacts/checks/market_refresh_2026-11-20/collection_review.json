@@ -1,0 +1,49 @@
+{
+  "completed_at": "2026-11-20T13:12:32.520631+08:00",
+  "status": "REVIEW_REQUIRED",
+  "data_date": "2026-11-19",
+  "instruments": 594,
+  "target_date_coverage": 594,
+  "first_collection": {
+    "path": "data/raw/2026-11-19",
+    "sha256": "0bfe7eccce563f2ddb8115b0e8ae91b25da699fd1367b1a6385203b096f04cfa"
+  },
+  "retry_collection": {
+    "path": "data/raw/2026-11-19-retry",
+    "sha256": "8dfaa94e9259f90e10c64f07760ba0e420c2d49e950885215de293bb452f051c"
+  },
+  "all_response_hashes_pass": true,
+  "overlap_revisions_by_field": {
+    "turnover": 102,
+    "amplitude": 93,
+    "pct": 90,
+    "amount": 93
+  },
+  "revision_classification": {
+    "turnover_revision": 102,
+    "two_decimal_rounding_consistent": 183,
+    "whole_currency_truncation_consistent": 93
+  },
+  "unclassified_revisions": [],
+  "historical_price_or_volume_revisions": 0,
+  "missing_historical_fields": 113,
+  "cross_source": {
+    "sampled_instruments": 12,
+    "dates_per_instrument": 6,
+    "price_values_checked": 288,
+    "price_mismatches": 0,
+    "volume_values_checked": 72,
+    "strict_volume_mismatches": 12,
+    "volume_differences_consistent_with_whole_lot_rounding": true,
+    "original_strict_comparison_retained": true,
+    "not_a_full_universe_or_point_in_time_certification": true
+  },
+  "activated": false,
+  "required_before_processing": [
+    "Verify equity and ETF corporate actions affecting the extension and the next opening.",
+    "Keep original overlapping raw fields unchanged; record provider precision and turnover revisions.",
+    "Rebuild panels, scores and features with exact historical-prefix checks.",
+    "Preserve historical status/industry limitations and the sh688017 quarantine."
+  ],
+  "source_bundle_sha256": "c6d9099030f627e2abeeec1758cb5098cbc6c4e5e5c52f577540a528ad1758ae"
+}

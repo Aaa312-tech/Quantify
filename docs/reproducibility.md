@@ -45,21 +45,21 @@ python -m quantfolio report --run artifacts/evaluations/opening_review
 
 ## 公司行为修正
 
-`configs/protocols/action_repair.json`登记了修正范围和现金时点约定。以下命令只写新目录，检查公告哈希和原权益值，并重建全部1/3/5日标签：
+`configs/protocols/action_repair.json`登记首次修正；`dividend_review.json`在其快照上登记后续5项分红补证。以下命令按协议中的源快照生成新目录，检查公告哈希和原权益值，并重建全部1/3/5日标签：
 
 ```powershell
-python -m quantfolio repair-data --output data/processed/reviewed_actions
+python -m quantfolio repair-data --protocol configs/protocols/dividend_review.json --output data/processed/reviewed_dividends
 ```
 
 检查`audit.json`与`label_changes.json.gz`后，将`configs/project.toml`的`bundle`指向新文件、`protocol`指向修正协议，保留`reference_bundle`原路径。生成器会向完整性清单追加新快照；不会自动切换活跃输入。
 
 ```powershell
-python -m quantfolio data-bridge --baseline artifacts/evaluations/execution_bridge_2026-11-20 --output artifacts/evaluations/action_review
+python -m quantfolio data-bridge --baseline artifacts/evaluations/action_bridge_2026-11-20 --output artifacts/evaluations/dividend_review
 python -m quantfolio train --include-latest --output artifacts/experiments/reviewed_training
 python -m quantfolio evaluate --run artifacts/experiments/reviewed_training --output artifacts/evaluations/reviewed_training --all-policies
 ```
 
-数据对照要求日历、资格、特征及预测行完全一致。它固定旧预测，不使用重建标签重新选型。完整重训另外运行，不能把两个阶段的收益变化合并称为选股改进。
+数据对照要求日历、资格、特征及预测行完全一致。比较对象可以是已完成的执行诊断或数据诊断，且必须使用同一冻结预测来源。它不使用重建标签重新选型。完整重训另外运行，不能把两个阶段的收益变化合并称为选股改进。
 
 不带`--run`的`report`读取当前配置的`evaluation`，生成`reports/latest/index.html`。显式`report --reference`才会读取冻结参考并写到`reports/reference`，页面标记旧成交假设的问题。工程复现通过不增加独立市场样本，也不改变收益优势检验的结论。
 
@@ -67,9 +67,10 @@ python -m quantfolio evaluate --run artifacts/experiments/reviewed_training --ou
 
 ```powershell
 python -m quantfolio fetch-bars --date 2026-11-19 --output data/raw/market_review
+python -m quantfolio fetch-bars --date 2026-11-19 --retry data/raw/market_review --output data/raw/market_retry
 ```
 
-采集包含与活跃快照重叠的五个交易日，逐只留存未复权响应、请求信息、SHA-256和历史修订。请求按顺序执行，连续失败或限流时停止。它不修改活跃快照，也不从缺失日线推断停牌；当天16时之前拒绝请求当天完整日线。
+采集包含与活跃快照重叠的五个交易日，逐只留存未复权响应、请求信息、SHA-256和历史修订。请求按顺序执行，连续失败或限流时停止。仅在首批存在失败或遗漏请求时运行补采命令；它保留首批全部文件，且要求数据来源与日期相同。采集不修改活跃快照，也不从缺失日线推断停牌；当天16时之前拒绝请求当天完整日线。
 
 ## 环境与错误
 

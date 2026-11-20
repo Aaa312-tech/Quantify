@@ -1,0 +1,1833 @@
+{
+  "completed_at": "2026-11-20T13:19:59.604915+08:00",
+  "decision": "RESEARCH_ONLY",
+  "source_commit": "7b7324a",
+  "scope": "Complete fresh retraining after five further sourced dividend repairs; historical selection protocol unchanged.",
+  "input_summaries_sha256": {
+    "previous": "d39b4be5ef5073e96035db00d22105c2a1147321be8348b305868203d7b85600",
+    "data_bridge": "69bbd6d292927cd6271cc8b24400622cb28dc91e9179ebe48e54847964b7bb2e",
+    "updated": "ca6c12201c252f8f3bf09840d962e9b84f93fcd39d04aeb5e22ceaf09c0ee71e"
+  },
+  "cost_comparisons": [
+    {
+      "cost": "10bps",
+      "prior_strategy": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.3103216000000002,
+        "max_drawdown": -0.06527260879566499,
+        "es95": -0.02090345772960278,
+        "fees": 10432.09,
+        "slippage_cost": 18951.07,
+        "total_cost": 29383.16,
+        "trades": 167,
+        "turnover": 18.95104532,
+        "ending_cash": 1310321.6,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 3,
+          "OPEN_AT_UPPER_LIMIT": 2,
+          "T1_OR_MINIMUM_QUANTITY": 35,
+          "LOT_BUDGET_TOO_SMALL": 18,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 2,
+          "EXACT_FEES_EXCEED_EDGE": 2,
+          "OPEN_AT_LOWER_LIMIT": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 38,
+          "HOLD_BETWEEN_REBALANCES": 173,
+          "INFEASIBLE_REDUCE_ONLY": 9,
+          "CASH_NO_POSITIVE_EDGE": 11
+        },
+        "mean_exposure": 0.27604534956956384,
+        "target_exposure_breach_days": 5,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 53,
+          "CAUTION45": 77,
+          "FROZEN20": 101
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-02-03",
+            "state_age_before": 53,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1236906.1400000001,
+            "drawdown": 0.04404699616092134,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-06-04",
+            "state_age_before": 77,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1398690.38,
+            "drawdown": 0.06148863338861321,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "fixed_prediction_data_bridge": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.3103216000000002,
+        "max_drawdown": -0.06527260879566499,
+        "es95": -0.02090345772960278,
+        "fees": 10432.09,
+        "slippage_cost": 18951.07,
+        "total_cost": 29383.16,
+        "trades": 167,
+        "turnover": 18.95104532,
+        "ending_cash": 1310321.6,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 3,
+          "OPEN_AT_UPPER_LIMIT": 2,
+          "T1_OR_MINIMUM_QUANTITY": 35,
+          "LOT_BUDGET_TOO_SMALL": 18,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 2,
+          "EXACT_FEES_EXCEED_EDGE": 2,
+          "OPEN_AT_LOWER_LIMIT": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 38,
+          "HOLD_BETWEEN_REBALANCES": 173,
+          "INFEASIBLE_REDUCE_ONLY": 9,
+          "CASH_NO_POSITIVE_EDGE": 11
+        },
+        "mean_exposure": 0.27604534956956384,
+        "target_exposure_breach_days": 5,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 53,
+          "CAUTION45": 77,
+          "FROZEN20": 101
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-02-03",
+            "state_age_before": 53,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1236906.1400000001,
+            "drawdown": 0.04404699616092134,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-06-04",
+            "state_age_before": 77,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1398690.38,
+            "drawdown": 0.06148863338861321,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "strategy": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.28603887000000006,
+        "max_drawdown": -0.08054070551339587,
+        "es95": -0.02159156673201014,
+        "fees": 10718.43,
+        "slippage_cost": 19605.78,
+        "total_cost": 30324.21,
+        "trades": 177,
+        "turnover": 19.60577584,
+        "ending_cash": 1285426.87,
+        "ending_receivables": 612.0,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 3,
+          "OPEN_AT_UPPER_LIMIT": 2,
+          "T1_OR_MINIMUM_QUANTITY": 33,
+          "LOT_BUDGET_TOO_SMALL": 21,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 2,
+          "EXACT_FEES_EXCEED_EDGE": 2,
+          "OPEN_AT_LOWER_LIMIT": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 37,
+          "HOLD_BETWEEN_REBALANCES": 169,
+          "INFEASIBLE_REDUCE_ONLY": 9,
+          "RISK_EXIT": 16
+        },
+        "mean_exposure": 0.2652803725231862,
+        "target_exposure_breach_days": 7,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 53,
+          "CAUTION45": 80,
+          "FROZEN20": 24,
+          "HALTED0": 74
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-02-03",
+            "state_age_before": 53,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1236906.1400000001,
+            "drawdown": 0.04404699616092134,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-06-09",
+            "state_age_before": 80,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1398690.38,
+            "drawdown": 0.07451949444308037,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-14",
+            "state_age_before": 24,
+            "healthy_streak_before": 0,
+            "previous_phase": "FROZEN20",
+            "probe_anchor_before": null,
+            "phase": "HALTED0",
+            "level": 3,
+            "cap": 0.0,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_8",
+            "peak": 1398690.38,
+            "drawdown": 0.08052614188995844,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "matched_momentum": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.3103216000000002,
+        "max_drawdown": -0.06527260879566499,
+        "es95": -0.02090345772960278,
+        "fees": 10432.09,
+        "slippage_cost": 18951.07,
+        "total_cost": 29383.16,
+        "trades": 167,
+        "turnover": 18.95104532,
+        "ending_cash": 1310321.6,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 3,
+          "OPEN_AT_UPPER_LIMIT": 2,
+          "T1_OR_MINIMUM_QUANTITY": 35,
+          "LOT_BUDGET_TOO_SMALL": 18,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 2,
+          "EXACT_FEES_EXCEED_EDGE": 2,
+          "OPEN_AT_LOWER_LIMIT": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 38,
+          "HOLD_BETWEEN_REBALANCES": 173,
+          "INFEASIBLE_REDUCE_ONLY": 9,
+          "CASH_NO_POSITIVE_EDGE": 11
+        },
+        "mean_exposure": 0.27604534956956384,
+        "target_exposure_breach_days": 5,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 53,
+          "CAUTION45": 77,
+          "FROZEN20": 101
+        },
+        "recovery_transitions": [
+          {
+            "date": "2026-02-03",
+            "state_age_before": 53,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1236906.1400000001,
+            "drawdown": 0.04404699616092134,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-06-04",
+            "state_age_before": 77,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1398690.38,
+            "drawdown": 0.06148863338861321,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "continuous_excess": -0.02428273000000014,
+      "strategy_episode_aggregate": {
+        "complete_episodes": 23,
+        "partial_episodes": 1,
+        "mean_net_return": 0.01708842086956524,
+        "median_net_return": 0.0,
+        "worst_episode": -0.04339939999999998,
+        "best_episode": 0.20052983000000002,
+        "win_rate": 0.43478260869565216,
+        "worst_drawdown": -0.0634047029823056,
+        "episode_es95": -0.043225884999999964,
+        "trades": 301,
+        "mean_fees": 657.57,
+        "mean_slippage_cost": 1360.5130434782607,
+        "mean_turnover": 1.3605108295652173,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 6,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 21,
+          "LOT_BUDGET_TOO_SMALL": 20,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 5,
+          "OPEN_AT_LOWER_LIMIT": 2,
+          "EXACT_FEES_EXCEED_EDGE": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 53,
+          "HOLD_BETWEEN_REBALANCES": 161,
+          "INFEASIBLE_REDUCE_ONLY": 8,
+          "CASH_NO_POSITIVE_EDGE": 8
+        },
+        "mean_exposure": 0.39892621733102807,
+        "cash_only_days": 42,
+        "total_full_episode_days": 230,
+        "days_beyond_8pct_alert": 0,
+        "target_exposure_breach_days": 5,
+        "probe_entries": 0,
+        "probe_failures": 0,
+        "episodes_beyond_8pct": 0
+      },
+      "momentum_episode_aggregate": {
+        "complete_episodes": 23,
+        "partial_episodes": 1,
+        "mean_net_return": 0.021188512173913057,
+        "median_net_return": 0.0,
+        "worst_episode": -0.04558168000000007,
+        "best_episode": 0.20052983000000002,
+        "win_rate": 0.4782608695652174,
+        "worst_drawdown": -0.0634047029823056,
+        "episode_es95": -0.04449054000000002,
+        "trades": 302,
+        "mean_fees": 666.7813043478261,
+        "mean_slippage_cost": 1375.822608695652,
+        "mean_turnover": 1.3758198565217392,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 6,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 21,
+          "LOT_BUDGET_TOO_SMALL": 17,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 5,
+          "OPEN_AT_LOWER_LIMIT": 2,
+          "EXACT_FEES_EXCEED_EDGE": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 52,
+          "HOLD_BETWEEN_REBALANCES": 162,
+          "INFEASIBLE_REDUCE_ONLY": 8,
+          "CASH_NO_POSITIVE_EDGE": 8
+        },
+        "mean_exposure": 0.3992754797346296,
+        "cash_only_days": 42,
+        "total_full_episode_days": 230,
+        "days_beyond_8pct_alert": 0,
+        "target_exposure_breach_days": 4,
+        "probe_entries": 0,
+        "probe_failures": 0,
+        "episodes_beyond_8pct": 0
+      },
+      "paired_complete_episodes": [
+        {
+          "start": "2025-11-18",
+          "strategy": -0.025901379999999974,
+          "momentum": -0.025901379999999974,
+          "difference": 0.0
+        },
+        {
+          "start": "2025-12-02",
+          "strategy": 0.012522560000000071,
+          "momentum": 0.012522560000000071,
+          "difference": 0.0
+        },
+        {
+          "start": "2025-12-16",
+          "strategy": 0.0874621299999998,
+          "momentum": 0.0874621299999998,
+          "difference": 0.0
+        },
+        {
+          "start": "2025-12-30",
+          "strategy": 0.04252673000000007,
+          "momentum": 0.04252673000000007,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-01-15",
+          "strategy": 0.03766581000000002,
+          "momentum": 0.03766581000000002,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-01-29",
+          "strategy": 0.04122639000000006,
+          "momentum": 0.04122639000000006,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-02-12",
+          "strategy": -0.006960340000000009,
+          "momentum": -0.006960340000000009,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-03-06",
+          "strategy": -0.0047243799999999725,
+          "momentum": -0.0047243799999999725,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-03-20",
+          "strategy": 0.010641300000000076,
+          "momentum": 0.010641300000000076,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-04-03",
+          "strategy": 0.03924390999999994,
+          "momentum": 0.03924390999999994,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-04-20",
+          "strategy": 0.20052983000000002,
+          "momentum": 0.20052983000000002,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-05-07",
+          "strategy": 0.11611550000000004,
+          "momentum": 0.11611550000000004,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-05-21",
+          "strategy": -0.04305236999999995,
+          "momentum": -0.04558168000000007,
+          "difference": 0.002529310000000118
+        },
+        {
+          "start": "2026-06-04",
+          "strategy": -0.03848270999999992,
+          "momentum": 0.033173120000000056,
+          "difference": -0.07165582999999998
+        },
+        {
+          "start": "2026-06-18",
+          "strategy": 0.055982560000000126,
+          "momentum": 0.0811581400000001,
+          "difference": -0.025175579999999975
+        },
+        {
+          "start": "2026-07-03",
+          "strategy": -0.025507469999999977,
+          "momentum": -0.025507469999999977,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-07-17",
+          "strategy": -0.04339939999999998,
+          "momentum": -0.04339939999999998,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-07-31",
+          "strategy": -0.02537951999999999,
+          "momentum": -0.02537951999999999,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-08-14",
+          "strategy": -0.037475469999999955,
+          "momentum": -0.037475469999999955,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-08-28",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-09-11",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-09-28",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-10-19",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        }
+      ],
+      "mean_paired_excess": -0.004100091304347819,
+      "positive_pairs": 1,
+      "negative_pairs": 2,
+      "zero_pairs": 20,
+      "diagnostic_bootstrap_lower90": -0.009016502608695633,
+      "bootstrap_scope": "Descriptive only: 23 sequential accounts, block length 2, 2000 draws, fixed seed; no multiple-testing adjustment and no pristine holdout."
+    },
+    {
+      "cost": "20bps",
+      "prior_strategy": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.0788101499999998,
+        "max_drawdown": -0.06401339368795067,
+        "es95": -0.019274644458601022,
+        "fees": 9667.57,
+        "slippage_cost": 35868.3,
+        "total_cost": 45535.87,
+        "trades": 180,
+        "turnover": 17.93415698,
+        "ending_cash": 1078810.15,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 3,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "LOT_BUDGET_TOO_SMALL": 9,
+          "OPEN_AT_LOWER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 7,
+          "EXACT_FEES_EXCEED_EDGE": 1,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 44,
+          "HOLD_BETWEEN_REBALANCES": 174,
+          "CASH_NO_POSITIVE_EDGE": 13
+        },
+        "mean_exposure": 0.17963247554659423,
+        "target_exposure_breach_days": 2,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 148,
+          "FROZEN20": 74
+        },
+        "recovery_transitions": [
+          {
+            "date": "2025-12-01",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1000000.0,
+            "drawdown": 0.04000440000000005,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-14",
+            "state_age_before": 148,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1146689.4,
+            "drawdown": 0.06401339368795067,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "fixed_prediction_data_bridge": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.0788101499999998,
+        "max_drawdown": -0.06401339368795067,
+        "es95": -0.019274644458601022,
+        "fees": 9667.57,
+        "slippage_cost": 35868.3,
+        "total_cost": 45535.87,
+        "trades": 180,
+        "turnover": 17.93415698,
+        "ending_cash": 1078810.15,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 3,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "LOT_BUDGET_TOO_SMALL": 9,
+          "OPEN_AT_LOWER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 7,
+          "EXACT_FEES_EXCEED_EDGE": 1,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 44,
+          "HOLD_BETWEEN_REBALANCES": 174,
+          "CASH_NO_POSITIVE_EDGE": 13
+        },
+        "mean_exposure": 0.17963247554659423,
+        "target_exposure_breach_days": 2,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 148,
+          "FROZEN20": 74
+        },
+        "recovery_transitions": [
+          {
+            "date": "2025-12-01",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1000000.0,
+            "drawdown": 0.04000440000000005,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-14",
+            "state_age_before": 148,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1146689.4,
+            "drawdown": 0.06401339368795067,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "strategy": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.05143033000000008,
+        "max_drawdown": -0.07459754479311209,
+        "es95": -0.01928311325730727,
+        "fees": 9383.58,
+        "slippage_cost": 34600.68,
+        "total_cost": 43984.26,
+        "trades": 177,
+        "turnover": 17.30034057,
+        "ending_cash": 1051430.33,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 4,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "LOT_BUDGET_TOO_SMALL": 10,
+          "OPEN_AT_LOWER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 7,
+          "EXACT_FEES_EXCEED_EDGE": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 44,
+          "HOLD_BETWEEN_REBALANCES": 174,
+          "CASH_NO_POSITIVE_EDGE": 13
+        },
+        "mean_exposure": 0.17991472438115141,
+        "target_exposure_breach_days": 4,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 145,
+          "FROZEN20": 77
+        },
+        "recovery_transitions": [
+          {
+            "date": "2025-12-01",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1000000.0,
+            "drawdown": 0.04000440000000005,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-09",
+            "state_age_before": 145,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1135139.37,
+            "drawdown": 0.07018136460195201,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "matched_momentum": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.0788101499999998,
+        "max_drawdown": -0.06401339368795067,
+        "es95": -0.019274644458601022,
+        "fees": 9667.57,
+        "slippage_cost": 35868.3,
+        "total_cost": 45535.87,
+        "trades": 180,
+        "turnover": 17.93415698,
+        "ending_cash": 1078810.15,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 3,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "LOT_BUDGET_TOO_SMALL": 9,
+          "OPEN_AT_LOWER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 7,
+          "EXACT_FEES_EXCEED_EDGE": 1,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 3
+        },
+        "solver_counts": {
+          "OPTIMAL": 44,
+          "HOLD_BETWEEN_REBALANCES": 174,
+          "CASH_NO_POSITIVE_EDGE": 13
+        },
+        "mean_exposure": 0.17963247554659423,
+        "target_exposure_breach_days": 2,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 9,
+          "CAUTION45": 148,
+          "FROZEN20": 74
+        },
+        "recovery_transitions": [
+          {
+            "date": "2025-12-01",
+            "state_age_before": 9,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1000000.0,
+            "drawdown": 0.04000440000000005,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-14",
+            "state_age_before": 148,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1146689.4,
+            "drawdown": 0.06401339368795067,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "continuous_excess": -0.02737981999999972,
+      "strategy_episode_aggregate": {
+        "complete_episodes": 23,
+        "partial_episodes": 1,
+        "mean_net_return": 0.006220147826086959,
+        "median_net_return": 0.0,
+        "worst_episode": -0.0464673000000001,
+        "best_episode": 0.19825762999999985,
+        "win_rate": 0.34782608695652173,
+        "worst_drawdown": -0.06498038395719608,
+        "episode_es95": -0.043811460000000024,
+        "trades": 251,
+        "mean_fees": 550.6395652173914,
+        "mean_slippage_cost": 2270.372608695652,
+        "mean_turnover": 1.1351869639130434,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 5,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 13,
+          "OPEN_AT_LOWER_LIMIT": 1,
+          "LOT_BUDGET_TOO_SMALL": 14,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 50,
+          "HOLD_BETWEEN_REBALANCES": 165,
+          "CASH_NO_POSITIVE_EDGE": 11,
+          "INFEASIBLE_REDUCE_ONLY": 4
+        },
+        "mean_exposure": 0.2993691727604586,
+        "cash_only_days": 77,
+        "total_full_episode_days": 230,
+        "days_beyond_8pct_alert": 0,
+        "target_exposure_breach_days": 3,
+        "probe_entries": 0,
+        "probe_failures": 0,
+        "episodes_beyond_8pct": 0
+      },
+      "momentum_episode_aggregate": {
+        "complete_episodes": 23,
+        "partial_episodes": 1,
+        "mean_net_return": 0.010524975652173908,
+        "median_net_return": 0.0,
+        "worst_episode": -0.0464673000000001,
+        "best_episode": 0.19825762999999985,
+        "win_rate": 0.391304347826087,
+        "worst_drawdown": -0.06498038395719608,
+        "episode_es95": -0.043291150000000056,
+        "trades": 253,
+        "mean_fees": 560.6234782608697,
+        "mean_slippage_cost": 2303.0608695652177,
+        "mean_turnover": 1.1515306595652175,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 5,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 13,
+          "OPEN_AT_LOWER_LIMIT": 1,
+          "LOT_BUDGET_TOO_SMALL": 10,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 49,
+          "HOLD_BETWEEN_REBALANCES": 166,
+          "CASH_NO_POSITIVE_EDGE": 11,
+          "INFEASIBLE_REDUCE_ONLY": 4
+        },
+        "mean_exposure": 0.2999142206374026,
+        "cash_only_days": 77,
+        "total_full_episode_days": 230,
+        "days_beyond_8pct_alert": 0,
+        "target_exposure_breach_days": 2,
+        "probe_entries": 0,
+        "probe_failures": 0,
+        "episodes_beyond_8pct": 0
+      },
+      "paired_complete_episodes": [
+        {
+          "start": "2025-11-18",
+          "strategy": -0.03976506000000002,
+          "momentum": -0.03976506000000002,
+          "difference": 0.0
+        },
+        {
+          "start": "2025-12-02",
+          "strategy": 0.010750889999999957,
+          "momentum": 0.010750889999999957,
+          "difference": 0.0
+        },
+        {
+          "start": "2025-12-16",
+          "strategy": 0.010777440000000027,
+          "momentum": 0.010777440000000027,
+          "difference": 0.0
+        },
+        {
+          "start": "2025-12-30",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-01-15",
+          "strategy": 0.02027840999999997,
+          "momentum": 0.02027840999999997,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-01-29",
+          "strategy": 0.03940319000000003,
+          "momentum": 0.03940319000000003,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-02-12",
+          "strategy": -0.009502180000000027,
+          "momentum": -0.009502180000000027,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-03-06",
+          "strategy": -0.0071683499999999345,
+          "momentum": -0.0071683499999999345,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-03-20",
+          "strategy": 0.010100039999999977,
+          "momentum": 0.010100039999999977,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-04-03",
+          "strategy": 0.03823261000000011,
+          "momentum": 0.03823261000000011,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-04-20",
+          "strategy": 0.19825762999999985,
+          "momentum": 0.19825762999999985,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-05-07",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-05-21",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-06-04",
+          "strategy": -0.04115561999999995,
+          "momentum": 0.03154415999999993,
+          "difference": -0.07269977999999988
+        },
+        {
+          "start": "2026-06-18",
+          "strategy": 0.05333982000000015,
+          "momentum": 0.0796510800000001,
+          "difference": -0.026311259999999947
+        },
+        {
+          "start": "2026-07-03",
+          "strategy": -0.027935420000000044,
+          "momentum": -0.027935420000000044,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-07-17",
+          "strategy": -0.0464673000000001,
+          "momentum": -0.0464673000000001,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-07-31",
+          "strategy": -0.025967699999999927,
+          "momentum": -0.025967699999999927,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-08-14",
+          "strategy": -0.04011500000000001,
+          "momentum": -0.04011500000000001,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-08-28",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-09-11",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-09-28",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-10-19",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        }
+      ],
+      "mean_paired_excess": -0.004304827826086949,
+      "positive_pairs": 0,
+      "negative_pairs": 2,
+      "zero_pairs": 21,
+      "diagnostic_bootstrap_lower90": -0.009482579999999985,
+      "bootstrap_scope": "Descriptive only: 23 sequential accounts, block length 2, 2000 draws, fixed seed; no multiple-testing adjustment and no pristine holdout."
+    },
+    {
+      "cost": "30bps",
+      "prior_strategy": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.0356043399999999,
+        "max_drawdown": -0.0694401859164705,
+        "es95": -0.017175566359381396,
+        "fees": 5969.6,
+        "slippage_cost": 33271.64,
+        "total_cost": 39241.24,
+        "trades": 117,
+        "turnover": 11.09053106,
+        "ending_cash": 1035604.34,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 2,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 5,
+          "LOT_BUDGET_TOO_SMALL": 6
+        },
+        "solver_counts": {
+          "OPTIMAL": 28,
+          "HOLD_BETWEEN_REBALANCES": 178,
+          "CASH_NO_POSITIVE_EDGE": 25
+        },
+        "mean_exposure": 0.1199556394707372,
+        "target_exposure_breach_days": 1,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 6,
+          "CAUTION45": 151,
+          "FROZEN20": 74
+        },
+        "recovery_transitions": [
+          {
+            "date": "2025-11-26",
+            "state_age_before": 6,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1000000.0,
+            "drawdown": 0.040634579999999976,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-14",
+            "state_age_before": 151,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1107972.8399999999,
+            "drawdown": 0.0694401859164705,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "fixed_prediction_data_bridge": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.0356043399999999,
+        "max_drawdown": -0.0694401859164705,
+        "es95": -0.017175566359381396,
+        "fees": 5969.6,
+        "slippage_cost": 33271.64,
+        "total_cost": 39241.24,
+        "trades": 117,
+        "turnover": 11.09053106,
+        "ending_cash": 1035604.34,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 2,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 5,
+          "LOT_BUDGET_TOO_SMALL": 6
+        },
+        "solver_counts": {
+          "OPTIMAL": 28,
+          "HOLD_BETWEEN_REBALANCES": 178,
+          "CASH_NO_POSITIVE_EDGE": 25
+        },
+        "mean_exposure": 0.1199556394707372,
+        "target_exposure_breach_days": 1,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 6,
+          "CAUTION45": 151,
+          "FROZEN20": 74
+        },
+        "recovery_transitions": [
+          {
+            "date": "2025-11-26",
+            "state_age_before": 6,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1000000.0,
+            "drawdown": 0.040634579999999976,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-14",
+            "state_age_before": 151,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1107972.8399999999,
+            "drawdown": 0.0694401859164705,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "strategy": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.01319947999999993,
+        "max_drawdown": -0.07580445887445975,
+        "es95": -0.015025041488173513,
+        "fees": 5314.14,
+        "slippage_cost": 29368.56,
+        "total_cost": 34682.7,
+        "trades": 109,
+        "turnover": 9.78950002,
+        "ending_cash": 1013199.48,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 3,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 7,
+          "LOT_BUDGET_TOO_SMALL": 5
+        },
+        "solver_counts": {
+          "OPTIMAL": 28,
+          "HOLD_BETWEEN_REBALANCES": 178,
+          "CASH_NO_POSITIVE_EDGE": 25
+        },
+        "mean_exposure": 0.11620843700735212,
+        "target_exposure_breach_days": 2,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 6,
+          "CAUTION45": 148,
+          "FROZEN20": 77
+        },
+        "recovery_transitions": [
+          {
+            "date": "2025-11-26",
+            "state_age_before": 6,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1000000.0,
+            "drawdown": 0.040634579999999976,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-09",
+            "state_age_before": 148,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1095445.06,
+            "drawdown": 0.07106011322922945,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "matched_momentum": {
+        "start": "2025-11-18",
+        "end": "2026-11-02",
+        "sessions": 231,
+        "return": 0.0356043399999999,
+        "max_drawdown": -0.0694401859164705,
+        "es95": -0.017175566359381396,
+        "fees": 5969.6,
+        "slippage_cost": 33271.64,
+        "total_cost": 39241.24,
+        "trades": 117,
+        "turnover": 11.09053106,
+        "ending_cash": 1035604.34,
+        "ending_receivables": 0.0,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 2,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 5,
+          "LOT_BUDGET_TOO_SMALL": 6
+        },
+        "solver_counts": {
+          "OPTIMAL": 28,
+          "HOLD_BETWEEN_REBALANCES": 178,
+          "CASH_NO_POSITIVE_EDGE": 25
+        },
+        "mean_exposure": 0.1199556394707372,
+        "target_exposure_breach_days": 1,
+        "risk_mode": "latched",
+        "rule_config_days": {
+          "baseline": 210,
+          "add_penalty10": 21
+        },
+        "phase_days": {
+          "NORMAL": 6,
+          "CAUTION45": 151,
+          "FROZEN20": 74
+        },
+        "recovery_transitions": [
+          {
+            "date": "2025-11-26",
+            "state_age_before": 6,
+            "healthy_streak_before": 0,
+            "previous_phase": "NORMAL",
+            "probe_anchor_before": null,
+            "phase": "CAUTION45",
+            "level": 1,
+            "cap": 0.45,
+            "can_buy": true,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_4",
+            "peak": 1000000.0,
+            "drawdown": 0.040634579999999976,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          },
+          {
+            "date": "2026-07-14",
+            "state_age_before": 151,
+            "healthy_streak_before": 0,
+            "previous_phase": "CAUTION45",
+            "probe_anchor_before": null,
+            "phase": "FROZEN20",
+            "level": 2,
+            "cap": 0.2,
+            "can_buy": false,
+            "changed": true,
+            "reason": "GLOBAL_DRAWDOWN_6",
+            "peak": 1107972.8399999999,
+            "drawdown": 0.0694401859164705,
+            "state_age": 0,
+            "healthy_streak": 0,
+            "probe_anchor": null,
+            "healthy": false,
+            "mode": "latched"
+          }
+        ],
+        "probe_entries": 0,
+        "probe_failures": 0
+      },
+      "continuous_excess": -0.02240485999999997,
+      "strategy_episode_aggregate": {
+        "complete_episodes": 23,
+        "partial_episodes": 1,
+        "mean_net_return": 0.007406110434782593,
+        "median_net_return": 0.0,
+        "worst_episode": -0.033611599999999964,
+        "best_episode": 0.1974822599999999,
+        "win_rate": 0.21739130434782608,
+        "worst_drawdown": -0.06650643578858262,
+        "episode_es95": -0.03209036999999998,
+        "trades": 152,
+        "mean_fees": 308.72173913043486,
+        "mean_slippage_cost": 1998.2386956521739,
+        "mean_turnover": 0.6660785008695652,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 2,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 6,
+          "LOT_BUDGET_TOO_SMALL": 10,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 33,
+          "HOLD_BETWEEN_REBALANCES": 173,
+          "CASH_NO_POSITIVE_EDGE": 23,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.19403895659763104,
+        "cash_only_days": 117,
+        "total_full_episode_days": 230,
+        "days_beyond_8pct_alert": 0,
+        "target_exposure_breach_days": 2,
+        "probe_entries": 0,
+        "probe_failures": 0,
+        "episodes_beyond_8pct": 0
+      },
+      "momentum_episode_aggregate": {
+        "complete_episodes": 23,
+        "partial_episodes": 1,
+        "mean_net_return": 0.011176403913043463,
+        "median_net_return": 0.0,
+        "worst_episode": -0.033611599999999964,
+        "best_episode": 0.1974822599999999,
+        "win_rate": 0.2608695652173913,
+        "worst_drawdown": -0.06650643578858262,
+        "episode_es95": -0.031908714999999976,
+        "trades": 147,
+        "mean_fees": 306.34000000000003,
+        "mean_slippage_cost": 1958.1356521739128,
+        "mean_turnover": 0.6527110139130434,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 2,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 6,
+          "LOT_BUDGET_TOO_SMALL": 6,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 31,
+          "HOLD_BETWEEN_REBALANCES": 175,
+          "CASH_NO_POSITIVE_EDGE": 23,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.1939945085788535,
+        "cash_only_days": 117,
+        "total_full_episode_days": 230,
+        "days_beyond_8pct_alert": 0,
+        "target_exposure_breach_days": 1,
+        "probe_entries": 0,
+        "probe_failures": 0,
+        "episodes_beyond_8pct": 0
+      },
+      "paired_complete_episodes": [
+        {
+          "start": "2025-11-18",
+          "strategy": -0.02729345999999999,
+          "momentum": -0.02729345999999999,
+          "difference": 0.0
+        },
+        {
+          "start": "2025-12-02",
+          "strategy": 0.008989379999999825,
+          "momentum": 0.008989379999999825,
+          "difference": 0.0
+        },
+        {
+          "start": "2025-12-16",
+          "strategy": 0.009725699999999948,
+          "momentum": 0.009725699999999948,
+          "difference": 0.0
+        },
+        {
+          "start": "2025-12-30",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-01-15",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-01-29",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-02-12",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-03-06",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-03-20",
+          "strategy": -0.003360060000000109,
+          "momentum": -0.003360060000000109,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-04-03",
+          "strategy": 0.03723271000000006,
+          "momentum": 0.03723271000000006,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-04-20",
+          "strategy": 0.1974822599999999,
+          "momentum": 0.1974822599999999,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-05-07",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-05-21",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-06-04",
+          "strategy": -0.030569139999999995,
+          "momentum": 0.029908379999999957,
+          "difference": -0.06047751999999995
+        },
+        {
+          "start": "2026-06-18",
+          "strategy": 0.051901929999999874,
+          "momentum": 0.07814115999999993,
+          "difference": -0.026239230000000058
+        },
+        {
+          "start": "2026-07-03",
+          "strategy": -0.03020582999999999,
+          "momentum": -0.03020582999999999,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-07-17",
+          "strategy": -0.033611599999999964,
+          "momentum": -0.033611599999999964,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-07-31",
+          "strategy": -0.006117009999999978,
+          "momentum": -0.006117009999999978,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-08-14",
+          "strategy": -0.003834339999999936,
+          "momentum": -0.003834339999999936,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-08-28",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-09-11",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-09-28",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        },
+        {
+          "start": "2026-10-19",
+          "strategy": 0.0,
+          "momentum": 0.0,
+          "difference": 0.0
+        }
+      ],
+      "mean_paired_excess": -0.00377029347826087,
+      "positive_pairs": 0,
+      "negative_pairs": 2,
+      "zero_pairs": 21,
+      "diagnostic_bootstrap_lower90": -0.007888372173913038,
+      "bootstrap_scope": "Descriptive only: 23 sequential accounts, block length 2, 2000 draws, fixed seed; no multiple-testing adjustment and no pristine holdout."
+    }
+  ],
+  "choice_changes": [
+    {
+      "fold": 7,
+      "before_model": "momentum",
+      "after_model": "ridge50",
+      "before_rules": "baseline",
+      "after_rules": "baseline"
+    }
+  ],
+  "model_prediction_changes": {
+    "model_bytes_changed": 0,
+    "prediction_arrays_changed": 0
+  },
+  "accounts_identical_to_previous": 1396,
+  "accounts_changed": 29,
+  "accounts_with_changed_returns": 27,
+  "unresolved_events": [
+    {
+      "file": "evaluation/continuous/10bps/selected_strategy.json.gz",
+      "account": 0,
+      "date": "2026-07-06",
+      "symbol": "sz300433",
+      "type": "CORPORATE_ACTION",
+      "entitled_quantity": 1700,
+      "cash_gross": 765.0,
+      "cash_tax_reserve": 153.0,
+      "net_receivable": 612.0,
+      "share_quantity_change": 0,
+      "extra_shares_restricted": 0,
+      "fractional_shares_discarded": 0.0,
+      "pay_date": null,
+      "cash_available_date": null,
+      "share_list_date": null,
+      "unknown_cash_pay_date": true,
+      "unknown_cash_available_date": true,
+      "unknown_share_list_date": false,
+      "bonus_tax_not_modelled": false
+    },
+    {
+      "file": "evaluation/continuous/10bps/selected_baseline_rules.json.gz",
+      "account": 0,
+      "date": "2026-07-06",
+      "symbol": "sz300433",
+      "type": "CORPORATE_ACTION",
+      "entitled_quantity": 1700,
+      "cash_gross": 765.0,
+      "cash_tax_reserve": 153.0,
+      "net_receivable": 612.0,
+      "share_quantity_change": 0,
+      "extra_shares_restricted": 0,
+      "fractional_shares_discarded": 0.0,
+      "pay_date": null,
+      "cash_available_date": null,
+      "share_list_date": null,
+      "unknown_cash_pay_date": true,
+      "unknown_cash_available_date": true,
+      "unknown_share_list_date": false,
+      "bonus_tax_not_modelled": false
+    }
+  ],
+  "engineering": {
+    "accounts": 1425,
+    "reconciliation_checks": 435992,
+    "execution_checks": 316091,
+    "model_verification": "PASS"
+  },
+  "gates": {
+    "engineering": true,
+    "superiority": false,
+    "observed_primary_drawdown_within_8pct": false,
+    "primary_event_quality_clear": false,
+    "prospective_validation": false
+  },
+  "interpretation": [
+    "All 48 model files and the contents of all 12 outer prediction files are unchanged. The only model-selection change is fold 7, enabled by clearing a sourced dividend quality gap.",
+    "The model-selection rule permits a negative mean-minus-standard-error score when other gates pass. The selected fold-7 Ridge mix has score -0.0018516179704594835; this is a preregistered rule behavior, not a runtime bug.",
+    "Net returns are below matched momentum at every cost. Do not promote or claim predictive superiority.",
+    "The 10bp continuous path reaches an 8.054 percent drawdown and halts on 2026-07-14. The 8 percent alert is not a guaranteed loss cap.",
+    "One newly encountered Lens Technology cash payment remains unresolved in the frozen 10bp selected account; it is being sourced separately."
+  ]
+}
