@@ -1,6 +1,6 @@
 # 数据契约
 
-`configs/project.toml`声明数据快照、参考实验和完整性清单的相对路径及数据截止日。当前快照为 `data/processed/2026-11-18/bundle.joblib`。载入前检查SHA-256及截止日期；joblib仅用于本地受信任的快照和模型。
+`configs/project.toml`声明活跃快照`bundle`、冻结核验快照`reference_bundle`、研究评估`evaluation`及完整性清单。当前活跃快照位于`data/processed/2026-11-18-reviewed-actions`，原快照保留在`data/processed/2026-11-18`。载入前检查SHA-256及各自截止日期；joblib仅用于本地受信任的快照和模型。
 
 | 字段 | 内容 |
 | --- | --- |
@@ -21,3 +21,7 @@
 新数据需要新日期目录，核查交易日、重复记录、OHLC、流动性、公司行为和历史可用性，再登记配置与完整性清单。修改路径不会自动采集行情。`configs/project.toml`的`protocol`指向当前注册的修正协议；原实验协议保存在`configs/experiment.json`，不得改写。
 
 开盘报价函数不能读取当日收盘、最高、最低或全日量额来决定成交。缺失开盘状态不等于已证明可成交；现有快照没有经过认证的开盘状态历史。执行输出应注明代理模型和单独的滑点成本。
+
+修正公司行为保留`cash_pay_date`公告日期，另用`cash_available_date`表达开盘可用时间；缺失值保持未知。`ex_reference_cash_per_share`与`ex_reference_share_multiplier`只调整价格参考，不能替代实际权益。来源哈希、页码、标签变化与未解决限制随快照归档。
+
+`fetch-bars`把未复权日线响应写到`data/raw/<date>`，核对证券身份、字段、时间范围、OHLC和历史重叠；成交量单位为手、成交额为元。缺失目标日期、历史修订和下载失败分别保留。下载完成不代表数据已通过研究验收，仍需核查公司行为、证券状态和跨源差异后另建处理快照。

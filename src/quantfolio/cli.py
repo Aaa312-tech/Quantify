@@ -27,6 +27,11 @@ def main(argv: list[str] | None = None) -> None:
         "repair-data", help="Build the registered corporate-action snapshot"
     )
     repair.add_argument("--output", required=True, help="New directory under data/processed")
+    collection = commands.add_parser(
+        "fetch-bars", help="Collect completed daily bars for separate review"
+    )
+    collection.add_argument("--date", required=True, help="Completed session in YYYY-MM-DD form")
+    collection.add_argument("--output", required=True, help="New directory under data/raw")
     replay = commands.add_parser(
         "replay", aliases=["backtest"], help="Compare the frozen reference accounts exactly"
     )
@@ -69,7 +74,11 @@ def main(argv: list[str] | None = None) -> None:
     report = commands.add_parser(
         "report", help="Render reference results or an evaluated experiment"
     )
-    report.add_argument("--run", help="Evaluated directory under artifacts/evaluations")
+    report_source = report.add_mutually_exclusive_group()
+    report_source.add_argument("--run", help="Evaluated directory under artifacts/evaluations")
+    report_source.add_argument(
+        "--reference", action="store_true", help="Render the archived reference"
+    )
     args = parser.parse_args(argv)
     if args.command == "verify" and args.refit and not args.output:
         parser.error("--refit requires --output artifacts/checks/<new-name>")
@@ -92,23 +101,45 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
     if args.command == "status":
         from .market import EXECUTION_MODEL
 
-        path = paths.reference / "evaluation_summary.json"
+        active = paths.config.get("evaluation")
+        source = paths.artifact_path(active, "evaluations") if active else paths.reference
+        path = source / "evaluation_summary.json"
         manifest = read(paths.manifest)
         if sha(path) != manifest["files"][path.relative_to(paths.root).as_posix()]:
-            raise ValueError("Reference evaluation summary hash mismatch")
+            raise ValueError("Configured evaluation summary hash mismatch")
         result = read(path)
+        corrected = False
+        same_returns = all(
+            values[result["primary_policy"]]["summary"]["return"]
+            == values["matched_momentum"]["summary"]["return"]
+            for values in result["continuous"].values()
+        )
+        if active:
+            from .evaluation import experiment_folds, load_bundle
+
+            training = paths.artifact_path(result["source_run"], "experiments")
+            status, _ = experiment_folds(paths, load_bundle(paths), training)
+            if result["identity"] != status["identity"]:
+                raise ValueError("Configured evaluation and training identities differ")
+            corrected = status["status"] == "COMPLETE" and status.get("latest_fit_included", False)
         return {
             "software_version": __version__,
             "strategy": paths.config["strategy"],
             "strategy_name": paths.config["strategy_name"],
             "decision": result["decision"],
             "execution_model": EXECUTION_MODEL,
-            "displayed_results_scope": "ARCHIVED_EXECUTION_WITH_KNOWN_CAUSALITY_DEFECT",
-            "corrected_retraining_completed": False,
+            "displayed_results_scope": "CAUSAL_RETRAINING"
+            if active
+            else "ARCHIVED_EXECUTION_WITH_KNOWN_CAUSALITY_DEFECT",
+            "corrected_retraining_completed": corrected,
+            "source_evaluation": source.relative_to(paths.root).as_posix(),
             "data_cutoff": paths.config["data_cutoff"],
             "test_start": result["trade_start"],
             "test_end": result["trade_end"],
-            "gates": result["gates"],
+            "gates": result.get("gates", {"superiority": False}),
+            "superiority_assessment": "NO_POSITIVE_EXCESS_TO_MATCHED_MOMENTUM"
+            if active and same_returns
+            else result.get("superiority_assessment", "NOT_PASSED"),
             "continuous": {
                 key: {
                     name: values[result["primary_policy"]]["summary"][name]
@@ -126,6 +157,10 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .snapshots import repair_snapshot
 
         return repair_snapshot(paths, args.output)
+    if args.command == "fetch-bars":
+        from .market_data import fetch_bars
+
+        return fetch_bars(paths, args.date, args.output)
     if args.command in ("replay", "backtest"):
         from .evaluation import POLICIES, replay
 
@@ -154,4 +189,4 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         return evaluate(paths, args.run, args.output, args.cost or [10, 20, 30], args.all_policies)
     from .reporting import build_report
 
-    return build_report(paths, args.run)
+    return build_report(paths, args.run, reference=args.reference)

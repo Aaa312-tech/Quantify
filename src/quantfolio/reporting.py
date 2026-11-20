@@ -19,11 +19,12 @@ from .settings import Paths
 from .storage import load_gzip, read, sha
 
 
-def build_report(paths: Paths, run: str | Path | None = None) -> dict:
+def build_report(paths: Paths, run: str | Path | None = None, *, reference: bool = False) -> dict:
     """Render frozen results or an evaluated experiment without mixing sample periods."""
     check_integrity(paths)
-    reference = run is None
-    source = paths.reference if reference else paths.artifact_path(run, "evaluations")
+    requested = run or (None if reference else paths.config.get("evaluation"))
+    reference = requested is None
+    source = paths.reference if reference else paths.artifact_path(requested, "evaluations")
     result = read(source / "evaluation_summary.json")
     if not reference and (
         result.get("schema_version") != 1 or result["status"] not in {"COMPLETE", "PARTIAL"}
@@ -34,7 +35,9 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
     cost_bps = int(cost[:-3])
     benchmark = read(paths.benchmark) if reference else None
     destination = (
-        paths.root / "reports" / ("latest" if reference else f"experiments/{source.name}")
+        paths.root
+        / "reports"
+        / (f"experiments/{source.name}" if run else "reference" if reference else "latest")
     ).resolve()
     if not destination.is_relative_to(paths.root / "reports"):
         raise ValueError("Report destination escapes the project")
@@ -114,6 +117,18 @@ def build_report(paths: Paths, run: str | Path | None = None) -> dict:
     )
     if not reference and result["status"] == "PARTIAL":
         notice = "部分窗口回测。" + notice
+    if (
+        not reference
+        and result["status"] == "COMPLETE"
+        and all(
+            values[primary_policy]["summary"]["return"]
+            == values["matched_momentum"]["summary"]["return"]
+            for values in result["continuous"].values()
+        )
+    ):
+        notice = (
+            "当前各档连续账户收益与同风控动量相同，未显示超额收益；工程验收通过不代表预测有效。"
+        )
     if result.get("purpose") == "EXECUTION_DIAGNOSTIC":
         notice = (
             "执行诊断：固定旧预测及旧选型，仅更换成交与成本模型。"

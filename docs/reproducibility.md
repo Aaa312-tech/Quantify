@@ -61,7 +61,15 @@ python -m quantfolio evaluate --run artifacts/experiments/reviewed_training --ou
 
 数据对照要求日历、资格、特征及预测行完全一致。它固定旧预测，不使用重建标签重新选型。完整重训另外运行，不能把两个阶段的收益变化合并称为选股改进。
 
-不带`--run`的`report`从冻结参考结果生成 `reports/latest/index.html`，页面明确标记旧成交假设的问题。工程复现通过不增加独立市场样本，也不改变收益优势检验的结论。
+不带`--run`的`report`读取当前配置的`evaluation`，生成`reports/latest/index.html`。显式`report --reference`才会读取冻结参考并写到`reports/reference`，页面标记旧成交假设的问题。工程复现通过不增加独立市场样本，也不改变收益优势检验的结论。
+
+## 采集后续日线
+
+```powershell
+python -m quantfolio fetch-bars --date 2026-11-19 --output data/raw/market_review
+```
+
+采集包含与活跃快照重叠的五个交易日，逐只留存未复权响应、请求信息、SHA-256和历史修订。请求按顺序执行，连续失败或限流时停止。它不修改活跃快照，也不从缺失日线推断停牌；当天16时之前拒绝请求当天完整日线。
 
 ## 环境与错误
 

@@ -1,6 +1,7 @@
 """Exercise the experiment-to-report flow with a small, executable market fixture."""
 
 import json
+from argparse import Namespace
 from pathlib import Path
 
 import numpy as np
@@ -14,6 +15,36 @@ from quantfolio.market import EXECUTION_MODEL
 from quantfolio.settings import Paths
 from quantfolio.simulation import simulate
 from quantfolio.storage import digest, read, save, sha
+
+
+def test_configured_status_and_default_report_use_current_evaluation(experiment):
+    paths, _, run, _ = experiment
+    output = paths.root / "artifacts/evaluations/current"
+    result = evaluation.evaluate(paths, run, output, [10])
+    paths.config.update(
+        evaluation="artifacts/evaluations/current",
+        manifest="configs/current_manifest.json",
+        strategy="walk_forward_momentum",
+        strategy_name="滚动选型动量",
+    )
+    save(
+        paths.manifest,
+        {
+            "files": {
+                "artifacts/evaluations/current/evaluation_summary.json": sha(
+                    output / "evaluation_summary.json"
+                )
+            }
+        },
+    )
+    status = cli.run(Namespace(command="status"), paths)
+    assert status["displayed_results_scope"] == "CAUSAL_RETRAINING"
+    assert not status["corrected_retraining_completed"]
+    assert status["test_start"] == result["trade_start"]
+    assert status["gates"] == {"superiority": False}
+    assert status["superiority_assessment"] == "NO_POSITIVE_EXCESS_TO_MATCHED_MOMENTUM"
+    reporting.build_report(paths)
+    assert (paths.root / "reports/latest/index.html").is_file()
 
 
 @pytest.fixture

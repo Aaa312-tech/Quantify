@@ -81,7 +81,7 @@ def rebuild_labels(bundle, symbols=None):
     actions = {}
     for action in bundle["actions"]:
         actions.setdefault(action["symbol"], []).append(action)
-    groups = table.groupby("symbol", sort=True).indices
+    groups = table.groupby("symbol", sort=True, observed=True).indices
     for count, (symbol, positions) in enumerate(groups.items(), 1):
         if symbols is not None and symbol not in symbols:
             continue

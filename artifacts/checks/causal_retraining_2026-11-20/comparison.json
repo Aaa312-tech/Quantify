@@ -1,0 +1,850 @@
+{
+  "completed_at": "2026-11-20T12:43:11.027099+08:00",
+  "decision": "RESEARCH_ONLY",
+  "source_commit": "9a3b67f",
+  "scope": "Repeated historical comparison; not a pristine holdout or prospective return estimate.",
+  "input_summaries_sha256": {
+    "artifacts/reference/2026-11-19/evaluation_summary.json": "263960e0e36c69755ffb6179690b3dbc4d8ee329d56104ab528488cce036ff24",
+    "artifacts/evaluations/execution_bridge_2026-11-20/evaluation_summary.json": "8ac84c79d31e76d91d1d680ee79cb8422c146377f01544719df302e9d7c23785",
+    "artifacts/evaluations/action_bridge_2026-11-20/evaluation_summary.json": "c5bc48944dbcc05ab8176a84d71ce649148653d8593ee2366d5ad472b9c1d1ba",
+    "artifacts/evaluations/causal_retraining_2026-11-20/evaluation_summary.json": "d39b4be5ef5073e96035db00d22105c2a1147321be8348b305868203d7b85600"
+  },
+  "cost_comparisons": {
+    "10bps": {
+      "continuous_stages": {
+        "archived": {
+          "return": 0.08108316999999987,
+          "max_drawdown": -0.06549143429638915,
+          "fees": 9921.72,
+          "slippage_cost": null,
+          "trades": 185,
+          "mean_exposure": 0.2268005544658335,
+          "phase_days": {
+            "NORMAL": 7,
+            "CAUTION45": 123,
+            "FROZEN20": 101
+          },
+          "ending_receivables": 0.0,
+          "unresolved_events": 0
+        },
+        "execution": {
+          "return": 0.3103216000000002,
+          "max_drawdown": -0.06527260879566499,
+          "fees": 10432.09,
+          "slippage_cost": 18951.07,
+          "trades": 167,
+          "mean_exposure": 0.27604534956956384,
+          "phase_days": {
+            "NORMAL": 53,
+            "CAUTION45": 77,
+            "FROZEN20": 101
+          },
+          "ending_receivables": 448.08,
+          "unresolved_events": 2
+        },
+        "actions": {
+          "return": 0.3103216000000002,
+          "max_drawdown": -0.06527260879566499,
+          "fees": 10432.09,
+          "slippage_cost": 18951.07,
+          "trades": 167,
+          "mean_exposure": 0.27604534956956384,
+          "phase_days": {
+            "NORMAL": 53,
+            "CAUTION45": 77,
+            "FROZEN20": 101
+          },
+          "ending_receivables": 0.0,
+          "unresolved_events": 0
+        },
+        "retrained": {
+          "return": 0.3103216000000002,
+          "max_drawdown": -0.06527260879566499,
+          "fees": 10432.09,
+          "slippage_cost": 18951.07,
+          "trades": 167,
+          "mean_exposure": 0.27604534956956384,
+          "phase_days": {
+            "NORMAL": 53,
+            "CAUTION45": 77,
+            "FROZEN20": 101
+          },
+          "ending_receivables": 0.0,
+          "unresolved_events": 0
+        }
+      },
+      "matched_momentum_excess": 0.0,
+      "paired_complete_episodes": 23,
+      "paired_episode_excess": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_episode_statistics": {
+        "complete_episodes": 23,
+        "partial_episodes": 1,
+        "mean_net_return": 0.021188512173913057,
+        "median_net_return": 0.0,
+        "worst_episode": -0.04558168000000007,
+        "best_episode": 0.20052983000000002,
+        "win_rate": 0.4782608695652174,
+        "worst_drawdown": -0.0634047029823056,
+        "episode_es95": -0.04449054000000002,
+        "trades": 302,
+        "mean_fees": 666.7813043478261,
+        "mean_slippage_cost": 1375.822608695652,
+        "mean_turnover": 1.3758198565217392,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 6,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 21,
+          "LOT_BUDGET_TOO_SMALL": 17,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 5,
+          "OPEN_AT_LOWER_LIMIT": 2,
+          "EXACT_FEES_EXCEED_EDGE": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 52,
+          "HOLD_BETWEEN_REBALANCES": 162,
+          "INFEASIBLE_REDUCE_ONLY": 8,
+          "CASH_NO_POSITIVE_EDGE": 8
+        },
+        "mean_exposure": 0.3992754797346296,
+        "cash_only_days": 42,
+        "total_full_episode_days": 230,
+        "days_beyond_8pct_alert": 0,
+        "target_exposure_breach_days": 4,
+        "probe_entries": 0,
+        "probe_failures": 0,
+        "episodes_beyond_8pct": 0
+      }
+    },
+    "20bps": {
+      "continuous_stages": {
+        "archived": {
+          "return": 0.12271118000000003,
+          "max_drawdown": -0.06367784786002817,
+          "fees": 8562.63,
+          "slippage_cost": null,
+          "trades": 154,
+          "mean_exposure": 0.16859647789928725,
+          "phase_days": {
+            "NORMAL": 7,
+            "CAUTION45": 150,
+            "FROZEN20": 74
+          },
+          "ending_receivables": 0.0,
+          "unresolved_events": 0
+        },
+        "execution": {
+          "return": 0.0788101499999998,
+          "max_drawdown": -0.06401339368795067,
+          "fees": 9667.57,
+          "slippage_cost": 35868.3,
+          "trades": 180,
+          "mean_exposure": 0.17963247554659423,
+          "phase_days": {
+            "NORMAL": 9,
+            "CAUTION45": 148,
+            "FROZEN20": 74
+          },
+          "ending_receivables": 0.0,
+          "unresolved_events": 0
+        },
+        "actions": {
+          "return": 0.0788101499999998,
+          "max_drawdown": -0.06401339368795067,
+          "fees": 9667.57,
+          "slippage_cost": 35868.3,
+          "trades": 180,
+          "mean_exposure": 0.17963247554659423,
+          "phase_days": {
+            "NORMAL": 9,
+            "CAUTION45": 148,
+            "FROZEN20": 74
+          },
+          "ending_receivables": 0.0,
+          "unresolved_events": 0
+        },
+        "retrained": {
+          "return": 0.0788101499999998,
+          "max_drawdown": -0.06401339368795067,
+          "fees": 9667.57,
+          "slippage_cost": 35868.3,
+          "trades": 180,
+          "mean_exposure": 0.17963247554659423,
+          "phase_days": {
+            "NORMAL": 9,
+            "CAUTION45": 148,
+            "FROZEN20": 74
+          },
+          "ending_receivables": 0.0,
+          "unresolved_events": 0
+        }
+      },
+      "matched_momentum_excess": 0.0,
+      "paired_complete_episodes": 23,
+      "paired_episode_excess": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_episode_statistics": {
+        "complete_episodes": 23,
+        "partial_episodes": 1,
+        "mean_net_return": 0.010524975652173908,
+        "median_net_return": 0.0,
+        "worst_episode": -0.0464673000000001,
+        "best_episode": 0.19825762999999985,
+        "win_rate": 0.391304347826087,
+        "worst_drawdown": -0.06498038395719608,
+        "episode_es95": -0.043291150000000056,
+        "trades": 253,
+        "mean_fees": 560.6234782608697,
+        "mean_slippage_cost": 2303.0608695652177,
+        "mean_turnover": 1.1515306595652175,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 5,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 13,
+          "OPEN_AT_LOWER_LIMIT": 1,
+          "LOT_BUDGET_TOO_SMALL": 10,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 49,
+          "HOLD_BETWEEN_REBALANCES": 166,
+          "CASH_NO_POSITIVE_EDGE": 11,
+          "INFEASIBLE_REDUCE_ONLY": 4
+        },
+        "mean_exposure": 0.2999142206374026,
+        "cash_only_days": 77,
+        "total_full_episode_days": 230,
+        "days_beyond_8pct_alert": 0,
+        "target_exposure_breach_days": 2,
+        "probe_entries": 0,
+        "probe_failures": 0,
+        "episodes_beyond_8pct": 0
+      }
+    },
+    "30bps": {
+      "continuous_stages": {
+        "archived": {
+          "return": -0.04854644999999991,
+          "max_drawdown": -0.06588738000000005,
+          "fees": 1364.65,
+          "slippage_cost": null,
+          "trades": 28,
+          "mean_exposure": 0.10726394641935491,
+          "phase_days": {
+            "NORMAL": 4,
+            "CAUTION45": 9,
+            "FROZEN20": 218
+          },
+          "ending_receivables": 0.0,
+          "unresolved_events": 0
+        },
+        "execution": {
+          "return": 0.0356043399999999,
+          "max_drawdown": -0.0694401859164705,
+          "fees": 5969.6,
+          "slippage_cost": 33271.64,
+          "trades": 117,
+          "mean_exposure": 0.1199556394707372,
+          "phase_days": {
+            "NORMAL": 6,
+            "CAUTION45": 151,
+            "FROZEN20": 74
+          },
+          "ending_receivables": 0.0,
+          "unresolved_events": 0
+        },
+        "actions": {
+          "return": 0.0356043399999999,
+          "max_drawdown": -0.0694401859164705,
+          "fees": 5969.6,
+          "slippage_cost": 33271.64,
+          "trades": 117,
+          "mean_exposure": 0.1199556394707372,
+          "phase_days": {
+            "NORMAL": 6,
+            "CAUTION45": 151,
+            "FROZEN20": 74
+          },
+          "ending_receivables": 0.0,
+          "unresolved_events": 0
+        },
+        "retrained": {
+          "return": 0.0356043399999999,
+          "max_drawdown": -0.0694401859164705,
+          "fees": 5969.6,
+          "slippage_cost": 33271.64,
+          "trades": 117,
+          "mean_exposure": 0.1199556394707372,
+          "phase_days": {
+            "NORMAL": 6,
+            "CAUTION45": 151,
+            "FROZEN20": 74
+          },
+          "ending_receivables": 0.0,
+          "unresolved_events": 0
+        }
+      },
+      "matched_momentum_excess": 0.0,
+      "paired_complete_episodes": 23,
+      "paired_episode_excess": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primary_episode_statistics": {
+        "complete_episodes": 23,
+        "partial_episodes": 1,
+        "mean_net_return": 0.011176403913043463,
+        "median_net_return": 0.0,
+        "worst_episode": -0.033611599999999964,
+        "best_episode": 0.1974822599999999,
+        "win_rate": 0.2608695652173913,
+        "worst_drawdown": -0.06650643578858262,
+        "episode_es95": -0.031908714999999976,
+        "trades": 147,
+        "mean_fees": 306.34000000000003,
+        "mean_slippage_cost": 1958.1356521739128,
+        "mean_turnover": 0.6527110139130434,
+        "unresolved_events": 0,
+        "quality_issues": 0,
+        "rejection_counts": {
+          "VOLATILITY_GAP_CEILING": 2,
+          "OPEN_AT_UPPER_LIMIT": 1,
+          "T1_OR_MINIMUM_QUANTITY": 6,
+          "LOT_BUDGET_TOO_SMALL": 6,
+          "OTHER_HOLDING_ABOVE_NAV_CAP": 1
+        },
+        "solver_counts": {
+          "OPTIMAL": 31,
+          "HOLD_BETWEEN_REBALANCES": 175,
+          "CASH_NO_POSITIVE_EDGE": 23,
+          "INFEASIBLE_REDUCE_ONLY": 1
+        },
+        "mean_exposure": 0.1939945085788535,
+        "cash_only_days": 117,
+        "total_full_episode_days": 230,
+        "days_beyond_8pct_alert": 0,
+        "target_exposure_breach_days": 1,
+        "probe_entries": 0,
+        "probe_failures": 0,
+        "episodes_beyond_8pct": 0
+      }
+    }
+  },
+  "choice_changes": [
+    {
+      "window": 1,
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      }
+    },
+    {
+      "window": 2,
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      }
+    },
+    {
+      "window": 3,
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      }
+    },
+    {
+      "window": 4,
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      }
+    },
+    {
+      "window": 5,
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      }
+    },
+    {
+      "window": 6,
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "add_penalty10"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "add_penalty10"
+      }
+    },
+    {
+      "window": 7,
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      }
+    },
+    {
+      "window": 8,
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      }
+    },
+    {
+      "window": 9,
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      }
+    },
+    {
+      "window": 10,
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      }
+    },
+    {
+      "window": 11,
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      }
+    },
+    {
+      "window": "final",
+      "before": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      },
+      "after": {
+        "selected_candidate": "momentum",
+        "selected_rules": "baseline"
+      }
+    }
+  ],
+  "model_prediction_changes": [
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_01/validation_fit/ridge/predictions.npy",
+      "rows": 35080,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_01/validation_fit/tree/predictions.npy",
+      "rows": 35080,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_01/outer_fit/ridge/predictions.npy",
+      "rows": 11642,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_01/outer_fit/tree/predictions.npy",
+      "rows": 11642,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_02/validation_fit/ridge/predictions.npy",
+      "rows": 35077,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_02/validation_fit/tree/predictions.npy",
+      "rows": 35077,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_02/outer_fit/ridge/predictions.npy",
+      "rows": 11523,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_02/outer_fit/tree/predictions.npy",
+      "rows": 11523,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_03/validation_fit/ridge/predictions.npy",
+      "rows": 34789,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_03/validation_fit/tree/predictions.npy",
+      "rows": 34789,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_03/outer_fit/ridge/predictions.npy",
+      "rows": 11819,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_03/outer_fit/tree/predictions.npy",
+      "rows": 11819,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_04/validation_fit/ridge/predictions.npy",
+      "rows": 34949,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_04/validation_fit/tree/predictions.npy",
+      "rows": 34949,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_04/outer_fit/ridge/predictions.npy",
+      "rows": 11707,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_04/outer_fit/tree/predictions.npy",
+      "rows": 11707,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_05/validation_fit/ridge/predictions.npy",
+      "rows": 35015,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_05/validation_fit/tree/predictions.npy",
+      "rows": 35015,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_05/outer_fit/ridge/predictions.npy",
+      "rows": 11551,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_05/outer_fit/tree/predictions.npy",
+      "rows": 11551,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_06/validation_fit/ridge/predictions.npy",
+      "rows": 35120,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_06/validation_fit/tree/predictions.npy",
+      "rows": 35120,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_06/outer_fit/ridge/predictions.npy",
+      "rows": 11504,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_06/outer_fit/tree/predictions.npy",
+      "rows": 11504,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_07/validation_fit/ridge/predictions.npy",
+      "rows": 34842,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_07/validation_fit/tree/predictions.npy",
+      "rows": 34842,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_07/outer_fit/ridge/predictions.npy",
+      "rows": 11403,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_07/outer_fit/tree/predictions.npy",
+      "rows": 11403,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_08/validation_fit/ridge/predictions.npy",
+      "rows": 34566,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_08/validation_fit/tree/predictions.npy",
+      "rows": 34566,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_08/outer_fit/ridge/predictions.npy",
+      "rows": 11208,
+      "changed_values": 11207,
+      "max_absolute_change": 1.9505620002746582e-05
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_08/outer_fit/tree/predictions.npy",
+      "rows": 11208,
+      "changed_values": 11208,
+      "max_absolute_change": 0.024019876460021815
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_09/validation_fit/ridge/predictions.npy",
+      "rows": 34181,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_09/validation_fit/tree/predictions.npy",
+      "rows": 34181,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_09/outer_fit/ridge/predictions.npy",
+      "rows": 11342,
+      "changed_values": 11341,
+      "max_absolute_change": 2.2096559405326843e-05
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_09/outer_fit/tree/predictions.npy",
+      "rows": 11342,
+      "changed_values": 11342,
+      "max_absolute_change": 0.03229200759051965
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_10/validation_fit/ridge/predictions.npy",
+      "rows": 33985,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_10/validation_fit/tree/predictions.npy",
+      "rows": 33985,
+      "changed_values": 0,
+      "max_absolute_change": 0.0
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_10/outer_fit/ridge/predictions.npy",
+      "rows": 11501,
+      "changed_values": 11498,
+      "max_absolute_change": 1.3308599591255188e-05
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_10/outer_fit/tree/predictions.npy",
+      "rows": 11501,
+      "changed_values": 11501,
+      "max_absolute_change": 1.134715991731386e-05
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_11/validation_fit/ridge/predictions.npy",
+      "rows": 33976,
+      "changed_values": 33964,
+      "max_absolute_change": 3.012828528881073e-05
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_11/validation_fit/tree/predictions.npy",
+      "rows": 33976,
+      "changed_values": 33976,
+      "max_absolute_change": 0.04311885164673371
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_11/outer_fit/ridge/predictions.npy",
+      "rows": 11633,
+      "changed_values": 11632,
+      "max_absolute_change": 1.4327466487884521e-05
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/training/fold_11/outer_fit/tree/predictions.npy",
+      "rows": 11633,
+      "changed_values": 11633,
+      "max_absolute_change": 0.03542188006765941
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/final_fit/validation_fit/ridge/predictions.npy",
+      "rows": 34630,
+      "changed_values": 34617,
+      "max_absolute_change": 2.3476779460906982e-05
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/final_fit/validation_fit/tree/predictions.npy",
+      "rows": 34630,
+      "changed_values": 34630,
+      "max_absolute_change": 0.040425037766549536
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/final_fit/outer_fit/ridge/predictions.npy",
+      "rows": 566,
+      "changed_values": 566,
+      "max_absolute_change": 1.0219402611255646e-05
+    },
+    {
+      "path": "artifacts/experiments/causal_retraining_2026-11-20/final_fit/outer_fit/tree/predictions.npy",
+      "rows": 566,
+      "changed_values": 566,
+      "max_absolute_change": 0.03305118185645736
+    }
+  ],
+  "data_bridge_to_retraining_exact_accounts": 1190,
+  "engineering": {
+    "accounts": 1425,
+    "reconciliation_checks": 436228,
+    "execution_checks": 316017,
+    "models_reloaded": 48,
+    "local_tests_passed": 111,
+    "local_tests_skipped": 1
+  },
+  "gates": {
+    "engineering": true,
+    "superiority": false,
+    "observed_primary_drawdowns_within_8pct": true,
+    "prospective_validation": false
+  },
+  "interpretation": [
+    "All eleven outer windows and the latest fit still selected momentum.",
+    "Primary and same-risk momentum returns are exactly equal at all three costs.",
+    "Repairs restore accounting and label consistency; they do not establish improved stock selection.",
+    "The eight stale short-horizon labels are explained in ../reviewed_actions_2026-11-20/label_attribution.json.",
+    "Original universe, industry history and opening-status limitations remain."
+  ]
+}
