@@ -24,7 +24,8 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
 ## Research constraints
 
 - Maintain the active `quantfolio` package and walk-forward momentum strategy unless a research task changes it.
-  Balanced attack, the 8% alert and non-recovering risk remain in force.
+  Balanced attack, the 8% alert and non-recovering risk remain in force. Active model/rule adoption
+  uses `positive_score`; recovery candidates remain research-only.
 - Name strategies by behavior, not iteration numbers. Keep old identifiers only where required
   to read or trace frozen evidence; use semantic software versions for package releases.
 - The superiority gate is false. Engineering parity does not prove outperformance; the active

@@ -18,6 +18,12 @@ python -m quantfolio report --run artifacts/evaluations/example_run
 
 每次训练或评估使用新目录。目录已存在时命令会拒绝覆盖；缺少完成状态的训练不能进入评估。运行失败时保留已写出的诊断材料，修复原因后使用新名称。
 
+有限候选研究使用`study`和`evaluate-study`，完整定义、命令及输出见
+[选型、恢复与换手实验](strategy_study.md)。`study`先完成48次拟合，再冻结各窗口的内层
+选择；`evaluate-study`核对源文件和选择记录后运行外层账户。`positive_score`选型模式
+属于训练身份，不能把不同采用门槛的模型结果混用。登记协议和执行源文件须在实验前固定，
+新增结果不会自动修改`configs/project.toml`。
+
 ## 验证冻结参考结果
 
 ```powershell

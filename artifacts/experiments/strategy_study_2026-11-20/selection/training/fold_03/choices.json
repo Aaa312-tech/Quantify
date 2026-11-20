@@ -1,0 +1,1783 @@
+{
+  "completed_at": "2026-11-20T14:41:28.928262+08:00",
+  "fold": {
+    "fold": 3,
+    "train_start": 167,
+    "train_end": 418,
+    "validation_start": 425,
+    "validation_end": 487,
+    "test_start": 494,
+    "test_end": 514
+  },
+  "final_fit": false,
+  "legacy_choice": {
+    "model": "momentum",
+    "rules": "baseline"
+  },
+  "recipes": {
+    "positive_adoption": {
+      "tested": true,
+      "choice": {
+        "model": "momentum",
+        "rules": "baseline",
+        "mode": "latched",
+        "turnover": "legacy"
+      },
+      "validation": {
+        "returns": [
+          -0.05505578,
+          -0.012315960000000015,
+          0.008872189999999947,
+          -0.010451699999999953,
+          0.06317897000000006,
+          0.11853236000000011
+        ],
+        "mean_net_return": 0.018793346666666693,
+        "worst_drawdown": -0.06400390269028089,
+        "episodes": 6,
+        "trades": 90,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "identity": "37b668b1135d4f8c14779f20ba6e8c0f1bbbf0b68a4cfbc3ba87333e8b0cdbbe",
+        "config": "baseline",
+        "continuous": {
+          "start": "2025-10-10",
+          "end": "2026-01-08",
+          "sessions": 63,
+          "return": -0.024217000000000044,
+          "max_drawdown": -0.06951014303260816,
+          "es95": -0.019332029427462157,
+          "fees": 1083.46,
+          "slippage_cost": 1972.74,
+          "total_cost": 3056.2,
+          "trades": 31,
+          "turnover": 1.9727185,
+          "ending_cash": 778623.5,
+          "ending_receivables": 0.0,
+          "unresolved_events": 0,
+          "quality_issues": 0,
+          "rejection_counts": {
+            "T1_OR_MINIMUM_QUANTITY": 9,
+            "LOT_BUDGET_TOO_SMALL": 2
+          },
+          "solver_counts": {
+            "OPTIMAL": 14,
+            "HOLD_BETWEEN_REBALANCES": 47,
+            "INFEASIBLE_REDUCE_ONLY": 2
+          },
+          "mean_exposure": 0.24554886092608477,
+          "target_exposure_breach_days": 0,
+          "risk_mode": "latched",
+          "rule_config_days": {
+            "baseline": 63
+          },
+          "phase_days": {
+            "NORMAL": 6,
+            "CAUTION45": 3,
+            "FROZEN20": 54
+          },
+          "recovery_transitions": [
+            {
+              "date": "2025-10-20",
+              "state_age_before": 6,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1009560.0,
+              "drawdown": 0.05361532746939257,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            },
+            {
+              "date": "2025-10-23",
+              "state_age_before": 3,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "FROZEN20",
+              "level": 2,
+              "cap": 0.2,
+              "can_buy": false,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_6",
+              "peak": 1009560.0,
+              "drawdown": 0.06060455049724622,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          ],
+          "probe_entries": 0,
+          "probe_failures": 0
+        },
+        "accounting_pass": true,
+        "accounting_checks": 2996,
+        "execution_checks": 4062,
+        "ledger_sha256": "e09c76fd0f9de469836ceacf20e92cee7e7765dbc857286ef4733f66e256bdbf",
+        "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\strategy_study_2026-11-20\\primary_training\\training\\fold_03\\inner_rules\\baseline.ledgers.json.gz"
+      },
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": true,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true,
+          "positive_mean_minus_standard_error": false
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0,
+        "winning_episodes": 0,
+        "lower90": 0.0,
+        "standard_error": 0.0,
+        "score": 0.0
+      },
+      "selection_evidence": {
+        "rule_adoption": {
+          "add_retain18": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": true,
+              "wins_at_least_four": false,
+              "lower90_positive": true,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": true
+            },
+            "qualifies": false,
+            "mean_advantage": 0.008145331666666663,
+            "winning_episodes": 3,
+            "lower90": 0.001367044999999974,
+            "standard_error": 0.006562966144057357,
+            "score": 0.0015823655226093062
+          },
+          "add_replace1": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": 0.0,
+            "winning_episodes": 0,
+            "lower90": 0.0,
+            "standard_error": 0.0,
+            "score": 0.0
+          },
+          "add_rank_gap3": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": 0.0,
+            "winning_episodes": 0,
+            "lower90": 0.0,
+            "standard_error": 0.0,
+            "score": 0.0
+          },
+          "add_normal_budget25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.00723994333333335,
+            "winning_episodes": 2,
+            "lower90": -0.0286513791666667,
+            "standard_error": 0.017446587130898097,
+            "score": -0.024686530464231447
+          },
+          "add_caution_budget25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": true,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": 0.0013710866666666692,
+            "winning_episodes": 1,
+            "lower90": 0.0,
+            "standard_error": 0.0013710866666666694,
+            "score": -2.168404344971009e-19
+          },
+          "add_penalty10": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": 0.0,
+            "winning_episodes": 0,
+            "lower90": 0.0,
+            "standard_error": 0.0,
+            "score": 0.0
+          },
+          "add_deadband2": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": 0.0,
+            "winning_episodes": 0,
+            "lower90": 0.0,
+            "standard_error": 0.0,
+            "score": 0.0
+          },
+          "all_on": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          },
+          "remove_retain18": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          },
+          "remove_replace1": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          },
+          "remove_rank_gap3": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          },
+          "remove_normal_budget25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": true,
+              "wins_at_least_four": true,
+              "lower90_positive": true,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": true
+            },
+            "qualifies": false,
+            "mean_advantage": 0.009516418333333332,
+            "winning_episodes": 4,
+            "lower90": 0.003232006666666639,
+            "standard_error": 0.006362799776675079,
+            "score": 0.003153618556658253
+          },
+          "remove_caution_budget25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.00723994333333335,
+            "winning_episodes": 2,
+            "lower90": -0.0286513791666667,
+            "standard_error": 0.017446587130898097,
+            "score": -0.024686530464231447
+          },
+          "remove_penalty10": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          },
+          "remove_deadband2": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          }
+        },
+        "model_adoption": {
+          "ridge25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false,
+              "industry_factor_check": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.004739765000000007,
+            "winning_episodes": 3,
+            "lower90": -0.020560355000000013,
+            "standard_error": 0.015445067545219904,
+            "score": -0.02018483254521991
+          },
+          "ridge50": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false,
+              "industry_factor_check": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.006117513333333287,
+            "winning_episodes": 3,
+            "lower90": -0.01217419833333333,
+            "standard_error": 0.007804489019339939,
+            "score": -0.013922002352673227
+          },
+          "tree25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false,
+              "industry_factor_check": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0019852066666666834,
+            "winning_episodes": 3,
+            "lower90": -0.02962617666666667,
+            "standard_error": 0.021329785780453248,
+            "score": -0.02331499244711993
+          },
+          "tree50": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": false,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "positive_mean_minus_standard_error": false,
+              "industry_factor_check": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.003360218333333368,
+            "winning_episodes": 3,
+            "lower90": -0.02031410000000013,
+            "standard_error": 0.011984174383170622,
+            "score": -0.01534439271650399
+          }
+        }
+      },
+      "trial_source": "artifacts/experiments/strategy_study_2026-11-20/primary_training/training/fold_03/inner_rules/baseline.json"
+    },
+    "industry_holdout": {
+      "tested": true,
+      "choice": {
+        "model": "momentum",
+        "rules": "baseline",
+        "mode": "latched",
+        "turnover": "legacy"
+      },
+      "validation": {
+        "returns": [
+          -0.05505578,
+          -0.012315960000000015,
+          0.008872189999999947,
+          -0.010451699999999953,
+          0.06317897000000006,
+          0.11853236000000011
+        ],
+        "mean_net_return": 0.018793346666666693,
+        "worst_drawdown": -0.06400390269028089,
+        "episodes": 6,
+        "trades": 90,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "identity": "37b668b1135d4f8c14779f20ba6e8c0f1bbbf0b68a4cfbc3ba87333e8b0cdbbe",
+        "config": "baseline",
+        "continuous": {
+          "start": "2025-10-10",
+          "end": "2026-01-08",
+          "sessions": 63,
+          "return": -0.024217000000000044,
+          "max_drawdown": -0.06951014303260816,
+          "es95": -0.019332029427462157,
+          "fees": 1083.46,
+          "slippage_cost": 1972.74,
+          "total_cost": 3056.2,
+          "trades": 31,
+          "turnover": 1.9727185,
+          "ending_cash": 778623.5,
+          "ending_receivables": 0.0,
+          "unresolved_events": 0,
+          "quality_issues": 0,
+          "rejection_counts": {
+            "T1_OR_MINIMUM_QUANTITY": 9,
+            "LOT_BUDGET_TOO_SMALL": 2
+          },
+          "solver_counts": {
+            "OPTIMAL": 14,
+            "HOLD_BETWEEN_REBALANCES": 47,
+            "INFEASIBLE_REDUCE_ONLY": 2
+          },
+          "mean_exposure": 0.24554886092608477,
+          "target_exposure_breach_days": 0,
+          "risk_mode": "latched",
+          "rule_config_days": {
+            "baseline": 63
+          },
+          "phase_days": {
+            "NORMAL": 6,
+            "CAUTION45": 3,
+            "FROZEN20": 54
+          },
+          "recovery_transitions": [
+            {
+              "date": "2025-10-20",
+              "state_age_before": 6,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1009560.0,
+              "drawdown": 0.05361532746939257,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            },
+            {
+              "date": "2025-10-23",
+              "state_age_before": 3,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "FROZEN20",
+              "level": 2,
+              "cap": 0.2,
+              "can_buy": false,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_6",
+              "peak": 1009560.0,
+              "drawdown": 0.06060455049724622,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          ],
+          "probe_entries": 0,
+          "probe_failures": 0
+        },
+        "accounting_pass": true,
+        "accounting_checks": 2996,
+        "execution_checks": 4062,
+        "ledger_sha256": "e09c76fd0f9de469836ceacf20e92cee7e7765dbc857286ef4733f66e256bdbf",
+        "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\strategy_study_2026-11-20\\primary_training\\training\\fold_03\\inner_rules\\baseline.ledgers.json.gz"
+      },
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": true,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true,
+          "positive_mean_minus_standard_error": false
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0,
+        "winning_episodes": 0,
+        "lower90": 0.0,
+        "standard_error": 0.0,
+        "score": 0.0
+      },
+      "selection_evidence": {
+        "rule_adoption": {
+          "add_retain18": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": true,
+              "wins_at_least_four": false,
+              "lower90_positive": true,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": 0.008145331666666663,
+            "winning_episodes": 3,
+            "lower90": 0.001367044999999974,
+            "standard_error": 0.006562966144057357,
+            "score": 0.0015823655226093062
+          },
+          "add_replace1": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": 0.0,
+            "winning_episodes": 0,
+            "lower90": 0.0,
+            "standard_error": 0.0,
+            "score": 0.0
+          },
+          "add_rank_gap3": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": 0.0,
+            "winning_episodes": 0,
+            "lower90": 0.0,
+            "standard_error": 0.0,
+            "score": 0.0
+          },
+          "add_normal_budget25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.00723994333333335,
+            "winning_episodes": 2,
+            "lower90": -0.0286513791666667,
+            "standard_error": 0.017446587130898097,
+            "score": -0.024686530464231447
+          },
+          "add_caution_budget25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": true,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": 0.0013710866666666692,
+            "winning_episodes": 1,
+            "lower90": 0.0,
+            "standard_error": 0.0013710866666666694,
+            "score": -2.168404344971009e-19
+          },
+          "add_penalty10": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": 0.0,
+            "winning_episodes": 0,
+            "lower90": 0.0,
+            "standard_error": 0.0,
+            "score": 0.0
+          },
+          "add_deadband2": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": 0.0,
+            "winning_episodes": 0,
+            "lower90": 0.0,
+            "standard_error": 0.0,
+            "score": 0.0
+          },
+          "all_on": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          },
+          "remove_retain18": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          },
+          "remove_replace1": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          },
+          "remove_rank_gap3": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          },
+          "remove_normal_budget25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": true,
+              "wins_at_least_four": true,
+              "lower90_positive": true,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": 0.009516418333333332,
+            "winning_episodes": 4,
+            "lower90": 0.003232006666666639,
+            "standard_error": 0.006362799776675079,
+            "score": 0.003153618556658253
+          },
+          "remove_caution_budget25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.00723994333333335,
+            "winning_episodes": 2,
+            "lower90": -0.0286513791666667,
+            "standard_error": 0.017446587130898097,
+            "score": -0.024686530464231447
+          },
+          "remove_penalty10": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          },
+          "remove_deadband2": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0058688566666666815,
+            "winning_episodes": 3,
+            "lower90": -0.0284446933333334,
+            "standard_error": 0.017613458407485807,
+            "score": -0.02348231507415249
+          }
+        },
+        "model_adoption": {
+          "ridge25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "industry_factor_check": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.004739765000000007,
+            "winning_episodes": 3,
+            "lower90": -0.020560355000000013,
+            "standard_error": 0.015445067545219904,
+            "score": -0.02018483254521991
+          },
+          "ridge50": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "industry_factor_check": true
+            },
+            "qualifies": false,
+            "mean_advantage": -0.006117513333333287,
+            "winning_episodes": 3,
+            "lower90": -0.01217419833333333,
+            "standard_error": 0.007804489019339939,
+            "score": -0.013922002352673227
+          },
+          "tree25": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": true,
+              "continuous_return_not_over50bp_worse": true,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "industry_factor_check": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.0019852066666666834,
+            "winning_episodes": 3,
+            "lower90": -0.02962617666666667,
+            "standard_error": 0.021329785780453248,
+            "score": -0.02331499244711993
+          },
+          "tree50": {
+            "requirements": {
+              "six_complete_episodes": true,
+              "minimum_mean_advantage": false,
+              "wins_at_least_four": false,
+              "lower90_positive": false,
+              "episode_dd_within8": true,
+              "episode_dd_not_over50bp_worse": true,
+              "continuous_dd_within8": true,
+              "continuous_dd_not_over50bp_worse": false,
+              "continuous_return_not_over50bp_worse": false,
+              "quality_clear": false,
+              "accounting_clear": true,
+              "industry_factor_check": false
+            },
+            "qualifies": false,
+            "mean_advantage": -0.003360218333333368,
+            "winning_episodes": 3,
+            "lower90": -0.02031410000000013,
+            "standard_error": 0.011984174383170622,
+            "score": -0.01534439271650399
+          }
+        }
+      },
+      "trial_source": "artifacts/experiments/strategy_study_2026-11-20/primary_training/training/fold_03/inner_rules/baseline.json"
+    },
+    "staged_restore": {
+      "tested": true,
+      "choice": {
+        "model": "momentum",
+        "rules": "baseline",
+        "mode": "staged_restore",
+        "turnover": "legacy"
+      },
+      "validation": {
+        "returns": [
+          -0.05505578,
+          -0.012315960000000015,
+          0.008872189999999947,
+          -0.010451699999999953,
+          0.06317897000000006,
+          0.11853236000000011
+        ],
+        "mean_net_return": 0.018793346666666693,
+        "worst_drawdown": -0.06400390269028089,
+        "episodes": 6,
+        "trades": 90,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "identity": "c596bb5ac421abf032df3b8c7c12bc93f778baa8a575b092f2ec9879036e408d",
+        "config": "baseline",
+        "continuous": {
+          "start": "2025-10-10",
+          "end": "2026-01-08",
+          "sessions": 63,
+          "return": -0.00281139000000008,
+          "max_drawdown": -0.06951014303260816,
+          "es95": -0.01965660008063556,
+          "fees": 2285.18,
+          "slippage_cost": 4544.21,
+          "total_cost": 6829.39,
+          "trades": 57,
+          "turnover": 4.5441806,
+          "ending_cash": 367820.41,
+          "ending_receivables": 0.0,
+          "unresolved_events": 0,
+          "quality_issues": 0,
+          "rejection_counts": {
+            "T1_OR_MINIMUM_QUANTITY": 8,
+            "LOT_BUDGET_TOO_SMALL": 2
+          },
+          "solver_counts": {
+            "OPTIMAL": 16,
+            "HOLD_BETWEEN_REBALANCES": 45,
+            "INFEASIBLE_REDUCE_ONLY": 2
+          },
+          "mean_exposure": 0.28415448223199596,
+          "target_exposure_breach_days": 0,
+          "risk_mode": "staged_restore",
+          "rule_config_days": {
+            "baseline": 63
+          },
+          "phase_days": {
+            "NORMAL": 7,
+            "CAUTION45": 11,
+            "FROZEN20": 45
+          },
+          "recovery_transitions": [
+            {
+              "date": "2025-10-20",
+              "state_age_before": 6,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1009560.0,
+              "drawdown": 0.05361532746939257,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "staged_restore"
+            },
+            {
+              "date": "2025-10-23",
+              "state_age_before": 3,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "FROZEN20",
+              "level": 2,
+              "cap": 0.2,
+              "can_buy": false,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_6",
+              "peak": 1009560.0,
+              "drawdown": 0.06060455049724622,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "staged_restore"
+            },
+            {
+              "date": "2025-12-25",
+              "state_age_before": 45,
+              "healthy_streak_before": 3,
+              "previous_phase": "FROZEN20",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "RESTORE_BELOW_5",
+              "peak": 1009560.0,
+              "drawdown": 0.035758904869448105,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": true,
+              "mode": "staged_restore"
+            },
+            {
+              "date": "2026-01-08",
+              "state_age_before": 8,
+              "healthy_streak_before": 3,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "NORMAL",
+              "level": 0,
+              "cap": 0.9,
+              "can_buy": true,
+              "changed": true,
+              "reason": "RESTORE_BELOW_2_5",
+              "peak": 1017361.3800000001,
+              "drawdown": 0.008834815412395614,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": true,
+              "mode": "staged_restore"
+            }
+          ],
+          "probe_entries": 0,
+          "probe_failures": 0
+        },
+        "accounting_pass": true,
+        "accounting_checks": 3252,
+        "execution_checks": 4274,
+        "ledger_sha256": "9800c40d8a3a1c88e8d7eb33296ebd825688dfc43fb0829193b5a7dab4cd52ac",
+        "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\strategy_study_2026-11-20\\selection\\training\\fold_03\\trials\\momentum__baseline__staged_restore__legacy.ledgers.json.gz"
+      },
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": true,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true,
+          "positive_mean_minus_standard_error": false
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0,
+        "winning_episodes": 0,
+        "lower90": 0.0,
+        "standard_error": 0.0,
+        "score": 0.0
+      },
+      "selection_evidence": null,
+      "trial_source": "artifacts/experiments/strategy_study_2026-11-20/selection/training/fold_03/trials/momentum__baseline__staged_restore__legacy.json"
+    },
+    "probe_restore": {
+      "tested": true,
+      "choice": {
+        "model": "momentum",
+        "rules": "baseline",
+        "mode": "probe_restore",
+        "turnover": "legacy"
+      },
+      "validation": {
+        "returns": [
+          -0.05505578,
+          -0.012315960000000015,
+          0.008872189999999947,
+          -0.010451699999999953,
+          0.06317897000000006,
+          0.11853236000000011
+        ],
+        "mean_net_return": 0.018793346666666693,
+        "worst_drawdown": -0.06400390269028089,
+        "episodes": 6,
+        "trades": 90,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "identity": "c596bb5ac421abf032df3b8c7c12bc93f778baa8a575b092f2ec9879036e408d",
+        "config": "baseline",
+        "continuous": {
+          "start": "2025-10-10",
+          "end": "2026-01-08",
+          "sessions": 63,
+          "return": -0.00281139000000008,
+          "max_drawdown": -0.06951014303260816,
+          "es95": -0.01965660008063556,
+          "fees": 2285.18,
+          "slippage_cost": 4544.21,
+          "total_cost": 6829.39,
+          "trades": 57,
+          "turnover": 4.5441806,
+          "ending_cash": 367820.41,
+          "ending_receivables": 0.0,
+          "unresolved_events": 0,
+          "quality_issues": 0,
+          "rejection_counts": {
+            "T1_OR_MINIMUM_QUANTITY": 8,
+            "LOT_BUDGET_TOO_SMALL": 2
+          },
+          "solver_counts": {
+            "OPTIMAL": 16,
+            "HOLD_BETWEEN_REBALANCES": 45,
+            "INFEASIBLE_REDUCE_ONLY": 2
+          },
+          "mean_exposure": 0.28415448223199596,
+          "target_exposure_breach_days": 0,
+          "risk_mode": "probe_restore",
+          "rule_config_days": {
+            "baseline": 63
+          },
+          "phase_days": {
+            "NORMAL": 7,
+            "CAUTION45": 11,
+            "FROZEN20": 45
+          },
+          "recovery_transitions": [
+            {
+              "date": "2025-10-20",
+              "state_age_before": 6,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1009560.0,
+              "drawdown": 0.05361532746939257,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "probe_restore"
+            },
+            {
+              "date": "2025-10-23",
+              "state_age_before": 3,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "FROZEN20",
+              "level": 2,
+              "cap": 0.2,
+              "can_buy": false,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_6",
+              "peak": 1009560.0,
+              "drawdown": 0.06060455049724622,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "probe_restore"
+            },
+            {
+              "date": "2025-12-25",
+              "state_age_before": 45,
+              "healthy_streak_before": 3,
+              "previous_phase": "FROZEN20",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "RESTORE_BELOW_5",
+              "peak": 1009560.0,
+              "drawdown": 0.035758904869448105,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": true,
+              "mode": "probe_restore"
+            },
+            {
+              "date": "2026-01-08",
+              "state_age_before": 8,
+              "healthy_streak_before": 3,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "NORMAL",
+              "level": 0,
+              "cap": 0.9,
+              "can_buy": true,
+              "changed": true,
+              "reason": "RESTORE_BELOW_2_5",
+              "peak": 1017361.3800000001,
+              "drawdown": 0.008834815412395614,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": true,
+              "mode": "probe_restore"
+            }
+          ],
+          "probe_entries": 0,
+          "probe_failures": 0
+        },
+        "accounting_pass": true,
+        "accounting_checks": 3252,
+        "execution_checks": 4274,
+        "ledger_sha256": "6a834ef594f3289a0657f51003b5c6307d7cb60d07d4ed63fcc21cd3e7a4de20",
+        "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\strategy_study_2026-11-20\\selection\\training\\fold_03\\trials\\momentum__baseline__probe_restore__legacy.ledgers.json.gz"
+      },
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": true,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true,
+          "positive_mean_minus_standard_error": false
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0,
+        "winning_episodes": 0,
+        "lower90": 0.0,
+        "standard_error": 0.0,
+        "score": 0.0
+      },
+      "selection_evidence": null,
+      "trial_source": "artifacts/experiments/strategy_study_2026-11-20/selection/training/fold_03/trials/momentum__baseline__probe_restore__legacy.json"
+    },
+    "cost_penalty": {
+      "tested": true,
+      "choice": {
+        "model": "momentum",
+        "rules": "baseline",
+        "mode": "latched",
+        "turnover": "cost_penalty"
+      },
+      "validation": {
+        "returns": [
+          -0.05505578,
+          -0.012315960000000015,
+          0.008872189999999947,
+          -0.010451699999999953,
+          0.06317897000000006,
+          0.11853236000000011
+        ],
+        "mean_net_return": 0.018793346666666693,
+        "worst_drawdown": -0.06400390269028089,
+        "episodes": 6,
+        "trades": 90,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "identity": "c596bb5ac421abf032df3b8c7c12bc93f778baa8a575b092f2ec9879036e408d",
+        "config": "baseline",
+        "continuous": {
+          "start": "2025-10-10",
+          "end": "2026-01-08",
+          "sessions": 63,
+          "return": -0.024217000000000044,
+          "max_drawdown": -0.06951014303260816,
+          "es95": -0.019332029427462157,
+          "fees": 1083.46,
+          "slippage_cost": 1972.74,
+          "total_cost": 3056.2,
+          "trades": 31,
+          "turnover": 1.9727185,
+          "ending_cash": 778623.5,
+          "ending_receivables": 0.0,
+          "unresolved_events": 0,
+          "quality_issues": 0,
+          "rejection_counts": {
+            "T1_OR_MINIMUM_QUANTITY": 9,
+            "LOT_BUDGET_TOO_SMALL": 2
+          },
+          "solver_counts": {
+            "OPTIMAL": 14,
+            "HOLD_BETWEEN_REBALANCES": 47,
+            "INFEASIBLE_REDUCE_ONLY": 2
+          },
+          "mean_exposure": 0.24554886092608477,
+          "target_exposure_breach_days": 0,
+          "risk_mode": "latched",
+          "rule_config_days": {
+            "baseline": 63
+          },
+          "phase_days": {
+            "NORMAL": 6,
+            "CAUTION45": 3,
+            "FROZEN20": 54
+          },
+          "recovery_transitions": [
+            {
+              "date": "2025-10-20",
+              "state_age_before": 6,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1009560.0,
+              "drawdown": 0.05361532746939257,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            },
+            {
+              "date": "2025-10-23",
+              "state_age_before": 3,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "FROZEN20",
+              "level": 2,
+              "cap": 0.2,
+              "can_buy": false,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_6",
+              "peak": 1009560.0,
+              "drawdown": 0.06060455049724622,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          ],
+          "probe_entries": 0,
+          "probe_failures": 0
+        },
+        "accounting_pass": true,
+        "accounting_checks": 2996,
+        "execution_checks": 4062,
+        "ledger_sha256": "18e2e4414ca08d947e462ecf371c5942bb9b047cc01d2195a7fed12ca439230e",
+        "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\strategy_study_2026-11-20\\selection\\training\\fold_03\\trials\\momentum__baseline__latched__cost_penalty.ledgers.json.gz"
+      },
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": true,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true,
+          "positive_mean_minus_standard_error": false
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0,
+        "winning_episodes": 0,
+        "lower90": 0.0,
+        "standard_error": 0.0,
+        "score": 0.0
+      },
+      "selection_evidence": null,
+      "trial_source": "artifacts/experiments/strategy_study_2026-11-20/selection/training/fold_03/trials/momentum__baseline__latched__cost_penalty.json"
+    },
+    "cost_band": {
+      "tested": true,
+      "choice": {
+        "model": "momentum",
+        "rules": "baseline",
+        "mode": "latched",
+        "turnover": "cost_band"
+      },
+      "validation": {
+        "returns": [
+          -0.05505578,
+          -0.012315960000000015,
+          0.008872189999999947,
+          -0.010451699999999953,
+          0.06317897000000006,
+          0.11853236000000011
+        ],
+        "mean_net_return": 0.018793346666666693,
+        "worst_drawdown": -0.06400390269028089,
+        "episodes": 6,
+        "trades": 90,
+        "unresolved_events": 1,
+        "quality_issues": 0,
+        "identity": "c596bb5ac421abf032df3b8c7c12bc93f778baa8a575b092f2ec9879036e408d",
+        "config": "baseline",
+        "continuous": {
+          "start": "2025-10-10",
+          "end": "2026-01-08",
+          "sessions": 63,
+          "return": -0.024217000000000044,
+          "max_drawdown": -0.06951014303260816,
+          "es95": -0.019332029427462157,
+          "fees": 1083.46,
+          "slippage_cost": 1972.74,
+          "total_cost": 3056.2,
+          "trades": 31,
+          "turnover": 1.9727185,
+          "ending_cash": 778623.5,
+          "ending_receivables": 0.0,
+          "unresolved_events": 0,
+          "quality_issues": 0,
+          "rejection_counts": {
+            "T1_OR_MINIMUM_QUANTITY": 9,
+            "LOT_BUDGET_TOO_SMALL": 2
+          },
+          "solver_counts": {
+            "OPTIMAL": 14,
+            "HOLD_BETWEEN_REBALANCES": 47,
+            "INFEASIBLE_REDUCE_ONLY": 2
+          },
+          "mean_exposure": 0.24554886092608477,
+          "target_exposure_breach_days": 0,
+          "risk_mode": "latched",
+          "rule_config_days": {
+            "baseline": 63
+          },
+          "phase_days": {
+            "NORMAL": 6,
+            "CAUTION45": 3,
+            "FROZEN20": 54
+          },
+          "recovery_transitions": [
+            {
+              "date": "2025-10-20",
+              "state_age_before": 6,
+              "healthy_streak_before": 0,
+              "previous_phase": "NORMAL",
+              "probe_anchor_before": null,
+              "phase": "CAUTION45",
+              "level": 1,
+              "cap": 0.45,
+              "can_buy": true,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_4",
+              "peak": 1009560.0,
+              "drawdown": 0.05361532746939257,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            },
+            {
+              "date": "2025-10-23",
+              "state_age_before": 3,
+              "healthy_streak_before": 0,
+              "previous_phase": "CAUTION45",
+              "probe_anchor_before": null,
+              "phase": "FROZEN20",
+              "level": 2,
+              "cap": 0.2,
+              "can_buy": false,
+              "changed": true,
+              "reason": "GLOBAL_DRAWDOWN_6",
+              "peak": 1009560.0,
+              "drawdown": 0.06060455049724622,
+              "state_age": 0,
+              "healthy_streak": 0,
+              "probe_anchor": null,
+              "healthy": false,
+              "mode": "latched"
+            }
+          ],
+          "probe_entries": 0,
+          "probe_failures": 0
+        },
+        "accounting_pass": true,
+        "accounting_checks": 2996,
+        "execution_checks": 4062,
+        "ledger_sha256": "ddeb2ced5dbd978bfbfc25d4e98a1976695dc6b48df340fbc86a88746ceaa68f",
+        "ledger_path": "D:\\投资组合量化\\artifacts\\experiments\\strategy_study_2026-11-20\\selection\\training\\fold_03\\trials\\momentum__baseline__latched__cost_band.ledgers.json.gz"
+      },
+      "adoption": {
+        "requirements": {
+          "six_complete_episodes": true,
+          "minimum_mean_advantage": false,
+          "wins_at_least_four": false,
+          "lower90_positive": false,
+          "episode_dd_within8": true,
+          "episode_dd_not_over50bp_worse": true,
+          "continuous_dd_within8": true,
+          "continuous_dd_not_over50bp_worse": true,
+          "continuous_return_not_over50bp_worse": true,
+          "quality_clear": false,
+          "accounting_clear": true,
+          "positive_mean_minus_standard_error": false
+        },
+        "qualifies": false,
+        "mean_advantage": 0.0,
+        "winning_episodes": 0,
+        "lower90": 0.0,
+        "standard_error": 0.0,
+        "score": 0.0
+      },
+      "selection_evidence": null,
+      "trial_source": "artifacts/experiments/strategy_study_2026-11-20/selection/training/fold_03/trials/momentum__baseline__latched__cost_band.json"
+    },
+    "stable_selection": {
+      "tested": false,
+      "status": "NOT_TESTED_COMPONENT_GATE",
+      "components": [
+        "positive_adoption",
+        "industry_holdout"
+      ]
+    },
+    "stable_cost_band": {
+      "tested": false,
+      "status": "NOT_TESTED_COMPONENT_GATE",
+      "components": [
+        "positive_adoption",
+        "cost_band"
+      ]
+    }
+  },
+  "inner_selected": {
+    "recipe": "matched_momentum",
+    "choice": {
+      "model": "momentum",
+      "rules": "baseline",
+      "mode": "latched",
+      "turnover": "legacy"
+    }
+  },
+  "outer_results_used_for_selection": false,
+  "fit_result_sha256": "81dace521cd0ff08253c73c03ed0db1eb39a835d926b93cfa69789983cdf8507"
+}

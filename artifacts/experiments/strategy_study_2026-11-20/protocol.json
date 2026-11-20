@@ -1,0 +1,115 @@
+{
+  "registered_at": "2026-11-20T14:35:15.009905+08:00",
+  "identity": "c596bb5ac421abf032df3b8c7c12bc93f778baa8a575b092f2ec9879036e408d",
+  "specification": {
+    "plan": "configs/protocols/strategy_study.json",
+    "plan_sha256": "33ef06d267067ade7110e189494cf604fad766d3105a120f41d0558703bde754",
+    "data_sha256": "f387f259843397187afde08ea24a7e4348f6960fd23b3862348299e70fc8e40c",
+    "baseline": "artifacts/experiments/market_retraining_2026-11-20",
+    "recipes": {
+      "positive_adoption": {
+        "components": [
+          "positive_adoption"
+        ],
+        "positive_score": true,
+        "industry_holdout": false,
+        "mode": "latched",
+        "turnover": "legacy"
+      },
+      "industry_holdout": {
+        "components": [
+          "industry_holdout"
+        ],
+        "positive_score": false,
+        "industry_holdout": true,
+        "mode": "latched",
+        "turnover": "legacy"
+      },
+      "staged_restore": {
+        "components": [
+          "staged_restore"
+        ],
+        "positive_score": false,
+        "industry_holdout": false,
+        "mode": "staged_restore",
+        "turnover": "legacy"
+      },
+      "probe_restore": {
+        "components": [
+          "probe_restore"
+        ],
+        "positive_score": false,
+        "industry_holdout": false,
+        "mode": "probe_restore",
+        "turnover": "legacy"
+      },
+      "cost_penalty": {
+        "components": [
+          "cost_penalty"
+        ],
+        "positive_score": false,
+        "industry_holdout": false,
+        "mode": "latched",
+        "turnover": "cost_penalty"
+      },
+      "cost_band": {
+        "components": [
+          "cost_band"
+        ],
+        "positive_score": false,
+        "industry_holdout": false,
+        "mode": "latched",
+        "turnover": "cost_band"
+      },
+      "stable_selection": {
+        "components": [
+          "positive_adoption",
+          "industry_holdout"
+        ],
+        "positive_score": true,
+        "industry_holdout": true,
+        "mode": "latched",
+        "turnover": "legacy"
+      },
+      "stable_cost_band": {
+        "components": [
+          "positive_adoption",
+          "cost_band"
+        ],
+        "positive_score": true,
+        "industry_holdout": false,
+        "mode": "latched",
+        "turnover": "cost_band"
+      }
+    },
+    "source_sha256": {
+      "__init__.py": "e95ef6cbb6eea19224d4de28118508d7714cd9b88d95f915639e56ac911bb7a1",
+      "__main__.py": "da611df5578a975edf9bb6c1c0929f0bf8049aee45a24cd3a7bf16903a909224",
+      "allocation.py": "eb048fce8da892c259c21335be4964be130df889a1fd93d5035290c28bab2695",
+      "calibration.py": "0727196e4d378f814f16bf84fcf13b172cbf4f139e19374a671c3fb5002c2f91",
+      "cli.py": "53852a9ff8bd14af3631b5c182eca8534ada5b8f9f946dc9d9a11a1fb52e7648",
+      "dataset.py": "1404f19839d63efaba035d5cfff498073446a08500e9953e2f687c96eb842745",
+      "evaluation.py": "68c58fd1c77bf23f0eb7fe16f4300823eddda9885b45f69c8bdd09fe804b9114",
+      "features.py": "80e965c953e976789a04ea343d694b3367a9b3a24ea2614d5b95ef2c63890cbf",
+      "ledger.py": "d8b464016b32cb0b55b6960f0bbeb7189f8e99404527cd3a5b85dffe9248f0c5",
+      "market.py": "00456b0347cd30f1e5060e31a213d7e3af978c2ace945c9a93d3a8003617bf83",
+      "market_data.py": "8dfe48cc175062985fdfc4e2dd218dff44d6eb79d3a626b473573f5a99612698",
+      "metrics.py": "63619e807886de901232c8fc9f61704aebe067286b90b8d1d5336096f621b77f",
+      "models.py": "97324ddc38de9935fbed8a231817ab0c92c545f65d11648ecb1de1ad1d202dbd",
+      "preprocessing.py": "ef88df88addf0527c30ede4c17846373a1e910fc6b77beb63d6c8dfe1f1047ab",
+      "refresh.py": "f58079149a7aa56b30565cd8dcc3e3696683f49a10118b4e218824e608c75d12",
+      "reporting.py": "52eb711a7a46622354df5a8c78c009d34cd2a998b7c0f8df3c7b201a1c46a474",
+      "risk.py": "a20ee6dce02d9c755396f41e311589802b3794932c757387c1c2b9a9f5df8877",
+      "rules.py": "c59a1d5e4090a157971133fe1ec5c72fd1efd96e3c929675874690b5af0b0a75",
+      "selection.py": "69098b220a0c2268a84a572164d9bb29243499c69e969645e4a1d7b5776ecbb9",
+      "settings.py": "0d287ba9afe086c7f07bf9b63b97bd157afac587a5323231a701a873cca267d6",
+      "simulation.py": "6c8d5182f68a3e50aff5dab48b4f86685a95eb1c28b92ed86aebdaea0d566169",
+      "snapshots.py": "0c229d1ca52f3a6bc8259941fb51381cd4ddd24d727fe9b03af6fc01344a736d",
+      "storage.py": "39b2692d46fa4e06df614368ef614afc2dde576d1d6bfad09b4674514926b76d",
+      "study.py": "2288c4b15f87eadbe0265021ada21e7fb994acc4eec8679980ce7be0761f299e",
+      "training.py": "aa160d3b856bf1d5db5b7600d60f577ce2f77f6cf002e2f09e87f8ce5a19c2a1",
+      "validation.py": "ed93d01ae5f6e65b6da84cd795566f4860a1ff01f166a06d13383aec08c1b8cf",
+      "verification.py": "66e60dea0c6c4dad687cd64ba8de89ca2321c1179a9443777af3c6dbf78f2a41"
+    }
+  }
+}
