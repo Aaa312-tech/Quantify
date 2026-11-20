@@ -10,8 +10,36 @@ from .ledger import nearest_tick
 EXECUTION_MODEL = "opening_proxy_separate_cost"
 
 
-def board_limit(m, date):
+def risk_warning(meta, date, *, as_of=None):
+    """Return an effective warning using only notices available at the decision time."""
+    periods = meta.get("risk_warning_periods", ())
+    if not periods:
+        return None
+    day = pd.Timestamp(date)
+    if day.tzinfo is not None:
+        day = day.tz_convert("Asia/Shanghai").tz_localize(None)
+    day = day.normalize()
+    available = (
+        day.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=9, minutes=25)
+        if as_of is None
+        else pd.Timestamp(as_of)
+    )
+    if pd.isna(day) or pd.isna(available) or available.tzinfo is None:
+        raise ValueError("Security status needs a session and timezone-aware information cutoff")
+    session = str(day.date())
+    for period in periods:
+        if period["start"] <= session and pd.Timestamp(period["start_available_at"]) <= available:
+            # A later removal notice cannot clear a warning in an earlier decision.
+            if session < period["end"] or pd.Timestamp(period["end_available_at"]) > available:
+                return period
+    return None
+
+
+def board_limit(m, date, *, as_of=None):
     """Return the daily price-limit assumption for the board and date."""
+    warning = risk_warning(m, date, as_of=as_of)
+    if warning is not None:
+        return warning["limit"]
     code = m["code"]
     if m["kind"] == "etf":
         return m.get("observed_limit", 0.20 if code in ["159915", "588000"] else 0.10)
@@ -36,7 +64,7 @@ def regime(panels, date):
     return 0.60, float(breadth), "震荡"
 
 
-def opening_price(meta, raw, date, previous, actions=(), side="BUY", *, status=None):
+def opening_price(meta, raw, date, previous, actions=(), side="BUY", *, status=None, as_of=None):
     """Use only the opening quote and information available by the opening auction.
 
     Daily volume and the eventual high/low cannot establish opening tradability.
@@ -56,6 +84,8 @@ def opening_price(meta, raw, date, previous, actions=(), side="BUY", *, status=N
             return None, "INVALID_OPENING_STATUS"
         if status["suspended"]:
             return None, "SUSPENDED_AT_OPEN"
+    if side == "BUY" and risk_warning(meta, date, as_of=as_of) is not None:
+        return None, "RISK_WARNING_BUY_EXCLUDED"
     if date not in raw.index or previous not in raw.index:
         return None, "NO_QUOTE"
     old = float(raw.at[previous, "close"])
@@ -75,7 +105,7 @@ def opening_price(meta, raw, date, previous, actions=(), side="BUY", *, status=N
         return None, "INVALID_OPENING_REFERENCE"
     if abs(o - nearest_tick(o, tick)) > tick * 1e-6:
         return None, "OFF_TICK_OPENING_QUOTE"
-    lim = board_limit(meta, date)
+    lim = board_limit(meta, date, as_of=as_of)
     upper = nearest_tick(ref * (1 + lim), tick)
     lower = nearest_tick(ref * (1 - lim), tick)
     if not lower <= o <= upper:

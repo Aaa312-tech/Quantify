@@ -1,0 +1,62 @@
+{
+  "name": "historical_status_repair",
+  "registered_at": "2026-11-21T02:29:34.487372+08:00",
+  "baseline_commit": "708e8480c0b43f8cd460dfd5605d9a4ca328a60c",
+  "parent_protocol": "configs/protocols/inner_action_review.json",
+  "parent_protocol_sha256": "8fb90f82a27a73e4f18b29bf82766cf66e7534320d94441401db089b9c23d78c",
+  "source_bundle": "data/processed/2026-11-19-inner-actions/bundle.joblib",
+  "source_bundle_sha256": "d523eece966153dcbbddea9027b41c73bf514bdb3e3d5ad97f6729e41a3657cc",
+  "source_data_cutoff": "2026-11-19",
+  "review": "docs/references/security_status/dated_review_2026-11-21.json",
+  "review_sha256": "e476056e7dd2e19ec310ae9a70031fa3d9062795173f19da35434765507f1293",
+  "provider_audit": "artifacts/checks/historical_status_2026-11-21/provider_audit/summary.json",
+  "provider_audit_sha256": "189a91f61b55adc1d0bc245a6805f4c71f10180ef6f1f22a6020f0de380bfa98",
+  "provider_records": "artifacts/checks/historical_status_2026-11-21/provider_audit/securities.json.gz",
+  "provider_records_sha256": "a22a6dbefb0b080750c5af65a8036d0c7cbf58780b6a3bb323a797f3a8c02018",
+  "scope": "Apply all ten issuer-reviewed risk-warning intervals. Rebuild eligibility, cross-sectional scores, 57 model inputs and legal labels; use dated sourced limits and reject strategy buys during effective warnings. Preserve raw prices, actions, current universe, industry assignments, calendar and row identities.",
+  "source_selection": "All ten positive securities from the frozen independent provider screen; include all reviewed facts regardless of subsequent profitability. The source review has no return-based exclusions.",
+  "availability_basis": "CALENDAR_PUBLICATION_DATE_NEXT_MIDNIGHT",
+  "information_policy": "Prior-close signals use 16:00 Asia/Shanghai; opening execution uses 09:25. Notice dates become available at the following calendar midnight, before each registered effective opening. Unknown future starts/removals cannot alter earlier decisions. This is a conservative retrospective convention, not certified intraday availability.",
+  "quarantined": {
+    "sh688017": "Historical amount and turnover remain absent; status repair does not clear this independent data quarantine."
+  },
+  "baseline_run": "artifacts/experiments/inner_action_review_2026-11-21",
+  "baseline_evaluation": "artifacts/evaluations/inner_action_review_2026-11-21",
+  "snapshot_output": "data/processed/2026-11-19-reviewed-status",
+  "training_output": "artifacts/experiments/historical_status_repair_2026-11-21",
+  "evaluation_output": "artifacts/evaluations/historical_status_repair_2026-11-21",
+  "checks_output": "artifacts/checks/historical_status_repair_2026-11-21",
+  "selection_mode": "positive_score",
+  "turnover_policy": "legacy",
+  "risk": "Balanced attack; latched 4/6/8 percent stages; original high-water mark; no automatic recovery after downgrade or the 8 percent exit.",
+  "retraining": {
+    "windows": 11,
+    "include_latest": true,
+    "fits": 48,
+    "slippage_bps": [
+      10,
+      20,
+      30
+    ],
+    "policies": 19,
+    "evaluation_accounts": 1425,
+    "selection": "All original model, calibration, allocation and adoption thresholds unchanged. Only inner validation selects candidates; no new strategy search."
+  },
+  "comparison": "Reconcile every positive vendor session to dated notices and every eligibility removal. Compare old and new models, predictions, choices, continuous and ten-session accounts. Run all 1425 accounts separately with frozen old forecasts and rule choices: verify forecast row identity on the OLD bundle, then execute on the corrected bundle. The diagnostic preserves old ranks and common forecasts and is not a new trained strategy. Attribute the remaining change to full rebuilding and retraining.",
+  "verification": "Exact untouched-parent rebuild, exact unchanged raw/actions/calendar/row identities and feature names; record all feature and label changes; no new eligible rows; exclude all 2755 reviewed warning sessions, remove exactly 1634 formerly eligible rows. Verify 48 model reloads, all new and fixed-forecast account audits, 75 complete paper accounts and original frozen-file hashes.",
+  "adoption": "Retain sourced data corrections regardless of historical return impact. Activate only after the full registered training and independent account checks pass; then bind a new nonblocking status-review record to the corrected bundle. Never rewrite the old impact review or infer fresh market data or superiority from engineering validation.",
+  "limitations": [
+    "Retrospective research on repeatedly inspected windows; no independent forward performance evidence.",
+    "The ten positive intervals are source-reviewed; negative vendor flags, full historical listings/delistings, industries, Beijing stocks and funds are not certified.",
+    "Calendar publication dates do not prove an exact intraday public-availability time; daily suspension flags do not certify opening status.",
+    "Other historical corporate-action dates and fractional-share allocation remain incomplete outside the reviewed queue.",
+    "Opening prices are proxies; queue, liquidity, competition fees and matching remain unconfirmed.",
+    "No market-date extension. The 2026-11-20 complete-data gate and forward observation remain pending."
+  ],
+  "decision": "RESEARCH_ONLY",
+  "code_prerequisite": {
+    "version": "0.16.0",
+    "validation": "artifacts/checks/historical_status_implementation_2026-11-21/validation.json",
+    "validation_sha256": "13d9bac9cfcbdc1a3508abfa40b68e7a1b7134e8d86cd75dd2c25c473a526aad"
+  }
+}

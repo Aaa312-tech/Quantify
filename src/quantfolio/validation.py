@@ -57,6 +57,18 @@ def opening_errors(trade, bundle):
         limit = 0.20
     else:
         limit = 0.10
+    deadline = date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=9, minutes=25)
+    for period in meta.get("risk_warning_periods", ()):
+        start_known = pd.Timestamp(period["start_available_at"])
+        end_known = pd.Timestamp(period["end_available_at"])
+        if start_known.tzinfo is None or end_known.tzinfo is None:
+            failures.append("INVALID_RISK_WARNING_AVAILABILITY")
+            continue
+        if period["start"] <= trade["date"] and start_known <= deadline:
+            if trade["date"] < period["end"] or end_known > deadline:
+                limit = period["limit"]
+                if trade["side"] == "BUY":
+                    failures.append("BUY_DURING_RISK_WARNING")
     upper = (Decimal(str(reference * (1 + limit))) / tick).quantize(
         Decimal("1"), rounding=ROUND_HALF_UP
     ) * tick

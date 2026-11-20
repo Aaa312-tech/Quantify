@@ -152,10 +152,22 @@ python -m quantfolio audit-status --collection data/raw/status_history_example -
 数据身份与请求范围；离线核查可重复传入不重叠的成功批次。数据提供方的日线标记只能
 帮助定位历史状态问题；当前两只证券的公告核验与1425账户排查、三只证券的训练输入
 核查及546只沪深股票的全范围来源比较保存在`artifacts/checks/historical_status_2026-11-21`。
-其中10只带历史ST标记，三只已核实公告，另七只须补证；这些材料不会自动覆盖历史资格、
+其中10只带历史ST标记，现已补齐全部生效和撤销公告；这些材料不会自动覆盖历史资格、
 模型或回测。前3个采集批次记录了开发期间的源码哈希，但未保存各中间版本的完整源码；
 最后一批另存`collector_source.py`并核对其哈希。最终离线核查重新解析了全部原始响应。
 接口用法和依赖来源见[BaoStock维护者发布页](https://pypi.org/project/baostock/0.9.4/)。
+
+日期修正按`configs/protocols/historical_status_repair.json`执行：
+
+```powershell
+python -m quantfolio repair-status --protocol configs/protocols/historical_status_repair.json --output data/processed/2026-11-19-reviewed-status
+```
+
+协议绑定父数据、公告文件、筛查结果和输出目录。已有输出不能覆盖；复现时另存协议副本，
+仅将输出路径改为新的研究目录并记录新协议哈希。随后配置对应快照和协议，运行
+`train --include-latest`、`evaluate --all-policies`及`verify-paper`。
+重训固定48次拟合、19种原政策与三档滑点，不新增候选。固定旧预测的1425账户须单独比较：
+旧预测先按旧快照验证行身份，再在修正快照上执行；它只用于定位修正影响，不能代替新训练。
 
 ## 安装包检查
 

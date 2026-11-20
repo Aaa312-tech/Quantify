@@ -1,0 +1,957 @@
+
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title>搜狐股票</title>
+		<!-- news sdk meta -->
+		<meta name="keywords" content="A股行情, 港股行情, 美股行情, 基金净值, 即时快讯, 公司与产业, 市场评论, 深度分析, 机构研究报告, 宏观与政策, 投资体检, 盘中统计, 热门游资, 金罗盘券商研究能力量化评测" />
+		<meta name="description" content="覆盖沪深京港美全球行情，毫秒级报价精准直达；深度透视公司财务与股权，实时追踪市场动态及舆情风向；独家投资体检、盘中统计、热门游资，及金罗盘券商研究能力量化评测；新闻客户端与手机网无缝协同，全平台立体护航" />
+		<!-- <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=yes" /> -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="renderer" content="webkit" />
+		<meta name="format-detection" content="telephone=no" />
+		<!-- QQ强制竖屏 -->
+		<meta name="x5-orientation" content="portrait" />
+		<meta name="x5-page-mode" content="app" />
+		<!-- UC 强制竖屏 -->
+		<meta name="screen-orientation" content="portrait" />
+		<script type="text/javascript" src="//static.k.sohu.com/static/node-stock/v1-0-4/_common/js/jquery.min.js?20240117"></script>
+		<script type="text/javascript" src="//static.k.sohu.com/static/node-stock/v1-0-4/_common/js/ejs.min.js?20240117"></script>
+		<script type="text/javascript" src="//static.k.sohu.com/static/node-stock/v1-0-4/_common/js/common.js?20240117"></script>
+		<script type="text/javascript" src="//static.k.sohu.com/static/node-stock/v1-0-4/_common/js/gbk.js?20240117"></script>
+		<!--[if lt IE 9]>
+    <script type="text/javascript" src="//static.k.sohu.com/static/node-stock/v1-0-4/_common/js/es5-shim.min.js"></script>
+    <script type="text/javascript" src="//static.k.sohu.com/static/node-stock/v1-0-4/_common/js/es5-sham.min.js"></script>
+    <script type="text/javascript" src="//static.k.sohu.com/static/node-stock/v1-0-4/_common/js/respond.min.js"></script>
+    <script type="text/javascript" src="//static.k.sohu.com/static/node-stock/v1-0-4/_common/js/json3.min.js"></script>
+    <script type="text/javascript" src="//static.k.sohu.com/static/node-stock/v1-0-4/_common/js/ie8hack.js"></script>
+    <script type="text/javascript" src="//static.k.sohu.com/static/node-stock/v1-0-4/_common/js/html5shiv.js"></script>
+    <link href="//47f72d130392f.cdn.sohucs.com/web/static/css/ie8hack-9dce3c3b96.css" rel="stylesheet" />
+    <style>  
+    .tips-ok-msg,.tips-error-msg{-ms-filter:"progid:DXImageTransform.Microsoft.gradient(startColorstr=#CC000000,endColorstr=#CC000000)";}  
+    </style>  
+  <![endif]-->
+		<link rel="stylesheet" href="//static.k.sohu.com/static/node-stock/v1-0-4/_common/css/loginbar.css?202608271600">
+		<link href="//static.k.sohu.com/static/node-stock/v1-0-4/index/css/app.css?202608271600" rel="stylesheet" />
+		<script type="text/javascript" src="//js.sohu.com/mail/pv/pv_v203_ajax.js"></script>
+	</head>
+
+	<body id="bodyContent">
+
+		<div id="wrapper">
+			<!--sohu loginbar -->
+			<div class="CompTPLTopNavBar" id="TPLTopNavBarc80da3420125684076ff1691391588010mu3c38ey2g7"
+				name=TPLTopNavBar>
+				<div id="main-header" data-server-rendered="true" class="area clear sub-nav" data-v-f5d92f22>
+					<div class="z-navigation-main-wrapper navigation-main-wrap" data-v-f5d92f22>
+						<div data-spm="block1_78_6yAGlY_1_nav" class="navigation-top-wrapper" data-v-f5d92f22>
+							<div class="navigation-image-wrap" data-v-f5d92f22><a href="//www.sohu.com" target="_blank"
+									data-v-f5d92f22><img
+										src="https://29e5534ea20a8.cdn.sohucs.com/mptc-mpfe/img/components-pc/sohu-logo.png"
+										class="top-logo" style="width: 72px; height: 48px;" data-v-f5d92f22></a></div>
+							<ul data-v-f5d92f22>
+								<li class="navigation-head-list-li" data-v-f5d92f22><a
+										href="https://news.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+										class="navigation-head-list-a" data-v-f5d92f22>新闻</a></li>
+								<li class="navigation-head-list-li" data-v-f5d92f22><a
+										href="https://sports.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+										class="navigation-head-list-a" data-v-f5d92f22>体育</a></li>
+								<li class="navigation-head-list-li" data-v-f5d92f22><a
+										href="https://auto.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+										class="navigation-head-list-a" data-v-f5d92f22>汽车</a></li>
+								<li class="navigation-head-list-li" data-v-f5d92f22><a
+										href="https://house.focus.cn/?scm=1103.plate:260:0.0.2.0" target="_blank"
+										class="navigation-head-list-a" data-v-f5d92f22>房产</a></li>
+								<li class="navigation-head-list-li" data-v-f5d92f22><a
+										href="https://travel.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+										class="navigation-head-list-a" data-v-f5d92f22>旅游</a></li>
+								<li class="navigation-head-list-li" data-v-f5d92f22><a
+										href="https://learning.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+										class="navigation-head-list-a" data-v-f5d92f22>教育</a></li>
+								<li class="navigation-head-list-li" data-v-f5d92f22><a
+										href="https://fashion.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+										class="navigation-head-list-a" data-v-f5d92f22>时尚</a></li>
+								<li class="navigation-head-list-li" data-v-f5d92f22><a
+										href="https://it.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+										class="navigation-head-list-a" data-v-f5d92f22>科技</a></li>
+								<li class="navigation-head-list-li" data-v-f5d92f22><a
+										href="https://business.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+										class="navigation-head-list-a" data-v-f5d92f22>财经</a></li>
+								<li class="navigation-head-list-li" data-v-f5d92f22><a
+										href="https://yule.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+										class="navigation-head-list-a" data-v-f5d92f22>娱乐</a></li>
+								<li class="navigation-head-list-li" data-v-f5d92f22><a
+										href="https://baobao.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+										class="navigation-head-list-a" data-v-f5d92f22>母婴</a></li>
+								<li class="navigation-head-list-li navigation-head-extra" data-v-f5d92f22><a
+										href="javascript:void(0)" class="navigation-head-list-a"
+										style="display: inline-block;height: 32px;" data-v-f5d92f22><span
+											style="display: inline-block;vertical-align: top;" data-v-f5d92f22>更多</span>
+										<svg width="24px" height="15px" viewBox="0 0 48 48" version="1.1"
+											xmlns="http://www.w3.org/2000/svg"
+											xmlns:xlink="http://www.w3.org/1999/xlink" class="more-arrow"
+											data-v-f5d92f22>
+											<title data-v-f5d92f22>icon_Unfold</title>
+											<g id="图标库" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"
+												data-v-f5d92f22>
+												<g id="icon_展开/收起" fill="#fff" data-v-f5d92f22>
+													<polygon id="矩形" points="12 18 36 18 24 34" data-v-f5d92f22>
+													</polygon>
+												</g>
+											</g>
+										</svg></a>
+									<div class="navigation-more-list" data-v-f5d92f22>
+										<div class="navigation-more-box" data-v-f5d92f22><a
+												href="https://www.sohu.com/xchannel/TURBd01EQXdOekUx?scm=1103.plate:260:0.0.2.0"
+												target="_blank" class="navigation-more-show" data-v-f5d92f22>健康</a>
+										</div>
+										<div class="navigation-more-box" data-v-f5d92f22><a
+												href="https://history.sohu.com/?scm=1103.plate:260:0.0.2.0"
+												target="_blank" class="navigation-more-show" data-v-f5d92f22>历史</a>
+										</div>
+										<div class="navigation-more-box" data-v-f5d92f22><a
+												href="https://mil.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+												class="navigation-more-show" data-v-f5d92f22>军事</a></div>
+										<div class="navigation-more-box" data-v-f5d92f22><a
+												href="https://chihe.sohu.com/?scm=1103.plate:260:0.0.2.0"
+												target="_blank" class="navigation-more-show" data-v-f5d92f22>美食</a>
+										</div>
+										<div class="navigation-more-box" data-v-f5d92f22><a
+												href="https://cul.sohu.com/?scm=1103.plate:260:0.0.2.0" target="_blank"
+												class="navigation-more-show" data-v-f5d92f22>文化</a></div>
+										<div class="navigation-more-box" data-v-f5d92f22><a
+												href="https://www.sohu.com/xchannel/TURBd01EQXdOREU0?scm=1103.plate:260:0.0.2.0"
+												target="_blank" class="navigation-more-show" data-v-f5d92f22>星座</a>
+										</div>
+										<div class="navigation-more-box" data-v-f5d92f22><a
+												href="https://www.sohu.com/xchannel/TURBd01EQXhPVGt5?scm=1103.plate:260:0.0.2.0"
+												target="_blank" class="navigation-more-show" data-v-f5d92f22>专题</a>
+										</div>
+										<div class="navigation-more-box" data-v-f5d92f22><a
+												href="https://www.sohu.com/xchannel/TURBd01EQXdOelEw?scm=1103.plate:260:0.0.2.0"
+												target="_blank" class="navigation-more-show" data-v-f5d92f22>游戏</a>
+										</div>
+										<div class="navigation-more-box" data-v-f5d92f22><a
+												href="https://www.sohu.com/xchannel/392?scm=1103.plate:260:0.0.2.0"
+												target="_blank" class="navigation-more-show" data-v-f5d92f22>搞笑</a>
+										</div>
+										<div class="navigation-more-box" data-v-f5d92f22><a
+												href="https://www.sohu.com/xchannel/TURBd01EQXdNek01?scm=1103.plate:260:0.0.2.0"
+												target="_blank" class="navigation-more-show" data-v-f5d92f22>动漫</a>
+										</div>
+										<div class="navigation-more-box" data-v-f5d92f22><a
+												href="https://www.sohu.com/xchannel/TURBd01EQXdNekl3?scm=1103.plate:260:0.0.2.0"
+												target="_blank" class="navigation-more-show" data-v-f5d92f22>宠物</a>
+										</div>
+										<div class="more-list-arrow-icon" data-v-f5d92f22></div>
+										<div style="width: 100%;height: 8px;position: absolute;top: -8px;left: 0;"
+											data-v-f5d92f22></div>
+									</div>
+								</li>
+							</ul>
+							<div class="navigation-login-wrap" data-v-f5d92f22>
+								<div id="head-login" class="right login" data-v-f5d92f22></div>
+							</div>
+							<!-- <a href="javascript:;" class="wza-btn" data-v-f5d92f22>
+          无障碍
+        </a> -->
+						</div>
+					</div>
+				</div>
+			</div><!--sohu loginbar end -->
+			
+			<div class="main-nav">
+			<div id="gpMainTop" class="main-top">
+				<div style="padding-top: 1px;">
+	<div class="title-top clearfix">
+		<div class="left">
+			<a href="/" class="logo"></a>
+			<a target="_blank" href="//s.m.sohu.com/t/index.html" class="mobile"></a>
+		</div>
+		<div class="searchbox">
+			<div id="search-content" class="navsea" >
+				<form class="searchForm autoTmp" method=get action=javascript:void(0); target="_blank"><input class="searchInput kw" value=代码/名称/简写 disableautocomplete="" autocomplete="off"> <input class="btn" value="" type="submit"> 
+				</form>
+				<div style="display: none" id="suggestDiv" class="suggestDiv suggestLists"></div>
+			</div>
+		</div>
+		<div class="suggestionbox">
+			<a target="_blank" href="//q.stock.sohu.com/feedback.html" class="suggestion">
+			</a>
+		</div>
+	</div>
+	<div class="stock-nav">
+		<ul class="navlist">
+			
+			<li class="nav-mystock"><a target="_blank" href="//q.stock.sohu.com/cn/mystock.shtml"></a></li>
+			<li><a target="_blank" href="//q.stock.sohu.com/fund/etfindex.html">ETF筛选</a><span class="line"></span></li>
+			<li><a target="_blank" href="//q.stock.sohu.com/cn/bk.shtml">热门板块</a></li>
+			<li><a target="_blank" href="//q.stock.sohu.com/cn/ph.shtml">涨跌排行</a></li>
+			<li><a target="_blank" href="//q.stock.sohu.com/cn/zs.shtml">大盘指数</a></li>
+			<li><a  target="_blank" href="//q.stock.sohu.com/fundflow/">资金流向</a></li>
+			<li><a target="_blank" href="//stock.sohu.com/ipo/">IPO新股</a></li>
+			<li class="nav-hotmoney"><a href="//q.stock.sohu.com/cn/hotmoney.html">热门游资</a><span class="ico"></span></li>
+			<li><a target="_blank" href="//q.stock.sohu.com/app2/bigdeal2.jsp">大宗交易</a></li>
+			<li><a target="_blank" href="//q.stock.sohu.com/app2/rpsholder.up">内部交易</a></li>
+			<li><a target="_blank" href="//q.stock.sohu.com/app2/mpssTrade.up">融资融券</a></li>
+			<!-- <li><a target="_blank" href="//stock.sohu.com/s2011/jlp/">金罗盘</a></li> -->
+			<li><a href="//q.stock.sohu.com/cn/kzz_ph.html">可转债</a></li>
+			<li><a target="_blank" href="//q.fund.sohu.com/jzph/zxjz_date_up.shtml">基金净值</a></li>
+			<li><a target="_blank" href="//q.stock.sohu.com/hk/hk_ph.html">港股</a><span class="new">新</span><span class="line"></span></li></li>
+			<li><a target="_blank" href="//q.stock.sohu.com/us/zgg.html">美股</a></li>
+		</ul>
+		<div class="userInfo" id="userInfoIcon" style="display: none;">
+			<div class="menuList" id="userMenu">
+				<ul>
+					<li class="menu-li consultantOnly"><a href="javascript:void(0);" data-href='/sdk/performance'>我的主页</a></li>
+					<li class="menu-li consultantOnly"><a href="/sdk/transfer?page=callin">管理组合</a>
+						<ul class="l2-menu">
+							<li class="menu-li"><a href="/sdk/transfer?page=callin">调入</a></li>
+							<li class="menu-li"><a href="/sdk/transfer?page=callout">调出</a></li>
+							<li class="menu-li"><a href="/sdk/transfer?page=cancel">撤单</a></li>
+							<li class="menu-li"><a href="/sdk/transfer?page=record">调仓记录</a></li>
+						</ul>
+					</li>
+					 <!-- data-href="http://mp.sohu.com" -->
+					<li class="menu-li consultantOnly"><a href="//mp.sohu.com" target="_blank">发布观点</a></li>
+					<li class="menu-li"><a href="javascript:void(0);" data-href="/sdk/concern#myconcern">我的关注</a></li>
+					<li class="menu-li"><a href="javascript:void(0);" data-href="/sdk/concern#mycollection">我的收藏</a></li>
+					<li class="menu-li commonOnly"><a href="javascript:void(0);" data-href="/sdk/concern#application">申请策略师入住</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script id="userMenuTpl" type="text/template">
+	<ul>
+		{{ if(userLogined && isConsultant){ }}
+		<li class="menu-li"><a href="/person">我的主页</a></li>
+		<li class="menu-li"><a href="javascript:void(0);">管理组合</a>
+<!-- 			<ul class="l2-menu">
+				<li><a href="javascript:void(0);">调入</a></li>
+				<li><a href="javascript:void(0);">调出</a></li>
+				<li><a href="javascript:void(0);">撤单</a></li>
+				<li><a href="javascript:void(0);">调仓记录</a></li>
+			</ul> -->
+		</li>
+		<li class="menu-li"><a href="javascript:void(0);">发布观点</a></li>
+		{{ } }}
+		<li class="menu-li"><a href="javascript:void(0);">我的关注</a></li>
+		<li class="menu-li"><a href="javascript:void(0);">我的收藏</a></li>
+		{{ if(!userLogined || !isConsultant){ }}
+		<!-- <li class="menu-li"><a href="javascript:void(0);">申请策略师入住</a></li> -->
+		{{ } }}
+	</ul>
+</script>
+			</div>
+		</div>
+
+		<div class="body-content clearfix">
+			<div class="left-zs">
+				<div class="item-content zsbox clearfix">
+					<div class="item-row row1">
+						<div class="zsbox-left">
+							<div id="shanghaiIndex" class="item-column ">
+
+							</div>
+							<div id="shenzhenIndex" class="item-column ">
+							
+							</div>
+						</div>
+						<div class="zsbox-right">
+							<div id="chuangyeIndex" class="item-column ">
+
+							</div>
+							
+							<div id="nasiIndex" class="item-column ">
+
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="item-column clearfix">
+					<div id="pangzhongItem"></div>
+					<div id="pangzhongHk"></div>
+				</div>
+				
+			</div>
+			<div class="news-index">
+				<div class="news-container">
+					<div class="news-header">
+						<div class="title">要 闻</div>
+						<a href="//q.stock.sohu.com/cn/newslist.html" class="more" target="_blank">更多 ></a>
+					</div>
+					<ul class="news-list" id="newslist">
+						
+					</ul>
+				</div>
+
+			</div>
+		</div>
+		<!--<div class="indexAd" style="text-align:center;margin:-10px 0 20px"><a href="https://v.wjx.cn/vm/mhsx5FR.aspx#" target="_blank"><img src="//static.k.sohu.com/static/node-stock/v1-0-4/index/images/ad.jpg" /></a></div>-->
+		<div class="main-content">
+
+			<div class="item-content">
+				
+				<div class="item-row row2 clearfix">
+					
+					<div id="hushenRise" class="col-left">
+						<div class="tabbox">
+							<div class="tabtag">
+								<ul>
+									<li class="colItemLi item active">
+										<a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sh_as&field=changerate&sort=up" target="_blank">沪市涨</a>
+									</li>
+									<li>
+										<a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sh_as&field=changerate&sort=down" target="_blank">沪市跌</a>
+									</li>
+								</ul>
+								<div class="tabline"></div>
+							</div>
+							<div id="hushiRise" class="stocklist tabcon"></div>
+							<div id="shenshiRise" class="stocklist tabcon hidden"></div>
+						</div>
+					</div>
+					<div id="sz" class="col-mid">
+						<div class="tabbox">
+							<div class="tabtag">
+								<ul>
+									<li class="active">
+										<a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sz_as&field=changerate&sort=up" target="_blank">深市涨</a>
+									</li>
+									<li>
+										<a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sz_as&field=changerate&sort=down" target="_blank">深市跌</a>
+									</li>
+									
+								</ul>
+								<div class="tabline"></div>
+							</div>
+							<div id="szZhang" class="stocklist tabcon"></div>
+							<div id="szDie" class="stocklist tabcon hidden"></div>
+						</div>
+					</div>
+
+					<div class="col-right">
+						<div class="mystock-myrecent tabbox">
+							<div class="tabtag">
+								<ul>
+									<li class="active">
+										<a target="_blank" href="//q.stock.sohu.com/cn/mystock.shtml">我的自选</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);">最近访问</a>
+									</li>
+								</ul>
+								<div class="tabline"></div>
+							</div>
+							<div class="tabcon" id="mystock">
+								
+							</div>
+							<div class="tabcon hidden" id="myrecent">
+								
+							</div>
+							
+						</div>
+
+						<div class="zhangdie tabbox">
+							<div class="tabtag">
+								<ul>
+									<li class="active">
+										<a href="//q.stock.sohu.com/cn/bk.shtml" target="_blank">领涨板块</a>
+									</li>
+									<li>
+										<a href="//q.stock.sohu.com/cn/bk.shtml?sort=up" target="_blank">领跌板块</a>
+									</li>
+								</ul>
+								<div class="tabline"></div>
+							</div>
+
+							<div class="stocklist tabcon" id="ledRise">
+								
+							</div>
+							<div class="stocklist tabcon hidden" id="ledDecline">
+								
+							</div>
+						</div>
+						<!-- 领涨领跌 end -->
+					</div><!-- right end -->
+				</div>
+				<!-- row2 end -->
+
+				<div class="item-row row3 clearfix">
+					
+					<div class="col-left" id="hk">
+						<div class="zhangdie tabbox">
+							<div class="tabtag">
+								<ul>
+									<li class="active">热门港股</li>
+									<li>
+										<a href="//q.stock.sohu.com/hk/hk_ph.html?column=amt&sort=desc" target="_blank">港股成交额</a>
+									</li>
+								</ul>
+								<div class="tabline"></div>
+							</div>
+
+							<div class="stocklist tabcon" id="hkHot">
+								
+							</div>
+							<div class="stocklist tabcon hidden" id="hkAmt">
+								
+							</div>
+						</div>
+						<!-- 领涨领跌 end -->
+					</div>
+					<div class="col-mid" id="us">
+						<div class="zhangdie tabbox">
+							<div class="tabtag">
+								<ul>
+									<li class="active">热门美股</li>
+									<li>
+										<a href="//q.stock.sohu.com/us/zgg.html?column=amt&sort=desc" target="_blank">美股成交额</a>
+									</li>
+								</ul>
+								<div class="tabline"></div>
+							</div>
+
+							<div class="stocklist tabcon" id="usHot">
+								
+							</div>
+							<div class="stocklist tabcon hidden" id="usAmt">
+								
+							</div>
+						</div>
+						<!-- 领涨领跌 end -->
+					</div>
+					
+					<div id="fundIn" class="col-right fund-in-out">
+						<div class="tabbox">
+							<div class="tabtag">
+								<ul>
+									<li class="colItemLi item active">
+										<a href="//q.stock.sohu.com/fundflow/stock_inflow.html?name=NetVal&io=In"
+											target="_blank">资金流入</a>
+									</li>
+									<li class="colItemLi item">
+										<a href="//q.stock.sohu.com/fundflow/stock_inflow.html?name=NetVal&io=Out"
+											target="_blank">资金流出</a>
+									</li>
+								</ul>
+								<div class="tabline"></div>
+							</div>
+
+							<div class="stocklist tabcon" id="fundInContent">
+								
+							</div>
+							<div class="stocklist tabcon hidden" id="fundOutContent">
+								
+							</div>
+						</div>
+						
+					</div>
+
+					
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- <div style="height:50px;">
+</div>
+<div class="tipsMask" id="tipsMaskBox">
+
+</div>
+<div style="display: none;" id="staticPath" data-path="/build"></div> -->
+	<script id="columnItem3" type="text/template">
+		<div class="tabbox">
+			<div class="tabtag">
+				<ul>
+				{{ if(colItems){ }}
+				{{ colItems.forEach(function(item,index){ }}
+				{{ if(index == 0){  }}
+					<li class="active">
+				{{ }else{ }}
+					<li>
+				{{ } }}
+						<a target="_blank" href="{{= item.linkUrl }}">{{= item.title}}</a>
+						
+					</li>
+				
+				{{ }); }}
+				{{ } }}
+					
+				</ul>
+			<div class="line1px"></div>
+		    </div>
+
+
+		    {{ if(colItems){ }}
+			{{ colItems.forEach(function(item,index){ }}
+			{{ if(index == 0){  }}
+				<div class="tabcon">
+			{{ }else{ }}
+				<div class="tabcon hidden">
+			{{ } }}
+					
+						
+					<div class="zsinfo">
+						<span class="price"></span>
+						<span class="zde"></span>
+						<span class="zdf"></span>
+					</div>
+					<a target="_blank" href="{{= item.linkUrl }}"><img id="{{= item.id }}" class="indexImg" src="{{= item.imgUrl}}"></a>
+				</div>
+			{{ }); }}
+			{{ } }}
+
+	    </div>
+
+	
+</script>
+
+<script id="columnItem3x" type="text/template">
+		<div class="colItem3">
+		<ul>
+		{{ if(colItems){ }}
+		{{ colItems.forEach(function(item,index){ }}
+		{{ if(index == 0){  }}
+			<li class="colItemLi item active">
+		{{ }else{ }}
+			<li class="colItemLi item">
+		{{ } }}
+				<a target="_blank" href="{{= item.linkUrl }}" class="colItem-title">{{= item.title}}</a>
+				<div class="colItem">
+					<a target="_blank" href="{{= item.linkUrl }}"><img id="{{= item.id }}" class="indexImg" src="{{= item.imgUrl}}"></a>
+				</div>
+			</li>
+		
+		{{ }); }}
+		{{ } }}
+			<div class="line1px"></div>
+		</ul>
+		
+	</div>
+</script>
+
+	<script id="panzhongtongjiTpl" type="text/template">
+		    <!-- 顶部涨跌停/停牌 -->
+		    <div class="top-bar">
+		        <div class="up-item"><a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sh_as&field=changerate&sort=up" target="_blank"><span class="name">涨停</span><span class="num">{{= stat[16] }}</span></a></div>
+		        <div class="halt-item"  style="left:{{= (parseFloat(stat[16])/(parseFloat(stat[16]) + parseFloat(stat[17]) + parseFloat(stat[18]))) * 100 }}%"><span class="name">停牌</span><span class="num">{{= stat[18] }}</span></div>
+		        <div class="down-item"><a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sh_as&field=changerate&sort=down" target="_blank"><span class="name">跌停</span><span class="num">{{= stat[17] }}</span></a></div>
+		    </div>
+		    <div class="bar-line">
+		        <div class="bar-red" style="width:{{= (parseFloat(stat[16])/(parseFloat(stat[16]) + parseFloat(stat[17]) + parseFloat(stat[18]))) * 100 }}%"></div>
+		        <div class="bar-gray" style="width:{{= (parseFloat(stat[18])/(parseFloat(stat[16]) + parseFloat(stat[17]) + parseFloat(stat[18]))) * 100 }}%"><div></div></div>
+		        <div class="bar-green" style="width:{{= (parseFloat(stat[17])/(parseFloat(stat[16]) + parseFloat(stat[17]) + parseFloat(stat[18]))) * 100 }}%"></div>
+		    </div>
+		
+		    <!-- 数据表格 -->
+		    <table class="data-table" id="panzhong_tj">
+		        <thead>
+		            <tr>
+		                <th class="status-name"><a target="_blank" href="https://q.stock.sohu.com/cn/zdt.shtml">盘中 ></a></th>
+		                <th class="hd-item">股票只数</th>
+		                <th class="hd-item">涨/平/跌</th>
+		                <th class="hd-item">流通市值(亿)</th>
+		                <th class="hd-item">成交额(亿)</th>
+		                <th class="hd-item">平均市盈率</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            <tr>
+		                <td class="sc-name"><a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sh_as&field=changerate&sort=up" target="_blank">沪&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;市</a></td>
+		                <td>{{= stat[0] }}</td>
+		                <td>
+							<a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sh_as&amp;field=changerate&amp;sort=up" target="_blank" class="stock-red"><em class="stock-red">{{= stat[2] }}</em></a>
+														<em class="stock-black">/{{= stat[4] }}/</em>
+														<a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sh_as&amp;field=changerate&amp;sort=down" target="_blank" class="stock-green"><em class="stock-green">{{= stat[6] }}</em></a>
+		                </td>
+		                <td>{{= stat[8] }}</td>
+		                <td><a href="https://q.stock.sohu.com/cn/ph_m.shtml?type=sh_as&field=turnover&sort=up" target="_blank">{{= stat[10] }}</a></td>
+		                <td><a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sh_as&amp;field=peratio&amp;sort=up" target="_blank">{{= stat[12] }}</a></td>
+		            </tr>
+		            <tr>
+		                <td class="sc-name"><a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sz_as&field=changerate&sort=up" target="_blank">深&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;市</a></td>
+		                <td>{{= stat[1] }}</td>
+		                <td>
+							<a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sz_as&amp;field=changerate&amp;sort=up" target="_blank" class="stock-red"><em class="stock-red">{{= stat[3] }}</em></a>
+														<em class="stock-black">/{{= stat[5] }}/</em>
+														<a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sz_as&amp;field=changerate&amp;sort=down" target="_blank" class="stock-green"><em class="stock-green">{{= stat[7] }}</em></a>
+		                </td>
+		                <td>{{= stat[9] }}</td>
+		                <td><a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sz_as&field=turnover&sort=up" target="_blank">{{= stat[11] }}</a></td>
+		                <td><a href="//q.stock.sohu.com/cn/ph_m.shtml?type=sz_as&amp;field=peratio&amp;sort=up" target="_blank">{{= stat[13] }}</a></td>
+		            </tr>
+		            <tr>
+		                <td class="sc-name"><a href="//q.stock.sohu.com/cn/ph_m.shtml?type=bj_as&field=changerate&sort=up" target="_blank">北 交 所</a></td>
+		                <td>{{= stat[19] }}</td>
+		                <td>
+		                    <a href="//q.stock.sohu.com/cn/ph_m.shtml?type=bj_as&amp;field=changerate&amp;sort=up" target="_blank" class="stock-red"><em class="stock-red">{{= stat[20] }}</em></a>
+		                    							<em class="stock-black">/{{= stat[21] }}/</em>
+		                    							<a href="//q.stock.sohu.com/cn/ph_m.shtml?type=bj_as&amp;field=changerate&amp;sort=down" target="_blank" class="stock-green"><em class="stock-green">{{= stat[22] }}</em></a>
+		                </td>
+		                <td>{{= stat[23] }}</td>
+		                <td><a href="//q.stock.sohu.com/cn/ph_m.shtml?type=bj_as&field=turnover&sort=up" target="_blank">{{= stat[24] }}</a></td>
+		                <td><a href="//q.stock.sohu.com/cn/ph_m.shtml?type=bj_as&amp;field=peratio&amp;sort=up" target="_blank">{{= stat[25] }}</a></td>
+		            </tr>
+		            
+		        </tbody>
+		    </table>
+</script>
+<!-- <tr id="hkstat"></tr> -->
+
+	<script id="hushenRiseTpl" type="text/template">
+		<table cellspacing="0">
+		<thead >
+			<tr>
+				<td>股票名称</td>
+				<td>当前价格</td>
+				<td>涨跌幅↓</td>
+				<td>换手率</td>
+			</tr>
+		</thead>
+		<tbody >
+			{{ tbody.forEach(function(val,i){ }}
+				{{ if(i>13){ return } }}
+				<tr>
+					<td>
+						<div class="addmystockbox">
+							<a target="_blank" href="{{= val.desurl }}">{{= val.name }}</a>
+							<a title="加自选" class="addmystock" market="1" code="{{= val.code }}" href="//q.stock.sohu.com/cn/mystock.shtml?t=cn&outlink=y&code={{= val.code }}" target="_blank"></a>
+						</div>
+					</td>
+					<td>{{= val.now_price }}</td>
+					<td>
+					{{ if(parseFloat(val.changerate)>0){ }}
+					<em class="stock-red">
+					{{ } }}
+					{{ if(parseFloat(val.changerate)<0){ }}
+					<em class="stock-green">
+					{{ } }}
+					{{ if(parseFloat(val.changerate)==0){ }}
+					<em>
+					{{ } }}{{= val.changerate }}</em></td>
+					<td>{{= val.turnoverrate }}</td>
+				</tr>
+			{{ }); }}
+		</tbody>
+	</table>
+</script>
+
+	<script id="szTpl" type="text/template">
+		<table cellspacing="0">
+		<thead >
+			<tr>
+				<td>股票名称</td>
+				<td>当前价格</td>
+				<td>涨跌幅↓</td>
+				<td>换手率</td>
+			</tr>
+		</thead>
+		<tbody >
+			{{ tbody.forEach(function(val,i){ }}
+				{{ if(i>13){ return } }}
+				<tr>
+					<td>
+						<div class="addmystockbox">
+							<a target="_blank" href="{{= val.desurl }}">{{= val.name }}</a>
+							<a title="加自选" class="addmystock" market="1" code="{{= val.code }}" href="//q.stock.sohu.com/cn/mystock.shtml?t=cn&outlink=y&code={{= val.code }}" target="_blank"></a>
+						</div>
+					</td>
+					<td>{{= val.now_price }}</td>
+					<td>
+					{{ if(parseFloat(val.changerate)>0){ }}
+					<em class="stock-red">
+					{{ } }}
+					{{ if(parseFloat(val.changerate)<0){ }}
+					<em class="stock-green">
+					{{ } }}
+					{{ if(parseFloat(val.changerate)==0){ }}
+					<em>
+					{{ } }}{{= val.changerate }}</em></td>
+					<td>{{= val.turnoverrate }}</td>
+				</tr>
+			{{ }); }}
+		</tbody>
+	</table>
+</script>
+
+	<script id="hkTpl" type="text/template">
+		<table cellspacing="0">
+		<thead >
+			<tr>
+				<td>股票名称</td>
+				<td>当前价格</td>
+				<td>涨跌幅</td>
+				<td>成交额(港元){{= arrow.arrow }}</td>
+			</tr>
+		</thead>
+		<tbody >
+			{{ tbody.forEach(function(val,i){ }}
+				<tr>
+					<td>
+						<div class="addmystockbox">
+							<a class="stockname" target="_blank" href="//q.stock.sohu.com/hk/show_hk.html?code=hk_{{= val[0] }}" title="{{= val[1] }}">{{= val[1] }}</a>
+							<a title="加自选" class="addmystock" market="1" code="hk_{{= val[0] }}" href="//q.stock.sohu.com/cn/mystock.shtml?t=cn&outlink=y&code=hk_{{= val[0] }}" target="_blank"></a>
+						</div>
+					</td>
+					
+					<td>{{= val[2] }}</td>
+					<td>
+					{{ if(parseFloat(val[4])>0){ }}
+					<em class="stock-red">
+					{{ } }}
+					{{ if(parseFloat(val[4])<0){ }}
+					<em class="stock-green">
+					{{ } }}
+					{{ if(parseFloat(val[4])==0){ }}
+					<em>
+					{{ } }}{{= val[4] }}</em></td>
+					<td>{{= parseFloat(val[7]).toFixed(1) }}亿</td>
+				</tr>
+			{{ }); }}
+		</tbody>
+	</table>
+</script>
+<script id="usTpl" type="text/template">
+		<table cellspacing="0">
+		<thead >
+			<tr>
+				<td>股票名称</td>
+				<td>当前价格</td>
+				<td>涨跌幅</td>
+				<td>成交额(美元){{= arrow.arrow }}</td>
+			</tr>
+		</thead>
+		<tbody >
+			{{ tbody.forEach(function(val,i){ }}
+				<tr>
+					<td>
+						<div class="addmystockbox">
+							<a class="stockname" target="_blank" href="//q.stock.sohu.com/us/{{= val[1] }}.html" title="{{= val[0] }}">{{= val[0] }}</a>
+							<a title="加自选" class="addmystock" market="1" code="us_{{= val[1] }}" href="//q.stock.sohu.com/cn/mystock.shtml?t=cn&outlink=y&code=us_{{= val[1] }}" target="_blank"></a>
+						</div>
+					</td>
+					
+					<td>{{= val[2] }}</td>
+					<td>
+					{{ if(parseFloat(val[3])>0){ }}
+					<em class="stock-red">
+					{{ } }}
+					{{ if(parseFloat(val[3])<0){ }}
+					<em class="stock-green">
+					{{ } }}
+					{{ if(parseFloat(val[3])==0){ }}
+					<em>
+					{{ } }}{{= val[3] }}</em></td>
+					<td>{{= parseFloat(val[6]).toFixed(1) }}亿</td>
+				</tr>
+			{{ }); }}
+		</tbody>
+	</table>
+</script>
+
+	<script id="ledRiseAndDeclineTpl" type="text/template">
+
+
+
+		{{ if(colItems){ }}
+		{{ colItems.forEach(function(item,index){ }}
+
+		<table cellspacing="0">
+			<thead>
+				<tr>
+					<td>板块名称</td>
+					<td>平均价格</td>
+					<td>涨跌幅↓</td>
+					<td>领涨股</td>
+				</tr>
+			</thead>
+			<tbody>
+				{{ item.tbody.forEach(function(val,i){ }}
+				<tr>
+					<td><a target="_blank" href="{{= val.dlink }}" title="{{= val.name }}">{{= val.name }}</a></td>
+					<td>{{= val.priceString }}</td>
+					<td>
+						{{ if((/^-/).test(val.changerateString)){ }}
+						<em class="stock-green">
+							{{ }else{ }}
+							<em class="stock-red">
+								{{ } }}
+								{{= val.changerateString }}&nbsp;</em>
+					</td>
+					<td>
+						<div class="addmystockbox">
+							<a target="_blank" href="{{= val.leaderlink }}">{{= val.leadername }}</a>
+							<a title="加自选" class="addmystock" market="1" code="{{= val.leadercode }}"
+								href="//q.stock.sohu.com/cn/mystock.shtml?t=cn&outlink=y&code={{= val.leadercode }}"
+								target="_blank"></a>
+						</div>
+					</td>
+				</tr>
+				{{ }); }}
+
+			</tbody>
+		</table>
+		{{ }); }}
+		{{ } }}
+
+
+
+		<!--ledRiseAndDecline end-->
+	</script>
+
+
+	
+
+
+	<script id="compassRankTpl" type="text/template">
+		<ul>
+	{{ if(rankList){ }}
+		{{ rankList.forEach(function(item,i){  }}
+			{{ var personUrl = "/sdk/performance?email=" + item.email; }}
+			
+		<li class="rank-li">
+			<a class="rankItem" href="{{= personUrl }}">
+				<div>
+					<img class="avatar" src="{{= item.imageUrl }}">
+					<span class="username">{{= item.name }}</span>
+					<span class="rate">胜率：<span class="rateNum stock-red">{{= item.winningProbability }}</span></span>
+				</div>
+				<div style="margin-top: 15px;">
+					<ul>
+						<li class="short">
+							<p class="{{= window.commonFunc.getClassNameByValue(item.profit) }}">{{= item.profit }}</p>
+							<p class="des">收益</p>
+						</li>
+						<li class="short">
+							<p>{{= item.changeHands }}</p>
+							<p class="des">换手</p>
+						</li>
+						<li class="short">
+							<p>{{= item.netValue }}</p>
+							<p class="des">净值</p>
+						</li>
+						<li class="short">
+							<p class="{{= window.commonFunc.getClassNameByValue(item.maxProfit) }}">{{= item.maxProfit }}</p>
+							<p class="des">最大获利</p>
+						</li>
+					</ul>
+				</div>
+			</a>
+			{{ if(item.concern == 1){ }}
+			<span class="btn-focus btn-disable" data-email='{{= item.email }}'>已关注</span>
+			{{ }else{ }}
+			<span class="btn-focus" data-email='{{= item.email }}'>关注</span>
+			{{	} }}
+		</li>
+	{{	}); }}
+	{{	} }}
+	</ul>
+<div style="height: 0;clear:both;"></div>			
+<!--compassRankTpl end-->
+</script>
+
+
+	<script id="fundInOutTpl" type="text/template">
+		<table cellspacing="0">
+		<thead >
+			<tr>
+				<td style="width:25%">股票名称</td>
+				<td style="width:20%" class="ta-c">现价</td>
+				<td style="width:20%">涨跌幅</td>
+				<td style="width:35%">{{= title.t2 }}</td>
+			</tr>
+		</thead>
+		<tbody >
+			{{ tbody.forEach(function(val,i){ }}
+				<tr>
+					<td>
+						<div class="addmystockbox">
+							<a target="_blank" href="{{= val.stockUrl }}"  title="{{= val.stockName}}">{{= val.stockName }}</a>
+							<a title="加自选" class="addmystock" market="1" code="cn_{{= val.stockCode }}" href="//q.stock.sohu.com/cn/mystock.shtml?t=cn&outlink=y&code=cn_{{= val.stockCode }}" target="_blank"></a>
+						</div>
+					</td>
+					<td class="ta-c">{{= val.stockNowValueString }}</td>
+					<td>
+						{{ if((/^-/).test(val.stockRateString)){ }}
+						<em class="stock-green">
+						{{ }else{ }}
+						<em class="stock-red">
+						{{ } }}
+						{{= val.stockRateString }}</em>
+					
+					</td>
+					<td class="ta-c">{{= (parseFloat(val.stockValue)/10000).toFixed(1) }}亿</td>
+				</tr>
+			{{ }); }}
+		</tbody>
+	</table>
+</script>
+
+	<script id="tipsTpl" type="text/template">
+	{{ if(tips.tipsType == 'tips' ){ }}
+		{{ if(tips.msgType == 'ok' ){ }}
+		<div class="tipsBox tips-ok-msg concern-ok">
+			<div class="msg-ico-ok"></div>
+			<p>{{= tips.msg }}</p>
+		</div>
+		{{ }else if(tips.msgType == 'error' ){ }}
+		<div class="tipsBox tips-error-msg concern-error">
+			<div class="msg-ico-error"></div>
+			<p>{{= tips.msg }}</p>
+		</div>
+		{{ }else if(tips.msgType == 'text' ){ }}
+		<div class="tipsBox tips-text-msg">
+			<p>{{= tips.msg }}</p>
+		</div>
+		{{ } }}
+	{{ }else if(tips.tipsType == 'confirm' ){ }}
+		<div class="tipsBox tips-confirm-msg">
+			<div class=""></div>
+			<p>{{= tips.msg }}</p>
+		</div>
+	{{ } }}
+</script>
+<script id="confirmTpl" type="text/template">
+<div class="pop-tips">
+	{{if(tipMsg && tipMsg.length>0){ }}
+		{{ tipMsg.forEach(function(val,i){  }}
+			<div class="tips-text">{{= val}}</div>
+		{{ }); }}	    
+	{{ } }}
+	
+	{{if(tipOk){ }}
+	    <a id="tipOk" href="javascript: void(0);" class="{{= tipCancel?'btn-ok':'btn-enter'}}" action="{{= action? action : ''}}">确定</a>
+	{{ } }}
+	{{if(tipCancel){ }}
+	    <a id="tipCancel" href="javascript: void(0);" class="btn-no">取消</a>
+	{{ } }}
+</div>
+</script>
+	<div style="height:50px;">
+</div>
+
+		<div style="display: none;" id="staticPath" data-path="//static.k.sohu.com/static/node-stock/v1-0-4/"></div>
+		<div class="tipsMask" id="tipsMaskBox">
+		</div>
+		<script src="//statics.itc.cn/web/static/js/lib-111eab4f1d.js"></script>
+
+		<script src="//static.k.sohu.com/static/finance/pc/qstock/loginbar.js"></script>
+		<script>
+			window.RUNNINGENV = "cloudProd";
+			
+		</script>
+		<!-- sohu loginbar end -->
+
+
+<script type="text/javascript" src="//static.k.sohu.com/static/node-stock/v1-0-4/index/js/index.js?202608271600"></script>
+<script type="text/javascript" src="//static.k.sohu.com/static/finance/pc/tongji/tongji.js"></script>
+
+<div class="midea-pop"></div>
+<div class="midea-popbg"></div>
+	</body>
+</html>

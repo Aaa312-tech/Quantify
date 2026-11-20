@@ -45,6 +45,13 @@ def main(argv: list[str] | None = None) -> None:
         default="configs/protocols/action_repair.json",
         help="Registered repair protocol",
     )
+    status_repair = commands.add_parser(
+        "repair-status", help="Rebuild eligibility from reviewed historical warning notices"
+    )
+    status_repair.add_argument("--output", required=True, help="New directory under data/processed")
+    status_repair.add_argument(
+        "--protocol", required=True, help="Registered status repair protocol"
+    )
     refresh = commands.add_parser("refresh-data", help="Build a reviewed market-data extension")
     refresh.add_argument("--output", required=True, help="New directory under data/processed")
     refresh.add_argument("--protocol", required=True, help="Registered market refresh protocol")
@@ -261,6 +268,10 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .snapshots import repair_snapshot
 
         return repair_snapshot(paths, args.output, args.protocol)
+    if args.command == "repair-status":
+        from .status_repair import repair_status_snapshot
+
+        return repair_status_snapshot(paths, args.output, args.protocol)
     if args.command == "fetch-bars":
         from .market_data import fetch_bars
 

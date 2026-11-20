@@ -11,7 +11,7 @@ import pandas as pd
 
 from .allocation import allocate
 from .ledger import Ledger, buy_quantity, cents, fees_cents, lot_rule, slippage_cents
-from .market import EXECUTION_MODEL, opening_price, regime
+from .market import EXECUTION_MODEL, opening_price, regime, risk_warning
 from .metrics import account_stats
 from .risk import RISK_MODES, RiskState, healthy_market
 from .rules import config_for, turnover_for
@@ -74,6 +74,7 @@ class _Execution:
             self.actions[symbol],
             side,
             status=self.bundle.get("opening_status", {}).get(str(self.date.date()), {}).get(symbol),
+            as_of=self.bundle.get("information_at"),
         )
 
     def _observe(self):
@@ -295,6 +296,12 @@ def simulate(
             symbol: v
             for symbol, v in forecasts.get(index - 1, {}).items()
             if panels["eligible"].at[previous, symbol]
+            and risk_warning(
+                meta[symbol],
+                date,
+                as_of=previous.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16),
+            )
+            is None
             and np.isfinite(v["mu"])
             and np.isfinite(v["margin"])
         }

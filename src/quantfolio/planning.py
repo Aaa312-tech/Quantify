@@ -21,7 +21,7 @@ from .allocation import allocate
 from .dataset import check_integrity, eligible_rows, load_bundle
 from .evaluation import experiment_folds
 from .ledger import lot_rule, nearest_tick, tick_price
-from .market import board_limit, regime
+from .market import board_limit, regime, risk_warning
 from .models import prediction_map
 from .risk import RiskState, healthy_market
 from .simulation import _Execution, buy_ceiling
@@ -179,6 +179,7 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, tur
     book, risk = restore_account(account, bundle["meta"])
     signal = date_only(account["as_of"])
     execution = date_only(execute_on)
+    information_at = session_time(account["as_of"], 16, 0)
     if signal != bundle["calendar"][-1] or execution <= signal:
         raise ValueError("Account and completed market snapshot must share the signal date")
     panels = bundle["panels"]
@@ -211,6 +212,7 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, tur
         symbol: value
         for symbol, value in forecasts.items()
         if panels["eligible"].at[signal, symbol]
+        and risk_warning(bundle["meta"][symbol], execution, as_of=information_at) is None
         and np.isfinite(value["mu"])
         and np.isfinite(value["margin"])
     }
@@ -263,7 +265,7 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, tur
                 reference = action.get("price_limit_reference", reference)
         number(reference, "ex-date opening reference", positive=True)
         tick = 0.001 if meta["kind"] == "etf" else 0.01
-        limit = board_limit(meta, execution)
+        limit = board_limit(meta, execution, as_of=information_at)
         ceiling = buy_ceiling(
             raw, signal, execution, by_symbol[symbol], atr.get((index, symbol), np.nan)
         )
@@ -301,6 +303,7 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, tur
         "stopped": stopped,
         "rule_config": config,
         "turnover_policy": turnover,
+        "information_at": information_at.isoformat(),
         "target_weights": targets,
         "decision": decision,
         "contracts": contracts,
@@ -388,6 +391,11 @@ def resolve_intent(intent, account, actions, calendar, quotes, *, preview=False)
         )
     bundle = {
         "calendar": pd.DatetimeIndex([signal, execution]),
+        "information_at": (
+            intent.get("information_at", session_time(intent["signal_date"], 16, 0).isoformat())
+            if preview
+            else None
+        ),
         "raws": raws,
         "meta": meta,
         "panels": {

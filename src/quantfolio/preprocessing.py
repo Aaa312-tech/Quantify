@@ -14,7 +14,7 @@ from .features import (
     price_features,
 )
 from .ledger import causal_price_index
-from .market import LABEL_STATUS, legal_label
+from .market import LABEL_STATUS, legal_label, risk_warning
 from .storage import log
 
 PANEL_FIELDS = (
@@ -70,8 +70,15 @@ def rank_panels(frames, meta, calendar, quarantined=()):
                 & (panels["adv20"][symbol] >= 2e7)
                 & panels["close"][symbol].notna()
             )
-        if "ST" in instrument["name"].upper() or "退" in instrument["name"]:
+        if "退" in instrument["name"] or (
+            "ST" in instrument["name"].upper() and not instrument.get("risk_warning_periods")
+        ):
             eligible[symbol] = False
+        if instrument.get("risk_warning_periods"):
+            for date in calendar:
+                closing = date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16)
+                if risk_warning(instrument, date, as_of=closing) is not None:
+                    eligible.at[date, symbol] = False
     for symbol in quarantined:
         if symbol not in meta:
             raise ValueError(f"Unknown quarantined security: {symbol}")
