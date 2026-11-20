@@ -1,0 +1,129 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_interrupted_collection_needs_verified_retries_to_cover_the_entire_universe _
+
+tmp_path = WindowsPath('C:/Users/wdong/AppData/Local/Temp/pytest-of-wdong/pytest-822/test_interrupted_collection_ne0')
+
+    def test_interrupted_collection_needs_verified_retries_to_cover_the_entire_universe(tmp_path):
+        symbols = ["sh600001", "sh600002", "sh600003"]
+        values = [10, 10.1, 10.2, 9.9, 1000, 1000000, 3, 1, 0.1, 0.2]
+        raw = pd.DataFrame(
+            [values], columns=COLUMNS, index=pd.to_datetime(["2026-11-18"]), dtype=float
+        )
+        parent = {
+            "meta": {s: {"symbol": s, "code": s[2:]} for s in symbols},
+            "raws": {s: raw.copy() for s in symbols},
+            "calendar": raw.index,
+        }
+        sources = []
+        for name, status, completed in (
+            ("interrupted", "PARTIAL", symbols[:1]),
+            ("retry", "COMPLETE", symbols[1:]),
+        ):
+            folder = tmp_path / "data/raw" / name
+            folder.mkdir(parents=True)
+            save(
+                folder / "protocol.json",
+                {
+                    "source_bundle_sha256": "source",
+                    "requested_completed_date": "2026-11-19",
+                    "historical_overlap_start": "2026-11-18",
+                    "adjustment": "unadjusted",
+                    "symbols": symbols if status == "PARTIAL" else completed,
+                },
+            )
+            records = []
+            for symbol in completed:
+                response = json.dumps(
+                    {
+                        "data": {
+                            "code": symbol[2:],
+                            "market": 1,
+                            "klines": [
+                                day + "," + ",".join(map(str, values))
+                                for day in ("2026-11-18", "2026-11-19")
+                            ],
+                        }
+                    }
+                ).encode()
+                file = folder / f"{symbol}.json"
+                file.write_bytes(response)
+                records.append(
+                    {
+                        "symbol": symbol,
+                        "response_sha256": sha(file),
+                        **inspect_bars(
+                            response, parent["meta"][symbol], "2026-11-18", "2026-11-19", raw
+                        ),
+                    }
+                )
+            if status == "PARTIAL":
+                records.append({"symbol": symbols[1], "status": "FAILED", "error": "HTTP 403"})
+            save(
+                folder / "collection.json",
+                {
+                    "status": status,
+                    "requested_completed_date": "2026-11-19",
+                    "records": records,
+                },
+            )
+            sources.append(
+                {
+                    "path": f"data/raw/{name}",
+                    "protocol_sha256": sha(folder / "protocol.json"),
+                    "collection_sha256": sha(folder / "collection.json"),
+                }
+            )
+        protocol = {
+            "collection_source_sha256": "source",
+            "completed_date": "2026-11-19",
+            "approved_overlap_fields": [],
+            "collections": sources[:1],
+        }
+        with pytest.raises(ValueError):
+            _reviewed_raws(Paths(tmp_path), protocol, parent, parent)
+        protocol["collections"] = sources
+>       updated, records = _reviewed_raws(Paths(tmp_path), protocol, parent, parent)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_refresh.py:234: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+paths = Paths(root=WindowsPath('C:/Users/wdong/AppData/Local/Temp/pytest-of-wdong/pytest-822/test_interrupted_collection_ne0'))
+protocol = {'approved_overlap_fields': [], 'collection_source_sha256': 'source', 'collections': [{'collection_sha256': '1acc165e1...protocol_sha256': 'b71d26c5e27187ceda1f9736014248a2f7820c957f2d75818498bfc65eac0b28'}], 'completed_date': '2026-11-19'}
+parent = {'calendar': DatetimeIndex(['2026-11-18'], dtype='datetime64[ns]', freq=None), 'meta': {'sh600001': {'code': '600001',...ct  change  turnover
+2026-11-18  10.0   10.1  10.2  9.9  ...        3.0  1.0     0.1       0.2
+
+[1 rows x 10 columns]}}
+collection_parent = {'calendar': DatetimeIndex(['2026-11-18'], dtype='datetime64[ns]', freq=None), 'meta': {'sh600001': {'code': '600001',...ct  change  turnover
+2026-11-18  10.0   10.1  10.2  9.9  ...        3.0  1.0     0.1       0.2
+
+[1 rows x 10 columns]}}
+
+    def _reviewed_raws(paths, protocol, parent, collection_parent):
+        if parent["meta"] != collection_parent["meta"]:
+            raise ValueError("Collection universe differs from the processed parent")
+        for symbol, raw in parent["raws"].items():
+            pd.testing.assert_frame_equal(raw, collection_parent["raws"][symbol], check_exact=True)
+        received, records = {}, []
+        for source in protocol["collections"]:
+            registration = read(
+                _checked_path(paths, f"{source['path']}/protocol.json", source["protocol_sha256"])
+            )
+            collection = read(
+                _checked_path(paths, f"{source['path']}/collection.json", source["collection_sha256"])
+            )
+            if (
+                registration["source_bundle_sha256"] != protocol["collection_source_sha256"]
+                or registration["requested_completed_date"] != protocol["completed_date"]
+                or collection["requested_completed_date"] != protocol["completed_date"]
+                or registration["adjustment"] != "unadjusted"
+                or collection["status"] != "COMPLETE"
+            ):
+>               raise ValueError("Raw collection identity, adjustment or completion differs")
+E               ValueError: Raw collection identity, adjustment or completion differs
+
+src\quantfolio\refresh.py:100: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_refresh.py::test_interrupted_collection_needs_verified_retries_to_cover_the_entire_universe
+1 failed, 11 deselected in 0.40s

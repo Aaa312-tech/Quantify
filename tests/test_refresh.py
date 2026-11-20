@@ -76,7 +76,9 @@ def test_unavailable_notice_or_invalid_entitlement_is_rejected(field, value):
         )
 
 
-@pytest.mark.parametrize("fault", [None, "price_revision", "changed_response", "duplicate"])
+@pytest.mark.parametrize(
+    "fault", [None, "price_revision", "changed_response", "duplicate", "unfinished"]
+)
 def test_reviewed_collections_preserve_missing_tail_and_reject_unregistered_changes(
     tmp_path, fault
 ):
@@ -118,7 +120,7 @@ def test_reviewed_collections_preserve_missing_tail_and_reject_unregistered_chan
     save(
         folder / "collection.json",
         {
-            "status": "COMPLETE",
+            "status": "RUNNING" if fault == "unfinished" else "COMPLETE",
             "requested_completed_date": "2026-11-19",
             "records": [
                 {"symbol": symbol, "response_sha256": sha(folder / f"{symbol}.json"), **audit}
@@ -148,3 +150,89 @@ def test_reviewed_collections_preserve_missing_tail_and_reject_unregistered_chan
         updated, _ = _reviewed_raws(Paths(tmp_path), protocol, parent, parent)
         assert list(updated[symbol].index.strftime("%Y-%m-%d")) == ["2026-11-17", "2026-11-19"]
         pd.testing.assert_frame_equal(updated[symbol].iloc[:1], raw, check_exact=True)
+
+
+def test_interrupted_collection_needs_verified_retries_to_cover_the_entire_universe(tmp_path):
+    symbols = ["sh600001", "sh600002", "sh600003"]
+    values = [10, 10.1, 10.2, 9.9, 1000, 1000000, 3, 1, 0.1, 0.2]
+    raw = pd.DataFrame([values], columns=COLUMNS, index=pd.to_datetime(["2026-11-18"]), dtype=float)
+    parent = {
+        "meta": {s: {"symbol": s, "code": s[2:]} for s in symbols},
+        "raws": {s: raw.copy() for s in symbols},
+        "calendar": raw.index,
+    }
+    sources = []
+    for name, status, completed in (
+        ("interrupted", "PARTIAL", symbols[:1]),
+        ("retry", "COMPLETE", symbols[1:]),
+    ):
+        folder = tmp_path / "data/raw" / name
+        folder.mkdir(parents=True)
+        save(
+            folder / "protocol.json",
+            {
+                "source_bundle_sha256": "source",
+                "requested_completed_date": "2026-11-19",
+                "historical_overlap_start": "2026-11-18",
+                "adjustment": "unadjusted",
+                "symbols": symbols if status == "PARTIAL" else completed,
+            },
+        )
+        records = []
+        for symbol in completed:
+            response = json.dumps(
+                {
+                    "data": {
+                        "code": symbol[2:],
+                        "market": 1,
+                        "klines": [
+                            day + "," + ",".join(map(str, values))
+                            for day in ("2026-11-18", "2026-11-19")
+                        ],
+                    }
+                }
+            ).encode()
+            file = folder / f"{symbol}.json"
+            file.write_bytes(response)
+            records.append(
+                {
+                    "symbol": symbol,
+                    "response_sha256": sha(file),
+                    **inspect_bars(
+                        response, parent["meta"][symbol], "2026-11-18", "2026-11-19", raw
+                    ),
+                }
+            )
+        if status == "PARTIAL":
+            records.append({"symbol": symbols[1], "status": "FAILED", "error": "HTTP 403"})
+        save(
+            folder / "collection.json",
+            {
+                "status": status,
+                "requested_completed_date": "2026-11-19",
+                "records": records,
+            },
+        )
+        sources.append(
+            {
+                "path": f"data/raw/{name}",
+                "protocol_sha256": sha(folder / "protocol.json"),
+                "collection_sha256": sha(folder / "collection.json"),
+            }
+        )
+    protocol = {
+        "collection_source_sha256": "source",
+        "completed_date": "2026-11-19",
+        "approved_overlap_fields": [],
+        "collections": sources[:1],
+    }
+    with pytest.raises(ValueError):
+        _reviewed_raws(Paths(tmp_path), protocol, parent, parent)
+    protocol["collections"] = sources
+    updated, records = _reviewed_raws(Paths(tmp_path), protocol, parent, parent)
+    assert set(updated) == set(symbols) and len(records) == 3
+    for symbol in symbols:
+        pd.testing.assert_frame_equal(updated[symbol].iloc[:1], raw, check_exact=True)
+        assert list(updated[symbol].index.strftime("%Y-%m-%d")) == ["2026-11-18", "2026-11-19"]
+    for source in sources:
+        assert sha(tmp_path / source["path"] / "collection.json") == source["collection_sha256"]

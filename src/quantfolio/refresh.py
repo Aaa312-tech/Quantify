@@ -95,9 +95,9 @@ def _reviewed_raws(paths, protocol, parent, collection_parent):
             or registration["requested_completed_date"] != protocol["completed_date"]
             or collection["requested_completed_date"] != protocol["completed_date"]
             or registration["adjustment"] != "unadjusted"
-            or collection["status"] != "COMPLETE"
+            or collection["status"] not in {"COMPLETE", "PARTIAL"}
         ):
-            raise ValueError("Raw collection identity, adjustment or completion differs")
+            raise ValueError("Raw collection identity, adjustment or terminal status differs")
         for record in collection["records"]:
             if record["status"] == "FAILED":
                 continue
