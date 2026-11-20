@@ -1,6 +1,6 @@
 # 数据契约
 
-`configs/project.toml`声明活跃快照`bundle`、冻结核验快照`reference_bundle`、研究评估`evaluation`及完整性清单。当前活跃快照位于`data/processed/2026-11-19`；父快照`2026-11-18-reviewed-dividends`、前次修正`2026-11-18-reviewed-actions`和原快照`2026-11-18`均保留。载入前检查SHA-256及各自截止日期；joblib仅用于本地受信任的快照和模型。
+`configs/project.toml`声明活跃快照`bundle`、冻结核验快照`reference_bundle`、研究评估`evaluation`及完整性清单。当前活跃快照位于`data/processed/2026-11-19-inner-dividends`，在父快照`2026-11-19`上补齐4项历史分红事实，行情截止日不变。父快照、此前公司行为修正与原快照`2026-11-18`均保留。载入前检查SHA-256及各自截止日期；joblib仅用于本地受信任的快照和模型。
 
 | 字段 | 内容 |
 | --- | --- |

@@ -112,7 +112,16 @@ python -m quantfolio refresh-data --protocol configs/protocols/market_extension.
 卖出预算研究的登记、双组完整训练、固定预测比较和验收见
 [研究说明](exit_budget_repair.md)。已完成目录中的源码与数据哈希必须匹配才能重评；
 复现实验应使用登记时提交`d7eabaa`、相同依赖与新输出目录，不覆盖完成记录。
-当前活跃评估为本轮`legacy`组，它与此前1425个基线账户完全一致。
+本轮`legacy`组作为后续分红修正的基准保留，与此前1425个基线账户完全一致。
+
+当前活跃研究使用`configs/protocols/inner_dividend_repair.json`登记的4项补证，登记提交为
+`2f49fd243fee30cb021c39fb9996d9ecd8b8fb6e`。数据、训练和评估分别位于
+`data/processed/2026-11-19-inner-dividends`、
+`artifacts/experiments/inner_dividend_repair_2026-11-21`及
+`artifacts/evaluations/inner_dividend_repair_2026-11-21`。沿用上述`repair-data`、
+`train --include-latest`、`evaluate --all-policies`和`verify-paper`，复现时另取新输出目录。
+48个模型文件、12组预测及全部选择精确一致，因此新评估也构成固定预测的数据对照，
+1425个完整账户未变；验收和启用记录保存在同名`artifacts/checks`目录。
 
 冻结数值参考来自Windows、Python 3.13.2及`pyproject.toml`中的依赖版本。核心数值操作在局部pandas配置中关闭numexpr，退出后恢复调用者设置。其他平台的单元测试通过不等于所有历史浮点结果逐位相同。
 
