@@ -1,0 +1,50 @@
+{
+  "name": "exit_budget_repair",
+  "registered_at": "2026-11-20T15:42:24.368988+08:00",
+  "baseline_commit": "c3ddd2e31fcbfed0df51cbd2185c318ae578638e",
+  "data_bundle": "data/processed/2026-11-19/bundle.joblib",
+  "data_sha256": "f387f259843397187afde08ea24a7e4348f6960fd23b3862348299e70fc8e40c",
+  "baseline_training": "artifacts/experiments/strategy_study_2026-11-20/primary_training",
+  "baseline_protocol_sha256": "1027f78241bde37f58e10c8a0b3b730de85de0df58aa269c866a7d5ec9ca73ea",
+  "baseline_evaluation": "artifacts/evaluations/strategy_study_2026-11-20",
+  "baseline_evaluation_sha256": "da3277e3528ebc87eb3af57484c43b623b9bb2909e8047d15aa75c8961a217da",
+  "diagnosis": "artifacts/checks/optimizer_diagnosis_2026-11-20/diagnosis.json",
+  "diagnosis_sha256": "9ad7db9c93ffbee261af66b68946da283e4f5868bbb0e154b3b6cf6fd03596b7",
+  "discovery": "All 75 existing primary historical accounts were inspected. The 22 captured failures are sell-budget conflicts; their returns are already known. This is reused research evidence, not an independent test.",
+  "candidate": "exit_priority",
+  "change": "Run the original LP first. Only for solver status 2 with an existing sell budget, remove just that sell-budget inequality and minimize total sales while retaining all other constraints. If feasible and minimum sales exceed the original budget, raise that budget only to the minimum plus 1e-9 numerical weight tolerance, then optimize the unchanged economic objective. Keep the buy budget, all hard constraints, all realized fees and default reduce-only handling when hard constraints remain infeasible. Never relax for solver timeout, unboundedness or numerical error.",
+  "candidate_budget": "Exactly one deterministic correction; no alternative policy, threshold, penalty or parameter search in this protocol. Earlier bounded strategy_study remains closed.",
+  "fixed_forecast_stage": {
+    "policies": [
+      "selected_strategy",
+      "matched_momentum"
+    ],
+    "costs_bps": [
+      10,
+      20,
+      30
+    ],
+    "scope": "Use the original frozen forecasts and rule schedule for legacy and exit_priority; 150 accounts per arm. Require exact legacy summary and complete-ledger parity. Save candidate ledgers, independent audits and first economic differences."
+  },
+  "retraining_stage": {
+    "arms": [
+      "legacy",
+      "exit_priority"
+    ],
+    "fits_per_arm": 48,
+    "windows": 11,
+    "include_latest": true,
+    "selection_mode": "positive_score",
+    "scope": "Re-run the same feature, label, model, calibration and inner candidate definitions. Only the exit_priority arm uses the correction during inner rule/model selection and outer evaluation. Baseline evaluates all 19 existing policies; repaired arm evaluates selected_strategy and matched_momentum. Compare estimator files and all prediction arrays, and attribute reselected rules/models separately from fixed-forecast effects."
+  },
+  "activation": "Candidate may become active only after solver/causality/accounting checks pass, original model and full baseline parity pass, and reselected primary continuous net return is no lower at each of 10/20/30bp with observed maximum drawdown no greater than 8%. If any gate fails, preserve the current legacy policy and report the failure. This historical gate establishes no independent alpha. Matched-risk momentum receives the identical correction for fair comparison.",
+  "invariants": [
+    "Balanced attack and unchanged latched 8% alert; original NAV high-water mark never resets.",
+    "No feature, universe, label, model hyperparameter, calibrated forecast or transaction-fee change.",
+    "Known T+1, liquidity, cash and concentration limits stay in force; untradable positions are never treated as sold.",
+    "All old frozen inputs and accounts remain immutable.",
+    "Report failures and quality gaps; no APP, broker or WeChat actions."
+  ],
+  "solver_reference": "https://docs.scipy.org/doc/scipy-1.15.2/reference/optimize.linprog-highs.html",
+  "decision": "RESEARCH_ONLY"
+}
