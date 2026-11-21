@@ -1,0 +1,69 @@
+{
+  "registered_at": "2026-11-21T11:53:57.209578+08:00",
+  "baseline_commit": "f8fe4eaaa0aeefb115f9a4075714aa9888bdcaa9",
+  "baseline_bundle": "data/processed/2026-11-20-industry-dated/bundle.joblib",
+  "baseline_bundle_sha256": "f67395a3d187487283a345e57e16b2ead48a6d70b016939b02a172def4542231",
+  "baseline_configuration_sha256": "64fc1d75e836245c1450f15cb9c3bd26b667187aa81decffb4bd2727c6937644",
+  "baseline_manifest_sha256": "45c2dedf3fa9e822692800e75e89fe6c63ae79ebb0a0099de14de61ab1e1e77f",
+  "symbols": [
+    "sh510300",
+    "sh510500",
+    "sh511010",
+    "sh512000",
+    "sh512100",
+    "sh512170",
+    "sh512400",
+    "sh512480",
+    "sh512660",
+    "sh512800",
+    "sh512880",
+    "sh515030",
+    "sh515050",
+    "sh515180",
+    "sh515790",
+    "sh515880",
+    "sh516160",
+    "sh518880",
+    "sh588000",
+    "sz159915",
+    "sz159928",
+    "sz159995"
+  ],
+  "period": {
+    "from": "2023-01-01",
+    "through": "2026-11-20",
+    "first_model_session": "2024-01-02"
+  },
+  "purpose": "Review historical ETF identities, stated asset classes, tracked indices and investment scope before choosing any model grouping. No return-based source selection.",
+  "source_priority": [
+    "exchange disclosure catalogue and original PDF",
+    "fund manager original publication",
+    "CNINFO original fund disclosure"
+  ],
+  "collection": [
+    "Archive the observed SSE public interface JavaScript, query parameters, raw responses, totals and every page for each Shanghai fund and each calendar year. Validate code, date range, unique document URL and declared totals.",
+    "Download every product-summary PDF returned in the registered interval. Keep complete catalogue rows to screen target-index or investment-scope amendments separately; no keyword non-hit is proof of no change.",
+    "For Shenzhen funds use an official catalogue when obtainable; otherwise archive individually discovered primary PDFs with an explicit incomplete-catalogue status. Record empty/error probes, not inferred absence.",
+    "Keep retrieval date, catalogue date, document preparation date and stated effective facts separate. A current response or file timestamp cannot certify historical publication time or unchanged bytes.",
+    "Use two independent PDF parsers for identity and asserted field excerpts, with exact page references and visual review of ambiguous layout. Excerpts and observations are field-scoped, not certification of every term."
+  ],
+  "classification": [
+    "Distinguish a fund's asset class, target index, broad/theme label and look-through stock-sector exposure; do not collapse them into one inferred label.",
+    "Do not assign stock CAPCO sectors to an ETF from its short name. Holdings weights and historical availability need separate evidence before aggregate stock-plus-fund industry limits can be claimed.",
+    "Keep unresolved document identities, changes, missing sources and coverage intervals explicit. Do not extend a 2026 fact backward over 2024."
+  ],
+  "raw_output": "data/raw/etf_disclosures_2026-11-21",
+  "review_output": "artifacts/checks/etf_sources_2026-11-21",
+  "processed_output": "data/processed/etf_sources_2026-11-21",
+  "decision": "SOURCE_REVIEW_ONLY_NOT_ACTIVATED",
+  "unchanged": [
+    "active dataset",
+    "source modules used by training/execution",
+    "forecasts and selected policies",
+    "all historical accounts",
+    "frozen November 23 plan",
+    "8 percent warning and latched risk",
+    "candidate budget and adoption thresholds"
+  ],
+  "next_gate": "Register a dated grouping/coverage comparison and complete compatibility, full retraining, independent accounting and paper checks before model adoption; ETF evidence does not repair historical stock-universe selection bias."
+}
