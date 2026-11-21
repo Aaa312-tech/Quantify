@@ -21,12 +21,12 @@ python -m quantfolio train --first 1 --last 1 --output artifacts/experiments/fir
 
 ## 当前支付日接入
 
-当前配置与`configs/experiments/declared_payments.toml`一致，协议为`configs/protocols/declared_payments.json`。完整验收在`artifacts/checks/declared_payments_2026-11-21`；读取`completion.json`、`validation.json`、`activation.json`与`input_scope.json`。首次保留比较失败另存`input_failure.json`及原程序、日志。
+当前配置与`configs/experiments/implemented_payments.toml`一致，协议为`configs/protocols/implemented_payments.json`。完整验收在`artifacts/checks/implemented_payments_2026-11-22`；读取`completion.json`、`validation.json`、`activation.json`与`input_scope.json`。修改前的测试失败、已执行源码及格式诊断分别保存在`before_tests.json`、`executed_snapshots.py`与`test_format_review.json`；旧阶段失败不改写。
 
 ```powershell
-python -m quantfolio --config configs/experiments/declared_payments.toml train --include-latest --output artifacts/experiments/declared_payment_reproduction
-python -m quantfolio --config configs/experiments/declared_payments.toml evaluate --run artifacts/experiments/declared_payment_reproduction --all-policies --output artifacts/evaluations/declared_payment_reproduction
-python -m quantfolio --config configs/experiments/declared_payments.toml verify --run artifacts/experiments/declared_payment_reproduction --output artifacts/checks/declared_payment_reproduction
+python -m quantfolio --config configs/experiments/implemented_payments.toml train --include-latest --output artifacts/experiments/implemented_payment_reproduction
+python -m quantfolio --config configs/experiments/implemented_payments.toml evaluate --run artifacts/experiments/implemented_payment_reproduction --all-policies --output artifacts/evaluations/implemented_payment_reproduction
+python -m quantfolio --config configs/experiments/implemented_payments.toml verify --run artifacts/experiments/implemented_payment_reproduction --output artifacts/checks/implemented_payment_reproduction
 ```
 
 输出目录须尚不存在。命令使用冻结快照，默认覆盖其全部完整窗口；重建须另行登记输出路径与来源、标签范围。旧阶段命令和验收边界保留在下方，不把原回执改成当前源码身份。
@@ -375,7 +375,7 @@ CI在Windows的Python 3.11、3.13及Ubuntu的Python 3.13上，从源码分发包
 ## 已验收的11月20日扩展
 
 行情扩展阶段的完整训练、评估与状态复核保存于`daily_source_extension_2026-11-21`；
-它是历史验收阶段，当前配置使用本页开头的`2026-11-20-declared-payments`快照。
+它是历史验收阶段，当前配置使用本页开头的`2026-11-20-implemented-payments`快照。
 新数据来源、单位转换和历史标签变化见同名`artifacts/checks`目录；实现兼容性、训练影响
 及固定旧预测对照分别存档，旧腾讯全池核验失败记录不变。
 

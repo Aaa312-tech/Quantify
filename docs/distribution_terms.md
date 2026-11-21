@@ -1,6 +1,6 @@
 # 分红条款来源复核
 
-当前全量1839项事件中，1421项有字段证据，418项仍未通过。最新实施范围复核新增34项支付日依据，31项是当前数据的缺失值、3项已有一致日期，尚未接入训练与回测。此前派息措辞阶段的25项缺失日期已按[独立接入协议](distribution_availability.md)完成重建、重训及账户验收。
+当前全量1839项事件中，1421项有字段证据，418项仍未通过。最新实施范围复核新增34项支付日依据，其中31项缺失日期已按[独立接入协议](distribution_availability.md)完成重建、重训及账户验收，3项已有一致日期保持。此前派息措辞阶段已接入的25项日期和所有旧字段保留。
 
 此前公告角色阶段新增的77项日期中，73项缺失值已经通过[独立支付日接入](distribution_availability.md)应用，4项原本已知。下文分别保留各来源阶段的范围和失败记录。
 
@@ -14,7 +14,7 @@
 
 38个完整原页覆盖最终读取器的21类字段版式、全部6项初查差异和唯一跨页金额句。相关12家公司的55份归档公告已核对；10处变更字样涉及股本基数或明确未变更说明，未发现对本批支付日期的修订。范围限于既有档案，不认证公告历史完整性或真实发布时间。
 
-验收入口为[来源验收](../artifacts/checks/payout_scope_2026-11-21/completion.json)、[独立字段核对](../artifacts/checks/payout_scope_2026-11-21/independent_closure.json)、[相关公告核对](../artifacts/checks/payout_scope_2026-11-21/amendment_review.json)和[完整原页核对](../artifacts/checks/payout_scope_2026-11-21/visual_review.json)。646项本地测试通过、1项主机权限检查跳过，48个当前模型普通重载误差为零。36229项旧冻结文件、活跃配置、数据、回测和11月23日计划保持。31项缺失日期须另行登记后接入、重建、完整重训及核账；本来源阶段不新增训练或收益观察。
+验收入口为[来源验收](../artifacts/checks/payout_scope_2026-11-21/completion.json)、[独立字段核对](../artifacts/checks/payout_scope_2026-11-21/independent_closure.json)、[相关公告核对](../artifacts/checks/payout_scope_2026-11-21/amendment_review.json)和[完整原页核对](../artifacts/checks/payout_scope_2026-11-21/visual_review.json)。646项本地测试通过、1项主机权限检查跳过，48个当前模型普通重载误差为零。36229项旧冻结文件、活跃配置、数据、回测和11月23日计划保持。上述来源阶段本身不新增训练或收益观察；31项缺失日期现已通过另行登记的[数据接入](distribution_availability.md)、完整重训及核账。
 
 ## 派息措辞与金额适用范围
 

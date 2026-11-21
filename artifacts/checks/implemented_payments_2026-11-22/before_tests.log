@@ -1,0 +1,104 @@
+.F...................................................................... [ 92%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+_ test_accepted_field_review_preserves_records_and_inputs[implementation_payout_scope] _
+
+phase = 'implementation_payout_scope'
+
+    @pytest.mark.parametrize("phase", PHASES)
+    def test_accepted_field_review_preserves_records_and_inputs(phase):
+        args = example(phase)
+        before = deepcopy(args)
+>       assert accepted_date_records(*args) == args[-1]["records"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_declared_payment_receipts.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+protocol = {'expected_changes': {'cash_pay_date': 1}, 'independent_review': {'sha256': 'accepted'}, 'review_protocol': {'sha256': 'protocol'}, 'review_sha256': 'review', ...}
+registered = {'phase': 'implementation_payout_scope'}
+acceptance = {'active_missing_payment_dates_supported': 1, 'active_state': {'bundle_sha256': 'current'}, 'added_payment_dates': 2, 'already_present_matching_dates': 1, ...}
+independent = {'events': 2, 'failed_events': 0, 'field_checks': 8, 'preserved_fields': [['sh600000', '2024-03-29', 'cash_pay_date', '2024-03-29'], ['sh600000', '2024-03-29', 'share_list_date', '2024-04-01']], ...}
+
+    def accepted_date_records(protocol, registered, acceptance, independent):
+        """Bind independent date records to the frozen receipt for their review phase."""
+        if (
+            independent["status"] != "PASS"
+            or independent["source_review_sha256"] != protocol["review_sha256"]
+        ):
+            raise ValueError("Independent date review binding differs")
+        if registered.get("phase") == "source_candidate_roles":
+            if (
+                acceptance["status"] != "PASS_SOURCE_ONLY"
+                or acceptance["protocol_sha256"] != protocol["review_protocol"]["sha256"]
+                or acceptance["facts_applied"] is not False
+                or independent["facts_applied"] is not False
+                or independent["failed_roles"] != 0
+                or independent["failed_events"] != 0
+                or acceptance["prior_supported_events_preserved"]
+                != independent["prior_events_preserved"]
+                or acceptance["evidence_sha256"]["source_review.json"] != protocol["review_sha256"]
+                or acceptance["evidence_sha256"]["independent_closure.json"]
+                != protocol["independent_review"]["sha256"]
+                or acceptance["active_state"]["bundle_sha256"] != protocol["source_bundle_sha256"]
+                or acceptance["active_missing_payment_dates_supported"]
+                != protocol["expected_changes"]["cash_pay_date"]
+                or acceptance["added_payment_dates"] != protocol["verified_additions"]["cash_pay_date"]
+            ):
+                raise ValueError("Companion date acceptance binding differs")
+            records = independent["fields"]
+        elif registered.get("phase") == "gross_cash_wording":
+            records = independent.get("records", [])
+            preserved = independent.get("preserved_fields", [])
+            field_checks = {"record_date", "ex_date", "cash_pay_date", "cash_per_share"}
+            checks = field_checks | {"issuer", "title"}
+            evidence = acceptance.get("evidence_sha256", {})
+            if (
+                acceptance.get("status") != "PASS_SOURCE_ONLY"
+                or acceptance.get("protocol_sha256") != protocol["review_protocol"]["sha256"]
+                or acceptance.get("facts_applied") is not False
+                or independent.get("failed_events") != 0
+                or independent.get("events") != len(records)
+                or independent.get("field_checks") != len(records) * len(field_checks)
+                or acceptance.get("independent_field_checks") != independent.get("field_checks")
+                or acceptance.get("prior_supported_fields_preserved") != len(preserved)
+                or any(len(field) != 4 for field in preserved)
+                or len({tuple(field[:3]) for field in preserved}) != len(preserved)
+                or acceptance.get("prior_supported_events_preserved")
+                != len({tuple(field[:2]) for field in preserved})
+                or evidence.get("source_review.json") != protocol["review_sha256"]
+                or evidence.get("field_acceptance.json") != protocol["independent_review"]["sha256"]
+                or acceptance.get("active_state", {}).get("bundle_sha256")
+                != protocol["source_bundle_sha256"]
+                or acceptance.get("active_missing_payment_dates_supported")
+                != protocol["expected_changes"]["cash_pay_date"]
+                or acceptance.get("added_payment_dates")
+                != protocol["verified_additions"]["cash_pay_date"]
+                or acceptance.get("already_present_matching_dates")
+                != protocol["verified_additions"]["cash_pay_date"]
+                - protocol["expected_changes"]["cash_pay_date"]
+                or len({(row["symbol"], row["ex_date"]) for row in records}) != len(records)
+                or any(
+                    row.get("passed") is not True
+                    or set(row.get("checks", {})) != checks
+                    or any(check.get("passed") is not True for check in row["checks"].values())
+                    for row in records
+                )
+            ):
+                raise ValueError("Declared payment acceptance binding differs")
+        else:
+            if (
+                acceptance["status"] != "SOURCE_REVIEW_ACCEPTED_WITH_UNRESOLVED_EVENTS"
+                or not acceptance["previous_facts_preserved"]
+                or acceptance["source_review_sha256"] != protocol["review_sha256"]
+                or acceptance["active_bundle_sha256"] != protocol["source_bundle_sha256"]
+                or acceptance["independent_fields"]["sha256"]
+                != protocol["independent_review"]["sha256"]
+            ):
+>               raise ValueError("Accepted date review binding differs")
+E               ValueError: Accepted date review binding differs
+
+src\quantfolio\snapshots.py:590: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_declared_payment_receipts.py::test_accepted_field_review_preserves_records_and_inputs[implementation_payout_scope]
+1 failed, 77 passed in 0.25s
