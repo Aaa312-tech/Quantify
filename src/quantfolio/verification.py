@@ -240,7 +240,7 @@ def _paper_account(bundle, forecasts, rules, reference, cost, *, turnover="legac
 
 
 def verify_paper(paths: Paths, output: Path) -> dict:
-    """Compare all 75 active-policy accounts, not just individual fills or final returns."""
+    """Compare every active-policy account, including complete ledgers and decisions."""
     from .evaluation import experiment_folds, first_difference, load_predictions
     from .planning import source_hashes
     from .storage import digest, load_gzip, log

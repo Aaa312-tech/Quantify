@@ -58,19 +58,72 @@ def run_exit_study(paths, output):
         configured = study_paths(paths, turnover)
         result = run_training(configured, output / folder, include_latest=True)
         checked = verify(configured, output / "verification" / turnover, run=output / folder)
-        if checked["models_reloaded"] != 48:
-            raise ValueError("The exit-budget study requires all 48 models in each arm")
+        expected = len(_fit_inventory(output / folder)["models"])
+        if checked["models_reloaded"] != expected:
+            raise ValueError(f"The exit-budget study requires all {expected} registered models")
         arms[turnover] = {"training": result, "models_reloaded": checked["models_reloaded"]}
     status = {"status": "COMPLETE", "completed_at": now(), "identity": identity, "arms": arms}
     save(output / "study_status.json", status, immutable=True)
     return status
 
 
+def _fit_inventory(run):
+    """Require the complete artifact inventory declared by a completed training range."""
+    registered = read(run / "protocol.json")
+    specification = registered["specification"]
+    status = read(run / "training_status.json")
+    identity = digest(specification)
+    if registered["identity"] != identity or status["identity"] != identity:
+        raise ValueError("Fit comparison training identity differs")
+    folds = specification["folds"]
+    first, last = specification["selected_folds"]
+    latest = specification["include_latest"]
+    if (
+        not 1 <= first <= last <= len(folds)
+        or [fold["fold"] for fold in folds] != list(range(1, len(folds) + 1))
+        or type(latest) is not bool
+        or status["latest_fit_included"] is not latest
+        or status["folds_completed"] != last - first + 1
+        or status["status"] != ("COMPLETE" if first == 1 and last == len(folds) else "PARTIAL")
+    ):
+        raise ValueError("Fit comparison training range is incomplete or inconsistent")
+    folders = {f"training/fold_{fold['fold']:02d}": fold for fold in folds[first - 1 : last]}
+    if latest:
+        folders["final_fit"] = None
+    inventory = {
+        "models": sorted(
+            f"{folder}/{stage}/{family}/model.joblib"
+            for folder in folders
+            for stage in ("validation_fit", "outer_fit")
+            for family in ("ridge", "tree")
+        ),
+        "forecasts": sorted(f"{folder}/outer_predictions.npz" for folder in folders),
+    }
+    for key, filename in (("models", "model.joblib"), ("forecasts", "outer_predictions.npz")):
+        actual = sorted(file.relative_to(run).as_posix() for file in run.rglob(filename))
+        if actual != inventory[key]:
+            raise ValueError(f"Fit comparison {key} inventory differs from its registered range")
+    for folder, fold in folders.items():
+        result = read(run / folder / "result.json")
+        if (
+            result["identity"] != identity
+            or result["final_fit"] is not (fold is None)
+            or (fold is not None and result["fold"] != fold)
+            or (fold is None and result["fold"]["fold"] != "final")
+        ):
+            raise ValueError("Fit comparison window identity differs")
+    return inventory
+
+
 def fit_parity(baseline, current):
     """Compare actual estimator bytes, saved predictions and complete outer forecast arrays."""
+    inventory = _fit_inventory(baseline)
+    if _fit_inventory(current) != inventory:
+        raise ValueError("Fit comparison runs cover different registered artifacts")
     models = []
-    for original in sorted(baseline.rglob("model.joblib")):
-        relative = original.relative_to(baseline)
+    for name in inventory["models"]:
+        relative = Path(name)
+        original = baseline / relative
         same = sha(original) == sha(current / relative)
         before = np.load(original.with_name("predictions.npy"))
         after = np.load((current / relative).with_name("predictions.npy"))
@@ -80,8 +133,9 @@ def fit_parity(baseline, current):
         )
     forecasts = []
     choices = []
-    for original in sorted(baseline.rglob("outer_predictions.npz")):
-        relative = original.relative_to(baseline)
+    for name in inventory["forecasts"]:
+        relative = Path(name)
+        original = baseline / relative
         with np.load(original) as before, np.load(current / relative) as after:
             equal = set(before.files) == set(after.files) and all(
                 before[k].dtype == after[k].dtype and np.array_equal(before[k], after[k])
@@ -98,11 +152,8 @@ def fit_parity(baseline, current):
                 "after": {key: new[key] for key in keys},
             }
         )
-    passed = (
-        len(models) == 48
-        and len(forecasts) == 12
-        and all(r["model_equal"] and r["predictions_equal"] for r in models)
-        and all(r["arrays_equal"] for r in forecasts)
+    passed = all(r["model_equal"] and r["predictions_equal"] for r in models) and all(
+        r["arrays_equal"] for r in forecasts
     )
     return {
         "status": "PASS" if passed else "FAIL",
@@ -203,7 +254,10 @@ def evaluate_exit_study(paths, run, output):
     save(output / "fixed_forecast_differences.json", fixed_changes, immutable=True)
     save(output / "reselection_differences.json", reselected_changes, immutable=True)
     comparison = {}
-    requirements = {"models_unchanged": True, "legacy_accounts_unchanged": len(legacy) == 1425}
+    requirements = {
+        "models_unchanged": True,
+        "legacy_accounts_unchanged": len(legacy) == original["accounts"],
+    }
     for cost in (10, 20, 30):
         key = f"{cost}bps"
         old = original["continuous"][key]["selected_strategy"]["summary"]

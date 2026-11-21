@@ -1,0 +1,76 @@
+{
+  "software_version": "0.25.1",
+  "strategy": "walk_forward_momentum",
+  "strategy_name": "滚动选型动量",
+  "decision": "RESEARCH_ONLY",
+  "execution_model": "opening_proxy_separate_cost",
+  "displayed_results_scope": "CAUSAL_RETRAINING",
+  "corrected_retraining_completed": true,
+  "source_evaluation": "artifacts/evaluations/companion_payments_2026-11-21",
+  "data_cutoff": "2026-11-20",
+  "historical_status_review": {
+    "status": "REGISTERED_STATUS_REPAIR_VERIFIED",
+    "blocking": false,
+    "reviewed_at": "2026-11-21T21:18:17.742205+08:00",
+    "source_bundle_sha256": "fa4210ec87a83b4900771ceabf0479b7662147b20735f8760e8fef7d5951d6ef",
+    "previous_review": "artifacts/checks/distribution_dates_2026-11-21/status_review.json",
+    "previous_review_sha256": "bee41d5ce6ac88ec4be78e3c2af4a7ec3b075e624cadf68477e005a25b4a94a9",
+    "source_review": "docs/references/security_status/dated_review_2026-11-21.json",
+    "source_review_sha256": "e476056e7dd2e19ec310ae9a70031fa3d9062795173f19da35434765507f1293",
+    "corrected_securities": 10,
+    "warning_sessions": 2755,
+    "remaining_reviewed_warning_training_rows": 0,
+    "remaining_reviewed_warning_buy_occurrences": 0,
+    "models_reloaded": 48,
+    "new_account_audits": 1425,
+    "fixed_forecast_account_audits": 1425,
+    "paper_accounts_exact": 75,
+    "evidence": {
+      "snapshot_review.json": "65c283101a151436d535f4cdd15706cf8c725d666819082400171582ba12c7af",
+      "compatibility/validation.json": "b7a85f92772336566502a6dd11aa2d85c1b0a54f5c5585e2543572a8f09346e9",
+      "training_validation.json": "3fbbdaa3ebdab4eb48fc7fe2bae610c039696fccbc402eecd055483af3193940",
+      "training_review.json": "d036a1bcf7ae6d9f66135ebe93fcf5047ccffa1f75ffc746f6832dcf520109d0",
+      "account_review.json": "58b82b9e13388a8cc163aa9f409281e38392e3672e0a844bf11fa13984a57685",
+      "exposure_review.json": "42faf46b427f2903bf9f992f4da58bd8e649ef3b36b8c5d4c1bcf1607e6687dc",
+      "settlement_review.json": "b9658a4be22b77a23b106e8babeb4bcd99d54e7b3831a7998e6fe988a3af988e",
+      "attribution.json": "e2cf61998026f9868ea07a83297e2ba54f49cb8378c6e46967eb533ac2aeca33",
+      "fixed_forecast_summary": "c77304ec88ac813457ab509d14025d94c2144443f944ece60ab2f69b46cfdeaf",
+      "baseline_integrity.json": "d5f057d00a17180facbab61d54af8ebbb2bbc25317c9c319b5b520bf72fcfd4b"
+    },
+    "scope": "Rechecks the ten sourced warning intervals across all fitted/reference cohorts and inner/outer buys. Six prior opening-status records and all eligibility inputs remain exact. Other historical status coverage is not certified.",
+    "limitations": [
+      "480 source events remain unverified. Accepted payment fields do not certify all action terms, taxes, fractional shares or announcement completeness.",
+      "Current-universe bias, exact historical publication times, other historical status and 111 quote-gap endpoints remain open.",
+      "Reported ETF proxy constraints do not certify complete daily economic exposure; economic upper bounds remain null.",
+      "Competition fees and matching details remain unconfirmed. No forward fill or return may be invented. Follow the whitepaper, 15% strategy cap and balanced attack with the original 8% latched warning."
+    ],
+    "path": "artifacts/checks/companion_payments_2026-11-21/status_review.json",
+    "sha256": "f0919cd810c6641da235e82a2b32d4ce9547af495a41db8668d2b4ea1441c651"
+  },
+  "test_start": "2025-11-18",
+  "test_end": "2026-11-02",
+  "gates": {
+    "superiority": false
+  },
+  "superiority_assessment": "NO_POSITIVE_EXCESS_TO_MATCHED_MOMENTUM",
+  "continuous": {
+    "10bps": {
+      "return": 0.35926760000000013,
+      "max_drawdown": -0.07588482489721504,
+      "trades": 244,
+      "fees": 15649.66
+    },
+    "20bps": {
+      "return": 0.033847210000000016,
+      "max_drawdown": -0.06300194048511343,
+      "trades": 96,
+      "fees": 5003.25
+    },
+    "30bps": {
+      "return": 0.11786390999999985,
+      "max_drawdown": -0.07936739272040427,
+      "trades": 144,
+      "fees": 8365.65
+    }
+  }
+}

@@ -2,6 +2,23 @@
 
 项目需要Python 3.11–3.13和Git LFS。先按README克隆完整仓库，在虚拟环境中安装 `.[dev]`。数据与模型属于项目目录，不打进Python安装包；从其他目录运行时使用 `--project PATH` 或 `QUANTFOLIO_ROOT`。
 
+## 默认训练范围
+
+`train`省略`--last`时，读取冻结快照日历，覆盖截至该快照的全部完整窗口。`--first`仍默认为1；若只设置`--first`，从该窗口训练至最后一个完整窗口。完整窗口不足一个或显式边界越界时拒绝生成训练结果。
+
+```powershell
+python -m quantfolio train --include-latest --output artifacts/experiments/full_run
+python -m quantfolio train --first 1 --last 1 --output artifacts/experiments/first_window
+```
+
+第一条覆盖全部历史窗口，并额外拟合最新收盘信号；第二条在当前11窗口快照上只训练第一个窗口，结果标为`PARTIAL`。`--include-latest`保持独立开关，省略时不生成最新一期；次日计划仍要求完整范围及最新拟合同时存在。所有输出目录必须尚不存在。
+
+模型比较按登记范围列出每个窗口的两个阶段、两类估计器和预测文件，逐一核对实际清单、身份与内容，不再固定为48个模型。完整窗口数增长时，模型数量随之增长；多余或缺失的文件仍会拒绝通过。历史协议和命令中显式的11窗口、48模型等数量描述对应冻结样本，继续保留。
+
+本次[维护协议](../configs/protocols/window_range.json)不改变输入、拟合公式、候选、选型、交易和风控。当前快照包含698个交易日，仍安排11个历史窗口及最新一期；修改前后的调用参数一致，所有普通身份检查保持。日历调用记录是没有拟合的诊断，存于`artifacts/checks/window_range_2026-11-21/orchestration`，不能作为训练输出使用。其他日历长度仅在合成测试中验证，没有生成未来行情或未来训练。
+
+维护验收包含545项测试、当前48个模型重载、1425个完整账户和75个纸面账户重放；没有新增模型拟合，也不更新历史训练回执的源码身份。当前配置、历史结果和11月23日冻结计划保持原字节，最终记录见[completion.json](../artifacts/checks/window_range_2026-11-21/completion.json)。
+
 ## 当前支付日接入
 
 当前配置与`configs/experiments/companion_payments.toml`一致；协议为`configs/protocols/companion_payments.json`，精确算术补核另见`payment_label_precision.json`。完整证据在`artifacts/checks/companion_payments_2026-11-21`，最终入口为`completion.json`、`validation.json`、`activation.json`和`input_closure.json`。`input_scope.json`保留首次独立核算失败，不能替换为最后状态。

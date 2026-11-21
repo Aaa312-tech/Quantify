@@ -140,7 +140,7 @@ def main(argv: list[str] | None = None) -> None:
         "--output", required=True, help="New directory under artifacts/experiments"
     )
     training.add_argument("--first", type=int, default=1)
-    training.add_argument("--last", type=int, default=11)
+    training.add_argument("--last", type=int, help="Last window (default: all complete windows)")
     training.add_argument("--include-latest", action="store_true")
     study = commands.add_parser("study", help="Refit and select the registered research recipes")
     study.add_argument("--output", required=True, help="New directory under artifacts/experiments")
@@ -200,7 +200,9 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
     if args.command == "verify" and args.refit and not args.output:
         parser.error("--refit requires --output artifacts/checks/<new-name>")
-    if args.command == "train" and not 1 <= args.first <= args.last:
+    if args.command == "train" and (
+        args.first < 1 or (args.last is not None and args.last < args.first)
+    ):
         parser.error("require 1 <= --first <= --last")
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     try:

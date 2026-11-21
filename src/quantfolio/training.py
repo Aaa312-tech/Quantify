@@ -24,9 +24,10 @@ from .validation import execution_audit, reconcile
 
 
 @pd.option_context("compute.use_numexpr", False)
-def run_training(paths, output, first=1, last=11, include_latest=False):
+def run_training(paths, output, first=1, last=None, include_latest=False):
     """Train the registered protocol in a new experiment, preserving all reference files.
 
+    An omitted last window uses every complete window in the dataset calendar.
     Model and rule selection uses only the validation segment. Partial fold runs
     are explicitly marked PARTIAL and must not be presented as a full backtest.
     """
@@ -47,6 +48,8 @@ def run_training(paths, output, first=1, last=11, include_latest=False):
     if turnover not in TURNOVER_POLICIES:
         raise ValueError("Unknown turnover policy")
     folds = walk_forward_folds(bundle["calendar"])
+    if last is None:
+        last = len(folds)
     if not 1 <= first <= last <= len(folds):
         raise ValueError(f"Require 1 <= first <= last <= {len(folds)}")
     specification = {
