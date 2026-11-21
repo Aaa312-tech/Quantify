@@ -23,6 +23,9 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
 
 ## Research constraints
 
+- Residual source work is in progress under `configs/protocols/distribution_residuals.json`, `distribution_layouts.json` and `residual_field_review.json`. The reader replay covers all 1839 events and preserves all 1530 prior accepted field values. Its 95 new event proposals (115 fields) are not accepted or integrated; eight extra listing proposals on previously supported events are outside scope. Keep the original 1452 accepted records exact when consolidating any later acceptance.
+- Preserve the 14 before-implementation test failures, four flattened-header failures and first incorrect date-navigation index. Table-cell closure explains only the recorded header failures; corrected date navigation is in `dated_event_navigation.json.gz` with `dated_navigation_closure.json`. The complete received archive is 1135 documents/3780 extracted pages, not a certified complete public archive. Full field/role/amendment review remains pending; the active source-unverified count stays 387. Current reader checks: 772 tests passed/one host skip, 48 frozen reference models reload with zero error and 245 labelled-grid date checks passed; 60 narrative date checks remain pending. Numerical modules, active inputs and paper plan are unchanged.
+
 - Balanced attack, the 8% warning, original high-water mark and latched/non-recovering risk remain in force. Active adoption is `positive_score`; turnover is `legacy`. Keep the registered candidate budget and thresholds unchanged.
 - Use behavioral strategy names and semantic package versions. Keep historical identifiers only for frozen evidence compatibility; never rewrite frozen results.
 - The active dataset is `data/processed/2026-11-20-recipient-entitlements/bundle.joblib`; configuration binds its training, evaluation and historical-ST review. Numerical changes require full compatibility and retraining checks.

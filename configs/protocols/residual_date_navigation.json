@@ -1,0 +1,42 @@
+{
+  "name": "residual_date_token_navigation",
+  "registered_at": "2026-11-22T05:45:04.235665+08:00",
+  "parent_protocol": {
+    "path": "configs/protocols/residual_field_review.json",
+    "sha256": "c5a67bd3d31dd7fdd1b188f4b21c6e4ed0fa589f5a650e1761f2d98003400f2f"
+  },
+  "prior_navigation": {
+    "path": "artifacts/checks/distribution_residuals_2026-11-22/related_event_navigation.json.gz",
+    "sha256": "ac23e7b90c66e37b46232428a47747825a6cf4b99fe692e03181db01f45c0392"
+  },
+  "failure": "Removing all whitespace concatenated adjacent numeric date cells. The first navigation lost real mentions for sh688120 2025-07-03 and sh688018 2026-06-05 and could form false day numbers. It is retained as a failed navigation attempt, not evidence of source absence.",
+  "source_examples": [
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1223981235.pdf",
+      "expected_dates": [
+        "2025-07-02",
+        "2025-07-03"
+      ]
+    },
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1225340886.pdf",
+      "expected_dates": [
+        "2026-06-04",
+        "2026-06-05"
+      ]
+    }
+  ],
+  "repair": "Retain whitespace separating numeric cells, allow whitespace inside date syntax and reject unmatched neighbouring digits. Reindex all 1135 source documents and all 387 residual events, preserving every amendment mention and source identity. Do not change the production parser or accept financial fields.",
+  "reader": {
+    "path": "artifacts/checks/distribution_residuals_2026-11-22/index_dated_mentions.py",
+    "sha256": "7c9254ee6dfca6e70858ae6e6c52377cc6b2e849029476b1e997f2e367f43d23"
+  },
+  "production_reader_sha256": "1021eb47f06f6d51ac5acd0e4f1b80532d7cba09e674e8a7a120bd4fdce7628a",
+  "required_checks": [
+    "All three dated-token fixtures pass before extraction.",
+    "Both fixed source examples regain their originally printed record and ex dates.",
+    "Compare every document and event with the first index and retain every change; source metadata, amendment mentions and empty-page inventory must remain exact.",
+    "No source, financial acceptance, runtime data, model or paper state changes."
+  ],
+  "facts_accepted": 0
+}

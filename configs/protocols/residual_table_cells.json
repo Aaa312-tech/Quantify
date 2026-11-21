@@ -1,0 +1,27 @@
+{
+  "name": "residual_table_cell_crosscheck",
+  "registered_at": "2026-11-22T05:26:17.979099+08:00",
+  "parent_protocol": {
+    "path": "configs/protocols/distribution_layouts.json",
+    "sha256": "b40d6dbb54b47d8edd1ab30536b56f2f91511e3b4ba8de3437e152be78cd294f"
+  },
+  "failed_check": {
+    "path": "artifacts/checks/distribution_residuals_2026-11-22/layout_regressions.json",
+    "sha256": "fb56d3fb42878dd4f9de653be4c02e05f330688c1c1515427109827d47f30262"
+  },
+  "failed_fields": [
+    "record_date",
+    "ex_date",
+    "cash_pay_date",
+    "share_list_date"
+  ],
+  "source": "data/raw/disclosures_2026-11-21/documents/1220132651.pdf",
+  "source_sha256": "296bb6cde29445c8b33facbc95cf45b8edb8032f54d3add7af0c7aabbab5a369",
+  "physical_pages": [
+    1,
+    2
+  ],
+  "reason": "MuPDF sort=True interleaves wrapped table-header lines. Both complete pages and the MuPDF geometric cell tables were inspected; original expected dates are unchanged. The flattened-text failure remains preserved.",
+  "method": "Read the actual grid cells with PyMuPDF find_tables; require the six exact normalized labels, one A-share row, last-trading dash, physical cell boxes and all four date cells agreeing with the preregistered expectations. Check all twelve cells on each repeated table. Do not infer a field from unlabelled date order.",
+  "scope": "This is an independent layout check, not acceptance of event facts or a production parser change. All other source regression checks must still pass; any unexplained failure blocks closure."
+}

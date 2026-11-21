@@ -86,16 +86,30 @@ def _page_text(raw):
     return re.sub(r"(?<=[\u4e00-\u9fff]) +(?=[\u4e00-\u9fff])", "", text)
 
 
-def _boundary_page(raw, number):
+def _boundary_page(raw, number, total=None):
     lines = [line.strip() for line in unicodedata.normalize("NFKC", raw).splitlines()]
     occupied = [index for index, line in enumerate(lines) if line]
     markers = []
     for index in dict.fromkeys(occupied[:1] + occupied[-1:]):
+        style = "paired_dash"
         marker = re.fullmatch(r"[-—–]\s*(\d+)\s*[-—–]", lines[index])
+        if marker is None and total is not None:
+            for style, pattern in (
+                ("chinese_total", r"第\s*(\d+)\s*页\s*共\s*(\d+)\s*页"),
+                ("fraction_total", r"(\d+)\s*/\s*(\d+)"),
+            ):
+                marker = re.fullmatch(pattern, lines[index])
+                if marker:
+                    if int(marker[2]) != total:
+                        return None
+                    break
         if marker:
             if int(marker[1]) != number:
                 return None
-            markers.append({"page": number, "line": index + 1, "text": lines[index]})
+            evidence = {"page": number, "line": index + 1, "text": lines[index]}
+            if style != "paired_dash":
+                evidence["style"] = style
+            markers.append(evidence)
             lines[index] = ""
     if len(markers) > 1:
         return None
@@ -133,115 +147,172 @@ def _cross_page_cash(pages):
     return evidence
 
 
-def extract_terms(pages):
-    """Recognize only labelled dates and explicitly gross cash in supported layouts."""
-    evidence = {}
+def _page_terms(text, history):
+    for field, label in (("record_date", "股权登记日"), ("ex_date", EX_LABEL)):
+        for match in re.finditer(label + r"\s*(?:为\s*)?[:：]?\s*(" + DATE + ")", text):
+            yield field, _date(match[1]), match
+    # Preserve spaces between table cells. Do not infer column order from date occurrence.
+    header = (
+        r"股份类别\s*股权登记日\s*最后交易日\s*"
+        + EX_LABEL
+        + r"\s*现金红利发放日\s*A\s*股\s*("
+        + DATE
+        + r")\s*[-—–−ー]\s*("
+        + DATE
+        + r")\s+("
+        + DATE
+        + ")"
+    )
+    for match in re.finditer(header, text):
+        for field, value in zip(("record_date", "ex_date", "cash_pay_date"), match.groups()):
+            yield field, _date(value), match
+    listed_header = (
+        r"股份类别\s*股权登记日\s*最后交易日\s*"
+        + EX_LABEL
+        + r"\s*新增无限售条件流通股份上市日\s*现金红利发放日\s*A\s*股\s*("
+        + DATE
+        + r")\s*[-—–−ー]\s*"
+        + r"\s+".join("(" + DATE + ")" for _ in range(3))
+        + r"(?!\s*"
+        + DATE
+        + ")"
+    )
+    for match in re.finditer(listed_header, text):
+        fields = ("record_date", "ex_date", "share_list_date", "cash_pay_date")
+        for field, value in zip(fields, match.groups()):
+            yield field, _date(value), match
+    for listing in (False, True):
+        labels = r"股权登记日\s*" + EX_LABEL + r"\s*"
+        fields = ["record_date", "ex_date"]
+        if listing:
+            labels += r"新增无限售条件流通股份上市日\s*"
+            fields.append("share_list_date")
+        labels += r"现金红利发放日\s*"
+        fields.append("cash_pay_date")
+        dates = r"\s+".join("(" + DATE + ")" for _ in fields)
+        for share_class in (False, True):
+            pattern = (
+                r"股份类别\s*" + labels + r"A\s*股\s*" + dates if share_class else labels + dates
+            )
+            for match in re.finditer(pattern + r"(?!\s*" + DATE + ")", text):
+                for field, value in zip(fields, match.groups()):
+                    yield field, _date(value), match
+    payment = (
+        r"代派的\s*(?:A\s*股(?:股东)?\s*)?现金红利将于\s*("
+        + DATE
+        + r")[^。；;]{0,90}?直接划入其资金账户"
+    )
+    for match in re.finditer(payment, text):
+        yield "cash_pay_date", _date(match[1]), match
+    listing = (
+        r"(?:本次(?:所)?送(?:\(转\)|转)股|新增无限售条件流通股份)的?上市日为[:：]?\s*(" + DATE + ")"
+    )
+    for match in re.finditer(listing, text):
+        yield "share_list_date", _date(match[1]), match
+    first_trading_day = r"本次所转增的无限售条件流通股的起始交易日为[:：]?\s*(" + DATE + ")"
+    for match in re.finditer(first_trading_day, text):
+        yield "share_list_date", _date(match[1]), match
+    amounts = (
+        (
+            r"A\s*股每股现金(?:红利|股利|分红|股息)\s*(?:人民币\s*)?("
+            + NUMBER
+            + r")\s*元\s*\(\s*含税",
+            1,
+        ),
+        (
+            r"(?:向全体股东(?:按)?)?每\s*10\s*股"
+            r"(?:派(?:发|送)?\s*(?:现金(?:红利|股利|分红|股息)?\s*)?|分配\s*现金\s*)"
+            r"(?:人民币\s*)?(" + NUMBER + r")\s*元(?:人民币(?:\s*\(以下简称\s*[“\"]元[”\"]\s*\))?)?"
+            r"\s*(?:现金\s*)?\(\s*含税",
+            10,
+        ),
+        (
+            r"本次利润分配[^。]{0,180}?每股派发现金(?:红利|股利|分红|股息)\s*(?:人民币\s*)?("
+            + NUMBER
+            + r")\s*元\s*\(\s*含税",
+            1,
+        ),
+    )
+    for pattern, divisor in amounts:
+        for match in re.finditer(pattern, text):
+            if divisor == 10:
+                if not _current_payout(
+                    history + text[: match.start()], match[0].startswith("向全体股东")
+                ):
+                    yield "unscoped_cash_per_share", str(Decimal(match[1]) / divisor), match
+                    continue
+            yield "cash_per_share", str(Decimal(match[1]) / divisor), match
+    per_share = (
+        r"(?:A\s*股)?每股(?:派发\s*(?:20\d{2}\s*年\s*(?:中期|末期|年度)\s*)?)?"
+        r"现金(?:红利|股利|分红|股息)\s*(?:人民币\s*)?(" + NUMBER + r")\s*元\s*\(\s*含税"
+    )
+    for match in re.finditer(per_share, text):
+        prefix = history + text[: match.start()]
+        if _current_payout(prefix):
+            yield "cash_per_share", str(Decimal(match[1])), match
 
-    def add(field, value, page, excerpt):
-        evidence.setdefault(field, []).append({"value": value, "page": page, "text": excerpt})
 
+def _adjacent_terms(pages):
     history = ""
+    for page in range(1, len(pages)):
+        left = _boundary_page(pages[page - 1], page, len(pages))
+        right = _boundary_page(pages[page], page + 1, len(pages))
+        if left is not None and right is not None:
+            left_style = [row.get("style", "paired_dash") for row in left[1]]
+            right_style = [row.get("style", "paired_dash") for row in right[1]]
+            if left_style == right_style:
+                # CJK words can wrap; a currency's numeric token cannot be repaired.
+                separator = (
+                    ""
+                    if re.search(r"[\u4e00-\u9fff]$", left[0])
+                    and re.match(r"[\u4e00-\u9fff]", right[0])
+                    else " "
+                )
+                boundary = len(left[0])
+                joined = left[0] + separator + right[0]
+                for field, value, match in _page_terms(joined, history):
+                    if (
+                        field != "unscoped_cash_per_share"
+                        and match.start() < boundary
+                        and match.end() > boundary + len(separator)
+                    ):
+                        yield (
+                            field,
+                            {
+                                "value": value,
+                                "page": page,
+                                "pages": [page, page + 1],
+                                "text": match[0],
+                                "parts": [
+                                    {"page": page, "text": joined[match.start() : boundary]},
+                                    {
+                                        "page": page + 1,
+                                        "text": joined[boundary + len(separator) : match.end()],
+                                    },
+                                ],
+                                "page_number_lines": left[1] + right[1],
+                            },
+                        )
+        history += _page_text(pages[page - 1]) + " "
+
+
+def extract_terms(pages):
+    """Recognize labelled source fields, retaining physical-page evidence."""
+    evidence, history = {}, ""
     for page, raw in enumerate(pages, 1):
         text = _page_text(raw)
-        for field, label in (("record_date", "股权登记日"), ("ex_date", EX_LABEL)):
-            for match in re.finditer(label + r"\s*(?:为\s*)?[:：]?\s*(" + DATE + ")", text):
-                add(field, _date(match[1]), page, match[0])
-        # Preserve spaces between table cells. Do not infer column order from date occurrence.
-        header = (
-            r"股份类别\s*股权登记日\s*最后交易日\s*"
-            + EX_LABEL
-            + r"\s*现金红利发放日\s*A\s*股\s*("
-            + DATE
-            + r")\s*[-—–−ー]\s*("
-            + DATE
-            + r")\s+("
-            + DATE
-            + ")"
-        )
-        for match in re.finditer(header, text):
-            for field, value in zip(("record_date", "ex_date", "cash_pay_date"), match.groups()):
-                add(field, _date(value), page, match[0])
-        for listing in (False, True):
-            labels = r"股权登记日\s*" + EX_LABEL + r"\s*"
-            fields = ["record_date", "ex_date"]
-            if listing:
-                labels += r"新增无限售条件流通股份上市日\s*"
-                fields.append("share_list_date")
-            labels += r"现金红利发放日\s*"
-            fields.append("cash_pay_date")
-            dates = r"\s+".join("(" + DATE + ")" for _ in fields)
-            for share_class in (False, True):
-                pattern = (
-                    r"股份类别\s*" + labels + r"A\s*股\s*" + dates
-                    if share_class
-                    else labels + dates
-                )
-                for match in re.finditer(pattern + r"(?!\s*" + DATE + ")", text):
-                    for field, value in zip(fields, match.groups()):
-                        add(field, _date(value), page, match[0])
-        payment = (
-            r"代派的\s*(?:A\s*股(?:股东)?\s*)?现金红利将于\s*("
-            + DATE
-            + r")[^。；;]{0,90}?直接划入其资金账户"
-        )
-        for match in re.finditer(payment, text):
-            add("cash_pay_date", _date(match[1]), page, match[0])
-        listing = (
-            r"(?:本次(?:所)?送(?:\(转\)|转)股|新增无限售条件流通股份)的?上市日为[:：]?\s*("
-            + DATE
-            + ")"
-        )
-        for match in re.finditer(listing, text):
-            add("share_list_date", _date(match[1]), page, match[0])
-        amounts = (
-            (
-                r"A\s*股每股现金(?:红利|股利|分红|股息)\s*(?:人民币\s*)?("
-                + NUMBER
-                + r")\s*元\s*\(\s*含税",
-                1,
-            ),
-            (
-                r"(?:向全体股东(?:按)?)?每\s*10\s*股"
-                r"(?:派(?:发|送)?\s*(?:现金(?:红利|股利|分红|股息)?\s*)?|分配\s*现金\s*)"
-                r"(?:人民币\s*)?("
-                + NUMBER
-                + r")\s*元(?:人民币(?:\s*\(以下简称\s*[“\"]元[”\"]\s*\))?)?"
-                r"\s*(?:现金\s*)?\(\s*含税",
-                10,
-            ),
-            (
-                r"本次利润分配[^。]{0,180}?每股派发现金(?:红利|股利|分红|股息)\s*(?:人民币\s*)?("
-                + NUMBER
-                + r")\s*元\s*\(\s*含税",
-                1,
-            ),
-        )
-        for pattern, divisor in amounts:
-            for match in re.finditer(pattern, text):
-                if divisor == 10:
-                    if not _current_payout(
-                        history + text[: match.start()], match[0].startswith("向全体股东")
-                    ):
-                        add(
-                            "unscoped_cash_per_share",
-                            str(Decimal(match[1]) / divisor),
-                            page,
-                            match[0],
-                        )
-                        continue
-                add("cash_per_share", str(Decimal(match[1]) / divisor), page, match[0])
-        per_share = (
-            r"(?:A\s*股)?每股(?:派发\s*(?:20\d{2}\s*年\s*(?:中期|末期|年度)\s*)?)?"
-            r"现金(?:红利|股利|分红|股息)\s*(?:人民币\s*)?(" + NUMBER + r")\s*元\s*\(\s*含税"
-        )
-        for match in re.finditer(per_share, text):
-            prefix = history + text[: match.start()]
-            if _current_payout(prefix):
-                add("cash_per_share", str(Decimal(match[1])), page, match[0])
+        for field, value, match in _page_terms(text, history):
+            evidence.setdefault(field, []).append({"value": value, "page": page, "text": match[0]})
         history += text + " "
     cross_page = _cross_page_cash(pages)
     if cross_page:
         evidence.setdefault("cash_per_share", []).extend(cross_page)
+    for field, item in _adjacent_terms(pages):
+        previous = evidence.setdefault(field, [])
+        if not any(
+            row.get("pages") == item["pages"] and row["value"] == item["value"] for row in previous
+        ):
+            previous.append(item)
     return evidence
 
 
@@ -315,8 +386,22 @@ def notice_role(symbol, candidate, pages):
     if not pages or not _compact(pages[0]):
         return {**result, "reason": "UNSUPPORTED_DOCUMENT"}
     first = _compact(pages[0])
+    body_title = title
     if title not in first:
-        return {**result, "reason": "TITLE_NOT_IN_FIRST_PAGE"}
+        matches = set()
+        for name in re.findall(r"(?:证券|股票)简称[:：]([\w*]{2,16})公告编号[:：]", first):
+            if title.startswith(name):
+                remainder = title[len(name) :].lstrip(":：")
+                if remainder and remainder in first:
+                    matches.add((name, remainder))
+        if len(matches) != 1:
+            return {**result, "reason": "TITLE_NOT_IN_FIRST_PAGE"}
+        short_name, body_title = matches.pop()
+        result["title_match"] = {
+            "security_short_name": short_name,
+            "body_title": body_title,
+            "page": 1,
+        }
     codes = set(
         re.findall(
             r"(?:证券|股票)\s*代码\s*[:：]?\s*(\d{6})(?!\d)",
@@ -348,7 +433,7 @@ def notice_role(symbol, candidate, pages):
     for number, raw in enumerate(pages, 1):
         text = _compact(raw)
         if number == 1:
-            text = text.split(title, 1)[1]
+            text = text.split(body_title, 1)[1]
         for clause in re.split(r"[。；;]", text):
             if len(clause) > 400:
                 continue
