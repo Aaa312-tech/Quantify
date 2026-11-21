@@ -12,8 +12,8 @@ from pathlib import Path
 from .dataset import check_integrity, load_snapshot
 from .storage import digest, log, now, read, save, sha
 
-DATE = r"20\d{2}\s*(?:年|/|-)\s*\d{1,2}\s*(?:月|/|-)\s*\d{1,2}\s*日?"
-EX_LABEL = r"除权\s*(?:\(\s*息\s*\)|除息|息)?\s*日"
+DATE = r"2\s*0\s*\d\s*\d\s*(?:年|/|-)\s*\d{1,2}\s*(?:月|/|-)\s*\d{1,2}\s*日?(?!\d)"
+EX_LABEL = r"(?:除权\s*(?:\(\s*息\s*\)|除息|息)?|除息)\s*日"
 NUMBER = r"[0-9]+(?:\.[0-9]+)?"
 FIELDS = frozenset(
     (
@@ -27,8 +27,40 @@ FIELDS = frozenset(
 
 
 def _date(text):
-    parts = re.findall(r"\d+", text)
-    return dt.date(*map(int, parts)).isoformat()
+    year, month, day = re.fullmatch(
+        r"(2\s*0\s*\d\s*\d)\s*(?:年|/|-)\s*(\d{1,2})\s*(?:月|/|-)\s*(\d{1,2})\s*日?",
+        text.strip(),
+    ).groups()
+    return dt.date(int(re.sub(r"\s", "", year)), int(month), int(day)).isoformat()
+
+
+def _current_scheme(prefix):
+    headings = list(re.finditer(r"[一二三四五六七八九十]+、", prefix))
+    title = prefix[headings[-1].end() :].strip() if headings else ""
+    return (
+        re.match(
+            r"(?:本次(?:实施的)?)?(?:权益分派|利润分配|分配|分红派息)"
+            r"(?:(?:及|、)(?:资本公积金)?转增股本)?方案",
+            title,
+        )
+        is not None
+    )
+
+
+def _current_payout(prefix, established_all_shareholder=False):
+    clause = re.split(r"[。；;]", prefix)[-1]
+    # Outstanding A/H share counts describe the capital base, not the dividend class.
+    clause = re.sub(
+        r"\(其中\s*A\s*股\s*[\d,]+\s*股[,，]\s*H\s*股\s*[\d,]+\s*股\)",
+        "",
+        clause,
+    )
+    excluded = r"已派|前次|上次|此前|全年|累计|H\s*股|税后|除权|折算"
+    # Approved implementation sections can retain proposal wording. Preserve the
+    # old explicit all-shareholder grammar; expanded forms need narrower scope.
+    if not established_all_shareholder:
+        excluded += r"|预案|拟"
+    return _current_scheme(prefix) and re.search(excluded, clause) is None
 
 
 def extract_terms(pages):
@@ -60,6 +92,24 @@ def extract_terms(pages):
         for match in re.finditer(header, text):
             for field, value in zip(("record_date", "ex_date", "cash_pay_date"), match.groups()):
                 add(field, _date(value), page, match[0])
+        for listing in (False, True):
+            labels = r"股权登记日\s*" + EX_LABEL + r"\s*"
+            fields = ["record_date", "ex_date"]
+            if listing:
+                labels += r"新增无限售条件流通股份上市日\s*"
+                fields.append("share_list_date")
+            labels += r"现金红利发放日\s*"
+            fields.append("cash_pay_date")
+            dates = r"\s+".join("(" + DATE + ")" for _ in fields)
+            for share_class in (False, True):
+                pattern = (
+                    r"股份类别\s*" + labels + r"A\s*股\s*" + dates
+                    if share_class
+                    else labels + dates
+                )
+                for match in re.finditer(pattern + r"(?!\s*" + DATE + ")", text):
+                    for field, value in zip(fields, match.groups()):
+                        add(field, _date(value), page, match[0])
         payment = (
             r"代派的\s*(?:A\s*股(?:股东)?\s*)?现金红利将于\s*("
             + DATE
@@ -77,9 +127,10 @@ def extract_terms(pages):
         amounts = (
             (r"A\s*股每股现金红利\s*(?:人民币\s*)?(" + NUMBER + r")\s*元\s*\(\s*含税", 1),
             (
-                r"向全体股东(?:按)?每\s*10\s*股派(?:发)?\s*(?:现金(?:红利|股利)?\s*)?(?:人民币\s*)?("
+                r"(?:向全体股东(?:按)?)?每\s*10\s*股派(?:发)?\s*"
+                r"(?:现金(?:红利|股利|分红)?\s*)?(?:人民币\s*)?("
                 + NUMBER
-                + r")\s*元(?:人民币)?\s*(?:现金)?\s*\(\s*含税",
+                + r")\s*元(?:人民币)?\s*(?:现金\s*)?\(\s*含税",
                 10,
             ),
             (
@@ -92,17 +143,9 @@ def extract_terms(pages):
         for pattern, divisor in amounts:
             for match in re.finditer(pattern, text):
                 if divisor == 10:
-                    headings = list(
-                        re.finditer(
-                            r"[一二三四五六七八九十]+、([^。、；;:：]{1,60})",
-                            history + text[: match.start()],
-                        )
-                    )
-                    title = headings[-1][1].strip() if headings else ""
-                    current = re.match(
-                        r"(?:本次(?:实施的)?)?(?:权益分派|利润分配|分配|分红派息)方案", title
-                    )
-                    if not current:
+                    if not _current_payout(
+                        history + text[: match.start()], match[0].startswith("向全体股东")
+                    ):
                         add(
                             "unscoped_cash_per_share",
                             str(Decimal(match[1]) / divisor),
@@ -111,6 +154,14 @@ def extract_terms(pages):
                         )
                         continue
                 add("cash_per_share", str(Decimal(match[1]) / divisor), page, match[0])
+        per_share = (
+            r"(?:A\s*股)?每股(?:派发\s*(?:20\d{2}\s*年\s*(?:中期|末期|年度)\s*)?)?"
+            r"现金(?:红利|股利|分红)\s*(?:人民币\s*)?(" + NUMBER + r")\s*元\s*\(\s*含税"
+        )
+        for match in re.finditer(per_share, text):
+            prefix = history + text[: match.start()]
+            if _current_payout(prefix):
+                add("cash_per_share", str(Decimal(match[1])), page, match[0])
         history += text + " "
     return evidence
 

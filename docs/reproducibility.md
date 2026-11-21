@@ -391,3 +391,16 @@ python -m quantfolio review-industries --protocol configs/protocols/industry_cel
 后续时点与敞口构建按`configs/protocols/etf_exposures.json`登记。数据位于`data/processed/etf_exposures_2026-11-21`，检查位于同名`artifacts/checks`目录。先以`notes_reviewed.json`确定附注来源，再经财务字段初查、版式复核与清单补核，最终读取`financial_observations.json.gz`；不能用早期提取替代最终字段。`financial_audit.json`核对528份报告的有序代码、金额、原横线及合计。
 
 `equity_profiles.json.gz`保存752份来源组合，`session_profiles.json.gz`为22只基金与698个交易日的完整索引。`history_audit.json`独立重建日期选择、代码映射及精确金额分拆，`information_boundaries.json`检查未来报告、概要、分类和身份对应的截断与扰动。复现不需要下载新PDF，也不会隐式重训；使用新注册路径，并记录原脚本、原图裁定和输入哈希。最终使用范围见[敞口数据说明](etf_exposures.md)。
+
+## 分红条款复核
+
+本轮来源输入保持原1839项事件身份。协议依次为`distribution_terms.json`、`distribution_term_scope.json`和`distribution_approved_wording.json`；实际执行程序、提取器副本、失败记录和验收均保存在`artifacts/checks/distribution_terms_2026-11-21`。运行包仅改公告提取与版本，数值模块、活跃快照和纸面计划的哈希保持。
+
+```powershell
+python -m pip install -e ".[disclosures]"
+python -m quantfolio review-distributions --protocol configs/protocols/distribution_approved_wording.json
+```
+
+以上协议输出已经冻结，命令会拒绝覆盖。重新执行前必须登记新的`review`和`checks_output`，并保留相同事件清单、来源哈希及门槛。独立读取使用`pymupdf==1.27.2.3`，脚本`independent_fields.py`的`--output`也必须指向不存在的新文件；它不调用生产提取器。首次执行的读取器另存`independent_initial.py`，对应原11项失败，不能用修复后源码解释其旧结果。
+
+最终验收见[来源说明](distribution_terms.md)链接的三个结论文件。435项本地测试通过，1项环境检查跳过；48个模型普通重载的预测完全一致。新增字段尚未接入，因此没有新增拟合和回测结果；接入须另行登记全量重训与账户对照。

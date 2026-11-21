@@ -1,0 +1,48 @@
+......FF                                                                 [100%]
+================================== FAILURES ===================================
+_ test_established_all_shareholder_implementation_wording_is_preserved[\u516c\u53f8\u62df\u4ee5\u5b9e\u65bd\u80a1\u6743\u767b\u8bb0\u65e5\u767b\u8bb0\u7684\u603b\u80a1\u672c\u6263\u51cf\u56de\u8d2d\u80a1\u4e3a\u57fa\u6570\uff0c\u5411\u5168\u4f53\u80a1\u4e1c\u6bcf10\u80a1\u6d3e\u53d1\u73b0\u91d1\u7ea2\u52290.2\u5143\uff08\u542b\u7a0e\uff09\u3002] _
+
+wording = '公司拟以实施股权登记日登记的总股本扣减回购股为基数，向全体股东每10股派发现金红利0.2元（含税）。'
+
+    @pytest.mark.parametrize(
+        "wording",
+        [
+            "公司拟以实施股权登记日登记的总股本扣减回购股为基数，向全体股东每10股派发现金红利0.2元（含税）。",
+            "公司年度利润分配预案为：以现有总股本剔除已回购股份为基数，向全体股东每10股派0.200000元人民币现金（含税）。",
+        ],
+    )
+    def test_established_all_shareholder_implementation_wording_is_preserved(wording):
+        # These are existing implementation-section forms, corroborated by the provider.
+>       assert amounts(["二、权益分派方案 " + wording]) == {Decimal("0.02")}
+E       AssertionError: assert set() == {Decimal('0.02')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.02')
+E         Use -v to get more diff
+
+tests\test_distribution_scope.py:55: AssertionError
+_ test_established_all_shareholder_implementation_wording_is_preserved[\u516c\u53f8\u5e74\u5ea6\u5229\u6da6\u5206\u914d\u9884\u6848\u4e3a\uff1a\u4ee5\u73b0\u6709\u603b\u80a1\u672c\u5254\u9664\u5df2\u56de\u8d2d\u80a1\u4efd\u4e3a\u57fa\u6570\uff0c\u5411\u5168\u4f53\u80a1\u4e1c\u6bcf10\u80a1\u6d3e0.200000\u5143\u4eba\u6c11\u5e01\u73b0\u91d1\uff08\u542b\u7a0e\uff09\u3002] _
+
+wording = '公司年度利润分配预案为：以现有总股本剔除已回购股份为基数，向全体股东每10股派0.200000元人民币现金（含税）。'
+
+    @pytest.mark.parametrize(
+        "wording",
+        [
+            "公司拟以实施股权登记日登记的总股本扣减回购股为基数，向全体股东每10股派发现金红利0.2元（含税）。",
+            "公司年度利润分配预案为：以现有总股本剔除已回购股份为基数，向全体股东每10股派0.200000元人民币现金（含税）。",
+        ],
+    )
+    def test_established_all_shareholder_implementation_wording_is_preserved(wording):
+        # These are existing implementation-section forms, corroborated by the provider.
+>       assert amounts(["二、权益分派方案 " + wording]) == {Decimal("0.02")}
+E       AssertionError: assert set() == {Decimal('0.02')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.02')
+E         Use -v to get more diff
+
+tests\test_distribution_scope.py:55: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_distribution_scope.py::test_established_all_shareholder_implementation_wording_is_preserved[\u516c\u53f8\u62df\u4ee5\u5b9e\u65bd\u80a1\u6743\u767b\u8bb0\u65e5\u767b\u8bb0\u7684\u603b\u80a1\u672c\u6263\u51cf\u56de\u8d2d\u80a1\u4e3a\u57fa\u6570\uff0c\u5411\u5168\u4f53\u80a1\u4e1c\u6bcf10\u80a1\u6d3e\u53d1\u73b0\u91d1\u7ea2\u52290.2\u5143\uff08\u542b\u7a0e\uff09\u3002]
+FAILED tests/test_distribution_scope.py::test_established_all_shareholder_implementation_wording_is_preserved[\u516c\u53f8\u5e74\u5ea6\u5229\u6da6\u5206\u914d\u9884\u6848\u4e3a\uff1a\u4ee5\u73b0\u6709\u603b\u80a1\u672c\u5254\u9664\u5df2\u56de\u8d2d\u80a1\u4efd\u4e3a\u57fa\u6570\uff0c\u5411\u5168\u4f53\u80a1\u4e1c\u6bcf10\u80a1\u6d3e0.200000\u5143\u4eba\u6c11\u5e01\u73b0\u91d1\uff08\u542b\u7a0e\uff09\u3002]
+2 failed, 6 passed in 0.22s

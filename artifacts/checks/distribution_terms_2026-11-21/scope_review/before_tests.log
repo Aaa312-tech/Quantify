@@ -1,0 +1,79 @@
+FF..FF                                                                   [100%]
+================================== FAILURES ===================================
+________ test_share_capital_composition_is_not_an_h_share_distribution ________
+
+    def test_share_capital_composition_is_not_an_h_share_distribution():
+        pages = [
+            "二、本次实施的权益分派方案 公司以总股本3,039,065,855股为基数",
+            "（其中A股1,811,265,855股，H股1,227,800,000股），"
+            "向全体股东每10股派发现金红利人民币39.74元（含税）。",
+        ]
+>       assert amounts(pages) == {Decimal("3.974")}
+E       AssertionError: assert set() == {Decimal('3.974')}
+E         
+E         Extra items in the right set:
+E         Decimal('3.974')
+E         Use -v to get more diff
+
+tests\test_distribution_scope.py:20: AssertionError
+__ test_proposal_within_current_section_does_not_conflict_with_actual_amount __
+
+    def test_proposal_within_current_section_does_not_conflict_with_actual_amount():
+        pages = [
+            "A股每股现金红利0.2692元（含税）。二、分配方案 "
+            "根据审议通过的利润分配预案，公司拟向股东每10股派发现金红利人民币2.69元（含税）。"
+            "根据调整公告，本次权益分派以扣除回购股份后的股数为基数，"
+            "每10股派发现金红利人民币2.692元（含税）。",
+        ]
+>       assert amounts(pages) == {Decimal("0.2692")}
+E       AssertionError: assert {Decimal('0.2...mal('0.2692')} == {Decimal('0.2692')}
+E         
+E         Extra items in the left set:
+E         Decimal('0.269')
+E         Use -v to get more diff
+
+tests\test_distribution_scope.py:30: AssertionError
+_ test_non_current_roles_remain_unsupported[\u516c\u53f8\u62df\u5411\u80a1\u4e1c\u6bcf\u80a1\u73b0\u91d1\u7ea2\u52293.974\u5143\uff08\u542b\u7a0e\uff09\u3002] _
+
+wording = '公司拟向股东每股现金红利3.974元（含税）。'
+
+    @pytest.mark.parametrize(
+        "wording",
+        [
+            "H股1,000股股东每10股派发现金红利39.74元（含税）。",
+            "（其中H股1,000股每10股派发现金红利39.74元（含税））。",
+            "公司拟向股东每股现金红利3.974元（含税）。",
+            "根据原预案，每10股派发现金红利39.74元（含税）。",
+        ],
+    )
+    def test_non_current_roles_remain_unsupported(wording):
+>       assert not amounts(["二、分配方案 " + wording])
+E       AssertionError: assert not {Decimal('3.974')}
+E        +  where {Decimal('3.974')} = amounts(['二、分配方案 公司拟向股东每股现金红利3.974元（含税）。'])
+
+tests\test_distribution_scope.py:43: AssertionError
+_ test_non_current_roles_remain_unsupported[\u6839\u636e\u539f\u9884\u6848\uff0c\u6bcf10\u80a1\u6d3e\u53d1\u73b0\u91d1\u7ea2\u522939.74\u5143\uff08\u542b\u7a0e\uff09\u3002] _
+
+wording = '根据原预案，每10股派发现金红利39.74元（含税）。'
+
+    @pytest.mark.parametrize(
+        "wording",
+        [
+            "H股1,000股股东每10股派发现金红利39.74元（含税）。",
+            "（其中H股1,000股每10股派发现金红利39.74元（含税））。",
+            "公司拟向股东每股现金红利3.974元（含税）。",
+            "根据原预案，每10股派发现金红利39.74元（含税）。",
+        ],
+    )
+    def test_non_current_roles_remain_unsupported(wording):
+>       assert not amounts(["二、分配方案 " + wording])
+E       AssertionError: assert not {Decimal('3.974')}
+E        +  where {Decimal('3.974')} = amounts(['二、分配方案 根据原预案，每10股派发现金红利39.74元（含税）。'])
+
+tests\test_distribution_scope.py:43: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_distribution_scope.py::test_share_capital_composition_is_not_an_h_share_distribution
+FAILED tests/test_distribution_scope.py::test_proposal_within_current_section_does_not_conflict_with_actual_amount
+FAILED tests/test_distribution_scope.py::test_non_current_roles_remain_unsupported[\u516c\u53f8\u62df\u5411\u80a1\u4e1c\u6bcf\u80a1\u73b0\u91d1\u7ea2\u52293.974\u5143\uff08\u542b\u7a0e\uff09\u3002]
+FAILED tests/test_distribution_scope.py::test_non_current_roles_remain_unsupported[\u6839\u636e\u539f\u9884\u6848\uff0c\u6bcf10\u80a1\u6d3e\u53d1\u73b0\u91d1\u7ea2\u522939.74\u5143\uff08\u542b\u7a0e\uff09\u3002]
+4 failed, 2 passed in 0.24s
