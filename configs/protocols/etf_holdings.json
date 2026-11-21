@@ -1,0 +1,69 @@
+{
+  "registered_at": "2026-11-21T12:30:02.923916+08:00",
+  "baseline_commit": "902e476778a5472c7f5c78cf6ffd99e668832d9c",
+  "baseline_manifest_sha256": "d757eee7bbc86e096ba2db00c935957b5bdb27252337d54f85875b9c53c72c79",
+  "baseline_frozen_files": 27679,
+  "baseline_bundle": "data/processed/2026-11-20-industry-dated/bundle.joblib",
+  "baseline_bundle_sha256": "f67395a3d187487283a345e57e16b2ead48a6d70b016939b02a172def4542231",
+  "baseline_configuration_sha256": "64fc1d75e836245c1450f15cb9c3bd26b667187aa81decffb4bd2727c6937644",
+  "catalogue": "data/processed/etf_sources_2026-11-21/catalogue.json.gz",
+  "catalogue_sha256": "2446dbaf599b542263d7c8dd769770616df812c9e33a7cf371e4f87a96ea6ff7",
+  "symbols": [
+    "sh510300",
+    "sh510500",
+    "sh511010",
+    "sh512000",
+    "sh512100",
+    "sh512170",
+    "sh512400",
+    "sh512480",
+    "sh512660",
+    "sh512800",
+    "sh512880",
+    "sh515030",
+    "sh515050",
+    "sh515180",
+    "sh515790",
+    "sh515880",
+    "sh516160",
+    "sh518880",
+    "sh588000",
+    "sz159915",
+    "sz159928",
+    "sz159995"
+  ],
+  "catalogue_period": {
+    "from": "2023-01-01",
+    "through": "2026-11-20",
+    "first_model_session": "2024-01-02"
+  },
+  "purpose": "Extract report-dated ETF portfolio evidence for subsequent sector exposure research; do not infer complete holdings from top-ten lists or index names.",
+  "collection": [
+    "Use every annual, interim and quarterly report title in the complete frozen catalogue, including separately labelled report notices and any corrections. Preserve each selection or exclusion and every original row.",
+    "The observed catalogue has 528 named fund reports (24 per fund) and 24 publication notices. These are source inventory expectations, not proof of content identity or complete public disclosure history.",
+    "Archive original PDFs with URL, retrieval time, HTTP response, byte size and SHA-256. Keep every failed attempt; retry only in a new directory after the initial process is confirmed terminal."
+  ],
+  "extraction": [
+    "Independently verify fund code, report type, reporting period and report delivery date against two PDF readers, with original text and page references. Catalogue date, report delivery date, report period end, PDF metadata and retrieval date remain separate.",
+    "Locate the actual investment-portfolio section, excluding the table of contents. Extract asset composition, sector tables and end-period stock holdings with original units, denominator, page, row and source identity. Distinguish index/passive and active sleeves, domestic and foreign holdings, and reported dash values from numeric zero.",
+    "Annual/interim all-stock schedules and quarterly top-ten schedules retain explicit coverage labels. Never renormalize reported partial weights to 100 percent or fill absent holdings/industries with zero.",
+    "Reconcile full-stock market values with the corresponding equity total; reconcile asset and sector totals using exact displayed decimal values. Check percentage rounding using displayed precision, not an arbitrary epsilon. Keep NAV denominators distinct from total-asset denominators.",
+    "Cross-check extracted cells with an independent reader and review ambiguous layout visually. Preserve failures and source defects; representative renders do not certify every source page visually.",
+    "Retain report basis, code aliases, missing classifications, derivatives and non-equity assets as separate limitations. Do not substitute benchmark constituents for fund holdings or backdate holdings to report period end."
+  ],
+  "availability": "Exact historical intraday public availability and unchanged original bytes are not established by present downloads. A separately registered prospective or retrospective as-of policy is required before model use; report-period-end holdings are stale observations, not daily actual portfolios.",
+  "activation_gate": "Register controls for coverage, type/index identity and look-through sector weights before integration. Require unchanged-baseline compatibility, full retraining, independent historical accounts and paper-account checks. No alpha candidate additions, threshold changes or return-based taxonomy choices.",
+  "raw_output": "data/raw/etf_reports_2026-11-21",
+  "processed_output": "data/processed/etf_holdings_2026-11-21",
+  "review_output": "artifacts/checks/etf_holdings_2026-11-21",
+  "decision": "SOURCE_REVIEW_ONLY_NOT_ACTIVATED",
+  "unchanged": [
+    "active dataset",
+    "source modules used by training/execution",
+    "forecasts and selected policies",
+    "all historical accounts",
+    "frozen November 23 plan",
+    "8 percent warning and latched risk",
+    "candidate budget and adoption thresholds"
+  ]
+}
