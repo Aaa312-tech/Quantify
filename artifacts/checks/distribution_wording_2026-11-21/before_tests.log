@@ -1,0 +1,268 @@
+FFFFFFFFFFF..............                                                [100%]
+================================== FAILURES ===================================
+_ test_explicit_current_scheme_headings[\u6743\u76ca\u5206\u914d\u65b9\u6848] _
+
+heading = '权益分配方案'
+
+    @pytest.mark.parametrize(
+        "heading",
+        [
+            "权益分配方案",
+            "本次实施的权益分配方案",
+            "本次实施的2023年度利润分配方案",
+            "本次实施的2025年半年度权益分派方案",
+            "2025年中期分红派息方案",
+        ],
+    )
+    def test_explicit_current_scheme_headings(heading):
+>       assert amounts(f"二、{heading} 向全体股东每10股派3.15元人民币现金（含税）。") == {
+            Decimal("0.315")
+        }
+E       AssertionError: assert set() == {Decimal('0.315')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.315')
+E         Use -v to get more diff
+
+tests\test_distribution_wording.py:26: AssertionError
+_ test_explicit_current_scheme_headings[\u672c\u6b21\u5b9e\u65bd\u7684\u6743\u76ca\u5206\u914d\u65b9\u6848] _
+
+heading = '本次实施的权益分配方案'
+
+    @pytest.mark.parametrize(
+        "heading",
+        [
+            "权益分配方案",
+            "本次实施的权益分配方案",
+            "本次实施的2023年度利润分配方案",
+            "本次实施的2025年半年度权益分派方案",
+            "2025年中期分红派息方案",
+        ],
+    )
+    def test_explicit_current_scheme_headings(heading):
+>       assert amounts(f"二、{heading} 向全体股东每10股派3.15元人民币现金（含税）。") == {
+            Decimal("0.315")
+        }
+E       AssertionError: assert set() == {Decimal('0.315')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.315')
+E         Use -v to get more diff
+
+tests\test_distribution_wording.py:26: AssertionError
+_ test_explicit_current_scheme_headings[\u672c\u6b21\u5b9e\u65bd\u76842023\u5e74\u5ea6\u5229\u6da6\u5206\u914d\u65b9\u6848] _
+
+heading = '本次实施的2023年度利润分配方案'
+
+    @pytest.mark.parametrize(
+        "heading",
+        [
+            "权益分配方案",
+            "本次实施的权益分配方案",
+            "本次实施的2023年度利润分配方案",
+            "本次实施的2025年半年度权益分派方案",
+            "2025年中期分红派息方案",
+        ],
+    )
+    def test_explicit_current_scheme_headings(heading):
+>       assert amounts(f"二、{heading} 向全体股东每10股派3.15元人民币现金（含税）。") == {
+            Decimal("0.315")
+        }
+E       AssertionError: assert set() == {Decimal('0.315')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.315')
+E         Use -v to get more diff
+
+tests\test_distribution_wording.py:26: AssertionError
+_ test_explicit_current_scheme_headings[\u672c\u6b21\u5b9e\u65bd\u76842025\u5e74\u534a\u5e74\u5ea6\u6743\u76ca\u5206\u6d3e\u65b9\u6848] _
+
+heading = '本次实施的2025年半年度权益分派方案'
+
+    @pytest.mark.parametrize(
+        "heading",
+        [
+            "权益分配方案",
+            "本次实施的权益分配方案",
+            "本次实施的2023年度利润分配方案",
+            "本次实施的2025年半年度权益分派方案",
+            "2025年中期分红派息方案",
+        ],
+    )
+    def test_explicit_current_scheme_headings(heading):
+>       assert amounts(f"二、{heading} 向全体股东每10股派3.15元人民币现金（含税）。") == {
+            Decimal("0.315")
+        }
+E       AssertionError: assert set() == {Decimal('0.315')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.315')
+E         Use -v to get more diff
+
+tests\test_distribution_wording.py:26: AssertionError
+_ test_explicit_current_scheme_headings[2025\u5e74\u4e2d\u671f\u5206\u7ea2\u6d3e\u606f\u65b9\u6848] _
+
+heading = '2025年中期分红派息方案'
+
+    @pytest.mark.parametrize(
+        "heading",
+        [
+            "权益分配方案",
+            "本次实施的权益分配方案",
+            "本次实施的2023年度利润分配方案",
+            "本次实施的2025年半年度权益分派方案",
+            "2025年中期分红派息方案",
+        ],
+    )
+    def test_explicit_current_scheme_headings(heading):
+>       assert amounts(f"二、{heading} 向全体股东每10股派3.15元人民币现金（含税）。") == {
+            Decimal("0.315")
+        }
+E       AssertionError: assert set() == {Decimal('0.315')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.315')
+E         Use -v to get more diff
+
+tests\test_distribution_wording.py:26: AssertionError
+_ test_currency_definition_between_amount_and_gross_qualifier[\u201c\u5143\u201d] _
+
+quote = '“元”'
+
+    @pytest.mark.parametrize("quote", ['“元”', '"元"'])
+    def test_currency_definition_between_amount_and_gross_qualifier(quote):
+        text = (
+            "二、本次实施的权益分派方案 向全体股东每10股派3.15元人民币"
+            f"（以下简称{quote}）现金（含税；扣税后每10股派2.835元）。"
+        )
+>       assert amounts(text) == {Decimal("0.315")}
+E       AssertionError: assert set() == {Decimal('0.315')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.315')
+E         Use -v to get more diff
+
+tests\test_distribution_wording.py:37: AssertionError
+____ test_currency_definition_between_amount_and_gross_qualifier["\u5143"] ____
+
+quote = '"元"'
+
+    @pytest.mark.parametrize("quote", ['“元”', '"元"'])
+    def test_currency_definition_between_amount_and_gross_qualifier(quote):
+        text = (
+            "二、本次实施的权益分派方案 向全体股东每10股派3.15元人民币"
+            f"（以下简称{quote}）现金（含税；扣税后每10股派2.835元）。"
+        )
+>       assert amounts(text) == {Decimal("0.315")}
+E       AssertionError: assert set() == {Decimal('0.315')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.315')
+E         Use -v to get more diff
+
+tests\test_distribution_wording.py:37: AssertionError
+_ test_gross_cash_nouns_and_verbs[\u6bcf10\u80a1\u6d3e\u9001\u73b0\u91d1\u7ea2\u52290.4873\u5143\uff08\u542b\u7a0e\uff09-0.04873] _
+
+wording = '每10股派送现金红利0.4873元（含税）', expected = '0.04873'
+
+    @pytest.mark.parametrize(
+        "wording, expected",
+        [
+            ("每10股派送现金红利0.4873元（含税）", "0.04873"),
+            ("每10股分配现金0.26元（含税）", "0.026"),
+            ("每10股派发现金股息3.064元（含税）", "0.3064"),
+            ("每股派发现金股息人民币0.3064元（含税）", "0.3064"),
+            ("每股现金股利人民币0.3064元（含税）", "0.3064"),
+        ],
+    )
+    def test_gross_cash_nouns_and_verbs(wording, expected):
+>       assert amounts("二、分配方案 公司以现有股本为基数，" + wording) == {Decimal(expected)}
+E       AssertionError: assert set() == {Decimal('0.04873')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.04873')
+E         Use -v to get more diff
+
+tests\test_distribution_wording.py:51: AssertionError
+_ test_gross_cash_nouns_and_verbs[\u6bcf10\u80a1\u5206\u914d\u73b0\u91d10.26\u5143\uff08\u542b\u7a0e\uff09-0.026] _
+
+wording = '每10股分配现金0.26元（含税）', expected = '0.026'
+
+    @pytest.mark.parametrize(
+        "wording, expected",
+        [
+            ("每10股派送现金红利0.4873元（含税）", "0.04873"),
+            ("每10股分配现金0.26元（含税）", "0.026"),
+            ("每10股派发现金股息3.064元（含税）", "0.3064"),
+            ("每股派发现金股息人民币0.3064元（含税）", "0.3064"),
+            ("每股现金股利人民币0.3064元（含税）", "0.3064"),
+        ],
+    )
+    def test_gross_cash_nouns_and_verbs(wording, expected):
+>       assert amounts("二、分配方案 公司以现有股本为基数，" + wording) == {Decimal(expected)}
+E       AssertionError: assert set() == {Decimal('0.026')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.026')
+E         Use -v to get more diff
+
+tests\test_distribution_wording.py:51: AssertionError
+_ test_gross_cash_nouns_and_verbs[\u6bcf10\u80a1\u6d3e\u53d1\u73b0\u91d1\u80a1\u606f3.064\u5143\uff08\u542b\u7a0e\uff09-0.3064] _
+
+wording = '每10股派发现金股息3.064元（含税）', expected = '0.3064'
+
+    @pytest.mark.parametrize(
+        "wording, expected",
+        [
+            ("每10股派送现金红利0.4873元（含税）", "0.04873"),
+            ("每10股分配现金0.26元（含税）", "0.026"),
+            ("每10股派发现金股息3.064元（含税）", "0.3064"),
+            ("每股派发现金股息人民币0.3064元（含税）", "0.3064"),
+            ("每股现金股利人民币0.3064元（含税）", "0.3064"),
+        ],
+    )
+    def test_gross_cash_nouns_and_verbs(wording, expected):
+>       assert amounts("二、分配方案 公司以现有股本为基数，" + wording) == {Decimal(expected)}
+E       AssertionError: assert set() == {Decimal('0.3064')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.3064')
+E         Use -v to get more diff
+
+tests\test_distribution_wording.py:51: AssertionError
+_ test_gross_cash_nouns_and_verbs[\u6bcf\u80a1\u6d3e\u53d1\u73b0\u91d1\u80a1\u606f\u4eba\u6c11\u5e010.3064\u5143\uff08\u542b\u7a0e\uff09-0.3064] _
+
+wording = '每股派发现金股息人民币0.3064元（含税）', expected = '0.3064'
+
+    @pytest.mark.parametrize(
+        "wording, expected",
+        [
+            ("每10股派送现金红利0.4873元（含税）", "0.04873"),
+            ("每10股分配现金0.26元（含税）", "0.026"),
+            ("每10股派发现金股息3.064元（含税）", "0.3064"),
+            ("每股派发现金股息人民币0.3064元（含税）", "0.3064"),
+            ("每股现金股利人民币0.3064元（含税）", "0.3064"),
+        ],
+    )
+    def test_gross_cash_nouns_and_verbs(wording, expected):
+>       assert amounts("二、分配方案 公司以现有股本为基数，" + wording) == {Decimal(expected)}
+E       AssertionError: assert set() == {Decimal('0.3064')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.3064')
+E         Use -v to get more diff
+
+tests\test_distribution_wording.py:51: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_distribution_wording.py::test_explicit_current_scheme_headings[\u6743\u76ca\u5206\u914d\u65b9\u6848]
+FAILED tests/test_distribution_wording.py::test_explicit_current_scheme_headings[\u672c\u6b21\u5b9e\u65bd\u7684\u6743\u76ca\u5206\u914d\u65b9\u6848]
+FAILED tests/test_distribution_wording.py::test_explicit_current_scheme_headings[\u672c\u6b21\u5b9e\u65bd\u76842023\u5e74\u5ea6\u5229\u6da6\u5206\u914d\u65b9\u6848]
+FAILED tests/test_distribution_wording.py::test_explicit_current_scheme_headings[\u672c\u6b21\u5b9e\u65bd\u76842025\u5e74\u534a\u5e74\u5ea6\u6743\u76ca\u5206\u6d3e\u65b9\u6848]
+FAILED tests/test_distribution_wording.py::test_explicit_current_scheme_headings[2025\u5e74\u4e2d\u671f\u5206\u7ea2\u6d3e\u606f\u65b9\u6848]
+FAILED tests/test_distribution_wording.py::test_currency_definition_between_amount_and_gross_qualifier[\u201c\u5143\u201d]
+FAILED tests/test_distribution_wording.py::test_currency_definition_between_amount_and_gross_qualifier["\u5143"]
+FAILED tests/test_distribution_wording.py::test_gross_cash_nouns_and_verbs[\u6bcf10\u80a1\u6d3e\u9001\u73b0\u91d1\u7ea2\u52290.4873\u5143\uff08\u542b\u7a0e\uff09-0.04873]
+FAILED tests/test_distribution_wording.py::test_gross_cash_nouns_and_verbs[\u6bcf10\u80a1\u5206\u914d\u73b0\u91d10.26\u5143\uff08\u542b\u7a0e\uff09-0.026]
+FAILED tests/test_distribution_wording.py::test_gross_cash_nouns_and_verbs[\u6bcf10\u80a1\u6d3e\u53d1\u73b0\u91d1\u80a1\u606f3.064\u5143\uff08\u542b\u7a0e\uff09-0.3064]
+FAILED tests/test_distribution_wording.py::test_gross_cash_nouns_and_verbs[\u6bcf\u80a1\u6d3e\u53d1\u73b0\u91d1\u80a1\u606f\u4eba\u6c11\u5e010.3064\u5143\uff08\u542b\u7a0e\uff09-0.3064]
+11 failed, 14 passed in 0.28s

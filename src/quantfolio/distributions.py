@@ -39,7 +39,9 @@ def _current_scheme(prefix):
     title = prefix[headings[-1].end() :].strip() if headings else ""
     return (
         re.match(
-            r"(?:本次(?:实施的)?)?(?:权益分派|利润分配|分配|分红派息)"
+            r"(?:本次(?:实施的)?)?"
+            r"(?:20\d{2}年?(?:年度|半年度|中期|前三季度|第[一二三四]季度)?\s*)?"
+            r"(?:权益分(?:派|配)|利润分配|分配|分红派息)"
             r"(?:(?:及|、)(?:资本公积金)?转增股本)?方案",
             title,
         )
@@ -125,16 +127,23 @@ def extract_terms(pages):
         for match in re.finditer(listing, text):
             add("share_list_date", _date(match[1]), page, match[0])
         amounts = (
-            (r"A\s*股每股现金红利\s*(?:人民币\s*)?(" + NUMBER + r")\s*元\s*\(\s*含税", 1),
             (
-                r"(?:向全体股东(?:按)?)?每\s*10\s*股派(?:发)?\s*"
-                r"(?:现金(?:红利|股利|分红)?\s*)?(?:人民币\s*)?("
+                r"A\s*股每股现金(?:红利|股利|分红|股息)\s*(?:人民币\s*)?("
                 + NUMBER
-                + r")\s*元(?:人民币)?\s*(?:现金\s*)?\(\s*含税",
+                + r")\s*元\s*\(\s*含税",
+                1,
+            ),
+            (
+                r"(?:向全体股东(?:按)?)?每\s*10\s*股"
+                r"(?:派(?:发|送)?\s*(?:现金(?:红利|股利|分红|股息)?\s*)?|分配\s*现金\s*)"
+                r"(?:人民币\s*)?("
+                + NUMBER
+                + r")\s*元(?:人民币(?:\s*\(以下简称\s*[“\"]元[”\"]\s*\))?)?"
+                r"\s*(?:现金\s*)?\(\s*含税",
                 10,
             ),
             (
-                r"本次利润分配[^。]{0,180}?每股派发现金红利\s*(?:人民币\s*)?("
+                r"本次利润分配[^。]{0,180}?每股派发现金(?:红利|股利|分红|股息)\s*(?:人民币\s*)?("
                 + NUMBER
                 + r")\s*元\s*\(\s*含税",
                 1,
@@ -156,7 +165,7 @@ def extract_terms(pages):
                 add("cash_per_share", str(Decimal(match[1]) / divisor), page, match[0])
         per_share = (
             r"(?:A\s*股)?每股(?:派发\s*(?:20\d{2}\s*年\s*(?:中期|末期|年度)\s*)?)?"
-            r"现金(?:红利|股利|分红)\s*(?:人民币\s*)?(" + NUMBER + r")\s*元\s*\(\s*含税"
+            r"现金(?:红利|股利|分红|股息)\s*(?:人民币\s*)?(" + NUMBER + r")\s*元\s*\(\s*含税"
         )
         for match in re.finditer(per_share, text):
             prefix = history + text[: match.start()]
