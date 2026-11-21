@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quantfolio · 实验回测：etf_reported_2026-11-21</title>
+  <style>
+    :root { font-family: system-ui, "Microsoft YaHei", sans-serif; color: #1c2c45; background: #f2f5f9; }
+    body { margin: 0; }
+    main { max-width: 1120px; margin: auto; padding: 40px 24px; }
+    h1 { margin-bottom: 12px; }
+    h2 { font-size: 20px; }
+    p, li { line-height: 1.8; }
+    a { color: #185adb; }
+    .notice { border-left: 4px solid #ad6600; padding: 12px 18px; background: #fff4df; }
+    .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .card, section { background: white; border: 1px solid #dce3ed; border-radius: 10px; padding: 20px; }
+    .card span { display: block; color: #52657e; font-size: 13px; }
+    .card strong { display: block; font-size: 28px; margin-top: 10px; }
+    section { margin-top: 22px; }
+    img { display: block; width: 100%; height: auto; }
+    .scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 14px 10px; text-align: right; border-bottom: 1px solid #e4e9f0; white-space: nowrap; }
+    th:first-child, td:first-child { text-align: left; }
+    footer { margin-top: 24px; color: #52657e; font-size: 13px; }
+    @media (max-width: 700px) {
+      main { padding: 24px 14px; }
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>实验回测：etf_reported_2026-11-21</h1>
+  <p>均衡进攻 · 8%回撤预警 · 仓位降级后不恢复<br>
+    连续账户：2025-11-18 — 2026-11-02 ｜ 数据截止：2026-11-20</p>
+  <p class="notice">当前各档连续账户收益与同风控动量相同，未显示超额收益；工程验收通过不代表预测有效。</p>
+  <div class="cards">
+    <div class="card"><span>连续净收益 · 10bp</span><strong>35.93%</strong></div>
+    <div class="card"><span>最大回撤 · 10bp</span><strong>-7.59%</strong></div>
+    <div class="card"><span>10日账户平均净收益</span><strong>1.75%</strong></div>
+    <div class="card"><span>外层窗口 / 完整10日账户</span><strong>11 / 23</strong></div>
+  </div>
+  <section>
+    <h2>连续账户净值</h2>
+    <img src="equity_curve.png" alt="所选策略与同风控动量的连续净值比较">
+    <p>10日账户每期重置本金，其平均收益不能连乘为连续账户收益。</p>
+  </section>
+  <section>
+    <h2>成本敏感性与基准</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>每边滑点</th><th>策略连续净收益</th><th>同风控动量</th><th>策略最大回撤</th><th>策略平均10日</th></tr></thead>
+      <tbody><tr><td>10bps</td><td>35.93%</td><td>35.93%</td><td>-7.59%</td><td>1.75%</td></tr><tr><td>20bps</td><td>3.38%</td><td>3.38%</td><td>-6.30%</td><td>0.64%</td></tr><tr><td>30bps</td><td>11.79%</td><td>11.79%</td><td>-7.94%</td><td>0.87%</td></tr></tbody>
+    </table></div>
+    <p>另计佣金、过户费、印花税。各档独立重放，费用会改变成交和持仓路径；20bp收益高于10bp不意味着更高成本有利。</p>
+  </section>
+  <section>
+    <h2>适用范围</h2>
+    <ul>
+      <li>历史区间已用于多轮研究，股票池和行业分类不属于认证的历史时点数据。</li>
+      <li>8%是预警和下个可交易时点的退出目标，实际回撤仍可能超过8%。</li>
+      <li>仅展示本实验已完成窗口，不能与不同区间的完整历史收益直接比较。</li>
+    </ul>
+    <p><a href="../../../docs/methodology.md">方法与限制</a> ·
+      <a href="../../../docs/reproducibility.md">复现命令</a> ·
+      <a href="../../../artifacts/evaluations/etf_reported_2026-11-21/evaluation_summary.json">完整回测数据</a> ·
+      <a href="../../../README.md">项目首页</a></p>
+  </section>
+  <footer>由 quantfolio report 从已完成的回测记录生成。</footer>
+</main>
+</body>
+</html>

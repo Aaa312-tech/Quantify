@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 from scipy.optimize import linprog
 
+from .funds import concentration_rows, concentration_values, uses_reported_exposure
 from .rules import CONFIGS, TURNOVER_POLICIES
 
 
@@ -35,6 +36,10 @@ def buffered_weights(target, previous, selected, meta, cap, *, slippage=None):
         if any(
             sum(w for x, w in proposed.items() if meta[x]["industry"] == sector) > 0.28 + 1e-9
             for sector in {meta[x]["industry"] for x in proposed}
+        ):
+            continue
+        if uses_reported_exposure(meta) and any(
+            value > 0.28 + 1e-9 for value in concentration_values(meta, proposed).values()
         ):
             continue
         out = proposed
@@ -193,8 +198,12 @@ def allocate(
     cash.update({n + i: costs(meta, s, slippage)[0] for i, s in enumerate(names)})
     cash.update({2 * n + i: costs(meta, s, slippage)[1] for i, s in enumerate(names)})
     add(cash, max(0.0, 1 - receivable_weight))
-    for sector in {meta[s]["industry"] for s in names}:
-        add({i: 1 for i, s in enumerate(names) if meta[s]["industry"] == sector}, 0.28)
+    if uses_reported_exposure(meta):
+        for row in concentration_rows(meta, names).values():
+            add({i: row.get(s, 0.0) for i, s in enumerate(names)}, 0.28)
+    else:
+        for sector in {meta[s]["industry"] for s in names}:
+            add({i: 1 for i, s in enumerate(names) if meta[s]["industry"] == sector}, 0.28)
     budget = None
     if previous and level == 0:
         budget = 0.25 if cfg["normal_budget25"] else 0.50

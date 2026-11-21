@@ -24,13 +24,17 @@ def checked_industries(meta, as_of):
         raise ValueError("Industry audit requires an explicit information time")
     groups = {}
     for symbol, instrument in meta.items():
-        if "industry_history" not in instrument:
+        field = "fund_history" if "fund_history" in instrument else "industry_history"
+        if field not in instrument:
             groups[symbol] = instrument["industry"]
             continue
-        if instrument["kind"] != "stock" or not instrument["industry_history"]:
+        expected_kind = "etf" if field == "fund_history" else "stock"
+        if instrument["kind"] != expected_kind or not instrument[field]:
             raise ValueError("Invalid company industry history")
+        if field == "fund_history" and "industry_history" in instrument:
+            raise ValueError("Fund and company classifications cannot coexist")
         group, previous = None, None
-        for record in instrument["industry_history"]:
+        for record in instrument[field]:
             published = pd.Timestamp(record["available_at"])
             if (
                 pd.isna(published)
@@ -41,11 +45,171 @@ def checked_industries(meta, as_of):
             value = record["industry"]
             if value is not None and (not isinstance(value, str) or not value.strip()):
                 raise ValueError("Invalid industry key")
+            if field == "fund_history" and (value is None) != (record["profile"] is None):
+                raise ValueError("Fund group and profile coverage disagree")
             if published <= deadline:
                 group = value
             previous = published
         groups[symbol] = group
     return groups
+
+
+def checked_fund_profiles(meta, as_of):
+    """Select fund source records independently, without production schedule helpers."""
+    deadline = pd.Timestamp(as_of)
+    if pd.isna(deadline) or deadline.tzinfo is None:
+        raise ValueError("Fund audit requires a timezone-aware information time")
+    result = {}
+    for symbol, instrument in meta.items():
+        if "fund_history" not in instrument:
+            continue
+        if instrument["kind"] != "etf" or not instrument["fund_history"]:
+            raise ValueError("Invalid fund history")
+        latest, previous = None, None
+        for record in instrument["fund_history"]:
+            available = pd.Timestamp(record["available_at"])
+            if (
+                pd.isna(available)
+                or available.tzinfo is None
+                or (previous is not None and available <= previous)
+            ):
+                raise ValueError("Invalid fund availability sequence")
+            if (record["industry"] is None) != (record["profile"] is None):
+                raise ValueError("Fund group and profile coverage disagree")
+            if available <= deadline:
+                latest = record["profile"]
+            previous = available
+        result[symbol] = latest
+    return result
+
+
+def checked_fund_exposure(meta, values, nav, as_of, *, sources=False):
+    """Recompute uncertainty and concentrations from source amounts using Decimal arithmetic."""
+    profiles = checked_fund_profiles(meta, as_of)
+    groups = checked_industries(meta, as_of)
+    divisions = {
+        group
+        for s, group in groups.items()
+        if s in values and group is not None and group.startswith("capco:")
+    }
+    components, known, capital, reports = {}, {}, Decimal(0), {}
+    amounts = {s: Decimal(str(value)) for s, value in values.items()}
+    denominator = Decimal(str(nav))
+    for symbol, value in amounts.items():
+        if symbol not in profiles:
+            continue
+        profile = profiles[symbol]
+        if profile is None:
+            raise ValueError("Fund audit has an unknown held profile")
+        if profile["mode"] != "reported":
+            continue
+        if (
+            profile["complete_economic_exposure_certified"] is not False
+            or profile["economic_exposure_upper_bound"] is not None
+        ):
+            raise ValueError("Uncertified fund exposure was reported as bounded")
+        reported_nav = Decimal(profile["reported_nav_cny"])
+        if not reported_nav.is_finite() or reported_nav <= 0:
+            raise ValueError("Invalid reported fund NAV")
+        known[symbol] = {
+            group: Decimal(row["amount_cny"]) / reported_nav
+            for group, row in profile["matched_divisions"].items()
+        }
+        divisions.update(known[symbol])
+        components[symbol] = {
+            "unmatched_named": Decimal(profile["unmatched_named"]["amount_cny"]) / reported_nav,
+            "undisclosed_stocks": Decimal(profile["undisclosed_stocks"]["amount_cny"])
+            / reported_nav,
+            "residual_uncertainty": abs(
+                Decimal(profile["signed_equity_sector_residual"]["amount_cny"])
+            )
+            / reported_nav,
+            "reported_index_contracts": sum(
+                (
+                    abs(Decimal(row["reported_market_value_cny"])) / reported_nav
+                    for row in profile["reported_index_contracts"]
+                ),
+                Decimal(0),
+            ),
+        }
+        if any(
+            not v.is_finite() or v < 0
+            for v in [*known[symbol].values(), *components[symbol].values()]
+        ):
+            raise ValueError("Invalid reported exposure ratio")
+        if any(row["kind"] != "stock_index_futures" for row in profile["reported_index_contracts"]):
+            raise ValueError("Non-equity contract in equity audit")
+        capital += value / denominator
+        if sources:
+            reports[symbol] = {
+                "source": profile["source_report"],
+                "source_sha256": profile["source_sha256"],
+                "period_end": profile["period_end"],
+                "report_age_days": (
+                    pd.Timestamp(as_of).tz_convert("Asia/Shanghai").date()
+                    - pd.Timestamp(profile["period_end"]).date()
+                ).days,
+            }
+    amounts_by_division = {}
+    for division in sorted(divisions):
+        total = sum(
+            (amounts[s] for s in amounts if s not in known and groups[s] == division), Decimal(0)
+        )
+        for symbol in known:
+            total += amounts[symbol] * (
+                known[symbol].get(division, Decimal(0)) + sum(components[symbol].values())
+            )
+        amounts_by_division[division] = total
+    if known:
+        amounts_by_division["reported:unnamed_division"] = sum(
+            (amounts[s] * sum(components[s].values()) for s in known), Decimal(0)
+        )
+    uncertainty = {
+        name: float(
+            sum(
+                (amounts[s] / denominator * parts[name] for s, parts in components.items()),
+                Decimal(0),
+            )
+        )
+        for name in (
+            "unmatched_named",
+            "undisclosed_stocks",
+            "residual_uncertainty",
+            "reported_index_contracts",
+        )
+    }
+    result = {
+        "max_reported_equity_weight": float(
+            max(amounts_by_division.values(), default=Decimal(0)) / denominator
+        ),
+        "uncertified_fund_weight": float(capital),
+        "uncertainty_weights": uncertainty,
+        "complete_economic_exposure_certified": False,
+        "economic_exposure_upper_bound": None,
+    }
+    if sources:
+        result.update(
+            division_weights={k: float(v / denominator) for k, v in amounts_by_division.items()},
+            reports=reports,
+        )
+    return result
+
+
+def fund_exposure_equal(actual, expected):
+    """Numerical audit tolerance covers only independent decimal/binary rounding."""
+    if isinstance(expected, dict):
+        return (
+            isinstance(actual, dict)
+            and actual.keys() == expected.keys()
+            and all(fund_exposure_equal(actual[key], value) for key, value in expected.items())
+        )
+    if isinstance(expected, float):
+        return (
+            isinstance(actual, (float, int))
+            and math.isfinite(actual)
+            and abs(actual - expected) <= 1e-10
+        )
+    return actual == expected
 
 
 def dated_industry_audit(ledger, bundle):
@@ -103,12 +267,36 @@ def dated_industry_audit(ledger, bundle):
             checks += 1
             if abs(marks[day, index]["max_industry_weight"] - largest) > 1e-10:
                 errors.append(["DATED_INDUSTRY_WEIGHT_MISMATCH", day, index])
+            if bundle.get("fund_mode") == "reported":
+                expected = checked_fund_exposure(
+                    {s: bundle["meta"][s] for s in relevant},
+                    values,
+                    nav,
+                    day + "T09:25:00+08:00",
+                )
+                checks += 1
+                if not fund_exposure_equal(marks[day, index].get("fund_exposure"), expected):
+                    errors.append(["FUND_EXPOSURE_MARK_MISMATCH", day, index])
+                if trade["side"] == "BUY" and expected["max_reported_equity_weight"] > 0.30 + 1e-7:
+                    errors.append(["REPORTED_EQUITY_BUY_CAP", day, index])
             if trade["side"] == "BUY":
                 checks += 2
                 if any(groups[name] is None for name in values):
                     errors.append(["BUY_WITH_UNKNOWN_INDUSTRY", day, index])
                 if largest > 0.30 + 1e-7:
                     errors.append(["DATED_INDUSTRY_CAP", day, index])
+        if bundle.get("fund_mode") == "reported":
+            values = {s: row["value"] for s, row in closing["positions"].items()}
+            expected = checked_fund_exposure(
+                {s: bundle["meta"][s] for s in values},
+                values,
+                closing["nav"],
+                day + "T16:00:00+08:00",
+                sources=True,
+            )
+            checks += 1
+            if not fund_exposure_equal(closing.get("fund_exposure"), expected):
+                errors.append(["CLOSING_FUND_EXPOSURE_MISMATCH", day])
         previous_positions = closing["positions"]
         last_close.update({s: row["close"] for s, row in previous_positions.items()})
     return {"checks": checks, "errors": errors}
@@ -556,7 +744,10 @@ def execution_audit(ledger, bundle):
                 errors.append(["POSTBUY_SECTOR_CAP", trade])
             if weights["gross_exposure"] > weights["risk_cap"] + 1e-7:
                 errors.append(["POSTBUY_TOTAL_CAP", trade])
-    if any("industry_history" in instrument for instrument in bundle["meta"].values()):
+    if any(
+        "industry_history" in instrument or "fund_history" in instrument
+        for instrument in bundle["meta"].values()
+    ):
         industries = dated_industry_audit(ledger, bundle)
         checks += industries["checks"]
         errors.extend(industries["errors"])

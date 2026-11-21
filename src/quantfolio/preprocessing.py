@@ -80,7 +80,7 @@ def rank_panels(frames, meta, calendar, quarantined=()):
                 closing = date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16)
                 if risk_warning(instrument, date, as_of=closing) is not None:
                     eligible.at[date, symbol] = False
-        if "industry_history" in instrument:
+        if "industry_history" in instrument or "fund_history" in instrument:
             eligible[symbol] &= industry_series(instrument, calendar).notna()
     for symbol in quarantined:
         if symbol not in meta:
@@ -130,6 +130,8 @@ def _labels(frame, instrument, raw, calendar, actions, opening_status=None):
 @pd.option_context("compute.use_numexpr", False)
 def build_dataset(meta, raws, actions, *, quarantined=(), opening_status=None):
     """Regenerate panels, scores, 57 model inputs and legal labels without future bars."""
+    from .dataset import fund_mode
+
     if set(meta) != set(raws) or "sh510300" not in raws:
         raise ValueError("Metadata and raw securities must match and include the benchmark")
     calendar = raws["sh510300"].index.copy()
@@ -212,6 +214,9 @@ def build_dataset(meta, raws, actions, *, quarantined=(), opening_status=None):
         "features": features,
         "cutoff": str(calendar[-1].date()),
     }
+    mode = fund_mode(meta)
+    if mode is not None:
+        result["fund_mode"] = mode
     if opening_status is not None:
         result["opening_status"] = deepcopy(opening_status)
     return result
@@ -219,6 +224,8 @@ def build_dataset(meta, raws, actions, *, quarantined=(), opening_status=None):
 
 def compare_history(before, after, *, labels=True):
     """Require exact historical values, missingness, order and dtypes, including ranks."""
+    if before.get("fund_mode") != after.get("fund_mode"):
+        raise ValueError("Historical fund mode changed")
     calendar = before["calendar"]
     pd.testing.assert_index_equal(calendar, after["calendar"][: len(calendar)], exact=True)
     if before["meta"] != after["meta"] or before["features"] != after["features"]:

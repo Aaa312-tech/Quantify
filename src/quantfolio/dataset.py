@@ -50,6 +50,31 @@ def load_bundle(paths: Paths, *, reference: bool = False) -> dict[str, Any]:
     return load_snapshot(paths, path, cutoff)
 
 
+def fund_mode(meta):
+    """Infer one declared control from fund histories; do not silently disable audits."""
+    modes = set()
+    has_history = False
+    for instrument in meta.values():
+        if "fund_history" not in instrument:
+            continue
+        has_history = True
+        if instrument["kind"] != "etf":
+            raise ValueError("Fund history requires an ETF")
+        for entry in instrument["fund_history"]:
+            profile = entry.get("profile")
+            if profile is None:
+                continue
+            mode = profile.get("mode")
+            if mode not in {"coverage", "identity", "reported"}:
+                raise ValueError("Fund history has an unknown control")
+            modes.add(mode)
+    if not has_history:
+        return None
+    if len(modes) != 1:
+        raise ValueError("Fund histories require one consistent declared control")
+    return modes.pop()
+
+
 def load_snapshot(paths: Paths, path: Path, cutoff: str) -> dict[str, Any]:
     """Load a registered local snapshot against its expected cutoff and frozen hash."""
     path = path.resolve()
@@ -65,6 +90,8 @@ def load_snapshot(paths: Paths, path: Path, cutoff: str) -> dict[str, Any]:
     required = {"meta", "raws", "actions", "panels", "calendar", "table", "features", "cutoff"}
     if required - bundle.keys():
         raise ValueError(f"Missing dataset fields: {required - bundle.keys()}")
+    if bundle.get("fund_mode") != fund_mode(bundle["meta"]):
+        raise ValueError("Fund mode differs from the stored profile histories")
     if str(bundle["cutoff"])[:10] != cutoff:
         raise ValueError("Dataset cutoff differs from the registered inputs")
     aliases = paths.archive.get("features", {})

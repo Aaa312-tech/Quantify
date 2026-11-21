@@ -63,6 +63,13 @@ def main(argv: list[str] | None = None) -> None:
     industry_repair.add_argument(
         "--variant", required=True, choices=("coverage", "static", "dated")
     )
+    fund_repair = commands.add_parser(
+        "repair-funds", help="Build a registered ETF identity or reported-exposure control"
+    )
+    fund_repair.add_argument("--protocol", required=True)
+    fund_repair.add_argument(
+        "--variant", required=True, choices=("coverage", "identity", "reported")
+    )
     status_repair = commands.add_parser(
         "repair-status", help="Rebuild eligibility from reviewed historical warning notices"
     )
@@ -307,6 +314,10 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
 
         return review_industries(paths, args.protocol)
 
+    if args.command == "repair-funds":
+        from .funds import build_fund_snapshot
+
+        return build_fund_snapshot(paths, args.protocol, args.variant)
     if args.command == "repair-industries":
         from .industries import build_industry_snapshot
 

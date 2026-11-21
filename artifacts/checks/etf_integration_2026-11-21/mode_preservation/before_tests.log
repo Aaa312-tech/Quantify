@@ -1,0 +1,84 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+__________________ test_rebuild_preserves_reported_fund_mode __________________
+
+    def test_rebuild_preserves_reported_fund_mode():
+>       assert fund_dataset().get("fund_mode") == "reported"
+E       AssertionError: assert None == 'reported'
+E        +  where None = <built-in method get of dict object at 0x000001D9440EB180>('fund_mode')
+E        +    where <built-in method get of dict object at 0x000001D9440EB180> = {'actions': [], 'calendar': DatetimeIndex(['2025-01-02', '2025-01-03', '2025-01-06', '2025-01-07',\n               '202...2025-07-23', 'features': ['rank_ret1', 'rank_mom5', 'rank_mom10', 'rank_mom20', 'rank_mom60', 'rank_mom120', ...], ...}.get
+E        +      where {'actions': [], 'calendar': DatetimeIndex(['2025-01-02', '2025-01-03', '2025-01-06', '2025-01-07',\n               '202...2025-07-23', 'features': ['rank_ret1', 'rank_mom5', 'rank_mom10', 'rank_mom20', 'rank_mom60', 'rank_mom120', ...], ...} = fund_dataset()
+
+artifacts\checks\etf_integration_2026-11-21\mode_preservation\regression_tests.py:23: AssertionError
+________________ test_history_comparison_rejects_dropped_mode _________________
+
+    def test_history_comparison_rejects_dropped_mode():
+        before = fund_dataset()
+        before["fund_mode"] = "reported"
+        after = deepcopy(before)
+        del after["fund_mode"]
+>       with pytest.raises(ValueError, match="[Ff]und"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+artifacts\checks\etf_integration_2026-11-21\mode_preservation\regression_tests.py:31: Failed
+____________ test_loader_rejects_missing_or_conflicting_mode[None] ____________
+
+tmp_path = WindowsPath('C:/Users/wdong/AppData/Local/Temp/pytest-of-wdong/pytest-870/test_loader_rejects_missing_or0')
+mode = None
+
+    @pytest.mark.parametrize("mode", [None, "coverage"])
+    def test_loader_rejects_missing_or_conflicting_mode(tmp_path, mode):
+        bundle = fund_dataset()
+        bundle.pop("fund_mode", None)
+        if mode is not None:
+            bundle["fund_mode"] = mode
+        file = tmp_path / "bundle.joblib"
+        joblib.dump(bundle, file)
+        folder = tmp_path / "configs"
+        folder.mkdir()
+        (folder / "project.toml").write_text(
+            'bundle = "bundle.joblib"\nmanifest = "configs/manifest.json"\n'
+            'archive = "configs/archive.toml"\n' + f'data_cutoff = "{bundle["cutoff"]}"\n',
+            encoding="utf-8",
+        )
+        (folder / "archive.toml").write_text("", encoding="utf-8")
+        save(folder / "manifest.json", {"files": {"bundle.joblib": sha(file)}})
+>       with pytest.raises(ValueError, match="[Ff]und"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+artifacts\checks\etf_integration_2026-11-21\mode_preservation\regression_tests.py:52: Failed
+__________ test_loader_rejects_missing_or_conflicting_mode[coverage] __________
+
+tmp_path = WindowsPath('C:/Users/wdong/AppData/Local/Temp/pytest-of-wdong/pytest-870/test_loader_rejects_missing_or1')
+mode = 'coverage'
+
+    @pytest.mark.parametrize("mode", [None, "coverage"])
+    def test_loader_rejects_missing_or_conflicting_mode(tmp_path, mode):
+        bundle = fund_dataset()
+        bundle.pop("fund_mode", None)
+        if mode is not None:
+            bundle["fund_mode"] = mode
+        file = tmp_path / "bundle.joblib"
+        joblib.dump(bundle, file)
+        folder = tmp_path / "configs"
+        folder.mkdir()
+        (folder / "project.toml").write_text(
+            'bundle = "bundle.joblib"\nmanifest = "configs/manifest.json"\n'
+            'archive = "configs/archive.toml"\n' + f'data_cutoff = "{bundle["cutoff"]}"\n',
+            encoding="utf-8",
+        )
+        (folder / "archive.toml").write_text("", encoding="utf-8")
+        save(folder / "manifest.json", {"files": {"bundle.joblib": sha(file)}})
+>       with pytest.raises(ValueError, match="[Ff]und"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+artifacts\checks\etf_integration_2026-11-21\mode_preservation\regression_tests.py:52: Failed
+=========================== short test summary info ===========================
+FAILED artifacts/checks/etf_integration_2026-11-21/mode_preservation/regression_tests.py::test_rebuild_preserves_reported_fund_mode
+FAILED artifacts/checks/etf_integration_2026-11-21/mode_preservation/regression_tests.py::test_history_comparison_rejects_dropped_mode
+FAILED artifacts/checks/etf_integration_2026-11-21/mode_preservation/regression_tests.py::test_loader_rejects_missing_or_conflicting_mode[None]
+FAILED artifacts/checks/etf_integration_2026-11-21/mode_preservation/regression_tests.py::test_loader_rejects_missing_or_conflicting_mode[coverage]
+4 failed in 4.51s

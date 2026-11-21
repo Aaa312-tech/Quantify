@@ -11,7 +11,7 @@ import pandas as pd
 from .ledger import Ledger, Lot, cents
 from .risk import RiskState
 from .storage import now
-from .validation import checked_industries
+from .validation import checked_fund_exposure, checked_industries, fund_exposure_equal
 
 
 def date_only(value):
@@ -213,7 +213,8 @@ def audit_fills(opening, result, meta, date, rate, cap):
     checks = 0
     prices = result["opening_marks"]
     receivables = sum(r["cents"] for r in opening["receivables"])
-    for trade in result["trades"]:
+    marks = {row["after_fill"]: row for row in result["intermediate_weights"]}
+    for index, trade in enumerate(result["trades"], 1):
         symbol, quantity, price = trade["symbol"], trade["quantity"], trade["price"]
         if type(quantity) is not int or quantity <= 0 or trade["date"] != date:
             raise ValueError("Paper trade has invalid quantity or date")
@@ -260,10 +261,21 @@ def audit_fills(opening, result, meta, date, rate, cap):
                 or any(v > 0.30 * nav + 1e-6 for v in sectors.values())
             ):
                 raise ValueError("Paper purchase breaches post-fee concentration or exposure")
+            if any("fund_history" in instrument for instrument in meta.values()):
+                report = checked_fund_exposure(meta, values, nav, information_at)
+                if report["max_reported_equity_weight"] > 0.30 + 1e-7:
+                    raise ValueError("Paper purchase breaches the reported equity proxy cap")
         else:
             raise ValueError("Unknown paper trade side")
         if cash < 0 or cash != amount(trade["cash_after"]):
             raise ValueError("Paper cash balance reconciliation failed")
+        if result.get("fund_mode") == "reported":
+            values = {s: amount(q * prices[s]) for s, q in quantities.items() if q}
+            nav = cash + sum(values.values()) + receivables
+            expected = checked_fund_exposure(meta, values, nav, information_at)
+            if not fund_exposure_equal(marks[index].get("fund_exposure"), expected):
+                raise ValueError("Paper fund exposure mark does not reconcile")
+            checks += 1
         checks += 9
     closing = result["opening_account"]
     actual = defaultdict(int)
@@ -273,6 +285,13 @@ def audit_fills(opening, result, meta, date, rate, cap):
         actual
     ):
         raise ValueError("Paper ending cash or shares do not reconcile")
+    if result.get("fund_mode") == "reported":
+        values = {s: amount(q * prices[s]) for s, q in quantities.items() if q}
+        nav = cash + sum(values.values()) + receivables
+        expected = checked_fund_exposure(meta, values, nav, information_at, sources=True)
+        if not fund_exposure_equal(result.get("fund_exposure"), expected):
+            raise ValueError("Paper ending fund exposure does not reconcile")
+        checks += 1
     return {
         "status": "PASS",
         "checks": checks + 2,

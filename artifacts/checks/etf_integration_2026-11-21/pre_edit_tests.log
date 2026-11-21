@@ -1,0 +1,58 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+_____________ test_fund_identity_is_unavailable_before_its_source _____________
+
+    def test_fund_identity_is_unavailable_before_its_source():
+        bundle, _ = fixture()
+        fund = bundle["meta"]["sh510300"]
+        fund["fund_history"] = [entry(bundle["calendar"][6], profile())]
+>       assert industry_at(fund, "2026-01-05T16:00:00+08:00") is None
+E       AssertionError: assert 'sh510300' is None
+E        +  where 'sh510300' = industry_at({'code': '510300', 'fund_history': [{'available_at': '2026-01-13T00:00:00+08:00', 'industry': 'benchmark:csi_300', 'pr...re_upper_bound': None, 'matched_divisions': {}, 'mode': 'reported', ...}}], 'industry': 'sh510300', 'kind': 'etf', ...}, '2026-01-05T16:00:00+08:00')
+
+artifacts\checks\etf_integration_2026-11-21\pre_edit_tests.py:60: AssertionError
+____________ test_partial_stock_schedule_cannot_hide_concentration ____________
+
+    def test_partial_stock_schedule_cannot_hide_concentration():
+        bundle, _ = opening_change()
+        meta = metadata_at(bundle["meta"], "2026-01-13T09:25:00+08:00")
+>       assert not post_buy_limits(
+            {"sh600001": 140000, "sh600002": 140000}, meta, "sh510300", 140000, 1000000, 0.9
+        )
+E       AssertionError: assert not True
+E        +  where True = post_buy_limits({'sh600001': 140000, 'sh600002': 140000}, {'sh510300': {'code': '510300', 'fund_history': [{'available_at': '2026-01-05T00:00:00+08:00', 'industry': 'benchmark:...h600002', ...}, 'sh600003': {'code': '600003', 'industry': 'capco:C33', 'kind': 'stock', 'name': 'sh600003', ...}, ...}, 'sh510300', 140000, 1000000, 0.9)
+
+artifacts\checks\etf_integration_2026-11-21\pre_edit_tests.py:66: AssertionError
+_________ test_new_opening_profile_resizes_the_frozen_close_intention _________
+
+    def test_new_opening_profile_resizes_the_frozen_close_intention():
+        bundle, forecasts = opening_change()
+        dates = bundle["calendar"]
+        account = new_account(str(dates[5].date()), "fund_boundary")
+        intent = make_intent(prefix(bundle, 5), account, forecasts[5], "baseline", str(dates[6].date()), 0.001)
+        original = deepcopy(intent)
+        preview = resolve_intent(intent, account, [], calendar_for(bundle), {}, preview=True)
+        actual = resolve_intent(intent, account, [], calendar_for(bundle), opening_quotes(intent))
+        preview_value = sum(t["gross"] for t in preview["trades"] if t["symbol"] in ("sh600001", "sh600002", "sh510300"))
+        actual_value = sum(t["gross"] for t in actual["trades"] if t["symbol"] in ("sh600001", "sh600002", "sh510300"))
+        assert preview_value > 0.30 * preview["opening_nav_after_costs"]
+>       assert actual_value <= 0.30 * actual["opening_nav_after_costs"] + 1e-8
+E       assert 417000.0 <= ((0.3 * 998908.85) + 1e-08)
+
+artifacts\checks\etf_integration_2026-11-21\pre_edit_tests.py:82: AssertionError
+____________ test_missing_new_fund_profile_stops_existing_holdings ____________
+
+    def test_missing_new_fund_profile_stops_existing_holdings():
+        bundle, forecasts = opening_change()
+        bundle["meta"]["sh510300"]["fund_history"].append(entry(bundle["calendar"][7], None))
+>       with pytest.raises(ValueError, match="industry"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+artifacts\checks\etf_integration_2026-11-21\pre_edit_tests.py:90: Failed
+=========================== short test summary info ===========================
+FAILED artifacts/checks/etf_integration_2026-11-21/pre_edit_tests.py::test_fund_identity_is_unavailable_before_its_source
+FAILED artifacts/checks/etf_integration_2026-11-21/pre_edit_tests.py::test_partial_stock_schedule_cannot_hide_concentration
+FAILED artifacts/checks/etf_integration_2026-11-21/pre_edit_tests.py::test_new_opening_profile_resizes_the_frozen_close_intention
+FAILED artifacts/checks/etf_integration_2026-11-21/pre_edit_tests.py::test_missing_new_fund_profile_stops_existing_holdings
+4 failed in 11.28s

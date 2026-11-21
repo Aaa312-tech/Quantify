@@ -20,6 +20,7 @@ from .accounts import (
 from .allocation import allocate
 from .dataset import check_integrity, eligible_rows, load_bundle
 from .evaluation import experiment_folds
+from .funds import exposure_report
 from .industries import metadata_at, require_industries
 from .ledger import lot_rule, nearest_tick, tick_price
 from .market import board_limit, regime, risk_warning
@@ -40,6 +41,7 @@ SOURCE_MODULES = (
     "simulation",
     "status_data",
     "industries",
+    "funds",
     "validation",
 )
 
@@ -296,7 +298,7 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, tur
             contracts[symbol]["atr_pct"]
         ):
             contracts[symbol]["atr_pct"] = None
-    return {
+    result = {
         "signal_date": account["as_of"],
         "execution_date": execute_on,
         "prior_close_nav": prior,
@@ -313,12 +315,19 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, tur
         "target_weights": targets,
         "decision": decision,
         "contracts": contracts,
+        **({"fund_mode": bundle["fund_mode"]} if "fund_mode" in bundle else {}),
         "forecasts": {s: valid[s] for s in required if s in valid},
         "slippage_rate": slippage,
         "account_meta": {
             s: meta_at_signal[s] for s in set(book.lots) | {r["symbol"] for r in book.receivables}
         },
     }
+    if bundle.get("fund_mode") == "reported":
+        weights = targets if planned else {s: value / prior for s, value in values.items()}
+        result["target_fund_exposure"] = exposure_report(
+            meta_at_signal, weights, 1.0, information_at, sources=True
+        )
+    return result
 
 
 def prepared_actions(account, actions, calendar, execute_on):
@@ -413,6 +422,7 @@ def resolve_intent(intent, account, actions, calendar, quotes, *, preview=False)
             (0, s): (np.nan if c["atr_pct"] is None else c["atr_pct"]) for s, c in contracts.items()
         },
         "opening_status": {intent["execution_date"]: statuses},
+        **({"fund_mode": intent["fund_mode"]} if "fund_mode" in intent else {}),
     }
     nav = book.nav(prices)
     values = book.values(prices)
@@ -451,6 +461,16 @@ def resolve_intent(intent, account, actions, calendar, quotes, *, preview=False)
         "intermediate_weights": marks,
         "decision": decision,
     }
+    if "fund_mode" in intent:
+        result["fund_mode"] = intent["fund_mode"]
+    if intent.get("fund_mode") == "reported":
+        result["fund_exposure"] = exposure_report(
+            book.meta,
+            book.values(prices),
+            book.nav(prices),
+            intent["information_at"] if preview else opening_at,
+            sources=True,
+        )
     result["audit"] = audit_fills(
         opening, result, meta, intent["execution_date"], intent["slippage_rate"], intent["cap"]
     )
@@ -569,6 +589,7 @@ def freeze_plan(paths, account_file, output, cost=10):
             "Manual paper workflow; no broker or APP connection.",
             "Fees, slippage and quote fills are research assumptions; contest matching remains unconfirmed.",
             "Current industry classifications, survival selection and historical trading-status coverage are incomplete.",
+            "Reported ETF holdings are dated, partial proxies. Unknown economic exposure remains unbounded; capital limits do not certify full look-through risk.",
         ],
     }
     upcoming = [day for day in calendar["sessions"] if session_time(day, 9, 25) > created]

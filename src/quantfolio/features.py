@@ -163,7 +163,10 @@ INDUSTRY_FEATURES = [
 def industry_features(table, meta, calendar=None):
     """Compute same-date industry ranks with small-group shrinkage and eligibility masking."""
     sector = table.symbol.map({s: m["industry"] for s, m in meta.items()})
-    if any("industry_history" in instrument for instrument in meta.values()):
+    if any(
+        "industry_history" in instrument or "fund_history" in instrument
+        for instrument in meta.values()
+    ):
         from .industries import industry_series
 
         if calendar is None:

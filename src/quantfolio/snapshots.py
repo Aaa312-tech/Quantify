@@ -216,6 +216,8 @@ def repair_snapshot(paths, output, protocol="configs/protocols/action_repair.jso
     }
     if "opening_status" in original:
         repaired["opening_status"] = original["opening_status"]
+    if "fund_mode" in original:
+        repaired["fund_mode"] = original["fund_mode"]
     repaired["table"] = causal_table
     repaired["actions"], normalized = repair_actions(
         original["actions"],

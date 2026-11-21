@@ -2,7 +2,29 @@
 
 项目需要Python 3.11–3.13和Git LFS。先按README克隆完整仓库，在虚拟环境中安装 `.[dev]`。数据与模型属于项目目录，不打进Python安装包；从其他目录运行时使用 `--project PATH` 或 `QUANTFOLIO_ROOT`。
 
-## 日期化行业对照
+## ETF接入与当前研究输入
+
+当前使用`configs/experiments/etf_reported.toml`对应的快照、训练和评估。事前协议为
+`configs/protocols/etf_integration.json`，三个固定对照的完整验收在
+`artifacts/checks/etf_integration_2026-11-21`。覆盖与身份组仅作归因，不能按收益另选基线。
+
+```powershell
+python -m quantfolio repair-funds --protocol configs/protocols/etf_integration.json --variant reported
+python -m quantfolio --config configs/experiments/etf_reported.toml train --first 1 --last 11 --include-latest --output artifacts/experiments/etf_reproduction
+python -m quantfolio --config configs/experiments/etf_reported.toml evaluate --run artifacts/experiments/etf_reproduction --all-policies --output artifacts/evaluations/etf_reproduction
+python -m quantfolio --config configs/experiments/etf_reported.toml verify --run artifacts/experiments/etf_reproduction --output artifacts/checks/etf_reproduction
+```
+
+登记快照已存在，第一行会拒绝覆盖；重新构建须使用新协议、新输出，并生成协议绑定的父快照
+重建回执。其余命令可读取已冻结快照，输出目录须尚不存在。固定预测对照使用独立的
+`etf_<arm>_fixed_2026-11-21`目录，不提前占用普通评估器的输出目录。
+
+实际144次拟合和账户评估保留当时源码身份。后续`fund_mode`保留修复只改数据标识路径，
+`mode_preservation/closure.json`绑定AST证明、四份完整精确重建及144个普通守卫下的模型重载。
+不得将训练回执的源码哈希改写成修复后的哈希，也不得跳过普通过期来源检查。
+来源金额、未来信息边界、逐笔敞口、全部成本和原始失败均见[接入说明](etf_integration.md)。
+
+## 日期化行业对照（前一阶段）
 
 协议`configs/protocols/industry_timing.json`在提交`6b31ec98`登记，分别构建覆盖过滤、
 最新静态分类和日期化分类。每组都有独立配置、快照、训练、评估与核验目录。
@@ -277,7 +299,7 @@ CI在Windows的Python 3.11、3.13及Ubuntu的Python 3.13上，从源码分发包
 ## 已验收的11月20日扩展
 
 行情扩展阶段的完整训练、评估与状态复核保存于`daily_source_extension_2026-11-21`；
-它是历史验收阶段，当前配置使用本页开头的`2026-11-20-industry-dated`快照。
+它是历史验收阶段，当前配置使用本页开头的`2026-11-20-etf-reported`快照。
 新数据来源、单位转换和历史标签变化见同名`artifacts/checks`目录；实现兼容性、训练影响
 及固定旧预测对照分别存档，旧腾讯全池核验失败记录不变。
 

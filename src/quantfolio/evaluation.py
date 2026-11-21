@@ -118,6 +118,7 @@ def experiment_folds(paths: Paths, bundle: dict, run: Path) -> tuple[dict, list]
         "metrics",
         "validation",
         "industries",
+        "funds",
     ):
         filename = name + ".py"
         if specification.get("source_sha256", {}).get(filename) != sha(

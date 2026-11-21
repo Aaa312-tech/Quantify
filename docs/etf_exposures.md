@@ -1,6 +1,6 @@
 # ETF披露时点与敞口数据
 
-22只ETF已生成按披露可用日排序的基金身份及已披露股票敞口，覆盖2024年1月2日至2026年11月20日的698个交易日。数据仍是研究来源层，尚未进入训练、组合限制或纸面计划。不能把已披露持仓称为基金每天的完整持仓。
+22只ETF已生成按披露可用日排序的基金身份及已披露股票敞口，覆盖2024年1月2日至2026年11月20日的698个交易日。本页记录来源构建阶段；后续已按独立协议完成[ETF运行接入](etf_integration.md)，接入前的来源证据保持原样。不能把已披露持仓称为基金每天的完整持仓。
 
 协议在提交`202244a5`登记，基线为`a7ae6450`。验收读取[阶段结论](../artifacts/checks/etf_exposures_2026-11-21/completion.json)、[财务字段核对](../artifacts/checks/etf_exposures_2026-11-21/financial_audit.json)、[独立历史核对](../artifacts/checks/etf_exposures_2026-11-21/history_audit.json)及[信息边界检查](../artifacts/checks/etf_exposures_2026-11-21/information_boundaries.json)。
 

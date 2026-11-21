@@ -14,6 +14,7 @@ rules / allocation / risk → simulation → ledger → validation
 | `dataset` | 载入快照、完整性、时间窗口及标签结束日净化 |
 | `snapshots` | 核验公司行为来源、生成独立快照、重建标签并记录差异 |
 | `status_data`、`status_repair` | 独立状态筛查、公告区间与可用时间核验、历史资格及特征重建 |
+| `funds` | 编译基金来源历史，分开基准同行组、已披露敞口约束与未认证资本 |
 | `industry_sources`、`industries` | 保留行业原表和差异，按已登记的发布时间约定生成分类历史及独立数据对照 |
 | `market_data`、`refresh` | 采集与解析未复权日线，按登记证据追加行情、生成独立快照 |
 | `preprocessing` | 从行情生成完整面板、资格、评分、特征和标签，精确验证历史前缀 |
@@ -38,6 +39,7 @@ rules / allocation / risk → simulation → ledger → validation
 中性化和行业检验；执行器使用开盘时的分组检查买入上限，不能反向修改已冻结的收盘意向。
 独立核账自行解析分类历史并按持股数量、开盘价格重建行业权重。没有分类历史的旧输入
 保留原标签语义；含历史的股票在首期前或被新表遗漏时没有分类，禁止回退到当前标签。
+ETF的`fund_history`保存披露基准和来源金额，`fund_mode`绑定固定数据对照。载入拒绝丢失或冲突标识，重建与标签修补保留它。`funds`用分数计算执行约束，`validation`另用十进制金额独立重建；未知经济上界不写成零。
 
 主策略默认使用`latched`。`staged_restore`和`probe_restore`只在注册研究中显式启用，独立核验恢复等待期、市场条件、仓位与永久退出。运行时特征使用`rank_*`、`industry_*`等含义明确的名称；`dataset.load_bundle`在读取后按`configs/archive.toml`转换历史列名，保持值、类型及模型输入顺序。历史文件本身不改写。主策略使用`selected_strategy`，固定基准换手规则的对照使用`selected_baseline_rules`。
 

@@ -10,6 +10,12 @@ import numpy as np
 import pandas as pd
 
 from .allocation import allocate
+from .funds import (
+    concentration_values,
+    exposure_report,
+    purchase_capacity,
+    uses_reported_exposure,
+)
 from .industries import metadata_at, require_industries
 from .ledger import Ledger, buy_quantity, cents, fees_cents, lot_rule, slippage_cents
 from .market import EXECUTION_MODEL, opening_price, regime, risk_warning
@@ -28,6 +34,11 @@ def post_buy_limits(values, meta, symbol, purchase, after_fee_nav, cap):
         return False
     if sum(proposed.values()) > cap * after_fee_nav + 1e-8:
         return False
+    if uses_reported_exposure(meta):
+        return all(
+            value <= 0.30 * after_fee_nav + 1e-8
+            for value in concentration_values(meta, proposed).values()
+        )
     sectors = collections.defaultdict(float)
     for s, v in proposed.items():
         sectors[meta[s]["industry"]] += v
@@ -110,6 +121,13 @@ class _Execution:
                 / nav,
             }
         )
+        if self.bundle.get("fund_mode") == "reported":
+            information_at = self.bundle.get("information_at") or (
+                self.date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=9, minutes=25)
+            )
+            self.marks[-1]["fund_exposure"] = exposure_report(
+                self.ledger.meta, position_values, nav, information_at
+            )
 
     def sell(self, targets):
         for symbol in list(self.ledger.lots):
@@ -180,6 +198,10 @@ class _Execution:
                 max(0.0, 0.30 * nav - industry),
                 max(0.0, self.cap * nav - sum(position_values.values())),
             )
+            if uses_reported_exposure(self.ledger.meta):
+                budget = min(
+                    budget, purchase_capacity(self.ledger.meta, position_values, symbol, nav)
+                )
             quantity = (
                 buy_quantity(budget, price, self.ledger.meta[symbol], slippage=self.slippage)
                 if budget >= 100
@@ -452,6 +474,15 @@ def simulate(
                 "exposure_above_target": sum(position_values.values()) / nav > cap + 0.01,
             }
         )
+        if bundle.get("fund_mode") == "reported":
+            closing_at = date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16)
+            curve[-1]["fund_exposure"] = exposure_report(
+                metadata_at(bundle["meta"], closing_at),
+                position_values,
+                nav,
+                closing_at,
+                sources=True,
+            )
         if ledger.cash < 0:
             raise ValueError("Negative cash")
     summary = account_stats(ledger, curve, decisions, quality, mode)

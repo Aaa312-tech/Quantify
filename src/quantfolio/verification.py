@@ -6,6 +6,7 @@ from pathlib import Path
 
 import joblib
 import numpy as np
+import pandas as pd
 from threadpoolctl import threadpool_limits
 
 from .dataset import (
@@ -114,6 +115,8 @@ def verify(
 def _paper_account(bundle, forecasts, rules, reference, cost, *, turnover="legacy"):
     """Replay a complete stored account through daily manual-account round trips."""
     from .accounts import new_account, restore_account, snapshot_account
+    from .funds import exposure_report
+    from .industries import metadata_at
     from .market import EXECUTION_MODEL
     from .metrics import account_stats
     from .planning import make_intent, resolve_intent
@@ -208,6 +211,11 @@ def _paper_account(bundle, forecasts, rules, reference, cost, *, turnover="legac
                 "exposure_above_target": sum(values.values()) / nav > intent["cap"] + 0.01,
             }
         )
+        if bundle.get("fund_mode") == "reported":
+            closing_at = date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16)
+            curve[-1]["fund_exposure"] = exposure_report(
+                metadata_at(bundle["meta"], closing_at), values, nav, closing_at, sources=True
+            )
         account = snapshot_account(
             book, result["opening_account"], day, risk, index - start + 1, None
         )

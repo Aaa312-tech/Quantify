@@ -25,6 +25,8 @@ scripts/sync.ps1 -Python '.\.venv\Scripts\python' -Message 'fix: describe the co
 
 工程校验保留在`artifacts/checks`，完整重放保留在`artifacts/replays`。新检查完整覆盖旧检查后，将重复产物移出工作目录，旧记录仍可从对应Git提交查阅。机器探针、回收站清单、重复流程演示和一次性清理脚本不属于发布产物。
 
+已登记数据对照的失败、原始训练身份及修复闭环属于验收证据，不能当作重复缓存清理。追加冻结目录时排除`__pycache__`、`.pytest_cache`和`.pyc`；原证据字节及哈希保持不变。
+
 软件发布使用语义版本号，在 `src/quantfolio/__init__.py`维护，构建元数据自动读取。策略按方法命名：`walk_forward_momentum`（滚动选型动量），由`configs/project.toml`标明。软件版本和研究策略是两个不同字段。
 
 历史文件按用途命名，内容保留原字节。`configs/archive.toml`集中记录路径、策略标识和特征列的兼容映射；完整性清单按新路径核对原哈希。重命名必须核对文件内容、模型输入顺序、预测和账本，不能用重新生成的哈希掩盖差异。

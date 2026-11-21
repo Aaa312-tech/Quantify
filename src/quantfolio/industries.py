@@ -28,11 +28,19 @@ def _schedule(entries):
 
 
 def _history(instrument):
-    if instrument["kind"] != "stock":
-        raise ValueError("Company industry history cannot classify an ETF")
-    history = instrument["industry_history"]
+    fund = "fund_history" in instrument
+    if fund:
+        if instrument["kind"] != "etf" or "industry_history" in instrument:
+            raise ValueError("Fund history cannot classify a company")
+        history = instrument["fund_history"]
+    else:
+        if instrument["kind"] != "stock":
+            raise ValueError("Company industry history cannot classify an ETF")
+        history = instrument["industry_history"]
     if not isinstance(history, list) or any(not isinstance(row, dict) for row in history):
         raise ValueError("Industry history must be a list of dated records")
+    if fund and any((row["industry"] is None) != (row["profile"] is None) for row in history):
+        raise ValueError("Fund group and profile coverage disagree")
     return _schedule(tuple((row["available_at"], row["industry"]) for row in history))
 
 
@@ -44,7 +52,7 @@ def _information_time(as_of):
 
 
 def _current(instrument, information_time):
-    if "industry_history" not in instrument:
+    if not ("industry_history" in instrument or "fund_history" in instrument):
         return instrument["industry"]
     times, groups = _history(instrument)
     index = bisect_right(times, information_time) - 1
@@ -58,13 +66,24 @@ def industry_at(instrument, as_of):
 
 def metadata_at(meta, as_of):
     """Return a dated view while retaining histories for a later opening-time check."""
-    if not any("industry_history" in instrument for instrument in meta.values()):
+    if not any(
+        "industry_history" in instrument or "fund_history" in instrument
+        for instrument in meta.values()
+    ):
         return meta
     information_time = _information_time(as_of)
-    return {
+    result = {
         symbol: {**instrument, "industry": _current(instrument, information_time)}
         for symbol, instrument in meta.items()
     }
+    for instrument in result.values():
+        if "fund_history" in instrument:
+            times, _ = _history(instrument)
+            index = bisect_right(times, information_time) - 1
+            instrument["fund_profile"] = (
+                instrument["fund_history"][index]["profile"] if index >= 0 else None
+            )
+    return result
 
 
 def require_industries(meta, holdings):
@@ -75,7 +94,7 @@ def require_industries(meta, holdings):
 
 def industry_series(instrument, calendar):
     """Use each completed session's 16:00 information set, without future backfill."""
-    if "industry_history" not in instrument:
+    if not ("industry_history" in instrument or "fund_history" in instrument):
         return pd.Series(instrument["industry"], index=calendar, dtype=object)
     times, groups = _history(instrument)
     closing = calendar.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16)
