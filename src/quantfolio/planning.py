@@ -20,6 +20,7 @@ from .accounts import (
 from .allocation import allocate
 from .dataset import check_integrity, eligible_rows, load_bundle
 from .evaluation import experiment_folds
+from .industries import metadata_at, require_industries
 from .ledger import lot_rule, nearest_tick, tick_price
 from .market import board_limit, regime, risk_warning
 from .models import prediction_map
@@ -38,6 +39,8 @@ SOURCE_MODULES = (
     "rules",
     "simulation",
     "status_data",
+    "industries",
+    "validation",
 )
 
 
@@ -176,10 +179,12 @@ def latest_forecasts(paths, bundle):
 @pd.option_context("compute.use_numexpr", False)
 def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, turnover="legacy"):
     """Calculate the same completed-close targets as the historical strategy, before quotes."""
-    book, risk = restore_account(account, bundle["meta"])
     signal = date_only(account["as_of"])
     execution = date_only(execute_on)
     information_at = session_time(account["as_of"], 16, 0)
+    meta_at_signal = metadata_at(bundle["meta"], information_at)
+    book, risk = restore_account(account, meta_at_signal)
+    require_industries(meta_at_signal, book.lots)
     if signal != bundle["calendar"][-1] or execution <= signal:
         raise ValueError("Account and completed market snapshot must share the signal date")
     panels = bundle["panels"]
@@ -212,13 +217,14 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, tur
         symbol: value
         for symbol, value in forecasts.items()
         if panels["eligible"].at[signal, symbol]
+        and meta_at_signal[symbol]["industry"] is not None
         and risk_warning(bundle["meta"][symbol], execution, as_of=information_at) is None
         and np.isfinite(value["mu"])
         and np.isfinite(value["margin"])
     }
     if planned:
         targets, decision = allocate(
-            bundle["meta"],
+            meta_at_signal,
             valid,
             {s: v / prior for s, v in values.items()},
             cap,
@@ -253,7 +259,7 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, tur
     for action in bundle["actions"]:
         by_symbol[action["symbol"]].append(action)
     for symbol in required:
-        meta = bundle["meta"][symbol]
+        meta = meta_at_signal[symbol]
         raw = bundle["raws"][symbol]
         previous = float(raw.at[signal, "close"])
         reference = previous
@@ -310,7 +316,7 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, tur
         "forecasts": {s: valid[s] for s in required if s in valid},
         "slippage_rate": slippage,
         "account_meta": {
-            s: bundle["meta"][s] for s in set(book.lots) | {r["symbol"] for r in book.receivables}
+            s: meta_at_signal[s] for s in set(book.lots) | {r["symbol"] for r in book.receivables}
         },
     }
 
@@ -389,6 +395,8 @@ def resolve_intent(intent, account, actions, calendar, quotes, *, preview=False)
             {"close": [contract["prior_close"], np.nan], "open": [np.nan, price]},
             index=[signal, execution],
         )
+        if price is None:
+            raws[symbol] = raws[symbol].drop(index=execution)
     bundle = {
         "calendar": pd.DatetimeIndex([signal, execution]),
         "information_at": (

@@ -81,12 +81,12 @@ def load_snapshot(paths: Paths, path: Path, cutoff: str) -> dict[str, Any]:
 def validate_features(bundle: dict[str, Any]) -> dict[str, Any]:
     """Rebuild derived ranks and prove future rows do not change historical prefixes."""
     table = bundle["table"]
-    industry, _ = industry_features(table, bundle["meta"])
+    industry, _ = industry_features(table, bundle["meta"], bundle["calendar"])
     rebuilt = pd.concat([momentum_features(table), industry], axis=1)
     pd.testing.assert_frame_equal(table[rebuilt.columns], rebuilt)
     for cutoff in (300, 500, 650):
         prefix = table.loc[table.date_index <= cutoff].copy(deep=True)
-        industry, _ = industry_features(prefix, bundle["meta"])
+        industry, _ = industry_features(prefix, bundle["meta"], bundle["calendar"])
         actual = pd.concat([momentum_features(prefix), industry], axis=1)
         pd.testing.assert_frame_equal(actual, rebuilt.loc[prefix.index])
     return {

@@ -160,9 +160,22 @@ INDUSTRY_FEATURES = [
 
 
 @pd.option_context("compute.use_numexpr", False)
-def industry_features(table, meta):
+def industry_features(table, meta, calendar=None):
     """Compute same-date industry ranks with small-group shrinkage and eligibility masking."""
     sector = table.symbol.map({s: m["industry"] for s, m in meta.items()})
+    if any("industry_history" in instrument for instrument in meta.values()):
+        from .industries import industry_series
+
+        if calendar is None:
+            raise ValueError("Dated industry features require the signal calendar")
+        if len(table) and (table.date_index.min() < 0 or table.date_index.max() >= len(calendar)):
+            raise ValueError("Industry feature dates are outside the signal calendar")
+        histories = {s: industry_series(m, calendar).to_numpy() for s, m in meta.items()}
+        sector = pd.Series(
+            [histories[s][i] for i, s in zip(table.date_index, table.symbol)],
+            index=table.index,
+            dtype=object,
+        )
     values = table[INDUSTRY_FEATURES].where(table.eligible, axis=0)
     group = values.groupby([table.date_index, sector], sort=False)
     counts = group.transform("count")

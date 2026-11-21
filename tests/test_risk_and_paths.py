@@ -63,3 +63,26 @@ def test_immutable_json_rejects_changed_values(tmp_path):
     with pytest.raises(ValueError):
         save(path, {"status": "FAIL"}, immutable=True)
     assert read(path) == {"status": "PASS"}
+
+
+def test_experiment_configuration_does_not_modify_the_active_configuration(tmp_path):
+    configs = tmp_path / "configs"
+    configs.mkdir()
+    active = configs / "project.toml"
+    alternate = configs / "comparison.toml"
+    active.write_text('bundle = "original.joblib"\n', encoding="utf-8")
+    alternate.write_text('bundle = "comparison.joblib"\n', encoding="utf-8")
+    before = active.read_bytes()
+    selected = Paths(tmp_path, "configs/comparison.toml")
+    assert selected.bundle == tmp_path / "comparison.joblib"
+    assert Paths(tmp_path).bundle == tmp_path / "original.joblib"
+    assert active.read_bytes() == before
+
+
+@pytest.mark.parametrize(
+    "name",
+    ["../external.toml", "configs/../../external.toml", "data/config.toml", "configs/config.json"],
+)
+def test_experiment_configuration_must_stay_under_configs(tmp_path, name):
+    with pytest.raises(ValueError, match="Configuration"):
+        _ = Paths(tmp_path, name).config

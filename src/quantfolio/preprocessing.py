@@ -13,6 +13,7 @@ from .features import (
     momentum_features,
     price_features,
 )
+from .industries import industry_series
 from .ledger import causal_price_index
 from .market import LABEL_STATUS, legal_label, risk_warning
 from .storage import log
@@ -79,6 +80,8 @@ def rank_panels(frames, meta, calendar, quarantined=()):
                 closing = date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16)
                 if risk_warning(instrument, date, as_of=closing) is not None:
                     eligible.at[date, symbol] = False
+        if "industry_history" in instrument:
+            eligible[symbol] &= industry_series(instrument, calendar).notna()
     for symbol in quarantined:
         if symbol not in meta:
             raise ValueError(f"Unknown quarantined security: {symbol}")
@@ -192,7 +195,7 @@ def build_dataset(meta, raws, actions, *, quarantined=(), opening_status=None):
     table = pd.concat([table, ranks], axis=1)
     momentum = momentum_features(table)
     table = pd.concat([table, momentum], axis=1)
-    industry, sector = industry_features(table, meta)
+    industry, sector = industry_features(table, meta, calendar)
     table["industry"] = sector
     table = pd.concat([table, industry], axis=1)
     features = [*ranks, *CONTEXT_FEATURES, *momentum, *industry]

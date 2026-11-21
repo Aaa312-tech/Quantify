@@ -11,6 +11,7 @@ import pandas as pd
 from .ledger import Ledger, Lot, cents
 from .risk import RiskState
 from .storage import now
+from .validation import checked_industries
 
 
 def date_only(value):
@@ -195,12 +196,20 @@ def audit_fills(opening, result, meta, date, rate, cap):
     def amount(value):
         return int((Decimal(str(value)) * 100).quantize(Decimal(1), rounding=ROUND_HALF_UP))
 
+    information_at = (
+        opening["as_of"] + "T16:00:00+08:00"
+        if result["status"] == "REFERENCE_QUOTE_PREVIEW"
+        else date + "T09:25:00+08:00"
+    )
+    groups = checked_industries(meta, information_at)
     cash = amount(opening["cash"])
     quantities, available = defaultdict(int), defaultdict(int)
     for lot in opening["lots"]:
         quantities[lot["symbol"]] += lot["quantity"]
         if lot["available"] is not None and lot["available"] <= date:
             available[lot["symbol"]] += lot["quantity"]
+    if any(groups[symbol] is None for symbol, quantity in quantities.items() if quantity):
+        raise ValueError("Paper account has an unknown held industry")
     checks = 0
     prices = result["opening_marks"]
     receivables = sum(r["cents"] for r in opening["receivables"])
@@ -242,7 +251,9 @@ def audit_fills(opening, result, meta, date, rate, cap):
             nav = cash + sum(values.values()) + receivables
             sectors = defaultdict(int)
             for s, value in values.items():
-                sectors[meta[s]["industry"]] += value
+                if groups[s] is None:
+                    raise ValueError("Paper purchase has an unknown industry")
+                sectors[groups[s]] += value
             if (
                 any(v > 0.15 * nav + 1e-6 for v in values.values())
                 or sum(values.values()) > cap * nav + 1e-6

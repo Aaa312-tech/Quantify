@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 from .allocation import allocate
+from .industries import metadata_at, require_industries
 from .ledger import Ledger, buy_quantity, cents, fees_cents, lot_rule, slippage_cents
 from .market import EXECUTION_MODEL, opening_price, regime, risk_warning
 from .metrics import account_stats
@@ -66,6 +67,11 @@ class _Execution:
     def __post_init__(self):
         self.date = self.bundle["calendar"][self.index]
         self.previous = self.bundle["calendar"][self.index - 1]
+        information_at = self.bundle.get("information_at") or (
+            self.date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=9, minutes=25)
+        )
+        self.ledger.meta = metadata_at(self.ledger.meta, information_at)
+        require_industries(self.ledger.meta, self.ledger.lots)
 
     def _quote(self, symbol, side):
         return opening_price(
@@ -133,6 +139,9 @@ class _Execution:
     def buy(self, targets, stopped, valid, decision):
         for symbol, desired in targets.items():
             if desired <= 0 or symbol in stopped:
+                continue
+            if self.ledger.meta[symbol]["industry"] is None:
+                self.ledger.reject(self.date, symbol, "BUY", "UNKNOWN_INDUSTRY")
                 continue
             price, reason = self._quote(symbol, "BUY")
             if reason:
@@ -277,6 +286,11 @@ def simulate(
     for index in range(start, end + 1):
         date = calendar[index]
         previous = calendar[index - 1]
+        meta = metadata_at(
+            bundle["meta"], previous.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16)
+        )
+        ledger.meta = meta
+        require_industries(meta, ledger.lots)
         day = str(date.date())
         active_config = config_for(rules, index - 1)
         active_turnover = turnover_for(turnover, index - 1)
@@ -299,6 +313,7 @@ def simulate(
             symbol: v
             for symbol, v in forecasts.get(index - 1, {}).items()
             if panels["eligible"].at[previous, symbol]
+            and meta[symbol]["industry"] is not None
             and risk_warning(
                 meta[symbol],
                 date,

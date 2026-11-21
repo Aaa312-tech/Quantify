@@ -14,6 +14,9 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="quantfolio", description=__doc__)
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("--project", help="Project directory (or QUANTFOLIO_ROOT)")
+    parser.add_argument(
+        "--config", default="configs/project.toml", help="Project-relative TOML under configs"
+    )
     parser.add_argument("--debug", action="store_true", help="Show traceback on research errors")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("status", help="Show the active strategy and validation status")
@@ -53,6 +56,13 @@ def main(argv: list[str] | None = None) -> None:
         "review-industries", help="Cross-check registered historical industry source tables"
     )
     industry_review.add_argument("--protocol", required=True)
+    industry_repair = commands.add_parser(
+        "repair-industries", help="Build a registered dated-industry data control"
+    )
+    industry_repair.add_argument("--protocol", required=True)
+    industry_repair.add_argument(
+        "--variant", required=True, choices=("coverage", "static", "dated")
+    )
     status_repair = commands.add_parser(
         "repair-status", help="Rebuild eligibility from reviewed historical warning notices"
     )
@@ -187,7 +197,7 @@ def main(argv: list[str] | None = None) -> None:
         parser.error("require 1 <= --first <= --last")
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     try:
-        result = run(args, Paths(project_root(args.project)))
+        result = run(args, Paths(project_root(args.project), args.config))
     except (OSError, ValueError, AssertionError, KeyError) as error:
         if args.debug:
             raise
@@ -296,6 +306,11 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .industry_sources import review_industries
 
         return review_industries(paths, args.protocol)
+
+    if args.command == "repair-industries":
+        from .industries import build_industry_snapshot
+
+        return build_industry_snapshot(paths, args.protocol, args.variant)
     if args.command == "repair-status":
         from .status_repair import repair_status_snapshot
 

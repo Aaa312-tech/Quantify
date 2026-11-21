@@ -2,6 +2,42 @@
 
 项目需要Python 3.11–3.13和Git LFS。先按README克隆完整仓库，在虚拟环境中安装 `.[dev]`。数据与模型属于项目目录，不打进Python安装包；从其他目录运行时使用 `--project PATH` 或 `QUANTFOLIO_ROOT`。
 
+## 日期化行业对照
+
+协议`configs/protocols/industry_timing.json`在提交`6b31ec98`登记，分别构建覆盖过滤、
+最新静态分类和日期化分类。每组都有独立配置、快照、训练、评估与核验目录。
+
+```powershell
+python -m quantfolio repair-industries --protocol configs/protocols/industry_timing.json --variant dated
+python -m quantfolio --config configs/experiments/industry_dated.toml train --first 1 --last 11 --include-latest --output artifacts/experiments/industry_reproduction
+python -m quantfolio --config configs/experiments/industry_dated.toml evaluate --run artifacts/experiments/industry_reproduction --all-policies --output artifacts/evaluations/industry_reproduction
+python -m quantfolio --config configs/experiments/industry_dated.toml verify --run artifacts/experiments/industry_reproduction --output artifacts/checks/industry_reproduction
+```
+
+第一行的登记目标已存在时会拒绝重建；重新构建须复制协议、使用新目录，并重新生成绑定
+该协议的旧源码父快照回执。训练示例读取已冻结快照，输出目录也须尚不存在。
+另外两组使用对应`industry_coverage.toml`与`industry_static.toml`；静态组只用于回溯归因。
+普通`evaluate`要求目标目录不存在，因此应先完成普通评估，再向其子目录写固定预测对照。
+本轮覆盖组曾因对照提前创建父目录而被正常保护拒绝；原失败日志保留，通过临时暂存已有
+文件后在空目录重新评估解决，全部暂存文件逐字节归回。过程见
+`coverage/evaluation_recovery_protocol.json`与`coverage/evaluation_recovery.json`。
+
+旧输入兼容性、独立来源连接、全部行业排名、未来分类扰动、三组训练及固定预测回放的
+证据集中在`artifacts/checks/industry_timing_2026-11-21`。固定预测诊断明确使用前一组
+预测，在覆盖组只删除新不合格键；不重新校准，也不经过普通评估器伪装为匹配的数据模型。
+
+旧输入完整回放后仅扩展了纸面计划的源码依赖常量，加入独立行业核账模块。保留修改前文件、
+AST逐节点比较和最终源码下75个纸面账户的再次回放，见`implementation/source_guard_closure.json`。
+这项有明确范围的兼容性证据不解除普通训练或纸面计划的过期源码校验。
+
+新分类组合的纸面核验进一步发现：缺失开盘报价被表示为空价格行，拒单原因因此从
+`NO_QUOTE`变成`INVALID_OPENING_REFERENCE`。实际失败账户的资金、交易、净值、决策
+和权重一致，但完整账本校验仍拒绝通过。修正只删除这条不存在报价时的合成行，历史成交器、
+训练、模型与输入不变；原失败记录保留，并用AST差异证明修改范围。最终重新核对新旧
+共300个纸面账户，证据与原训练源码身份分别保存在`paper_missing_quote`和各组`validation.json`。
+读取本轮结果应以最终`validation.json`及`paper_quote_review`为准，不能把原`paper`中的
+失败记录改写为通过。
+
 ## 跳空因子精度修正
 
 登记协议为`configs/protocols/gap_precision.json`，登记提交为`298bdcc6`。
@@ -241,7 +277,7 @@ CI在Windows的Python 3.11、3.13及Ubuntu的Python 3.13上，从源码分发包
 ## 已验收的11月20日扩展
 
 行情扩展阶段的完整训练、评估与状态复核保存于`daily_source_extension_2026-11-21`；
-它是历史验收阶段，当前配置使用本页开头的`2026-11-20-local-gaps`快照。
+它是历史验收阶段，当前配置使用本页开头的`2026-11-20-industry-dated`快照。
 新数据来源、单位转换和历史标签变化见同名`artifacts/checks`目录；实现兼容性、训练影响
 及固定旧预测对照分别存档，旧腾讯全池核验失败记录不变。
 
@@ -315,7 +351,7 @@ python -m quantfolio review-industries --protocol configs/protocols/industry_cel
 `artifacts/checks/industry_cells_2026-11-21`；原始单元格位于
 `data/processed/industry_source_cells_2026-11-21`。这两个目录尚不是可直接训练的数据快照。
 
-本轮只增加来源审查模块、命令及可选依赖。344项测试通过，1项主机符号链接检查跳过；
+该来源审查阶段只增加模块、命令及可选依赖，未改变模型输入。344项测试通过，1项主机符号链接检查跳过；
 原冻结文件、交易核心源码、活跃配置和纸面计划输入逐项核对。没有数值或执行改动，
-因此未重复拟合模型，也没有新增回测收益。未来接入行业分类须另行登记并完成全量重训、
+该阶段没有重新拟合或增加回测收益。后续日期化接入已按本页开头的独立协议完成全量重训、
 同风控动量对照和账户核验；不能沿用本轮来源审查代替这些验证。

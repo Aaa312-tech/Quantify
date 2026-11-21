@@ -17,6 +17,103 @@ def money(value):
     return int((Decimal(str(value)) * 100).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
 
 
+def checked_industries(meta, as_of):
+    """Reconstruct groups independently of the production schedule lookup."""
+    deadline = pd.Timestamp(as_of)
+    if pd.isna(deadline) or deadline.tzinfo is None:
+        raise ValueError("Industry audit requires an explicit information time")
+    groups = {}
+    for symbol, instrument in meta.items():
+        if "industry_history" not in instrument:
+            groups[symbol] = instrument["industry"]
+            continue
+        if instrument["kind"] != "stock" or not instrument["industry_history"]:
+            raise ValueError("Invalid company industry history")
+        group, previous = None, None
+        for record in instrument["industry_history"]:
+            published = pd.Timestamp(record["available_at"])
+            if (
+                pd.isna(published)
+                or published.tzinfo is None
+                or (previous is not None and published <= previous)
+            ):
+                raise ValueError("Invalid industry availability sequence")
+            value = record["industry"]
+            if value is not None and (not isinstance(value, str) or not value.strip()):
+                raise ValueError("Invalid industry key")
+            if published <= deadline:
+                group = value
+            previous = published
+        groups[symbol] = group
+    return groups
+
+
+def dated_industry_audit(ledger, bundle):
+    """Rebuild post-fill groups and values from reconciled quantities and opening bars."""
+    errors, checks = [], 0
+    previous_positions = {}
+    last_close = {}
+    trades, events = collections.defaultdict(list), collections.defaultdict(list)
+    for index, trade in enumerate(ledger["trades"], 1):
+        trades[trade["date"]].append((index, trade))
+    for event in ledger["events"]:
+        if event["type"] == "CORPORATE_ACTION":
+            events[event["date"]].append(event)
+    marks = {(row["date"], row["after_fill"]): row for row in ledger["intermediate_weights"]}
+    for closing in ledger["curve"]:
+        day = closing["date"]
+        quantities = {s: row["quantity"] for s, row in previous_positions.items()}
+        for event in events[day]:
+            symbol = event["symbol"]
+            quantities[symbol] = quantities.get(symbol, 0) + event["share_quantity_change"]
+        for action in bundle["actions"]:
+            symbol = action["symbol"]
+            if action["ex_date"] == day and symbol in last_close:
+                last_close[symbol] = (last_close[symbol] - action["cash_per_share"]) / action[
+                    "share_multiplier"
+                ]
+        relevant = set(quantities) | {trade["symbol"] for _, trade in trades[day]}
+        groups = checked_industries(
+            {s: bundle["meta"][s] for s in relevant}, day + "T09:25:00+08:00"
+        )
+        for symbol, quantity in quantities.items():
+            checks += 1
+            if quantity and groups[symbol] is None:
+                errors.append(["UNKNOWN_HELD_INDUSTRY", day, symbol])
+        prices = {}
+        for symbol in relevant:
+            raw = bundle["raws"][symbol]
+            quote = raw.at[pd.Timestamp(day), "open"] if pd.Timestamp(day) in raw.index else None
+            prices[symbol] = (
+                float(quote)
+                if quote is not None and math.isfinite(quote)
+                else last_close.get(symbol)
+            )
+        for index, trade in trades[day]:
+            symbol = trade["symbol"]
+            change = trade["quantity"] * (1 if trade["side"] == "BUY" else -1)
+            quantities[symbol] = quantities.get(symbol, 0) + change
+            prices[symbol] = trade["price"]
+            values = {s: money(q * prices[s]) / 100 for s, q in quantities.items() if q}
+            sectors = collections.defaultdict(float)
+            for name, value in values.items():
+                sectors[groups[name]] += value
+            nav = trade["cash_after"] + sum(values.values()) + closing["receivables"]
+            largest = max(sectors.values(), default=0) / nav
+            checks += 1
+            if abs(marks[day, index]["max_industry_weight"] - largest) > 1e-10:
+                errors.append(["DATED_INDUSTRY_WEIGHT_MISMATCH", day, index])
+            if trade["side"] == "BUY":
+                checks += 2
+                if any(groups[name] is None for name in values):
+                    errors.append(["BUY_WITH_UNKNOWN_INDUSTRY", day, index])
+                if largest > 0.30 + 1e-7:
+                    errors.append(["DATED_INDUSTRY_CAP", day, index])
+        previous_positions = closing["positions"]
+        last_close.update({s: row["close"] for s, row in previous_positions.items()})
+    return {"checks": checks, "errors": errors}
+
+
 def opening_errors(trade, bundle):
     """Check the proxy independently; deliberately do not call the quote generator."""
     symbol = trade["symbol"]
@@ -459,4 +556,8 @@ def execution_audit(ledger, bundle):
                 errors.append(["POSTBUY_SECTOR_CAP", trade])
             if weights["gross_exposure"] > weights["risk_cap"] + 1e-7:
                 errors.append(["POSTBUY_TOTAL_CAP", trade])
+    if any("industry_history" in instrument for instrument in bundle["meta"].values()):
+        industries = dated_industry_audit(ledger, bundle)
+        checks += industries["checks"]
+        errors.extend(industries["errors"])
     return {"status": "PASS" if not errors else "FAIL", "checks": checks, "errors": errors}

@@ -94,7 +94,7 @@ def test_missing_quotes_limits_and_later_fields_cannot_create_fills():
     assert {r["reason"] for r in result["rejections"]} >= {
         "OPEN_AT_UPPER_LIMIT",
         "SUSPENDED_AT_OPEN",
-        "INVALID_OPENING_REFERENCE",
+        "NO_QUOTE",
     }
     quotes = opening_quotes(intent)
     quotes[symbols[0]]["market_at"] = "2026-01-13T15:00:00+08:00"
@@ -313,6 +313,41 @@ def test_frozen_plan_quote_resolution_and_closing_account_round_trip(tmp_path, m
     assert second["status"] == "FROZEN_CONDITIONAL_PLAN"
     assert not next_plan["intent"]["scheduled"]
     assert next_plan["intent"]["state"]["peak"] == account["valuation"]["nav"]
+
+
+def test_plan_rejects_changes_to_its_independent_industry_auditor(tmp_path, monkeypatch):
+    paths, _, _, _ = paper_project(tmp_path, monkeypatch)
+    result = freeze_plan(paths, "account.json", "artifacts/plans/bound_auditor")
+    original_sha = planning.sha
+    monkeypatch.setattr(
+        planning,
+        "sha",
+        lambda path: "changed" if path.name == "validation.py" else original_sha(path),
+    )
+    with pytest.raises(ValueError, match="calculation source changed"):
+        resolve_plan(paths, result["plan"], "missing.json", "artifacts/plans/stale_auditor")
+    assert not (tmp_path / "artifacts/plans/stale_auditor").exists()
+
+
+@pytest.mark.parametrize("omit_quote", [False, True])
+def test_missing_opening_quote_preserves_the_backtest_rejection(omit_quote):
+    bundle, forecasts = fixture()
+    dates, symbol = bundle["calendar"], "sh600001"
+    bundle["raws"][symbol] = bundle["raws"][symbol].drop(index=dates[6])
+    _, expected = simulate(bundle, 6, 6, forecasts)
+    account = new_account(str(dates[5].date()), "historical_diagnostic")
+    intent = make_intent(
+        prefix(bundle, 5), account, forecasts[5], "baseline", str(dates[6].date()), 0.001
+    )
+    quotes = opening_quotes(intent)
+    if omit_quote:
+        del quotes[symbol]
+    else:
+        quotes[symbol]["open"] = None
+    actual = resolve_intent(intent, account, [], calendar_for(bundle), quotes)
+    assert any(row["reason"] == "NO_QUOTE" for row in expected["rejections"])
+    assert actual["rejections"] == expected["rejections"]
+    assert actual["trades"] == expected["trades"]
 
 
 def test_expired_plan_does_not_emit_instructions_or_resolve(tmp_path, monkeypatch):

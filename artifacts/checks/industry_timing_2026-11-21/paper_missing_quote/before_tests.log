@@ -1,0 +1,62 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_____ test_missing_opening_quote_preserves_the_backtest_rejection[False] ______
+
+omit_quote = False
+
+    @pytest.mark.parametrize("omit_quote", [False, True])
+    def test_missing_opening_quote_preserves_the_backtest_rejection(omit_quote):
+        bundle, forecasts = fixture()
+        dates, symbol = bundle["calendar"], "sh600001"
+        bundle["raws"][symbol] = bundle["raws"][symbol].drop(index=dates[6])
+        _, expected = simulate(bundle, 6, 6, forecasts)
+        account = new_account(str(dates[5].date()), "historical_diagnostic")
+        intent = make_intent(
+            prefix(bundle, 5), account, forecasts[5], "baseline", str(dates[6].date()), 0.001
+        )
+        quotes = opening_quotes(intent)
+        if omit_quote:
+            del quotes[symbol]
+        else:
+            quotes[symbol]["open"] = None
+        actual = resolve_intent(intent, account, [], calendar_for(bundle), quotes)
+        assert any(row["reason"] == "NO_QUOTE" for row in expected["rejections"])
+>       assert actual["rejections"] == expected["rejections"]
+E       AssertionError: assert [{'date': '20...: 'sh600001'}] == [{'date': '20...: 'sh600001'}]
+E         
+E         At index 0 diff: {'date': '2026-01-13', 'symbol': 'sh600001', 'side': 'BUY', 'reason': 'INVALID_OPENING_REFERENCE'} != {'date': '2026-01-13', 'symbol': 'sh600001', 'side': 'BUY', 'reason': 'NO_QUOTE'}
+E         Use -v to get more diff
+
+tests\test_planning.py:349: AssertionError
+______ test_missing_opening_quote_preserves_the_backtest_rejection[True] ______
+
+omit_quote = True
+
+    @pytest.mark.parametrize("omit_quote", [False, True])
+    def test_missing_opening_quote_preserves_the_backtest_rejection(omit_quote):
+        bundle, forecasts = fixture()
+        dates, symbol = bundle["calendar"], "sh600001"
+        bundle["raws"][symbol] = bundle["raws"][symbol].drop(index=dates[6])
+        _, expected = simulate(bundle, 6, 6, forecasts)
+        account = new_account(str(dates[5].date()), "historical_diagnostic")
+        intent = make_intent(
+            prefix(bundle, 5), account, forecasts[5], "baseline", str(dates[6].date()), 0.001
+        )
+        quotes = opening_quotes(intent)
+        if omit_quote:
+            del quotes[symbol]
+        else:
+            quotes[symbol]["open"] = None
+        actual = resolve_intent(intent, account, [], calendar_for(bundle), quotes)
+        assert any(row["reason"] == "NO_QUOTE" for row in expected["rejections"])
+>       assert actual["rejections"] == expected["rejections"]
+E       AssertionError: assert [{'date': '20...: 'sh600001'}] == [{'date': '20...: 'sh600001'}]
+E         
+E         At index 0 diff: {'date': '2026-01-13', 'symbol': 'sh600001', 'side': 'BUY', 'reason': 'INVALID_OPENING_REFERENCE'} != {'date': '2026-01-13', 'symbol': 'sh600001', 'side': 'BUY', 'reason': 'NO_QUOTE'}
+E         Use -v to get more diff
+
+tests\test_planning.py:349: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_planning.py::test_missing_opening_quote_preserves_the_backtest_rejection[False]
+FAILED tests/test_planning.py::test_missing_opening_quote_preserves_the_backtest_rejection[True]
+2 failed, 19 deselected in 1.54s

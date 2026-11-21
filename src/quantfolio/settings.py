@@ -32,13 +32,28 @@ class Paths:
     """Project-relative inputs and isolated output directories."""
 
     root: Path
+    config_file: str | Path = "configs/project.toml"
 
     def __post_init__(self):
         object.__setattr__(self, "root", self.root.resolve())
 
     @cached_property
+    def configuration_path(self) -> Path:
+        relative = Path(self.config_file)
+        target = (self.root / relative).resolve()
+        parent = (self.root / "configs").resolve()
+        if (
+            relative.is_absolute()
+            or not parent.is_relative_to(self.root)
+            or not target.is_relative_to(parent)
+            or target.suffix != ".toml"
+        ):
+            raise ValueError("Configuration must be a TOML file inside project configs")
+        return target
+
+    @cached_property
     def config(self) -> dict:
-        with (self.root / "configs/project.toml").open("rb") as stream:
+        with self.configuration_path.open("rb") as stream:
             return tomllib.load(stream)
 
     @cached_property

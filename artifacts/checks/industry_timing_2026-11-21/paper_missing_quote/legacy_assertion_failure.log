@@ -1,0 +1,44 @@
+63 files already formatted
+All checks passed!
+..........s............................................................. [ 19%]
+........................................................................ [ 38%]
+........................................................................ [ 57%]
+...F.................................................................... [ 76%]
+........................................................................ [ 95%]
+................                                                         [100%]
+================================== FAILURES ===================================
+_______ test_missing_quotes_limits_and_later_fields_cannot_create_fills _______
+
+    def test_missing_quotes_limits_and_later_fields_cannot_create_fills():
+        bundle, forecasts = fixture()
+        account = new_account("2026-01-12", "synthetic")
+        intent = make_intent(prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001)
+        quotes = opening_quotes(intent)
+        expected = resolve_intent(intent, account, [], calendar_for(bundle), quotes)
+        for q in quotes.values():
+            q.update(high=0.0, low=1000.0, close=999.0, volume=0)
+        assert (
+            resolve_intent(intent, account, [], calendar_for(bundle), quotes)["trades"]
+            == expected["trades"]
+        )
+        symbols = list(quotes)
+        quotes[symbols[0]]["open"] = 11
+        quotes[symbols[1]]["suspended"] = True
+        quotes.pop(symbols[2])
+        result = resolve_intent(intent, account, [], calendar_for(bundle), quotes)
+        assert not {t["symbol"] for t in result["trades"]} & set(symbols[:3])
+>       assert {r["reason"] for r in result["rejections"]} >= {
+            "OPEN_AT_UPPER_LIMIT",
+            "SUSPENDED_AT_OPEN",
+            "INVALID_OPENING_REFERENCE",
+        }
+E       AssertionError: assert {'NO_QUOTE', ...NDED_AT_OPEN'} >= {'INVALID_OPE...NDED_AT_OPEN'}
+E         
+E         Extra items in the right set:
+E         'INVALID_OPENING_REFERENCE'
+
+tests\test_planning.py:94: AssertionError
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_cli_and_storage.py:135: Host does not permit directory symlinks
+FAILED tests/test_planning.py::test_missing_quotes_limits_and_later_fields_cannot_create_fills
+1 failed, 374 passed, 1 skipped in 19.71s

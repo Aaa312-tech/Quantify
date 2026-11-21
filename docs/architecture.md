@@ -14,6 +14,7 @@ rules / allocation / risk → simulation → ledger → validation
 | `dataset` | 载入快照、完整性、时间窗口及标签结束日净化 |
 | `snapshots` | 核验公司行为来源、生成独立快照、重建标签并记录差异 |
 | `status_data`、`status_repair` | 独立状态筛查、公告区间与可用时间核验、历史资格及特征重建 |
+| `industry_sources`、`industries` | 保留行业原表和差异，按已登记的发布时间约定生成分类历史及独立数据对照 |
 | `market_data`、`refresh` | 采集与解析未复权日线，按登记证据追加行情、生成独立快照 |
 | `preprocessing` | 从行情生成完整面板、资格、评分、特征和标签，精确验证历史前缀 |
 | `features` | 价格特征、同日横截面排序、行业相对特征 |
@@ -33,6 +34,11 @@ rules / allocation / risk → simulation → ledger → validation
 
 模型只读取信号日已知数据，订单在下一交易日开盘处理。`_Execution`按开盘报价代理估值，较早成交扣除的佣金和滑点降低现金及净值，后续买单重新检查上限。`validation`不复用`Ledger`的金额计算或`market`的报价函数，独立检查现金、开盘代理价格、方向涨跌停和成本。
 
+行业信息分别按信号日16:00与执行日09:25读取。特征表中的日期化分组贯穿残差目标、
+中性化和行业检验；执行器使用开盘时的分组检查买入上限，不能反向修改已冻结的收盘意向。
+独立核账自行解析分类历史并按持股数量、开盘价格重建行业权重。没有分类历史的旧输入
+保留原标签语义；含历史的股票在首期前或被新表遗漏时没有分类，禁止回退到当前标签。
+
 主策略默认使用`latched`。`staged_restore`和`probe_restore`只在注册研究中显式启用，独立核验恢复等待期、市场条件、仓位与永久退出。运行时特征使用`rank_*`、`industry_*`等含义明确的名称；`dataset.load_bundle`在读取后按`configs/archive.toml`转换历史列名，保持值、类型及模型输入顺序。历史文件本身不改写。主策略使用`selected_strategy`，固定基准换手规则的对照使用`selected_baseline_rules`。
 
 行情与实验在包外，报告模板在包内。新行情遵循[数据契约](data_contract.md)，新实验写入独立目录；[冻结参考文件](../configs/integrity_manifest.json)不随工程整理改写。路径调整只更新清单中的键，保留原SHA-256值；归档名称映射记录原路径。
@@ -40,4 +46,4 @@ rules / allocation / risk → simulation → ledger → validation
 换手政策进入训练身份、内层验证、外层评估和纸面计划。活跃政策为`legacy`；
 `exit_priority`只用于登记研究，因收益与回撤验收失败而未启用。
 
-`train → evaluate → report --run`按实验目录传递结果；评估检查训练时成交模型和执行源码。`execution-bridge`固定旧预测，比较新执行的账本差异；原冻结数值回归须用原提交的`replay`。项目路径和截止日期由`configs/project.toml`提供，运行时校验与输入一致。包导入不修改全局pandas设置。
+`train → evaluate → report --run`按实验目录传递结果；评估检查训练时成交模型和执行源码。`execution-bridge`固定旧预测，比较新执行的账本差异；原冻结数值回归须用原提交的`replay`。默认配置为`configs/project.toml`；登记对照可用全局参数`--config configs/experiments/<name>.toml`读取独立配置，不修改活跃输入。配置路径不得越出项目的`configs`目录。包导入不修改全局pandas设置。

@@ -1,0 +1,83 @@
+FFFFF                                                                    [100%]
+================================== FAILURES ===================================
+__________ test_unknown_industry_is_excluded_before_ranks_and_labels __________
+
+    def test_unknown_industry_is_excluded_before_ranks_and_labels():
+        meta, raws = inputs()
+        dates = raws["sh510300"].index
+        meta["sh600001"]["industry_history"] = [entry(dates[140], "capco:C39")]
+        bundle = build_dataset(meta, raws, [])
+>       assert not bundle["panels"]["eligible"].loc[dates[125:140], "sh600001"].any()
+E       assert not np.True_
+E        +  where np.True_ = any()
+E        +    where any = 2025-06-26    True\n2025-06-27    True\n2025-06-30    True\n2025-07-01    True\n2025-07-02    True\n2025-07-03    True\n2025...  True\n2025-07-11    True\n2025-07-14    True\n2025-07-15    True\n2025-07-16    True\nFreq: B, Name: sh600001, dtype: bool.any
+
+tests\test_industry_timing.py:37: AssertionError
+_________ test_dataset_uses_the_category_available_on_each_signal_day _________
+
+    def test_dataset_uses_the_category_available_on_each_signal_day():
+        meta, raws = inputs()
+        dates = raws["sh510300"].index
+        for instrument in meta.values():
+            if instrument["kind"] == "stock":
+                instrument["industry_history"] = [entry(dates[0], "capco:C39")]
+        meta["sh600001"]["industry_history"].append(entry(dates[135], "capco:I65"))
+        bundle = build_dataset(meta, raws, [])
+        rows = bundle["table"].query("symbol == 'sh600001'").set_index("date_index")
+>       assert rows.loc[130, "industry"] == "capco:C39"
+E       AssertionError: assert 'Example' == 'capco:C39'
+E         
+E         - capco:C39
+E         + Example
+
+tests\test_industry_timing.py:53: AssertionError
+__ test_opening_reclassification_limits_buys_without_rewriting_close_targets __
+
+    def test_opening_reclassification_limits_buys_without_rewriting_close_targets():
+        bundle, forecasts = changing_groups()
+        _, ledger = simulate(bundle, 6, 6, forecasts)
+        assert len(ledger["decisions"][0]["target_weights"]) == 6
+        closing = ledger["curve"][0]
+        stock_value = sum(value["value"] for value in closing["positions"].values())
+>       assert stock_value <= 0.30 * closing["nav"] + 1e-8
+E       assert 834000.0 <= ((0.3 * 998907.46) + 1e-08)
+
+tests\test_industry_timing.py:64: AssertionError
+____ test_paper_preview_and_actual_opening_use_their_own_information_time _____
+
+    def test_paper_preview_and_actual_opening_use_their_own_information_time():
+        bundle, forecasts = changing_groups()
+        day = str(bundle["calendar"][6].date())
+        account = new_account(str(bundle["calendar"][5].date()), "industry_boundary")
+        intent = make_intent(prefix(bundle, 5), account, forecasts[5], "baseline", day, 0.001)
+        frozen = deepcopy(intent)
+        preview = resolve_intent(intent, account, [], calendar_for(bundle), {}, preview=True)
+        actual = resolve_intent(intent, account, [], calendar_for(bundle), opening_quotes(intent))
+        preview_gross = sum(t["gross"] for t in preview["trades"])
+        actual_gross = sum(t["gross"] for t in actual["trades"])
+        assert preview_gross > 0.30 * preview["opening_nav_after_costs"]
+>       assert actual_gross <= 0.30 * actual["opening_nav_after_costs"] + 1e-8
+E       assert 834000.0 <= ((0.3 * 998907.46) + 1e-08)
+
+tests\test_industry_timing.py:79: AssertionError
+_________ test_missing_classification_for_a_holding_stops_the_account _________
+
+    def test_missing_classification_for_a_holding_stops_the_account():
+        bundle, forecasts = fixture()
+        dates = bundle["calendar"]
+        bundle["meta"]["sh600001"]["industry_history"] = [
+            entry(dates[0], "capco:C39"),
+            entry(dates[7], None),
+        ]
+>       with pytest.raises(ValueError, match="industry"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_industry_timing.py:91: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_industry_timing.py::test_unknown_industry_is_excluded_before_ranks_and_labels
+FAILED tests/test_industry_timing.py::test_dataset_uses_the_category_available_on_each_signal_day
+FAILED tests/test_industry_timing.py::test_opening_reclassification_limits_buys_without_rewriting_close_targets
+FAILED tests/test_industry_timing.py::test_paper_preview_and_actual_opening_use_their_own_information_time
+FAILED tests/test_industry_timing.py::test_missing_classification_for_a_holding_stops_the_account
+5 failed in 1.79s
