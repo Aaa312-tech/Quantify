@@ -355,3 +355,9 @@ python -m quantfolio review-industries --protocol configs/protocols/industry_cel
 原冻结文件、交易核心源码、活跃配置和纸面计划输入逐项核对。没有数值或执行改动，
 该阶段没有重新拟合或增加回测收益。后续日期化接入已按本页开头的独立协议完成全量重训、
 同风控动量对照和账户核验；不能沿用本轮来源审查代替这些验证。
+
+## ETF来源复核
+
+本阶段不改变运行包与模型输入，因此不新增拟合或回测收益。`configs/protocols/etf_sources.json`登记范围，`artifacts/checks/etf_sources_2026-11-21/completion.json`保存最终哈希与验收。读取`field_closure.json`和`structural_review.json`判断已核实字段；`initial`、首次`review.json`及`listing_unresolved.json`保留失败和中间状态，不能替换为最后状态。
+
+原始查询、下载回执与采集程序在`data/raw/etf_*`，逐份字段和来源坐标在`data/processed/etf_sources_2026-11-21`。公开网页查询只用于研究来源，不接触券商账户。审阅用PDF副本单列在检查目录，原件和额外提示页均保留；副本不是原始披露。原历史文件完整性使用`python -m quantfolio verify`核对，实际复现不得覆盖冻结目录。

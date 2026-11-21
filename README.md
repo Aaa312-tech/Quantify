@@ -22,6 +22,8 @@ A股模拟投资研究项目，Python包与命令名为`quantfolio`。当前采�
 
 11月23日[条件式纸面计划](artifacts/plans/dated_industries_2026-11-23/plan.md)已按当前代码和数据重新冻结：0笔参考订单。567个合格标的中，0个通过当前模型的净收益建仓筛选。计划有效期止于11月23日09:25；没有前向成交或收益。旧计划原样保留，不能在源码改变后继续解析旧计划。
 
+[ETF来源核查](docs/etf_sources.md)补齐22只基金的历史文献锚点，核对199份概要及17份结构公告；未改变模型输入或历史收益。基金类型、业绩基准和穿透行业权重需要分别处理，尚未认证真实历史持仓。
+
 数据边界与后续工作见[数据契约](docs/data_contract.md)和[修正记录](docs/remediation.md)。此前规则实验与失败候选保存在[策略实验](docs/strategy_study.md)和[卖出预算研究](docs/exit_budget_repair.md)，未据此放宽风控。
 
 ![滚动选型动量与基准的历史净值](reports/latest/equity_curve.png)
