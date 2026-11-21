@@ -1,0 +1,190 @@
+{
+  "name": "distribution_repair",
+  "operation": "supplement_verified_dates",
+  "registered_at": "2026-11-22T00:38:59.929574+08:00",
+  "baseline_commit": "f72102549a2a412bc053d782549be4fd06860bd5",
+  "baseline_manifest_sha256": "db7687fbcc6347147615525e00ce7cdfe7984fda982f71c561a3ed2fc936f906",
+  "baseline_frozen_files": 36312,
+  "parent_protocol": "configs/protocols/declared_payments.json",
+  "parent_protocol_sha256": "0ca77d7ed851ce46702ac0ac297edc59ec9122ad2ced184e24cdd136c2da9432",
+  "source_bundle": "data/processed/2026-11-20-declared-payments/bundle.joblib",
+  "source_bundle_sha256": "4daadc03e896eaeeb3fc2a4e02ad1bbcc5fc1d6983919ad51740053d09fc43e3",
+  "source_data_cutoff": "2026-11-20",
+  "source_inputs": {
+    "disclosures": {
+      "path": "data/raw/disclosures_retry_2026-11-21/collection.json",
+      "sha256": "9f1d7ad5ce168f1a95fb37e32e9ae0752e81c19d548e469a0df5ccee10b564a2"
+    },
+    "structured_actions": {
+      "path": "artifacts/checks/disclosure_sources_2026-11-21/all_structured_actions.json",
+      "sha256": "350a26313b2d128be42a5b74d87985e8e0f5450d749bfd1763454b5bff9b8eed"
+    },
+    "event_index": {
+      "path": "artifacts/checks/disclosure_sources_2026-11-21/primary_event_index.json",
+      "sha256": "76f4a72bbb88f7023799935ecd39293efd2aa2d7d357bb1664b54282feb792d0"
+    },
+    "primary_reviews": {
+      "path": "docs/references/distribution_reconciliation_2026-11-21.json",
+      "sha256": "50561527682f42996ee568982ab21c633e2652bb3098d0a4d17f8e3af59c7822"
+    },
+    "prior_followup": {
+      "path": "docs/references/resumption_followup_2026-11-21.json",
+      "sha256": "17e03664da4ca80da04c5ed35dda18f1bdf8fdd81ec10c17e4c51948160ac5e6"
+    }
+  },
+  "allowed_fact_changes": [
+    "cash_per_share",
+    "cash_pay_date",
+    "share_list_date",
+    "ex_reference_cash_per_share",
+    "cash_rounding"
+  ],
+  "review": "artifacts/checks/payout_scope_2026-11-21/source_review.json",
+  "review_sha256": "866a91b747d7c689dc6cb65b8378734db0e2755e113426d9ad622deee99d2e8b",
+  "review_protocol": {
+    "path": "configs/protocols/payout_scope.json",
+    "sha256": "02596a4a9864a95c476c35e0ea783f36c38a333d12fe79d7677cbf92c0dd9236"
+  },
+  "review_basis": {
+    "path": "data/processed/2026-11-20-reviewed-resumption/bundle.joblib",
+    "sha256": "abb61a2dd56168fc9176e0b05c0180ec8376cd3fca46556dbc3a13ca9522ef29"
+  },
+  "source_acceptance": {
+    "path": "artifacts/checks/payout_scope_2026-11-21/completion.json",
+    "sha256": "aaca91c9fd19e8db3f9cde82016680e3db8ab9cd588ed6b47a9d590f65f9c255"
+  },
+  "independent_review": {
+    "path": "artifacts/checks/payout_scope_2026-11-21/independent_closure.json",
+    "sha256": "71562a4b9b524d070c4c5bf262227c49e4efe4d944d97bd109bfb4721a12ceb3"
+  },
+  "supplement_fields": [
+    "cash_pay_date"
+  ],
+  "verified_additions": {
+    "events": 34,
+    "cash_pay_date": 34
+  },
+  "expected_changes": {
+    "events": 31,
+    "cash_pay_date": 31
+  },
+  "scope": "Apply the 31 independently supported missing payment dates; three additional dates already agree. Preserve all prior facts, economic terms, listing dates, original identities and provenance. Accept facts regardless of account/return effects.",
+  "binding": "Bind the accepted review to its original registered protocol and source snapshot, then verify its whole original event inventory. For each independently added field bind original/current action identities and unchanged economic terms; reject conflicts. Record both identities and append date-specific provenance without replacing existing review metadata.",
+  "cash_availability": "Use the unchanged first observed trading opening strictly after the declared cash payment date. Preserve share listing as its explicit sourced date; never infer one date from the other.",
+  "snapshot_output": "data/processed/2026-11-20-implemented-payments",
+  "checks_output": "artifacts/checks/implemented_payments_2026-11-22",
+  "configuration": "configs/experiments/implemented_payments.toml",
+  "training_output": "artifacts/experiments/implemented_payments_2026-11-22",
+  "evaluation_output": "artifacts/evaluations/implemented_payments_2026-11-22",
+  "fixed_forecast_output": "artifacts/evaluations/implemented_payments_fixed_2026-11-22",
+  "compatibility_output": "artifacts/evaluations/implemented_payments_parity_2026-11-22",
+  "baseline_run": "artifacts/experiments/declared_payments_2026-11-21",
+  "baseline_evaluation": "artifacts/evaluations/declared_payments_2026-11-21",
+  "baseline_status_review": "artifacts/checks/declared_payments_2026-11-21/status_review.json",
+  "active_configuration_sha256": "61d2e3d852446669a8ce7934270c7e062b29a5ba583b791b056c696557f15bd0",
+  "current_plan": {
+    "path": "artifacts/plans/declared_payments_2026-11-23/plan.json",
+    "sha256": "2e3c14079511932b7d5cac6673c6bb9eb609fdc94da713261756b68386efc0ac"
+  },
+  "baseline_source_sha256": {
+    "__init__.py": "3e88f5bf5ad4046d8ff0a0e98d5408cad2872398035cfc382e7a2dfe9bab4d01",
+    "__main__.py": "da611df5578a975edf9bb6c1c0929f0bf8049aee45a24cd3a7bf16903a909224",
+    "accounts.py": "aaf13138f3047956d02cccb3856db0901cd84eb163d5f0821726768b3c14072c",
+    "allocation.py": "27cc5133c663882ba1a3e3a800d9e8fd773d6aaf411326d475b3e290fe1a90a2",
+    "calibration.py": "0727196e4d378f814f16bf84fcf13b172cbf4f139e19374a671c3fb5002c2f91",
+    "cli.py": "8ea41f9f3a604abf4511fd51360a58f31bf4ea7ee893701afdcd1a12493f387e",
+    "daily_sources.py": "da3203a51fd6825ab5e25988030e94f9303dc950ae091889e62afb44979252ea",
+    "dataset.py": "9172523af79e1bed2af9f3aadd79597f9fedddbc0ad4991cbdaceee56cf6feda",
+    "disclosures.py": "37daa5bdad14e5049294ad56ed2fcd1edb8b590c6915d8980159c849e654cb09",
+    "distributions.py": "a5caf5060fdb1546894b7b1f06c850734bfdd79909ba29cac912efa86407f88c",
+    "evaluation.py": "a8205781078cb89f8416181d0ed498aa11a5e6e08d3b7968cf8b9cf6b02dd531",
+    "feasibility.py": "e35357893f29e6f41870a510dc823557f35edf90b39002ab4f2b5b4e16a58e15",
+    "features.py": "6b03eb10d860202dac9875fa7bba885455ca022be9c15caf8d2e7a41d2078cba",
+    "funds.py": "09ac7e629fb0693fd91cc54e15ea2934783dcea6deb27338dd3fe62b45354b16",
+    "industries.py": "dababe947e2bfa69db0257862de845f330e9cbddfeecd2556bab364ce9731b4c",
+    "industry_sources.py": "f643640bfe18fe7fdd712b2fd4d44e384c1a876efe63d6e8f0057a005ec20e57",
+    "ledger.py": "1ed5aeeae782d0a395c61f2169ada784e6bf2dbbb5bc695bf2ff054c29f1311a",
+    "market.py": "642104f32327a23b9e40a1e80c0fe11d3c078fcf05f5535f7d099dfef201d899",
+    "market_data.py": "8dfe48cc175062985fdfc4e2dd218dff44d6eb79d3a626b473573f5a99612698",
+    "metrics.py": "63619e807886de901232c8fc9f61704aebe067286b90b8d1d5336096f621b77f",
+    "models.py": "97324ddc38de9935fbed8a231817ab0c92c545f65d11648ecb1de1ad1d202dbd",
+    "planning.py": "ea8d1071fd61a71db0f171b8a6370780d5d4c3a16061e9b30419d7c306e55f73",
+    "preprocessing.py": "5fbeb025ab845a25781a0736f66f43f22a2563656591ca95f9aec672256ad2b4",
+    "refresh.py": "c8bd1d4dc12f5d3c012c8350a1f138ee23f77650b88d4b4e2424647e7ac1226c",
+    "reporting.py": "05d44ac18a5198277db9b9e520423ac1d38cc7a44935243da6d15b0564078c28",
+    "risk.py": "a20ee6dce02d9c755396f41e311589802b3794932c757387c1c2b9a9f5df8877",
+    "rules.py": "7265915a24f013a29d92d74e864f2329c9c13eeccaa2d5fedd564f9d1c445fb8",
+    "selection.py": "69098b220a0c2268a84a572164d9bb29243499c69e969645e4a1d7b5776ecbb9",
+    "settings.py": "392336d8c10650d7524e8fe74986c4fbf02953e07e68e66f2f0b4b325a555c77",
+    "simulation.py": "bf47400fc3c995016df971c8ed28d93d5dd4098b779fecbce82bb9d82214d32e",
+    "snapshots.py": "fbcbfe1ff2003d41c22d16eec5dd996a62f59b90f8ebc0579ed1ad53c0fcf8f4",
+    "status_data.py": "df964108b2a9296824cd2f364f7387152eeef60b876314e6f5a21ff2e661adb8",
+    "status_repair.py": "740668b3019b2aa07d24422ae0108480a98f7c695419130655cbe549374699b5",
+    "storage.py": "39b2692d46fa4e06df614368ef614afc2dde576d1d6bfad09b4674514926b76d",
+    "study.py": "2288c4b15f87eadbe0265021ada21e7fb994acc4eec8679980ce7be0761f299e",
+    "training.py": "3d246ecf950e809f1471702b14a53397e35e7a9d2fbd07404b4866655c70cbc6",
+    "validation.py": "f6f62d0b4f2b8dc503c4261a4c6b34222f04efc85d31ef995c17d458ccf77d12",
+    "verification.py": "0ac0a23ee54fabe589541bf22922e42a900441d5f38782be91629713eae40179"
+  },
+  "implementation_scope": "Only snapshots.py and semantic package version 0.27.0 may change. Bind implementation_payout_scope to its successful independent_closure.json, amendment_review.json, visual_review.json and pre-implementation payout_page_order.json. Reuse common date-receipt validation without duplicating financial logic; prove old-phase behavior is unchanged. All numerical feature/label/model/selection/execution/risk/ledger/planning functions stay exact. Reject incomplete, failed or mismatched evidence and preserve the existing source-phase gates.",
+  "snapshot_validation": [
+    "Bind all 34 accepted facts to original/current identities; require 31 missing and three matching. Bind all source receipts, 136 independent field checks and 1414 preserved fields across 1387 prior supported events. The initial independent_fields.json remains a failed review; the new phase's independent_closure.json is its accepted closure.",
+    "Bind the page-order addendum to its parent source protocol and accepted source completion. Verify both source closures and all independent financial checks; do not relax acceptance because the new phase uses a different receipt filename.",
+    "Before fitting, inspect complete transitive action-field dependencies of gross-wealth labels/openings. Independently check every eligible 1/3/5-day tuple of affected securities with rational entitlement arithmetic and separately rounded binary64 operations. Preserve ideal-decimal discrepancies and require exact equality after the original float32 boundary; no tolerance or stored-value rewrite. Economic/payment-time contradictions fail this scope.",
+    "Exactly rebuild parent and new snapshots. All table cells, labels, panels, scores, raw quotes, calendar, eligibility, metadata, opening status, features and fund_mode=reported remain exact. Only 31 payment dates, next-observed-opening availability and appended field provenance may differ.",
+    "Freeze expected fit-row, target and weight identities for all 24 actual fitting stages before fitting; preserve all 36312 baseline files. Fit inventories derive from the registered full available range, currently 11 outer windows and latest fit. New source identities must match actually executed code and inputs."
+  ],
+  "compatibility": {
+    "models_reloaded": 48,
+    "full_accounts_exact": 1425,
+    "paper_accounts_exact": 75,
+    "source_identity": "Run every ordinary guarded compatibility entry point after the receipt-only change is final. Do not bypass guards or rewrite original training identities. A later runtime change requires separately proven compatibility."
+  },
+  "retraining": {
+    "windows": 11,
+    "include_latest": true,
+    "fits": 48,
+    "evaluation_accounts": 1425,
+    "fixed_forecast_accounts": 1425,
+    "paper_accounts": 75,
+    "slippage_bps": [
+      10,
+      20,
+      30
+    ],
+    "policies": 19
+  },
+  "attribution": "Compare parent accounts with fixed parent forecasts on corrected inputs, then with fully refitted/calibrated forecasts. Expect payment-only model inputs/targets to remain exact; any contradiction blocks this registration. Report every changed full ledger, settlement, inner/outer quality marker and all cost paths against same-input same-risk momentum. No profit-based source acceptance, added alpha candidate or relaxed adoption threshold.",
+  "status_and_exposure": "Recheck ten sourced ST intervals, six opening-status records, dated industry coverage and reported ETF exposure. All signal/opening grouping and source-bound proxy limits stay unchanged; record remaining quality flags and passive exposure changes.",
+  "activation": "Activate source dates regardless of return direction only after source binding, exact reconstruction, old-input parity, full fitting, fixed forecasts, independent account/paper and status checks pass. Freeze a new conditional next-session plan after activation without changing old plans or inventing fills.",
+  "selection_mode": "positive_score",
+  "turnover_policy": "legacy",
+  "risk": "Balanced attack, 8% warning, original high-water mark, latched non-recovering risk, existing stricter position cap; use the whitepaper for confirmed contest rules. No extra alpha candidates or relaxed gates.",
+  "limitations": [
+    "418 source events remain unverified. Field-scoped payment acceptance does not certify all action terms, taxes, fractional shares, archive completeness or exact announcement time.",
+    "Current-universe bias, exact historical publication times, other historical status and 111 quote-gap endpoints remain open.",
+    "Reported ETF proxy constraints do not certify complete daily economic exposure; economic upper bounds remain null.",
+    "Competition fees and matching details remain unconfirmed. No forward fill or return may be invented. Follow the whitepaper, 15% strategy cap and balanced attack with the original 8% latched warning."
+  ],
+  "decision": "RESEARCH_ONLY",
+  "facts_applied": false,
+  "expected_label_changes": {
+    "total": 0,
+    "by_horizon": {}
+  },
+  "source_closure": {
+    "amendment_review.json": {
+      "path": "artifacts/checks/payout_scope_2026-11-21/amendment_review.json",
+      "sha256": "1c03aff99b77cb140ca67f65f070ccad25165ef3a3ad7813f80ceb132ba618c4"
+    },
+    "visual_review.json": {
+      "path": "artifacts/checks/payout_scope_2026-11-21/visual_review.json",
+      "sha256": "c869d970235a661d7aac78e972fd343032fa8b56a774065626f1803573df4db6"
+    }
+  },
+  "new_plan": "artifacts/plans/implemented_payments_2026-11-23",
+  "source_page_order": {
+    "path": "configs/protocols/payout_page_order.json",
+    "sha256": "35359c6ae3caf7990c45a0c5e52e7c1a52576350aeb6c340aac652c5b6981b18"
+  }
+}
