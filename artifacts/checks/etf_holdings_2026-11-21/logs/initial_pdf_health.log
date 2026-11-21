@@ -1,0 +1,33 @@
+50 / 552 {'READABLE': 50}
+100 / 552 {'READABLE': 90, 'REPAIR_REQUIRED': 10}
+150 / 552 {'READABLE': 139, 'REPAIR_REQUIRED': 11}
+200 / 552 {'READABLE': 189, 'REPAIR_REQUIRED': 11}
+250 / 552 {'READABLE': 239, 'REPAIR_REQUIRED': 11}
+300 / 552 {'READABLE': 289, 'REPAIR_REQUIRED': 11}
+350 / 552 {'READABLE': 339, 'REPAIR_REQUIRED': 11}
+400 / 552 {'READABLE': 389, 'REPAIR_REQUIRED': 11}
+450 / 552 {'READABLE': 439, 'REPAIR_REQUIRED': 11}
+500 / 552 {'READABLE': 489, 'REPAIR_REQUIRED': 11}
+Traceback (most recent call last):
+  File "D:\投资组合量化\artifacts\checks\etf_holdings_2026-11-21\pdf_health_source.py", line 109, in <module>
+    main()
+    ~~~~^^
+  File "D:\投资组合量化\artifacts\checks\etf_holdings_2026-11-21\pdf_health_source.py", line 91, in main
+    results.append(inspect(row))
+                   ~~~~~~~^^^^^
+  File "D:\投资组合量化\artifacts\checks\etf_holdings_2026-11-21\pdf_health_source.py", line 52, in inspect
+    relaxed = PdfReader(path, strict=False)
+  File "D:\conda\Lib\site-packages\pypdf\_reader.py", line 149, in __init__
+    self._initialize_stream(stream)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "D:\conda\Lib\site-packages\pypdf\_reader.py", line 171, in _initialize_stream
+    self.read(stream)
+    ~~~~~~~~~^^^^^^^^
+  File "D:\conda\Lib\site-packages\pypdf\_reader.py", line 644, in read
+    self._find_eof_marker(stream)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "D:\conda\Lib\site-packages\pypdf\_reader.py", line 750, in _find_eof_marker
+    line = read_previous_line(stream)
+  File "D:\conda\Lib\site-packages\pypdf\_utils.py", line 330, in read_previous_line
+    raise PdfStreamError(STREAM_TRUNCATED_PREMATURELY)
+pypdf.errors.PdfStreamError: Stream has ended unexpectedly

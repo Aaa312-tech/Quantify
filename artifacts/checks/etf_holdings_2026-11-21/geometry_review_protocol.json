@@ -1,0 +1,24 @@
+{
+  "registered_at": "2026-11-21T13:09:20.534587+08:00",
+  "source_extraction_sha256": "5a0176746e9900c6f2cc7a25d8e269fdd6a420a37a4e8761ba9edb6b015c0d4f",
+  "initial_table_review_sha256": "6c8507d55e58a115c8b80f2dcb3edec35a4a1ba9dd810738c3e47171c80fdc14",
+  "purpose": "Review source layouts whose consecutive-page column borders differ slightly, not financial tolerance or risk thresholds.",
+  "geometry": [
+    "Use the narrowest observed nonmerged cell for each column; a blank merged continuation cell does not define the individual column width.",
+    "Adjacent-page continuation requires the same ordered columns, each pair overlapping at least 95 percent of the larger width, outer table edges within one PDF point, a first-row continuation and the preceding last table row.",
+    "Preserve all original fragments and independent-reader proofs. Render every accepted continuation boundary; do not infer missing digits from totals or weights.",
+    "Source ordinals may use ordinary thousands separators such as 1,000; retain the printed ordinal and require its exact integer value."
+  ],
+  "nav_label_cases": [
+    {
+      "source": "data/raw/etf_reports_2026-11-21/documents/sh512000/2026-03-31_b2558d8e3bfa.pdf",
+      "source_sha256": "86bea50b66bf07d539fb6f2969a48386541dff34a5ed13e2b225742e2a12eae9"
+    },
+    {
+      "source": "data/raw/etf_reports_2026-11-21/documents/sh512170/2026-03-31_a50977982118.pdf",
+      "source_sha256": "a0511f8fb09f22d6307e5b0c40b6d567561285e0d62eb3818711005b5881b8db"
+    }
+  ],
+  "nav_note": "The original NAV label is split across two adjacent financial-summary rows. Combine only the label fragments and preserve all three printed annual amounts and current-year column evidence.",
+  "model_inputs_changed": false
+}
