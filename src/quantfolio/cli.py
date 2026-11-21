@@ -49,6 +49,10 @@ def main(argv: list[str] | None = None) -> None:
         "review-distributions", help="Review the registered dividend source inventory"
     )
     distribution_review.add_argument("--protocol", required=True)
+    industry_review = commands.add_parser(
+        "review-industries", help="Cross-check registered historical industry source tables"
+    )
+    industry_review.add_argument("--protocol", required=True)
     status_repair = commands.add_parser(
         "repair-status", help="Rebuild eligibility from reviewed historical warning notices"
     )
@@ -288,6 +292,10 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .distributions import review_distributions
 
         return review_distributions(paths, args.protocol)
+    if args.command == "review-industries":
+        from .industry_sources import review_industries
+
+        return review_industries(paths, args.protocol)
     if args.command == "repair-status":
         from .status_repair import repair_status_snapshot
 
