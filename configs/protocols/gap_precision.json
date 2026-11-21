@@ -1,0 +1,67 @@
+{
+  "name": "gap_precision",
+  "registered_at": "2026-11-21T08:34:27.350487+08:00",
+  "baseline_commit": "ea316d8fff947e97b0b1552f7966dda184a1d074",
+  "parent_protocol": "configs/protocols/distribution_repair.json",
+  "parent_protocol_sha256": "96c0ff2e96740174c829ec6077b46af6ce7f47eb600c33b2552eef071743e763",
+  "source_bundle": "data/processed/2026-11-20-reviewed-distributions/bundle.joblib",
+  "source_bundle_sha256": "b04297721e81b917966bfa73791bd70d13443ae2239f6bfdbbcf24a9734740f8",
+  "source_data_cutoff": "2026-11-20",
+  "baseline_manifest_sha256": "f2f1acba6a39a41e2d36505a7cc785868ad980eab77040cd7935716b124ef16e",
+  "baseline_frozen_files": 22692,
+  "diagnostic": "artifacts/checks/distribution_repair_2026-11-21/feature_precision_diagnostic.json",
+  "diagnostic_sha256": "0297a8dd937d512700f2e96ba1cd88bdcc3f8231ed41ea29791fb10896919d9b",
+  "defect": "Cumulative total-return index scaling introduces near-zero floating residuals into adj.open / adj.close.shift() - 1. Past entitlement corrections can therefore change later zero-gap cross-sectional ranks without changing their economic opening move.",
+  "formula": {
+    "old": "adjusted_open[t] / adjusted_close[t-1] - 1",
+    "new": "(raw_open[t] / raw_close[t-1]) * (share_multiplier[t] + cash_per_previous_share[t] / raw_close[t]) - 1",
+    "derivation": "For the unchanged total-return close index, factor[t] / factor[t-1] = share_multiplier[t] + cash_per_previous_share[t] / raw_close[t]. Cancel the cumulative index scale before floating-point evaluation.",
+    "event_mapping": "Keep the existing chronological aggregation onto the first observed quote on or after the ex-date. Cash is per then-current share; multiple events use the preceding multipliers. Do not invent missing quotes or move events outside the observed interval.",
+    "availability": "This remains a completed-day feature. Its event-day cash term uses that day close and must never be treated as an opening-time price or ex-reference.",
+    "storage": "Compute in float64, retain the existing float32 boundary and average-tie cross-sectional rank method. No zero threshold, rounding, clipping, new factor, or tuned parameter.",
+    "scope": "Only table.gap and table.rank_gap may change. All raw bars, actions, metadata, calendar, eligibility, other table fields including labels, panels, scores, missingness and feature order remain exact."
+  },
+  "references": [
+    "https://docs.python.org/3/tutorial/floatingpoint.html"
+  ],
+  "tests": [
+    "Reproduce the old error before changing production code.",
+    "Exactly zero non-event gap when opening equals the previous observed raw close, regardless of previous cumulative index scale.",
+    "Changing an earlier entitlement leaves every later local gap and corresponding cross-sectional gap rank exactly unchanged.",
+    "An independent rational-arithmetic oracle checks ordinary gaps, cash, splits and multiple actions during missing sessions. Float64 error bound is 16 machine epsilons times max(1, abs(reference)); it is a test assertion only, never a trading tolerance.",
+    "Preserve genuine small nonzero moves, future-prefix invariance, missing sessions and unchanged adjusted OHLC and split series."
+  ],
+  "snapshot_output": "data/processed/2026-11-20-local-gaps",
+  "checks_output": "artifacts/checks/gap_precision_2026-11-21",
+  "training_output": "artifacts/experiments/gap_precision_2026-11-21",
+  "evaluation_output": "artifacts/evaluations/gap_precision_2026-11-21",
+  "baseline_run": "artifacts/experiments/distribution_repair_2026-11-21",
+  "baseline_evaluation": "artifacts/evaluations/distribution_repair_2026-11-21",
+  "snapshot_checks": "Before implementation, reconstruct the entire parent exactly with frozen source. Then rebuild all securities with the local formula. Verify every stored gap independently from raw inputs and events, all gap ranks independently, and exact equality of every field outside the two-field whitelist. Store all changed rows and delta summaries.",
+  "compatibility": "After implementation, on the unchanged old bundle reload all 48 models and replay all 1425 complete accounts and 75 paper accounts. Ordinary source identity checks remain enabled; any explicit old-input diagnostic is separately labelled.",
+  "retraining": {
+    "windows": 11,
+    "include_latest": true,
+    "fits": 48,
+    "policies": 19,
+    "slippage_bps": [
+      10,
+      20,
+      30
+    ],
+    "evaluation_accounts": 1425,
+    "fixed_forecast_accounts": 1425,
+    "paper_accounts": 75
+  },
+  "selection_mode": "positive_score",
+  "turnover_policy": "legacy",
+  "risk": "Balanced attack, 8 percent warning, original high-water mark, latched non-recovering risk; no new alpha candidates and no relaxed adoption gate.",
+  "adoption": "Apply the numerically correct formula independently of return direction. Activate a new research snapshot only after local, full-data, old-input compatibility, training, model-reload, independent ledger, paper and historical-status checks pass. Report both fixed-old-forecast and retrained outcomes; matching selected policy names does not replace a complete replay.",
+  "limitations": [
+    "This correction removes cumulative-scale dependence from the opening-gap feature only. It does not certify every numerical expression or prove predictive superiority.",
+    "Historical industry taxonomy/timing and universe selection remain unresolved.",
+    "The 111 other quote-gap endpoints, carried-price flags and unresolved corporate-action fields remain explicit; no fabricated bars or fills.",
+    "Retrospective retraining adds no forward observation. Competition fee and matching details remain unconfirmed."
+  ],
+  "decision": "RESEARCH_ONLY"
+}
