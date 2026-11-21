@@ -512,6 +512,58 @@ def reviewed_distribution_actions(actions, calendar, facts, *, supplement=False)
     return repaired, changes
 
 
+def accepted_date_records(protocol, registered, acceptance, independent):
+    """Bind independent date records to the frozen receipt for their review phase."""
+    if (
+        independent["status"] != "PASS"
+        or independent["source_review_sha256"] != protocol["review_sha256"]
+    ):
+        raise ValueError("Independent date review binding differs")
+    if registered.get("phase") == "source_candidate_roles":
+        if (
+            acceptance["status"] != "PASS_SOURCE_ONLY"
+            or acceptance["protocol_sha256"] != protocol["review_protocol"]["sha256"]
+            or acceptance["facts_applied"] is not False
+            or independent["facts_applied"] is not False
+            or independent["failed_roles"] != 0
+            or independent["failed_events"] != 0
+            or acceptance["prior_supported_events_preserved"]
+            != independent["prior_events_preserved"]
+            or acceptance["evidence_sha256"]["source_review.json"] != protocol["review_sha256"]
+            or acceptance["evidence_sha256"]["independent_closure.json"]
+            != protocol["independent_review"]["sha256"]
+            or acceptance["active_state"]["bundle_sha256"] != protocol["source_bundle_sha256"]
+            or acceptance["active_missing_payment_dates_supported"]
+            != protocol["expected_changes"]["cash_pay_date"]
+            or acceptance["added_payment_dates"] != protocol["verified_additions"]["cash_pay_date"]
+        ):
+            raise ValueError("Companion date acceptance binding differs")
+        records = independent["fields"]
+    else:
+        if (
+            acceptance["status"] != "SOURCE_REVIEW_ACCEPTED_WITH_UNRESOLVED_EVENTS"
+            or not acceptance["previous_facts_preserved"]
+            or acceptance["source_review_sha256"] != protocol["review_sha256"]
+            or acceptance["active_bundle_sha256"] != protocol["source_bundle_sha256"]
+            or acceptance["independent_fields"]["sha256"]
+            != protocol["independent_review"]["sha256"]
+        ):
+            raise ValueError("Accepted date review binding differs")
+        records = independent["records"]
+    allowed = set(protocol["supplement_fields"])
+    if (
+        not allowed
+        or not allowed <= {"cash_pay_date", "share_list_date"}
+        or any(not set(record["added_fields"]) <= allowed for record in records)
+    ):
+        raise ValueError("Independent date fields exceed the registered scope")
+    counts = Counter(field for record in records for field in record["added_fields"])
+    counts["events"] = sum(bool(record["added_fields"]) for record in records)
+    if dict(counts) != protocol["verified_additions"]:
+        raise ValueError("Verified date addition inventory differs")
+    return records
+
+
 def _accepted_date_supplements(paths, protocol, review, original, manifest):
     """Check the frozen source-review basis before rebinding its accepted date fields."""
     from . import distributions
@@ -534,16 +586,19 @@ def _accepted_date_supplements(paths, protocol, review, original, manifest):
         or review["protocol_sha256"] != sha(registered_path)
         or review["data_snapshot_sha256"] != sha(basis_path)
         or review["source_inputs"] != registered["source_inputs"]
-        or acceptance["status"] != "SOURCE_REVIEW_ACCEPTED_WITH_UNRESOLVED_EVENTS"
-        or not acceptance["previous_facts_preserved"]
-        or acceptance["source_review_sha256"] != protocol["review_sha256"]
-        or acceptance["active_bundle_sha256"] != protocol["source_bundle_sha256"]
-        or acceptance["independent_fields"]["sha256"] != protocol["independent_review"]["sha256"]
-        or independent["status"] != "PASS"
-        or independent["source_review_sha256"] != protocol["review_sha256"]
-        or set(protocol["supplement_fields"]) != {"cash_pay_date", "share_list_date"}
     ):
         raise ValueError("Accepted date review binding differs")
+    additions = accepted_date_records(protocol, registered, acceptance, independent)
+    if registered.get("phase") == "source_candidate_roles":
+        closure = protocol["source_closure"]
+        if set(closure) != {"amendment_closure.json", "visual_review.json"}:
+            raise ValueError("Companion date source closure is incomplete")
+        for name, reference in closure.items():
+            if (
+                acceptance["evidence_sha256"][name] != reference["sha256"]
+                or read(frozen(reference))["status"] != "PASS"
+            ):
+                raise ValueError("Companion date source closure binding differs")
     basis = load_snapshot(paths, basis_path, registered["source_data_cutoff"])
     if review["original_actions_sha256"] != digest(basis["actions"]):
         raise ValueError("Date review does not bind the original action inventory")
@@ -551,15 +606,11 @@ def _accepted_date_supplements(paths, protocol, review, original, manifest):
     records = {(r["symbol"], r["ex_date"]): r["original_action_sha256"] for r in review["records"]}
     if records != identities or len(records) != len(review["records"]):
         raise ValueError("Date review event inventory differs")
-    counts = Counter(f for r in independent["records"] for f in r["added_fields"])
-    counts["events"] = sum(bool(r["added_fields"]) for r in independent["records"])
-    if dict(counts) != protocol["verified_additions"]:
-        raise ValueError("Verified date addition inventory differs")
     return date_supplement_facts(
         original["actions"],
         basis["actions"],
         review["facts"],
-        independent["records"],
+        additions,
         {
             "review_sha256": protocol["review_sha256"],
             "review_basis_sha256": sha(basis_path),

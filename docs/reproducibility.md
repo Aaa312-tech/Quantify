@@ -2,6 +2,18 @@
 
 项目需要Python 3.11–3.13和Git LFS。先按README克隆完整仓库，在虚拟环境中安装 `.[dev]`。数据与模型属于项目目录，不打进Python安装包；从其他目录运行时使用 `--project PATH` 或 `QUANTFOLIO_ROOT`。
 
+## 当前支付日接入
+
+当前配置与`configs/experiments/companion_payments.toml`一致；协议为`configs/protocols/companion_payments.json`，精确算术补核另见`payment_label_precision.json`。完整证据在`artifacts/checks/companion_payments_2026-11-21`，最终入口为`completion.json`、`validation.json`、`activation.json`和`input_closure.json`。`input_scope.json`保留首次独立核算失败，不能替换为最后状态。
+
+```powershell
+python -m quantfolio --config configs/experiments/companion_payments.toml train --first 1 --last 11 --include-latest --output artifacts/experiments/payment_reproduction
+python -m quantfolio --config configs/experiments/companion_payments.toml evaluate --run artifacts/experiments/payment_reproduction --all-policies --output artifacts/evaluations/payment_reproduction
+python -m quantfolio --config configs/experiments/companion_payments.toml verify --run artifacts/experiments/payment_reproduction --output artifacts/checks/payment_reproduction
+```
+
+命令使用冻结快照，输出须尚不存在。重建需要另行登记新路径并保留全部来源绑定、独立日期事实和标签零变化要求。此轮全部旧模型、完整账户与纸面账户直接使用最终源码复核；没有绕过模型身份守卫或改写原回执。后续章节保留各历史阶段的重现边界。
+
 ## 公告角色来源核对
 
 最新来源阶段的协议为`configs/protocols/distribution_roles.json`，证据位于
@@ -12,12 +24,12 @@
 `source_review.json`保留1839个事件、全部原候选及角色判定；正式验收还需同时读取
 `independent_closure.json`、`amendment_closure.json`、`visual_review.json`和`completion.json`。
 首次独立读取和修订跨页断言失败保留，不能用原始提取结果代替最终验收。新增77项支付日
-只作为来源事实，73项尚待接入当前快照；本轮没有重新拟合或生成新计划。48个当前模型
-通过普通模型守卫重新加载，全部预测精确一致。后续接入须单独登记标签范围和完整验证。
+在该来源阶段只作为事实保留；其后73项已按上方独立接入协议完成验证。该来源阶段本身没有重新拟合或生成新计划。
+该阶段的48个模型通过普通模型守卫重新加载，全部预测精确一致。来源验收不代替接入前的标签范围登记和完整验证。
 
-## 分红可用时间与当前研究输入
+## 前一阶段分红可用时间接入
 
-当前配置与`configs/experiments/distribution_availability.toml`一致，绑定新快照、训练、评估
+前一阶段配置为`configs/experiments/distribution_availability.toml`，绑定新快照、训练、评估
 及状态审查。协议为`configs/protocols/distribution_availability.json`；原始失败协议
 `distribution_dates.json`、部分输出和实际源码均保留。验收在
 `artifacts/checks/distribution_dates_2026-11-21`，来源及标签范围见[接入说明](distribution_availability.md)。
@@ -334,7 +346,7 @@ CI在Windows的Python 3.11、3.13及Ubuntu的Python 3.13上，从源码分发包
 ## 已验收的11月20日扩展
 
 行情扩展阶段的完整训练、评估与状态复核保存于`daily_source_extension_2026-11-21`；
-它是历史验收阶段，当前配置使用本页开头的`2026-11-20-distribution-availability`快照。
+它是历史验收阶段，当前配置使用本页开头的`2026-11-20-companion-payments`快照。
 新数据来源、单位转换和历史标签变化见同名`artifacts/checks`目录；实现兼容性、训练影响
 及固定旧预测对照分别存档，旧腾讯全池核验失败记录不变。
 

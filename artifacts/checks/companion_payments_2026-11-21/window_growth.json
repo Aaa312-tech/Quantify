@@ -1,0 +1,30 @@
+{
+  "status": "MAINTENANCE_FINDING",
+  "checked_at": "2026-11-21T20:59:17.649150+08:00",
+  "checker_sha256": "2b45d481a5b54084698411d9bfa2169c8cee0045baf7591c6e76b79bfcae6c10",
+  "bundle_sha256": "fa4210ec87a83b4900771ceabf0479b7662147b20735f8760e8fef7d5951d6ef",
+  "calendar_sha256": "a4355f1ec05f79e4c07588736b7a445d124aceec0fa36060c924a8db912a6227",
+  "source_sha256": {
+    "dataset.py": "9172523af79e1bed2af9f3aadd79597f9fedddbc0ad4991cbdaceee56cf6feda",
+    "training.py": "9b5ac939368230ef275f7a76c5447027ddfa3cd252724ae1aa2d18ffeac63798",
+    "cli.py": "33fa70ef51a91ba6086ace6ead95ca806d9fb652ae15167321aa6413cafbf4f9"
+  },
+  "current_sessions": 698,
+  "current_windows": 11,
+  "default_last": 11,
+  "boundaries": [
+    {
+      "conditional_data_cutoff": "2026-12-08",
+      "observed_session_count_required": 710,
+      "complete_windows": 12,
+      "default_last": 11,
+      "default_status": "PARTIAL",
+      "last_test_start": "2026-11-02",
+      "last_test_end": "2026-11-30"
+    }
+  ],
+  "runtime_changed": false,
+  "future_prices_created": false,
+  "future_training_performed": false,
+  "scope": "Calendar-only conditional calculation. If every subsequent scheduled session acquires reviewed data, the fixed last=11 default eventually yields PARTIAL instead of a complete run. This does not assert future quotes, fills or returns and does not affect the current 11-window snapshot. Register a separate maintenance change before adopting a dynamic default; preserve explicit partial ranges and current model/account parity."
+}
