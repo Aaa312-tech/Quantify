@@ -12,7 +12,7 @@
 
 固定旧预测与父数据相比，1425/1425个完整账户一致，0个账户收益变化；重训与固定预测相比，1425/1425个完整账户一致，0个账户收益变化。三档净收益、同风控动量和10日分布见[归因](../artifacts/checks/declared_payments_2026-11-21/attribution.json)，到账检查见[结算核对](../artifacts/checks/declared_payments_2026-11-21/settlement_review.json)。应收款转入现金本身不增加净值；尚未建立独立收益优势。
 
-当前未知支付日382项、股份上市日89项，缺少任一类日期的事件427项；452项来源未通过事件另计。内层行情质量标记22次、未解决事件0次。完整历史时点、股票池与ETF经济敞口仍未认证。[新计划](../artifacts/plans/declared_payments_2026-11-23/plan.md)为0笔参考订单，尚无前向观察。完整验收见[completion.json](../artifacts/checks/declared_payments_2026-11-21/completion.json)。
+当前未知支付日382项、股份上市日89项，缺少任一类日期的事件427项。该接入验收时有452项来源未通过事件；随后[实施范围来源复核](distribution_terms.md)将其降至418项，并为31项当前缺失支付日补齐依据，但尚未接入数据。内层行情质量标记22次、未解决事件0次。完整历史时点、股票池与ETF经济敞口仍未认证。[新计划](../artifacts/plans/declared_payments_2026-11-23/plan.md)为0笔参考订单，尚无前向观察。完整验收见[completion.json](../artifacts/checks/declared_payments_2026-11-21/completion.json)。
 
 ## 2026-11-21：公告角色核验后的支付日接入
 

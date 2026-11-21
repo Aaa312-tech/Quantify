@@ -1,0 +1,306 @@
+FFFFFF..............FFFFFF............F                                  [100%]
+================================== FAILURES ===================================
+_ test_current_implementation_heading_variants[\u4e8c\u3001\u672c\u6b21\u5b9e\u65bd\u7684 2023 \u5e74\u5ea6\u6743\u76ca\u5206\u6d3e\u65b9\u6848] _
+
+heading = '二、本次实施的 2023 年度权益分派方案'
+
+    @pytest.mark.parametrize(
+        "heading",
+        [
+            "二、本次实施的 2023 年度权益分派方案",
+            "二、本次实施的利润分派方案",
+            "二、本公司2024年度中期分红派息方案",
+            "2、2023 年度 A 股权益分派方案为：",
+            "2.2023 年度 A 股权益分派方案为：",
+        ],
+    )
+    def test_current_implementation_heading_variants(heading):
+>       assert amounts([heading + "每10股派发现金红利3元（含税）。"]) == {Decimal("0.3")}
+E       AssertionError: assert set() == {Decimal('0.3')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.3')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:25: AssertionError
+_ test_current_implementation_heading_variants[\u4e8c\u3001\u672c\u6b21\u5b9e\u65bd\u7684\u5229\u6da6\u5206\u6d3e\u65b9\u6848] _
+
+heading = '二、本次实施的利润分派方案'
+
+    @pytest.mark.parametrize(
+        "heading",
+        [
+            "二、本次实施的 2023 年度权益分派方案",
+            "二、本次实施的利润分派方案",
+            "二、本公司2024年度中期分红派息方案",
+            "2、2023 年度 A 股权益分派方案为：",
+            "2.2023 年度 A 股权益分派方案为：",
+        ],
+    )
+    def test_current_implementation_heading_variants(heading):
+>       assert amounts([heading + "每10股派发现金红利3元（含税）。"]) == {Decimal("0.3")}
+E       AssertionError: assert set() == {Decimal('0.3')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.3')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:25: AssertionError
+_ test_current_implementation_heading_variants[\u4e8c\u3001\u672c\u516c\u53f82024\u5e74\u5ea6\u4e2d\u671f\u5206\u7ea2\u6d3e\u606f\u65b9\u6848] _
+
+heading = '二、本公司2024年度中期分红派息方案'
+
+    @pytest.mark.parametrize(
+        "heading",
+        [
+            "二、本次实施的 2023 年度权益分派方案",
+            "二、本次实施的利润分派方案",
+            "二、本公司2024年度中期分红派息方案",
+            "2、2023 年度 A 股权益分派方案为：",
+            "2.2023 年度 A 股权益分派方案为：",
+        ],
+    )
+    def test_current_implementation_heading_variants(heading):
+>       assert amounts([heading + "每10股派发现金红利3元（含税）。"]) == {Decimal("0.3")}
+E       AssertionError: assert set() == {Decimal('0.3')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.3')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:25: AssertionError
+_ test_current_implementation_heading_variants[2\u30012023 \u5e74\u5ea6 A \u80a1\u6743\u76ca\u5206\u6d3e\u65b9\u6848\u4e3a\uff1a] _
+
+heading = '2、2023 年度 A 股权益分派方案为：'
+
+    @pytest.mark.parametrize(
+        "heading",
+        [
+            "二、本次实施的 2023 年度权益分派方案",
+            "二、本次实施的利润分派方案",
+            "二、本公司2024年度中期分红派息方案",
+            "2、2023 年度 A 股权益分派方案为：",
+            "2.2023 年度 A 股权益分派方案为：",
+        ],
+    )
+    def test_current_implementation_heading_variants(heading):
+>       assert amounts([heading + "每10股派发现金红利3元（含税）。"]) == {Decimal("0.3")}
+E       AssertionError: assert set() == {Decimal('0.3')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.3')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:25: AssertionError
+_ test_current_implementation_heading_variants[2.2023 \u5e74\u5ea6 A \u80a1\u6743\u76ca\u5206\u6d3e\u65b9\u6848\u4e3a\uff1a] _
+
+heading = '2.2023 年度 A 股权益分派方案为：'
+
+    @pytest.mark.parametrize(
+        "heading",
+        [
+            "二、本次实施的 2023 年度权益分派方案",
+            "二、本次实施的利润分派方案",
+            "二、本公司2024年度中期分红派息方案",
+            "2、2023 年度 A 股权益分派方案为：",
+            "2.2023 年度 A 股权益分派方案为：",
+        ],
+    )
+    def test_current_implementation_heading_variants(heading):
+>       assert amounts([heading + "每10股派发现金红利3元（含税）。"]) == {Decimal("0.3")}
+E       AssertionError: assert set() == {Decimal('0.3')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.3')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:25: AssertionError
+___ test_actual_scheme_under_approval_heading_does_not_accept_old_proposal ____
+
+    def test_actual_scheme_under_approval_heading_does_not_accept_old_proposal():
+        text = (
+            "一、股东大会审议通过的利润分配方案 "
+            "1、股东大会审议通过的方案为：向全体股东每10股派发现金20元（含税）。"
+            "3、公司实施的 2023 年度利润分配方案：以现有可参与分配股份为基数，"
+            "向全体股东每10股派发现金30元（含税）。"
+        )
+>       assert amounts([text]) == {Decimal("3")}
+E       AssertionError: assert set() == {Decimal('3')}
+E         
+E         Extra items in the right set:
+E         Decimal('3')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:35: AssertionError
+_ test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf\u80a1-0.22-header] _
+
+location = 'header', subject = '每股', expected = '0.22'
+
+    @pytest.mark.parametrize("location", ["header", "footer", "none"])
+    @pytest.mark.parametrize("subject, expected", [("每股", "0.22"), ("每10股", "0.022")])
+    def test_adjacent_sentence_keeps_both_pages_and_counter_provenance(location, subject, expected):
+        left = "二、分配方案 公司本次利润分配以可分配股本为基数，" + subject
+        right = "派发现金红利0.22元（含税），不涉及送股。"
+        if location == "header":
+            pages = ["- 1 -\n" + left, "- 2 -\n" + right]
+        elif location == "footer":
+            pages = [left + "\n- 1 -", right + "\n- 2 -"]
+        else:
+            pages = [left, right]
+        terms = extract_terms(pages).get("cash_per_share", [])
+>       assert {Decimal(row["value"]) for row in terms} == {Decimal(expected)}
+E       AssertionError: assert set() == {Decimal('0.22')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.22')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:78: AssertionError
+_ test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf\u80a1-0.22-footer] _
+
+location = 'footer', subject = '每股', expected = '0.22'
+
+    @pytest.mark.parametrize("location", ["header", "footer", "none"])
+    @pytest.mark.parametrize("subject, expected", [("每股", "0.22"), ("每10股", "0.022")])
+    def test_adjacent_sentence_keeps_both_pages_and_counter_provenance(location, subject, expected):
+        left = "二、分配方案 公司本次利润分配以可分配股本为基数，" + subject
+        right = "派发现金红利0.22元（含税），不涉及送股。"
+        if location == "header":
+            pages = ["- 1 -\n" + left, "- 2 -\n" + right]
+        elif location == "footer":
+            pages = [left + "\n- 1 -", right + "\n- 2 -"]
+        else:
+            pages = [left, right]
+        terms = extract_terms(pages).get("cash_per_share", [])
+>       assert {Decimal(row["value"]) for row in terms} == {Decimal(expected)}
+E       AssertionError: assert set() == {Decimal('0.22')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.22')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:78: AssertionError
+_ test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf\u80a1-0.22-none] _
+
+location = 'none', subject = '每股', expected = '0.22'
+
+    @pytest.mark.parametrize("location", ["header", "footer", "none"])
+    @pytest.mark.parametrize("subject, expected", [("每股", "0.22"), ("每10股", "0.022")])
+    def test_adjacent_sentence_keeps_both_pages_and_counter_provenance(location, subject, expected):
+        left = "二、分配方案 公司本次利润分配以可分配股本为基数，" + subject
+        right = "派发现金红利0.22元（含税），不涉及送股。"
+        if location == "header":
+            pages = ["- 1 -\n" + left, "- 2 -\n" + right]
+        elif location == "footer":
+            pages = [left + "\n- 1 -", right + "\n- 2 -"]
+        else:
+            pages = [left, right]
+        terms = extract_terms(pages).get("cash_per_share", [])
+>       assert {Decimal(row["value"]) for row in terms} == {Decimal(expected)}
+E       AssertionError: assert set() == {Decimal('0.22')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.22')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:78: AssertionError
+_ test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf10\u80a1-0.022-header] _
+
+location = 'header', subject = '每10股', expected = '0.022'
+
+    @pytest.mark.parametrize("location", ["header", "footer", "none"])
+    @pytest.mark.parametrize("subject, expected", [("每股", "0.22"), ("每10股", "0.022")])
+    def test_adjacent_sentence_keeps_both_pages_and_counter_provenance(location, subject, expected):
+        left = "二、分配方案 公司本次利润分配以可分配股本为基数，" + subject
+        right = "派发现金红利0.22元（含税），不涉及送股。"
+        if location == "header":
+            pages = ["- 1 -\n" + left, "- 2 -\n" + right]
+        elif location == "footer":
+            pages = [left + "\n- 1 -", right + "\n- 2 -"]
+        else:
+            pages = [left, right]
+        terms = extract_terms(pages).get("cash_per_share", [])
+>       assert {Decimal(row["value"]) for row in terms} == {Decimal(expected)}
+E       AssertionError: assert set() == {Decimal('0.022')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.022')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:78: AssertionError
+_ test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf10\u80a1-0.022-footer] _
+
+location = 'footer', subject = '每10股', expected = '0.022'
+
+    @pytest.mark.parametrize("location", ["header", "footer", "none"])
+    @pytest.mark.parametrize("subject, expected", [("每股", "0.22"), ("每10股", "0.022")])
+    def test_adjacent_sentence_keeps_both_pages_and_counter_provenance(location, subject, expected):
+        left = "二、分配方案 公司本次利润分配以可分配股本为基数，" + subject
+        right = "派发现金红利0.22元（含税），不涉及送股。"
+        if location == "header":
+            pages = ["- 1 -\n" + left, "- 2 -\n" + right]
+        elif location == "footer":
+            pages = [left + "\n- 1 -", right + "\n- 2 -"]
+        else:
+            pages = [left, right]
+        terms = extract_terms(pages).get("cash_per_share", [])
+>       assert {Decimal(row["value"]) for row in terms} == {Decimal(expected)}
+E       AssertionError: assert set() == {Decimal('0.022')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.022')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:78: AssertionError
+_ test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf10\u80a1-0.022-none] _
+
+location = 'none', subject = '每10股', expected = '0.022'
+
+    @pytest.mark.parametrize("location", ["header", "footer", "none"])
+    @pytest.mark.parametrize("subject, expected", [("每股", "0.22"), ("每10股", "0.022")])
+    def test_adjacent_sentence_keeps_both_pages_and_counter_provenance(location, subject, expected):
+        left = "二、分配方案 公司本次利润分配以可分配股本为基数，" + subject
+        right = "派发现金红利0.22元（含税），不涉及送股。"
+        if location == "header":
+            pages = ["- 1 -\n" + left, "- 2 -\n" + right]
+        elif location == "footer":
+            pages = [left + "\n- 1 -", right + "\n- 2 -"]
+        else:
+            pages = [left, right]
+        terms = extract_terms(pages).get("cash_per_share", [])
+>       assert {Decimal(row["value"]) for row in terms} == {Decimal(expected)}
+E       AssertionError: assert set() == {Decimal('0.022')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.022')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:78: AssertionError
+_____ test_page_numbers_follow_physical_pdf_pages_not_the_fixture_length ______
+
+    def test_page_numbers_follow_physical_pdf_pages_not_the_fixture_length():
+        pages = ["封面", "- 2 -\n二、分配方案 每股", "- 3 -\n派发现金红利0.22元（含税）"]
+        terms = extract_terms(pages).get("cash_per_share", [])
+>       assert {Decimal(row["value"]) for row in terms} == {Decimal("0.22")}
+E       AssertionError: assert set() == {Decimal('0.22')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.22')
+E         Use -v to get more diff
+
+tests\test_implementation_payouts.py:111: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_implementation_payouts.py::test_current_implementation_heading_variants[\u4e8c\u3001\u672c\u6b21\u5b9e\u65bd\u7684 2023 \u5e74\u5ea6\u6743\u76ca\u5206\u6d3e\u65b9\u6848]
+FAILED tests/test_implementation_payouts.py::test_current_implementation_heading_variants[\u4e8c\u3001\u672c\u6b21\u5b9e\u65bd\u7684\u5229\u6da6\u5206\u6d3e\u65b9\u6848]
+FAILED tests/test_implementation_payouts.py::test_current_implementation_heading_variants[\u4e8c\u3001\u672c\u516c\u53f82024\u5e74\u5ea6\u4e2d\u671f\u5206\u7ea2\u6d3e\u606f\u65b9\u6848]
+FAILED tests/test_implementation_payouts.py::test_current_implementation_heading_variants[2\u30012023 \u5e74\u5ea6 A \u80a1\u6743\u76ca\u5206\u6d3e\u65b9\u6848\u4e3a\uff1a]
+FAILED tests/test_implementation_payouts.py::test_current_implementation_heading_variants[2.2023 \u5e74\u5ea6 A \u80a1\u6743\u76ca\u5206\u6d3e\u65b9\u6848\u4e3a\uff1a]
+FAILED tests/test_implementation_payouts.py::test_actual_scheme_under_approval_heading_does_not_accept_old_proposal
+FAILED tests/test_implementation_payouts.py::test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf\u80a1-0.22-header]
+FAILED tests/test_implementation_payouts.py::test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf\u80a1-0.22-footer]
+FAILED tests/test_implementation_payouts.py::test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf\u80a1-0.22-none]
+FAILED tests/test_implementation_payouts.py::test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf10\u80a1-0.022-header]
+FAILED tests/test_implementation_payouts.py::test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf10\u80a1-0.022-footer]
+FAILED tests/test_implementation_payouts.py::test_adjacent_sentence_keeps_both_pages_and_counter_provenance[\u6bcf10\u80a1-0.022-none]
+FAILED tests/test_implementation_payouts.py::test_page_numbers_follow_physical_pdf_pages_not_the_fixture_length
+13 failed, 26 passed in 0.25s

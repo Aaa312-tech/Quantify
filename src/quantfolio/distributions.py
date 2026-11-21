@@ -15,6 +15,12 @@ from .storage import digest, log, now, read, save, sha
 DATE = r"2\s*0\s*\d\s*\d\s*(?:年|/|-)\s*\d{1,2}\s*(?:月|/|-)\s*\d{1,2}\s*日?(?!\d)"
 EX_LABEL = r"(?:除权\s*(?:\(\s*息\s*\)|除息|息)?|除息)\s*日"
 NUMBER = r"[0-9]+(?:\.[0-9]+)?"
+SCHEME = (
+    r"(?:本次(?:实施的)?\s*)?(?:(?:本)?公司\s*)?"
+    r"(?:20\d{2}\s*年?\s*(?:年度(?:中期|末期)?|半年度|中期|前三季度|第[一二三四]季度)?\s*)?"
+    r"(?:A\s*股\s*)?(?:权益分(?:派|配)|利润分(?:派|配)|分配|分红派息)"
+    r"(?:(?:及|、)(?:资本公积金)?转增股本)?方案"
+)
 FIELDS = frozenset(
     (
         "cash_per_share",
@@ -36,14 +42,17 @@ def _date(text):
 
 def _current_scheme(prefix):
     headings = list(re.finditer(r"[一二三四五六七八九十]+、", prefix))
+    if not headings:
+        headings = list(re.finditer(r"(?:^|\s)\d{1,2}[、.]\s*", prefix))
     title = prefix[headings[-1].end() :].strip() if headings else ""
+    if re.match(SCHEME, title):
+        return True
+    # An approval-history section needs a separate, explicit implementation clause.
+    clause = re.split(r"[。；;]", prefix)[-1]
     return (
-        re.match(
-            r"(?:本次(?:实施的)?)?"
-            r"(?:20\d{2}年?(?:年度|半年度|中期|前三季度|第[一二三四]季度)?\s*)?"
-            r"(?:权益分(?:派|配)|利润分配|分配|分红派息)"
-            r"(?:(?:及|、)(?:资本公积金)?转增股本)?方案",
-            title,
+        re.search(
+            r"(?:^|[、，,:\s])(?:公司(?:本次)?实施的|本次实施的)\s*" + SCHEME + r"\s*[:：]",
+            clause,
         )
         is not None
     )
@@ -51,6 +60,13 @@ def _current_scheme(prefix):
 
 def _current_payout(prefix, established_all_shareholder=False):
     clause = re.split(r"[。；;]", prefix)[-1]
+    if "公司本次利润分配以" in clause:
+        # A cited approved document is distinct from an amount that is still proposed.
+        clause = re.sub(
+            r"根据[^。；;]{0,120}?审议通过的\s*《[^》]{0,80}?利润分配预案》",
+            "",
+            clause,
+        )
     # Outstanding A/H share counts describe the capital base, not the dividend class.
     clause = re.sub(
         r"\(其中\s*A\s*股\s*[\d,]+\s*股[,，]\s*H\s*股\s*[\d,]+\s*股\)",
@@ -65,6 +81,58 @@ def _current_payout(prefix, established_all_shareholder=False):
     return _current_scheme(prefix) and re.search(excluded, clause) is None
 
 
+def _page_text(raw):
+    text = re.sub(r"\s+", " ", unicodedata.normalize("NFKC", raw))
+    return re.sub(r"(?<=[\u4e00-\u9fff]) +(?=[\u4e00-\u9fff])", "", text)
+
+
+def _boundary_page(raw, number):
+    lines = [line.strip() for line in unicodedata.normalize("NFKC", raw).splitlines()]
+    occupied = [index for index, line in enumerate(lines) if line]
+    markers = []
+    for index in dict.fromkeys(occupied[:1] + occupied[-1:]):
+        marker = re.fullmatch(r"[-—–]\s*(\d+)\s*[-—–]", lines[index])
+        if marker:
+            if int(marker[1]) != number:
+                return None
+            markers.append({"page": number, "line": index + 1, "text": lines[index]})
+            lines[index] = ""
+    if len(markers) > 1:
+        return None
+    return _page_text("\n".join(lines)).strip(), markers
+
+
+def _cross_page_cash(pages):
+    evidence, history = [], ""
+    for page in range(1, len(pages)):
+        left = _boundary_page(pages[page - 1], page)
+        right = _boundary_page(pages[page], page + 1)
+        if left is not None and right is not None and bool(left[1]) == bool(right[1]):
+            subject = re.search(r"(?:每\s*10\s*股|(?:A\s*股)?每股)$", left[0])
+            payout = re.match(
+                r"(?:派(?:发|送)?现金(?:红利|股利|分红|股息)?|分配现金)"
+                r"\s*(?:人民币\s*)?(" + NUMBER + r")\s*元\s*\(\s*含税",
+                right[0],
+            )
+            if subject and payout and _current_payout(history + left[0][: subject.start()]):
+                divisor = 10 if "10" in subject[0] else 1
+                evidence.append(
+                    {
+                        "value": str(Decimal(payout[1]) / divisor),
+                        "page": page,
+                        "pages": [page, page + 1],
+                        "text": subject[0] + " " + payout[0],
+                        "parts": [
+                            {"page": page, "text": subject[0]},
+                            {"page": page + 1, "text": payout[0]},
+                        ],
+                        "page_number_lines": left[1] + right[1],
+                    }
+                )
+        history += _page_text(pages[page - 1]) + " "
+    return evidence
+
+
 def extract_terms(pages):
     """Recognize only labelled dates and explicitly gross cash in supported layouts."""
     evidence = {}
@@ -74,8 +142,7 @@ def extract_terms(pages):
 
     history = ""
     for page, raw in enumerate(pages, 1):
-        text = re.sub(r"\s+", " ", unicodedata.normalize("NFKC", raw))
-        text = re.sub(r"(?<=[\u4e00-\u9fff]) +(?=[\u4e00-\u9fff])", "", text)
+        text = _page_text(raw)
         for field, label in (("record_date", "股权登记日"), ("ex_date", EX_LABEL)):
             for match in re.finditer(label + r"\s*(?:为\s*)?[:：]?\s*(" + DATE + ")", text):
                 add(field, _date(match[1]), page, match[0])
@@ -172,6 +239,9 @@ def extract_terms(pages):
             if _current_payout(prefix):
                 add("cash_per_share", str(Decimal(match[1])), page, match[0])
         history += text + " "
+    cross_page = _cross_page_cash(pages)
+    if cross_page:
+        evidence.setdefault("cash_per_share", []).extend(cross_page)
     return evidence
 
 
@@ -495,7 +565,12 @@ def review_distributions(paths, protocol):
                     known_at=known,
                     evidence=evidence,
                     evidence_pages=sorted(
-                        {x["page"] for items in evidence.values() for x in items}
+                        {
+                            page
+                            for items in evidence.values()
+                            for item in items
+                            for page in item.get("pages", [item["page"]])
+                        }
                     ),
                     structured_source=provider,
                 )
