@@ -365,3 +365,7 @@ python -m quantfolio review-industries --protocol configs/protocols/industry_cel
 定期报告按`configs/protocols/etf_holdings.json`另行登记。原件分置于`data/raw/etf_reports_2026-11-21`及两次补采目录；首次页面和表格、后续页面、最终单元格分别保存在`etf_holdings_2026-11-21`、`etf_holdings_followup_2026-11-21`和`etf_holdings_cells_2026-11-21`，未覆盖失败输出。
 
 本阶段验收读取`artifacts/checks/etf_holdings_2026-11-21/cell_closure.json`及`completion.json`。528份报告的身份及8349个选定页面采用两种PDF解析器核对，全部股票行另核对有序代码清单；141处跨页边界有原图目视回执。已执行脚本保留其记录的哈希，复现必须登记新目录并明确继承哪些裁定；不能直接重跑到冻结路径。原PDF用LFS，PDF索引恢复警告和拒绝的截断副本均保留。该来源审查没有触发重训，后续接入必须另做完整模型与账户验证。
+
+后续时点与敞口构建按`configs/protocols/etf_exposures.json`登记。数据位于`data/processed/etf_exposures_2026-11-21`，检查位于同名`artifacts/checks`目录。先以`notes_reviewed.json`确定附注来源，再经财务字段初查、版式复核与清单补核，最终读取`financial_observations.json.gz`；不能用早期提取替代最终字段。`financial_audit.json`核对528份报告的有序代码、金额、原横线及合计。
+
+`equity_profiles.json.gz`保存752份来源组合，`session_profiles.json.gz`为22只基金与698个交易日的完整索引。`history_audit.json`独立重建日期选择、代码映射及精确金额分拆，`information_boundaries.json`检查未来报告、概要、分类和身份对应的截断与扰动。复现不需要下载新PDF，也不会隐式重训；使用新注册路径，并记录原脚本、原图裁定和输入哈希。最终使用范围见[敞口数据说明](etf_exposures.md)。
