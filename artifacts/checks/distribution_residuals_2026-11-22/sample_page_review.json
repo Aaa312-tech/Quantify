@@ -1,0 +1,86 @@
+{
+  "status": "LAYOUT_OBSERVATIONS_NOT_ACCEPTANCE",
+  "recorded_at": "2026-11-22T05:07:34.795859+08:00",
+  "protocol_sha256": "b7fa36d0e1a51d59a4e605fc3dc5db46591b5caa23690ae9b49f78f935169ca4",
+  "source_text_sha256": "968d5a4886ca60fbc72c72c873cbe0e46950bb902ee6760615e7e347ed01f3cc",
+  "scope": {
+    "documents_extracted": 423,
+    "pypdf_pages_extracted": 1496,
+    "sample_documents_visually_observed": 3,
+    "sample_full_pages_visually_observed": 6
+  },
+  "records": [
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1220132651.pdf",
+      "source_sha256": "296bb6cde29445c8b33facbc95cf45b8edb8032f54d3add7af0c7aabbab5a369",
+      "pages": [
+        {
+          "physical_page": 1,
+          "whole_page_visually_observed": true,
+          "local_render_sha256": "df75111b6619b5da5ebb69d219715fb3bd3490dfcc0db0225627772dda91f3ff",
+          "independent_text_sha256": "f8b2d5d6898fa488e06ed28d6607220680c8e469328fd8fbeb5ae2ae526ff75d"
+        },
+        {
+          "physical_page": 2,
+          "whole_page_visually_observed": true,
+          "local_render_sha256": "0e98c5fc4672b4f2de417fea5d4bcd25117ede55e9456eb5c19eca2a19a0f70e",
+          "independent_text_sha256": "ad221663f5eba262fc6fdcf847c918f113d4c2458874159336ac8557d2ba79f0"
+        }
+      ],
+      "observation": "Six labelled columns include last trading day, an explicit dash, ex-date, new unrestricted-share listing date and cash payment date. The first and second pages repeat the same labelled date row. The implementation amount on page 1 is gross cash of RMB 2.1 per share and 0.4 capital-reserve shares per share. Current reader lacks this combined table layout.",
+      "financial_acceptance": "PENDING_FULL_REVIEW"
+    },
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1219747018.pdf",
+      "source_sha256": "9f190adf2ccb59a9cdc719796f8d4c0db35a6918265c0d6251dd72438ad59ca1",
+      "pages": [
+        {
+          "physical_page": 5,
+          "whole_page_visually_observed": true,
+          "local_render_sha256": "0fc5deb4fded0f3517a3f6cba9f69c272f158d872dab4494c34283be4cb3b26e",
+          "independent_text_sha256": "536161e3ba2e44495a913f9201185605b37d6e7cd00ffc45b01963397066fb11"
+        },
+        {
+          "physical_page": 6,
+          "whole_page_visually_observed": true,
+          "local_render_sha256": "5d021d87e32f9d50253f9053bdd9248171acd3a5fd26e919dcc5c1c44dd7989f",
+          "independent_text_sha256": "c94cbdb262b689279f40fba16549d6db0d2ec2adfa8e83e31b79033756fdbf7f"
+        }
+      ],
+      "observation": "Page 5 ends within the sentence about A-share cash dividends distributed through China Clear Shenzhen; page 6 continues with the 2024-04-29 transfer date and receiving account wording. Physical page footers are Chinese page X of 8 labels. Page 6 separately states the first trading day of unrestricted converted shares. Adjacent-page continuity needs explicit regression expectations; do not infer cash or listing dates from ex-date.",
+      "financial_acceptance": "PENDING_FULL_REVIEW"
+    },
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1220075364.pdf",
+      "source_sha256": "9cb7c9340a789fa15c6193a2802d14dab222c04b84e86b6bc2e15a017c3f9cc4",
+      "pages": [
+        {
+          "physical_page": 1,
+          "whole_page_visually_observed": true,
+          "local_render_sha256": "ab40f675888018e3210b5da80ae64a634b0b31aacc0c1f089300ea22b9b06aec",
+          "independent_text_sha256": "2f847ab4890997a6e92737a22972209a4c283361825fe6bb5a82a96cef479b69"
+        },
+        {
+          "physical_page": 2,
+          "whole_page_visually_observed": true,
+          "local_render_sha256": "56452555c37bd792f561c75eb96aa9a9798ce3f2c8f72928d6cbca879afcaaa7",
+          "independent_text_sha256": "401afc36c632d548ff0f017ee6d751f237b76c714bef7217a90f52ca19603e0b"
+        }
+      ],
+      "observation": "The current implementation heading on page 1 introduces a cash sentence ending with per-ten-shares RMB 1.00; its currency text continues through the physical page boundary into cash and gross-tax wording on page 2. Both extracted texts end page 1 with yuan renminbi and begin page 2 with cash. The approval-history paragraph on page 1 is a distinct section and is not the acceptance source. Both pages are required for a future gross-cash extraction test.",
+      "financial_acceptance": "PENDING_FULL_REVIEW"
+    }
+  ],
+  "facts_accepted": 0,
+  "active_state_unchanged": {
+    "configuration": true,
+    "bundle": true,
+    "paper_plan": true,
+    "all_runtime_sources": true
+  },
+  "limitations": [
+    "Six sampled pages are not a visual review of all 1496 extracted pages.",
+    "No provider, source-availability, amendment, amount, payment or listing acceptance gate is cleared by this note.",
+    "Full residual source review and any production reader changes remain pending."
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "name": "residual_distribution_layouts",
+  "registered_at": "2026-11-22T05:18:41.754605+08:00",
+  "parent_protocol": {
+    "path": "configs/protocols/distribution_residuals.json",
+    "sha256": "b7fa36d0e1a51d59a4e605fc3dc5db46591b5caa23690ae9b49f78f935169ca4"
+  },
+  "baseline_extractor_sha256": "a5caf5060fdb1546894b7b1f06c850734bfdd79909ba29cac912efa86407f88c",
+  "scope_events": 387,
+  "full_replay_events": 1839,
+  "prior_supported_events": 1452,
+  "prior_supported_fields": 1530,
+  "prior_facts_sha256": "7a0be28302ad1e0222f29792191fb09e67a1531d11b66f96066720dba5a4ed70",
+  "test_file": {
+    "path": "tests/test_distribution_layouts.py",
+    "sha256": "f21e586ce9ad60a7647750415c08599eb68d625c99c34b1d79f7a384e231ec02"
+  },
+  "observations": [
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1220132651.pdf",
+      "source_sha256": "296bb6cde29445c8b33facbc95cf45b8edb8032f54d3add7af0c7aabbab5a369",
+      "physical_pages_visually_observed": [
+        1,
+        2
+      ],
+      "render_sha256": {
+        "1": "df75111b6619b5da5ebb69d219715fb3bd3490dfcc0db0225627772dda91f3ff",
+        "2": "0e98c5fc4672b4f2de417fea5d4bcd25117ede55e9456eb5c19eca2a19a0f70e"
+      },
+      "expected_unique_values_or_role": {
+        "record_date": "2024-05-28",
+        "ex_date": "2024-05-29",
+        "cash_pay_date": "2024-05-29",
+        "share_list_date": "2024-05-29",
+        "cash_per_share": "2.1"
+      },
+      "basis": "Six explicitly labelled columns including last-trading dash and unrestricted-share listing date.",
+      "status": "PARSER_EXPECTATION_NOT_FINANCIAL_ACCEPTANCE"
+    },
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1219747018.pdf",
+      "source_sha256": "9f190adf2ccb59a9cdc719796f8d4c0db35a6918265c0d6251dd72438ad59ca1",
+      "physical_pages_visually_observed": [
+        5,
+        6
+      ],
+      "render_sha256": {
+        "5": "0fc5deb4fded0f3517a3f6cba9f69c272f158d872dab4494c34283be4cb3b26e",
+        "6": "5d021d87e32f9d50253f9053bdd9248171acd3a5fd26e919dcc5c1c44dd7989f"
+      },
+      "expected_unique_values_or_role": {
+        "cash_pay_date": "2024-04-29",
+        "share_list_date": "2024-04-29"
+      },
+      "basis": "Payment sentence crosses adjacent pages with Chinese physical-page and total-page footers; listing uses explicit first-trading-day label.",
+      "status": "PARSER_EXPECTATION_NOT_FINANCIAL_ACCEPTANCE"
+    },
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1220075364.pdf",
+      "source_sha256": "9cb7c9340a789fa15c6193a2802d14dab222c04b84e86b6bc2e15a017c3f9cc4",
+      "physical_pages_visually_observed": [
+        1,
+        2
+      ],
+      "render_sha256": {
+        "1": "ab40f675888018e3210b5da80ae64a634b0b31aacc0c1f089300ea22b9b06aec",
+        "2": "56452555c37bd792f561c75eb96aa9a9798ce3f2c8f72928d6cbca879afcaaa7"
+      },
+      "expected_unique_values_or_role": {
+        "cash_per_share": "0.1"
+      },
+      "basis": "Current implementation gross-cash sentence continues from currency text to cash and gross qualifier.",
+      "status": "PARSER_EXPECTATION_NOT_FINANCIAL_ACCEPTANCE"
+    },
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1220559953.pdf",
+      "source_sha256": "6ef99668009903ab5c6cb9cdf8b4895cdb2f4a90a6d81bf28216285b9a04d661",
+      "physical_pages_visually_observed": [
+        1,
+        2
+      ],
+      "render_sha256": {
+        "1": "1429a71cab6959d500fe60d9b2a3a668e512a0189a4c472dca7560c87cbb01a8",
+        "2": "07dfce49eaa37c0cdc3605c68ba0df79b6c2b4f47821a062c5b872fde137dd8a"
+      },
+      "expected_unique_values_or_role": {
+        "cash_per_share": "0.008"
+      },
+      "basis": "The word cash dividend crosses adjacent pages carrying fraction-form physical page counters.",
+      "status": "PARSER_EXPECTATION_NOT_FINANCIAL_ACCEPTANCE"
+    },
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1220143858.pdf",
+      "source_sha256": "56fbdb45e1fdfa4d8d168eba04b63a1116e4578f30d88961ca8d856cb9031d25",
+      "physical_pages_visually_observed": [
+        2,
+        3
+      ],
+      "render_sha256": {
+        "2": "e07d935c92445866c3231b415c0dbf0b3e31f7c037686125e8a5fc323d128226",
+        "3": "f82f6970718af75a936f3a04c770f498657f8c90485e92cdd9e0788271e690a4"
+      },
+      "expected_unique_values_or_role": {
+        "ex_date": "2024-05-30",
+        "share_list_date": "2024-05-30"
+      },
+      "basis": "Ex-date year and month/day cross adjacent unnumbered pages; the new shares have an explicit first-trading-day date.",
+      "status": "PARSER_EXPECTATION_NOT_FINANCIAL_ACCEPTANCE"
+    },
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1220144290.pdf",
+      "source_sha256": "65369aff5714b571383484b5975c0b98d079a8e6a27badbf4ca30805bf92fd2e",
+      "physical_pages_visually_observed": [
+        1
+      ],
+      "render_sha256": {
+        "1": "982a0e9183a074afe50e10c56db30426ac7d39cc47b24c2a8c309e95bbc0979f"
+      },
+      "expected_unique_values_or_role": {
+        "role": "REPURCHASE_PRICE"
+      },
+      "basis": "Catalogue prefix is the labelled security short name; the remaining body title agrees exactly.",
+      "status": "PARSER_EXPECTATION_NOT_FINANCIAL_ACCEPTANCE"
+    },
+    {
+      "source": "data/raw/disclosures_2026-11-21/documents/1220289164.pdf",
+      "source_sha256": "fb702005660dcd4bf472978c30adeeb2271aca4d91648c6f322d668251a5a8c4",
+      "physical_pages_visually_observed": [
+        1
+      ],
+      "render_sha256": {
+        "1": "d9ab958794b1ee3918d9d2bd3c6b97ea3587475d9809910fdc0dc80cd8350c5f"
+      },
+      "expected_unique_values_or_role": {
+        "role": "IMPLEMENTATION"
+      },
+      "basis": "Catalogue prefix and colon are bound to the labelled security short name; legal company name differs but the remaining title agrees exactly.",
+      "status": "PARSER_EXPECTATION_NOT_FINANCIAL_ACCEPTANCE"
+    }
+  ],
+  "input_evidence": {
+    "artifacts/checks/distribution_residuals_2026-11-22/diagnose_layouts.py": "106e6fd48e5a861c5a20b91a05940438abde2d6fcd9e32d9700ee439343f1fe5",
+    "artifacts/checks/distribution_residuals_2026-11-22/diagnostic_review.json": "8f5ede919cf6ebdd191611d1a146efd4c3f258b25bcba80ce4f7a60d0d53bd92",
+    "artifacts/checks/distribution_residuals_2026-11-22/document_inventory.json": "62812de693372078c55ae7a98eb5979b442ba8a3a066eb2b68c8266c1c66af02",
+    "artifacts/checks/distribution_residuals_2026-11-22/initial_diagnostics.json": "af5057509efc4557cd6f4b484c4ed5e948e29449f3feef9bdf101f041781b77d",
+    "artifacts/checks/distribution_residuals_2026-11-22/inventory_sources.log": "c2a73ddec8a9f94b1e5f902f3279fa29f472d58cc81d5f9430bafa6934435237",
+    "artifacts/checks/distribution_residuals_2026-11-22/inventory_sources.py": "0f587e64b0e7f43dac0e62a33aa646bec77546153c0898ceba67777298a8d2a9",
+    "artifacts/checks/distribution_residuals_2026-11-22/layout_diagnostics.json": "b91f1371286fe2b6185d717b912d7d5dac65d87cc90d81d98cc3dac4efa1d83a",
+    "artifacts/checks/distribution_residuals_2026-11-22/layout_diagnostics.log": "39b2496059d1f0de08cb4f88d6c7ac897ad0e743656d4cb754fd7a368795f512",
+    "artifacts/checks/distribution_residuals_2026-11-22/sample_page_review.json": "491e86f20fdc5155a07b110c2155af7abdd1ce8405d37715d20059e777ae2abb",
+    "artifacts/checks/distribution_residuals_2026-11-22/scope.json": "2cc404831108f55de844d2c22be750f32b37edb28ca9bb84e4a80d82969795bc",
+    "artifacts/checks/distribution_residuals_2026-11-22/source_text.json.gz": "968d5a4886ca60fbc72c72c873cbe0e46950bb902ee6760615e7e347ed01f3cc"
+  },
+  "changes": [
+    "Support the exact six-column A-share table with last-trading dash, separate listing and payment labels and all date cells present.",
+    "Reuse the existing field grammar across one adjacent physical page boundary, keeping both source parts and their page numbers; do not repair split numeric amounts.",
+    "Strip only paired dash counters or exact Chinese/fraction counters matching each physical page and the document total, at the first or last occupied line; paired styles must agree. Bare digits and other intervening content remain.",
+    "Recognize the explicitly stated first trading day of unrestricted converted shares as a listing date; do not infer it from ex-date.",
+    "A catalogue security-name prefix may be removed only when the same name is explicitly labelled on the first page and followed by an announcement-number label; the remaining title must occur exactly on that page. Keep the original catalogue title and match evidence."
+  ],
+  "unchanged": [
+    "Financial/provider/date agreement and source-availability gates",
+    "Current-payout scope and numeric precision rules",
+    "Companion resolution requirement for one implementation notice and exclusively recognized companion roles",
+    "Active configuration, data, numerical modules, models, risk, candidate budget and paper plan"
+  ],
+  "acceptance": [
+    "Run frozen new positive/negative tests before and after implementation and preserve every failure.",
+    "Evaluate both readers for all 423 candidate documents and every residual event; separately replay all 1839 original actions.",
+    "Compare all 1452 prior accepted records and 1530 values; retain original accepted records exactly in any consolidated acceptance. New raw parser evidence or role metadata must be reported separately and cannot silently rewrite prior provenance. A new conflict with any prior accepted financial value blocks acceptance.",
+    "Independently review each newly proposed field, its issuer/event/provider/source time and whole relevant pages. Diagnostic matches are not accepted facts.",
+    "Run complete local checks, unchanged numerical-module checks and 48 existing model reload guards before source-phase publication. Economic integration requires a separate protocol and full training/account validation."
+  ],
+  "facts_accepted": 0,
+  "whole_goal_complete": false
+}

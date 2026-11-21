@@ -1,0 +1,295 @@
+F......FFFFFFFFF..........FFFF......                                     [100%]
+================================== FAILURES ===================================
+_________ test_last_trading_column_does_not_shift_listing_or_payment __________
+
+    def test_last_trading_column_does_not_shift_listing_or_payment():
+        expected = {
+            "record_date": "2024-05-28",
+            "ex_date": "2024-05-29",
+            "share_list_date": "2024-05-30",
+            "cash_pay_date": "2024-06-03",
+        }
+        for field, value in expected.items():
+>           assert values([TABLE], field) == {value}
+E           AssertionError: assert set() == {'2024-05-28'}
+E             
+E             Extra items in the right set:
+E             '2024-05-28'
+E             Use -v to get more diff
+
+tests\test_distribution_layouts.py:30: AssertionError
+_ test_split_payment_keeps_both_pages_and_recognized_counters[\u7b2c {n} \u9875 \u5171 2 \u9875-header] _
+
+style = '第 {n} 页 共 2 页', location = 'header'
+
+    @pytest.mark.parametrize("location", ["header", "footer"])
+    @pytest.mark.parametrize("style", ["第 {n} 页 共 2 页", "{n} / 2", "- {n} -"])
+    def test_split_payment_keeps_both_pages_and_recognized_counters(style, location):
+        bodies = [
+            "五、权益分派方法 本公司委托中国结算深圳分公司代派的A股股东现金红利",
+            "将于2024年4月29日通过股东托管证券公司直接划入其资金账户。",
+        ]
+        pages = [
+            style.format(n=i) + "\n" + body if location == "header" else body + "\n" + style.format(n=i)
+            for i, body in enumerate(bodies, 1)
+        ]
+>       assert values(pages, "cash_pay_date") == {"2024-04-29"}
+E       AssertionError: assert set() == {'2024-04-29'}
+E         
+E         Extra items in the right set:
+E         '2024-04-29'
+E         Use -v to get more diff
+
+tests\test_distribution_layouts.py:60: AssertionError
+_ test_split_payment_keeps_both_pages_and_recognized_counters[\u7b2c {n} \u9875 \u5171 2 \u9875-footer] _
+
+style = '第 {n} 页 共 2 页', location = 'footer'
+
+    @pytest.mark.parametrize("location", ["header", "footer"])
+    @pytest.mark.parametrize("style", ["第 {n} 页 共 2 页", "{n} / 2", "- {n} -"])
+    def test_split_payment_keeps_both_pages_and_recognized_counters(style, location):
+        bodies = [
+            "五、权益分派方法 本公司委托中国结算深圳分公司代派的A股股东现金红利",
+            "将于2024年4月29日通过股东托管证券公司直接划入其资金账户。",
+        ]
+        pages = [
+            style.format(n=i) + "\n" + body if location == "header" else body + "\n" + style.format(n=i)
+            for i, body in enumerate(bodies, 1)
+        ]
+>       assert values(pages, "cash_pay_date") == {"2024-04-29"}
+E       AssertionError: assert set() == {'2024-04-29'}
+E         
+E         Extra items in the right set:
+E         '2024-04-29'
+E         Use -v to get more diff
+
+tests\test_distribution_layouts.py:60: AssertionError
+_ test_split_payment_keeps_both_pages_and_recognized_counters[{n} / 2-header] _
+
+style = '{n} / 2', location = 'header'
+
+    @pytest.mark.parametrize("location", ["header", "footer"])
+    @pytest.mark.parametrize("style", ["第 {n} 页 共 2 页", "{n} / 2", "- {n} -"])
+    def test_split_payment_keeps_both_pages_and_recognized_counters(style, location):
+        bodies = [
+            "五、权益分派方法 本公司委托中国结算深圳分公司代派的A股股东现金红利",
+            "将于2024年4月29日通过股东托管证券公司直接划入其资金账户。",
+        ]
+        pages = [
+            style.format(n=i) + "\n" + body if location == "header" else body + "\n" + style.format(n=i)
+            for i, body in enumerate(bodies, 1)
+        ]
+>       assert values(pages, "cash_pay_date") == {"2024-04-29"}
+E       AssertionError: assert set() == {'2024-04-29'}
+E         
+E         Extra items in the right set:
+E         '2024-04-29'
+E         Use -v to get more diff
+
+tests\test_distribution_layouts.py:60: AssertionError
+_ test_split_payment_keeps_both_pages_and_recognized_counters[{n} / 2-footer] _
+
+style = '{n} / 2', location = 'footer'
+
+    @pytest.mark.parametrize("location", ["header", "footer"])
+    @pytest.mark.parametrize("style", ["第 {n} 页 共 2 页", "{n} / 2", "- {n} -"])
+    def test_split_payment_keeps_both_pages_and_recognized_counters(style, location):
+        bodies = [
+            "五、权益分派方法 本公司委托中国结算深圳分公司代派的A股股东现金红利",
+            "将于2024年4月29日通过股东托管证券公司直接划入其资金账户。",
+        ]
+        pages = [
+            style.format(n=i) + "\n" + body if location == "header" else body + "\n" + style.format(n=i)
+            for i, body in enumerate(bodies, 1)
+        ]
+>       assert values(pages, "cash_pay_date") == {"2024-04-29"}
+E       AssertionError: assert set() == {'2024-04-29'}
+E         
+E         Extra items in the right set:
+E         '2024-04-29'
+E         Use -v to get more diff
+
+tests\test_distribution_layouts.py:60: AssertionError
+_ test_split_payment_keeps_both_pages_and_recognized_counters[- {n} --header] _
+
+style = '- {n} -', location = 'header'
+
+    @pytest.mark.parametrize("location", ["header", "footer"])
+    @pytest.mark.parametrize("style", ["第 {n} 页 共 2 页", "{n} / 2", "- {n} -"])
+    def test_split_payment_keeps_both_pages_and_recognized_counters(style, location):
+        bodies = [
+            "五、权益分派方法 本公司委托中国结算深圳分公司代派的A股股东现金红利",
+            "将于2024年4月29日通过股东托管证券公司直接划入其资金账户。",
+        ]
+        pages = [
+            style.format(n=i) + "\n" + body if location == "header" else body + "\n" + style.format(n=i)
+            for i, body in enumerate(bodies, 1)
+        ]
+>       assert values(pages, "cash_pay_date") == {"2024-04-29"}
+E       AssertionError: assert set() == {'2024-04-29'}
+E         
+E         Extra items in the right set:
+E         '2024-04-29'
+E         Use -v to get more diff
+
+tests\test_distribution_layouts.py:60: AssertionError
+_ test_split_payment_keeps_both_pages_and_recognized_counters[- {n} --footer] _
+
+style = '- {n} -', location = 'footer'
+
+    @pytest.mark.parametrize("location", ["header", "footer"])
+    @pytest.mark.parametrize("style", ["第 {n} 页 共 2 页", "{n} / 2", "- {n} -"])
+    def test_split_payment_keeps_both_pages_and_recognized_counters(style, location):
+        bodies = [
+            "五、权益分派方法 本公司委托中国结算深圳分公司代派的A股股东现金红利",
+            "将于2024年4月29日通过股东托管证券公司直接划入其资金账户。",
+        ]
+        pages = [
+            style.format(n=i) + "\n" + body if location == "header" else body + "\n" + style.format(n=i)
+            for i, body in enumerate(bodies, 1)
+        ]
+>       assert values(pages, "cash_pay_date") == {"2024-04-29"}
+E       AssertionError: assert set() == {'2024-04-29'}
+E         
+E         Extra items in the right set:
+E         '2024-04-29'
+E         Use -v to get more diff
+
+tests\test_distribution_layouts.py:60: AssertionError
+_______ test_cash_qualifier_and_currency_can_continue_on_adjacent_page ________
+
+    def test_cash_qualifier_and_currency_can_continue_on_adjacent_page():
+        pages = [
+            "一、审议情况 每10股派发现金9元（含税）。二、权益分派方案 "
+            "本公司本次方案为：向全体股东每10股派1.00元人民币",
+            "现金（含税；扣税后，每10股派0.90元）。",
+        ]
+>       assert values(pages, "cash_per_share") == {Decimal("0.1")}
+E       AssertionError: assert set() == {Decimal('0.1')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.1')
+E         Use -v to get more diff
+
+tests\test_distribution_layouts.py:74: AssertionError
+_______________ test_cash_word_boundary_with_fraction_counters ________________
+
+    def test_cash_word_boundary_with_fraction_counters():
+        pages = [
+            "1 / 2\n二、分配方案 本次利润分配以现有股本为基数，每股派发现金",
+            "2 / 2\n红利0.008元（含税）。",
+        ]
+>       assert values(pages, "cash_per_share") == {Decimal("0.008")}
+E       AssertionError: assert set() == {Decimal('0.008')}
+E         
+E         Extra items in the right set:
+E         Decimal('0.008')
+E         Use -v to get more diff
+
+tests\test_distribution_layouts.py:86: AssertionError
+______________ test_ex_date_continues_on_adjacent_physical_page _______________
+
+    def test_ex_date_continues_on_adjacent_physical_page():
+        pages = [
+            "封面",
+            "三、股权登记日与除权除息日 本次股权登记日为2024年5月29日，除权除息日为：2024年",
+            "5月30日。四、权益分派对象",
+            "其他事项",
+        ]
+        assert values(pages, "record_date") == {"2024-05-29"}
+>       assert values(pages, "ex_date") == {"2024-05-30"}
+E       AssertionError: assert set() == {'2024-05-30'}
+E         
+E         Extra items in the right set:
+E         '2024-05-30'
+E         Use -v to get more diff
+
+tests\test_distribution_layouts.py:97: AssertionError
+_____________ test_listing_start_is_not_inferred_from_the_ex_date _____________
+
+    def test_listing_start_is_not_inferred_from_the_ex_date():
+        text = (
+            "本次除权除息日为2024年5月29日。"
+            "六、本次所转增的无限售条件流通股的起始交易日为2024年5月30日。"
+        )
+>       assert values([text], "share_list_date") == {"2024-05-30"}
+E       AssertionError: assert set() == {'2024-05-30'}
+E         
+E         Extra items in the right set:
+E         '2024-05-30'
+E         Use -v to get more diff
+
+tests\test_distribution_layouts.py:136: AssertionError
+_______ test_catalogue_short_name_is_bound_to_labelled_security_name[] ________
+
+separator = ''
+
+    @pytest.mark.parametrize("separator", ["", "：", ":"])
+    def test_catalogue_short_name_is_bound_to_labelled_security_name(separator):
+        title = "关于实施2023年度权益分派后调整回购股份价格上限的公告"
+        page = (
+            "证券代码：600095 证券简称：湘财股份 公告编号：临2024-037\n"
+            "湘财股份有限公司\n" + title + "\n调整后回购价格上限为10.01元/股。"
+        )
+        role = notice_role("sh600095", candidate("a", "湘财股份" + separator + title), [page])
+>       assert role["role"] == "REPURCHASE_PRICE"
+E       AssertionError: assert 'UNKNOWN' == 'REPURCHASE_PRICE'
+E         
+E         - REPURCHASE_PRICE
+E         + UNKNOWN
+
+tests\test_distribution_layouts.py:152: AssertionError
+____ test_catalogue_short_name_is_bound_to_labelled_security_name[\uff1a] _____
+
+separator = '：'
+
+    @pytest.mark.parametrize("separator", ["", "：", ":"])
+    def test_catalogue_short_name_is_bound_to_labelled_security_name(separator):
+        title = "关于实施2023年度权益分派后调整回购股份价格上限的公告"
+        page = (
+            "证券代码：600095 证券简称：湘财股份 公告编号：临2024-037\n"
+            "湘财股份有限公司\n" + title + "\n调整后回购价格上限为10.01元/股。"
+        )
+        role = notice_role("sh600095", candidate("a", "湘财股份" + separator + title), [page])
+>       assert role["role"] == "REPURCHASE_PRICE"
+E       AssertionError: assert 'UNKNOWN' == 'REPURCHASE_PRICE'
+E         
+E         - REPURCHASE_PRICE
+E         + UNKNOWN
+
+tests\test_distribution_layouts.py:152: AssertionError
+_______ test_catalogue_short_name_is_bound_to_labelled_security_name[:] _______
+
+separator = ':'
+
+    @pytest.mark.parametrize("separator", ["", "：", ":"])
+    def test_catalogue_short_name_is_bound_to_labelled_security_name(separator):
+        title = "关于实施2023年度权益分派后调整回购股份价格上限的公告"
+        page = (
+            "证券代码：600095 证券简称：湘财股份 公告编号：临2024-037\n"
+            "湘财股份有限公司\n" + title + "\n调整后回购价格上限为10.01元/股。"
+        )
+        role = notice_role("sh600095", candidate("a", "湘财股份" + separator + title), [page])
+>       assert role["role"] == "REPURCHASE_PRICE"
+E       AssertionError: assert 'UNKNOWN' == 'REPURCHASE_PRICE'
+E         
+E         - REPURCHASE_PRICE
+E         + UNKNOWN
+
+tests\test_distribution_layouts.py:152: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_distribution_layouts.py::test_last_trading_column_does_not_shift_listing_or_payment
+FAILED tests/test_distribution_layouts.py::test_split_payment_keeps_both_pages_and_recognized_counters[\u7b2c {n} \u9875 \u5171 2 \u9875-header]
+FAILED tests/test_distribution_layouts.py::test_split_payment_keeps_both_pages_and_recognized_counters[\u7b2c {n} \u9875 \u5171 2 \u9875-footer]
+FAILED tests/test_distribution_layouts.py::test_split_payment_keeps_both_pages_and_recognized_counters[{n} / 2-header]
+FAILED tests/test_distribution_layouts.py::test_split_payment_keeps_both_pages_and_recognized_counters[{n} / 2-footer]
+FAILED tests/test_distribution_layouts.py::test_split_payment_keeps_both_pages_and_recognized_counters[- {n} --header]
+FAILED tests/test_distribution_layouts.py::test_split_payment_keeps_both_pages_and_recognized_counters[- {n} --footer]
+FAILED tests/test_distribution_layouts.py::test_cash_qualifier_and_currency_can_continue_on_adjacent_page
+FAILED tests/test_distribution_layouts.py::test_cash_word_boundary_with_fraction_counters
+FAILED tests/test_distribution_layouts.py::test_ex_date_continues_on_adjacent_physical_page
+FAILED tests/test_distribution_layouts.py::test_listing_start_is_not_inferred_from_the_ex_date
+FAILED tests/test_distribution_layouts.py::test_catalogue_short_name_is_bound_to_labelled_security_name[]
+FAILED tests/test_distribution_layouts.py::test_catalogue_short_name_is_bound_to_labelled_security_name[\uff1a]
+FAILED tests/test_distribution_layouts.py::test_catalogue_short_name_is_bound_to_labelled_security_name[:]
+14 failed, 22 passed in 0.26s
