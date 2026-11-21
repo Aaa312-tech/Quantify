@@ -685,6 +685,192 @@ def _accepted_date_supplements(paths, protocol, review, original, manifest):
     )
 
 
+def entitlement_facts(actions, basis_actions, review, additions, decisions, binding):
+    """Bind accepted recipient terms without replacing prior reviews or unrelated actions."""
+    from .distributions import FIELDS
+
+    def index(rows):
+        indexed = {(row["symbol"], row["ex_date"]): row for row in rows}
+        if len(indexed) != len(rows):
+            raise ValueError("Duplicate entitlement event")
+        return indexed
+
+    current, basis = index(actions), index(basis_actions)
+    records, facts = index(review["records"]), index(review["facts"])
+    accepted, decided = index(additions), index(decisions)
+    if (
+        current.keys() != basis.keys()
+        or records.keys() != basis.keys()
+        or review["original_actions_sha256"] != digest(basis_actions)
+        or any(records[key]["original_action_sha256"] != digest(row) for key, row in basis.items())
+        or facts != {key: row for key, row in records.items() if row["status"] == "VERIFIED_FIELDS"}
+        or not accepted
+        or accepted.keys() != decided.keys()
+        or not accepted.keys() <= facts.keys()
+    ):
+        raise ValueError("Entitlement source or accepted event inventory differs")
+    result = []
+    for key, acceptance in accepted.items():
+        action, old, fact, decision = current[key], basis[key], facts[key], decided[key]
+        fields = acceptance["verified_fields"]
+        supported = {
+            name: field["value"]
+            for name, field in decision["field_decisions"].items()
+            if field["status"] == "SUPPORTED_PRIMARY_FIELD"
+        }
+        if (
+            digest(action) != digest(old)
+            or acceptance["original_action_sha256"] != digest(old)
+            or any(name in action for name in ("distribution_review", "distribution_date_reviews"))
+        ):
+            raise ValueError("Current entitlement identity or prior review differs")
+        if (
+            not fields
+            or not set(fields) <= FIELDS - {"cash_rounding"}
+            or fields != fact["verified_fields"]
+            or fields != supported
+            or set(decision["field_decisions"]) != FIELDS
+            or fact["source"].get("field_review") != binding["field_decisions"]
+            or acceptance["field_evidence"] != decision["evidence"]
+            or acceptance["initial_failed_checks_retained"]
+            != decision["initial_failed_checks_retained"]
+            or acceptance["unresolved_primary_aggregate"]
+            != decision["unresolved_primary_aggregate"]
+        ):
+            raise ValueError("Accepted entitlement fields or source decisions differ")
+        control = decision["control_fields"]
+        if (
+            control["record_date"] != action.get("record_date")
+            or control["ex_date"] != action["ex_date"]
+            or Decimal(control["share_multiplier"]) != Decimal(str(action["share_multiplier"]))
+        ):
+            raise ValueError("Entitlement record date or share ratio differs")
+        cash = Decimal(str(fields["cash_per_share"]))
+        preserve_cash = abs(cash - Decimal(str(action["cash_per_share"]))) <= Decimal("1e-12")
+        if acceptance["preserve_original_cash_binary64_at_integration"] is not preserve_cash:
+            raise ValueError("Accepted cash storage decision differs")
+        result.append(
+            {
+                **deepcopy(fact),
+                "entitlement_basis": {
+                    **deepcopy(binding),
+                    "reviewed_action_sha256": digest(old),
+                    "current_action_sha256": digest(action),
+                    "independent_record_sha256": digest(acceptance),
+                    "field_decision_sha256": digest(decision),
+                },
+            }
+        )
+    return result
+
+
+def _accepted_entitlement_facts(paths, protocol, review, original, manifest):
+    """Require the completed source phase, including its retained unresolved evidence."""
+    from . import distributions
+
+    def frozen(reference):
+        if manifest["files"].get(reference["path"]) != reference["sha256"]:
+            raise ValueError("Entitlement reference is not frozen")
+        return distributions.checked_path(paths.root, reference["path"], reference["sha256"])
+
+    registered_path = frozen(protocol["review_protocol"])
+    registered, _ = distributions.registered_inputs(paths, registered_path)
+    basis_path = frozen(protocol["review_basis"])
+    acceptance = read(frozen(protocol["source_acceptance"]))
+    independent = read(frozen(protocol["independent_review"]))
+    decisions = read(frozen(protocol["field_decisions"]))
+    context = read(frozen(protocol["source_context"]))
+    previous = read(frozen(registered["previous_review"]))
+    if (
+        registered.get("phase") != "recipient_and_adjusted_entitlements"
+        or registered["source_bundle"] != protocol["review_basis"]["path"]
+        or registered["source_bundle_sha256"] != sha(basis_path)
+        or registered["source_data_cutoff"] != protocol["source_data_cutoff"]
+        or registered["review"] != protocol["review"]
+        or registered["source_inputs"] != protocol["source_inputs"]
+        or registered["field_decisions"] != protocol["field_decisions"]
+        or review["protocol_sha256"] != sha(registered_path)
+        or review["data_snapshot_sha256"] != sha(basis_path)
+        or acceptance["status"] != "SOURCE_REVIEW_VALIDATED_LOCALLY"
+        or independent["status"] != "FIELD_SOURCE_ACCEPTANCE_PASSED"
+        or acceptance["facts_applied"] is not False
+        or independent["facts_applied"] is not False
+        or acceptance["source_review_sha256"] != protocol["review_sha256"]
+        or independent["source_review_sha256"] != protocol["review_sha256"]
+        or acceptance["production_protocol_sha256"] != sha(registered_path)
+        or independent["protocol_sha256"] != sha(registered_path)
+        or acceptance["field_acceptance_sha256"] != protocol["independent_review"]["sha256"]
+        or independent["field_decisions_sha256"] != protocol["field_decisions"]["sha256"]
+        or independent["previous_review_sha256"] != registered["previous_review"]["sha256"]
+        or acceptance["active_state"]["bundle"]["sha256"] != protocol["source_bundle_sha256"]
+        or decisions["context_completion"] != protocol["source_context"]
+        or decisions["protocol"] != registered["evidence_protocol"]
+        or acceptance["protocol_sha256"] != decisions["protocol"]["sha256"]
+        or context["protocol_sha256"] != decisions["protocol"]["sha256"]
+        or context["issuer_context"]["all_issuer_context_complete"] is not True
+        or context["issuer_context_checks"]["context_check_failures"] != 0
+        or set(protocol["entitlement_fields"]) != distributions.FIELDS - {"cash_rounding"}
+    ):
+        raise ValueError("Entitlement source acceptance binding differs")
+    additions = independent["records"]
+    counts = Counter(name for record in additions for name in record["verified_fields"])
+    if (
+        {**counts, "events": len(additions)} != protocol["verified_additions"]
+        or dict(counts) != acceptance["new_supported_fields"]
+        or dict(counts) != independent["new_fields"]
+        or dict(counts) != decisions["supported_field_counts"]
+        or sum(counts.values()) != independent["new_field_count"]
+        or sum(counts.values()) != decisions["supported_fields"]
+        or decisions["events"] != len(additions)
+        or acceptance["initial_primary_failures_preserved"]
+        != independent["initial_primary_failures_retained"]
+        or acceptance["unresolved_primary_source_aggregates"]
+        != independent["unresolved_primary_aggregates"]
+    ):
+        raise ValueError("Entitlement accepted field inventory differs")
+    prior = {(row["symbol"], row["ex_date"]): row for row in previous["records"]}
+    current = {(row["symbol"], row["ex_date"]): row for row in review["records"]}
+    scoped = {(row["symbol"], row["ex_date"]) for row in additions}
+    preserved_fields = sum(len(row["verified_fields"]) for row in previous["facts"])
+    if (
+        len(prior) != len(previous["records"])
+        or prior.keys() != current.keys()
+        or len(current) != independent["events_checked"]
+        or len(current) != acceptance["events_checked"]
+        or len(current) - len(scoped) != independent["unscoped_records_exact"]
+        or preserved_fields != independent["prior_supported_fields_preserved"]
+        or preserved_fields != acceptance["prior_supported_fields_preserved"]
+        or any(current[key] != row for key, row in prior.items() if key not in scoped)
+        or any(
+            current[key]["verified_fields"].get(name) != value
+            for key, row in prior.items()
+            for name, value in row.get("verified_fields", {}).items()
+        )
+    ):
+        raise ValueError("Prior distribution source fields or records changed")
+    basis = load_snapshot(paths, basis_path, registered["source_data_cutoff"])
+    basis_index = {(row["symbol"], row["ex_date"]): row for row in basis["actions"]}
+    if not scoped <= basis_index.keys() or independent["source_basis_actions_sha256"] != digest(
+        [basis_index[key] for key in sorted(scoped)]
+    ):
+        raise ValueError("Entitlement basis actions differ")
+    return entitlement_facts(
+        original["actions"],
+        basis["actions"],
+        review,
+        additions,
+        decisions["records"],
+        {
+            "review_sha256": protocol["review_sha256"],
+            "review_basis": protocol["review_basis"],
+            "source_acceptance": protocol["source_acceptance"],
+            "independent_review": protocol["independent_review"],
+            "field_decisions": protocol["field_decisions"],
+            "source_context": protocol["source_context"],
+        },
+    )
+
+
 def restored_label_table(table, records):
     """Restore only independently accepted unknown-action labels at their original rows."""
     expected = table.copy(deep=True)
@@ -747,15 +933,16 @@ def repair_distribution_snapshot(paths, target, protocol_path, integrity):
         paths.root, protocol["source_bundle"], protocol["source_bundle_sha256"]
     )
     operation = protocol.get("operation")
-    if operation not in (None, "supplement_verified_dates"):
+    if operation not in (None, "supplement_verified_dates", "apply_verified_entitlements"):
         raise ValueError("Unsupported distribution repair operation")
     supplement = operation == "supplement_verified_dates"
+    entitlement = operation == "apply_verified_entitlements"
     if (
         review["extractor_sha256"] != sha(Path(distributions.__file__))
         or review["source_inputs"] != protocol["source_inputs"]
-        or (supplement and sha(review_path) != protocol["review_sha256"])
+        or ((supplement or entitlement) and sha(review_path) != protocol["review_sha256"])
         or (
-            not supplement
+            not (supplement or entitlement)
             and (
                 review["protocol_sha256"] != sha(protocol_path)
                 or review["data_snapshot_sha256"] != sha(source_path)
@@ -768,6 +955,8 @@ def repair_distribution_snapshot(paths, target, protocol_path, integrity):
     original = load_snapshot(paths, source_path, protocol["source_data_cutoff"])
     if supplement:
         facts = _accepted_date_supplements(paths, protocol, review, original, manifest)
+    elif entitlement:
+        facts = _accepted_entitlement_facts(paths, protocol, review, original, manifest)
     elif review["original_actions_sha256"] != digest(original["actions"]):
         raise ValueError("Source review does not bind the full action inventory")
     else:
@@ -786,11 +975,15 @@ def repair_distribution_snapshot(paths, target, protocol_path, integrity):
     actions, changes = reviewed_distribution_actions(
         original["actions"], original["calendar"], facts, supplement=supplement
     )
-    if supplement:
+    if supplement or entitlement:
         counts = Counter(f for change in changes for f in change["fields"])
         counts["events"] = len(changes)
         if dict(counts) != protocol["expected_changes"]:
-            raise ValueError("Supplementary date changes differ from registration")
+            raise ValueError(
+                "Entitlement changes differ from registration"
+                if entitlement
+                else "Supplementary date changes differ from registration"
+            )
         save(target / "fact_bindings.json", facts, immutable=True)
     repaired = build_dataset(original["meta"], original["raws"], actions, **rebuild_args)
     if repaired.get("fund_mode") != original.get("fund_mode"):
@@ -829,6 +1022,10 @@ def repair_distribution_snapshot(paths, target, protocol_path, integrity):
         pd.testing.assert_frame_equal(raw, repaired["raws"][symbol], check_exact=True)
     pd.testing.assert_index_equal(original["calendar"], repaired["calendar"], exact=True)
     entitlement_dates = [c["ex_date"] for c in changes if "cash_per_share" in c["fields"]]
+    if entitlement:
+        entitlement_dates.extend(
+            c["ex_date"] for c in changes if "ex_reference_cash_per_share" in c["fields"]
+        )
     boundary = (
         original["calendar"].searchsorted(min(entitlement_dates))
         if entitlement_dates

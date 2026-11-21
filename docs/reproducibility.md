@@ -19,17 +19,17 @@ python -m quantfolio train --first 1 --last 1 --output artifacts/experiments/fir
 
 维护验收包含545项测试、当前48个模型重载、1425个完整账户和75个纸面账户重放；没有新增模型拟合，也不更新历史训练回执的源码身份。该维护阶段的配置、历史结果和11月23日冻结计划保持原字节，最终记录见[completion.json](../artifacts/checks/window_range_2026-11-21/completion.json)。
 
-## 当前支付日接入
+## 当前权益条款接入
 
-当前配置与`configs/experiments/implemented_payments.toml`一致，协议为`configs/protocols/implemented_payments.json`。完整验收在`artifacts/checks/implemented_payments_2026-11-22`；读取`completion.json`、`validation.json`、`activation.json`与`input_scope.json`。修改前的测试失败、已执行源码及格式诊断分别保存在`before_tests.json`、`executed_snapshots.py`与`test_format_review.json`；旧阶段失败不改写。
+当前配置与`configs/experiments/recipient_entitlements.toml`一致，协议为`configs/protocols/recipient_entitlements.json`。完整验收在`artifacts/checks/recipient_entitlements_2026-11-22`；读取`completion.json`、`validation.json`、`activation.json`和`numeric_acceptance.json`。`action_scope.json`、`feature_expectations.json`、`label_scope.json`与`target_expectations.json`分别绑定动作、特征/排名、标签和拟合输入。修改前测试失败及初次绑定范围错误保留在`before_tests.json`和`binding_failure.json`，不改写旧回执。
 
 ```powershell
-python -m quantfolio --config configs/experiments/implemented_payments.toml train --include-latest --output artifacts/experiments/implemented_payment_reproduction
-python -m quantfolio --config configs/experiments/implemented_payments.toml evaluate --run artifacts/experiments/implemented_payment_reproduction --all-policies --output artifacts/evaluations/implemented_payment_reproduction
-python -m quantfolio --config configs/experiments/implemented_payments.toml verify --run artifacts/experiments/implemented_payment_reproduction --output artifacts/checks/implemented_payment_reproduction
+python -m quantfolio --config configs/experiments/recipient_entitlements.toml train --include-latest --output artifacts/experiments/recipient_entitlement_reproduction
+python -m quantfolio --config configs/experiments/recipient_entitlements.toml evaluate --run artifacts/experiments/recipient_entitlement_reproduction --all-policies --output artifacts/evaluations/recipient_entitlement_reproduction
+python -m quantfolio --config configs/experiments/recipient_entitlements.toml verify --run artifacts/experiments/recipient_entitlement_reproduction --output artifacts/checks/recipient_entitlement_reproduction
 ```
 
-输出目录须尚不存在。命令使用冻结快照，默认覆盖其全部完整窗口；重建须另行登记输出路径与来源、标签范围。旧阶段命令和验收边界保留在下方，不把原回执改成当前源码身份。
+输出目录须尚不存在。命令使用冻结快照，默认覆盖其全部完整窗口；重建须另行登记输出路径与来源、特征和标签范围。旧阶段命令和验收边界保留在下方，不把原回执改成当前源码身份。
 
 ## 公告角色阶段的支付日接入
 
@@ -375,7 +375,7 @@ CI在Windows的Python 3.11、3.13及Ubuntu的Python 3.13上，从源码分发包
 ## 已验收的11月20日扩展
 
 行情扩展阶段的完整训练、评估与状态复核保存于`daily_source_extension_2026-11-21`；
-它是历史验收阶段，当前配置使用本页开头的`2026-11-20-implemented-payments`快照。
+它是历史验收阶段，当前配置使用本页开头的`2026-11-20-recipient-entitlements`快照。
 新数据来源、单位转换和历史标签变化见同名`artifacts/checks`目录；实现兼容性、训练影响
 及固定旧预测对照分别存档，旧腾讯全池核验失败记录不变。
 

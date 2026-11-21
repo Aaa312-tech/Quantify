@@ -1,0 +1,753 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFF                                              [100%]
+================================== FAILURES ===================================
+________ test_cash_reference_and_available_opening_have_distinct_roles ________
+
+    def test_cash_reference_and_available_opening_have_distinct_roles():
+        args = example()
+        before = deepcopy(args)
+>       facts = snapshots.entitlement_facts(*args)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:97: AttributeError
+______________ test_duplicate_inventory_entries_are_rejected[0] _______________
+
+part = 0
+
+    @pytest.mark.parametrize("part", [0, 1, 3, 4])
+    def test_duplicate_inventory_entries_are_rejected(part):
+        args = example()
+        args[part].append(deepcopy(args[part][0]))
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:117: AttributeError
+______________ test_duplicate_inventory_entries_are_rejected[1] _______________
+
+part = 1
+
+    @pytest.mark.parametrize("part", [0, 1, 3, 4])
+    def test_duplicate_inventory_entries_are_rejected(part):
+        args = example()
+        args[part].append(deepcopy(args[part][0]))
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:117: AttributeError
+______________ test_duplicate_inventory_entries_are_rejected[3] _______________
+
+part = 3
+
+    @pytest.mark.parametrize("part", [0, 1, 3, 4])
+    def test_duplicate_inventory_entries_are_rejected(part):
+        args = example()
+        args[part].append(deepcopy(args[part][0]))
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:117: AttributeError
+______________ test_duplicate_inventory_entries_are_rejected[4] _______________
+
+part = 4
+
+    @pytest.mark.parametrize("part", [0, 1, 3, 4])
+    def test_duplicate_inventory_entries_are_rejected(part):
+        args = example()
+        args[part].append(deepcopy(args[part][0]))
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:117: AttributeError
+___ test_review_must_cover_the_original_inventory_without_duplicates[facts] ___
+
+part = 'facts'
+
+    @pytest.mark.parametrize("part", ["facts", "records"])
+    def test_review_must_cover_the_original_inventory_without_duplicates(part):
+        args = example()
+        args[2][part].append(deepcopy(args[2][part][0]))
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:125: AttributeError
+__ test_review_must_cover_the_original_inventory_without_duplicates[records] __
+
+part = 'records'
+
+    @pytest.mark.parametrize("part", ["facts", "records"])
+    def test_review_must_cover_the_original_inventory_without_duplicates(part):
+        args = example()
+        args[2][part].append(deepcopy(args[2][part][0]))
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:125: AttributeError
+_______________ test_missing_or_unknown_events_are_rejected[0] ________________
+
+part = 0
+
+    @pytest.mark.parametrize("part", [0, 1, 3, 4])
+    def test_missing_or_unknown_events_are_rejected(part):
+        args = example()
+        args[part][0]["symbol"] = "sh600999"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:133: AttributeError
+_______________ test_missing_or_unknown_events_are_rejected[1] ________________
+
+part = 1
+
+    @pytest.mark.parametrize("part", [0, 1, 3, 4])
+    def test_missing_or_unknown_events_are_rejected(part):
+        args = example()
+        args[part][0]["symbol"] = "sh600999"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:133: AttributeError
+_______________ test_missing_or_unknown_events_are_rejected[3] ________________
+
+part = 3
+
+    @pytest.mark.parametrize("part", [0, 1, 3, 4])
+    def test_missing_or_unknown_events_are_rejected(part):
+        args = example()
+        args[part][0]["symbol"] = "sh600999"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:133: AttributeError
+_______________ test_missing_or_unknown_events_are_rejected[4] ________________
+
+part = 4
+
+    @pytest.mark.parametrize("part", [0, 1, 3, 4])
+    def test_missing_or_unknown_events_are_rejected(part):
+        args = example()
+        args[part][0]["symbol"] = "sh600999"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:133: AttributeError
+_ test_target_cannot_be_rebound_after_current_action_changes[cash_per_share-0.3] _
+
+field = 'cash_per_share', value = 0.3
+
+    @pytest.mark.parametrize(
+        "field,value", [("cash_per_share", 0.3), ("id", "replaced"), ("cash_pay_date", "2024-07-25")]
+    )
+    def test_target_cannot_be_rebound_after_current_action_changes(field, value):
+        args = example()
+        args[0][0][field] = value
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:143: AttributeError
+___ test_target_cannot_be_rebound_after_current_action_changes[id-replaced] ___
+
+field = 'id', value = 'replaced'
+
+    @pytest.mark.parametrize(
+        "field,value", [("cash_per_share", 0.3), ("id", "replaced"), ("cash_pay_date", "2024-07-25")]
+    )
+    def test_target_cannot_be_rebound_after_current_action_changes(field, value):
+        args = example()
+        args[0][0][field] = value
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:143: AttributeError
+_ test_target_cannot_be_rebound_after_current_action_changes[cash_pay_date-2024-07-25] _
+
+field = 'cash_pay_date', value = '2024-07-25'
+
+    @pytest.mark.parametrize(
+        "field,value", [("cash_per_share", 0.3), ("id", "replaced"), ("cash_pay_date", "2024-07-25")]
+    )
+    def test_target_cannot_be_rebound_after_current_action_changes(field, value):
+        args = example()
+        args[0][0][field] = value
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:143: AttributeError
+_ test_existing_target_review_cannot_be_overwritten_even_with_matching_hashes[distribution_review] _
+
+field = 'distribution_review'
+
+    @pytest.mark.parametrize("field", ["distribution_review", "distribution_date_reviews"])
+    def test_existing_target_review_cannot_be_overwritten_even_with_matching_hashes(field):
+        args = example()
+        for rows in args[:2]:
+            rows[0][field] = {"old": "review"}
+        action_sha = digest(args[1][0])
+        args[2]["original_actions_sha256"] = digest(args[1])
+        args[2]["facts"][0]["original_action_sha256"] = action_sha
+        args[3][0]["original_action_sha256"] = action_sha
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:156: AttributeError
+_ test_existing_target_review_cannot_be_overwritten_even_with_matching_hashes[distribution_date_reviews] _
+
+field = 'distribution_date_reviews'
+
+    @pytest.mark.parametrize("field", ["distribution_review", "distribution_date_reviews"])
+    def test_existing_target_review_cannot_be_overwritten_even_with_matching_hashes(field):
+        args = example()
+        for rows in args[:2]:
+            rows[0][field] = {"old": "review"}
+        action_sha = digest(args[1][0])
+        args[2]["original_actions_sha256"] = digest(args[1])
+        args[2]["facts"][0]["original_action_sha256"] = action_sha
+        args[3][0]["original_action_sha256"] = action_sha
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:156: AttributeError
+_ test_independent_field_acceptance_and_source_decisions_must_agree[omitted] __
+
+mutation = 'omitted'
+
+    @pytest.mark.parametrize(
+        "mutation",
+        [
+            "omitted",
+            "unaccepted",
+            "extra",
+            "wrong_value",
+            "evidence",
+            "failure",
+            "aggregate",
+            "cash_storage",
+            "control",
+        ],
+    )
+    def test_independent_field_acceptance_and_source_decisions_must_agree(mutation):
+        args = example()
+        record, decision = args[3][0], args[4][0]
+        if mutation == "omitted":
+            record["verified_fields"].pop("cash_pay_date")
+        elif mutation == "unaccepted":
+            decision["field_decisions"]["cash_per_share"]["status"] = "NOT_ESTABLISHED"
+        elif mutation == "extra":
+            record["verified_fields"]["cash_rounding"] = "FLOOR_TO_CENT"
+        elif mutation == "wrong_value":
+            record["verified_fields"]["cash_per_share"] = "0.28"
+        elif mutation == "evidence":
+            record["field_evidence"] = {}
+        elif mutation == "failure":
+            record["initial_failed_checks_retained"] = []
+        elif mutation == "aggregate":
+            record["unresolved_primary_aggregate"] = None
+        elif mutation == "cash_storage":
+            record["preserve_original_cash_binary64_at_integration"] = True
+        else:
+            decision["control_fields"]["record_date"] = "2024-07-22"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:195: AttributeError
+_ test_independent_field_acceptance_and_source_decisions_must_agree[unaccepted] _
+
+mutation = 'unaccepted'
+
+    @pytest.mark.parametrize(
+        "mutation",
+        [
+            "omitted",
+            "unaccepted",
+            "extra",
+            "wrong_value",
+            "evidence",
+            "failure",
+            "aggregate",
+            "cash_storage",
+            "control",
+        ],
+    )
+    def test_independent_field_acceptance_and_source_decisions_must_agree(mutation):
+        args = example()
+        record, decision = args[3][0], args[4][0]
+        if mutation == "omitted":
+            record["verified_fields"].pop("cash_pay_date")
+        elif mutation == "unaccepted":
+            decision["field_decisions"]["cash_per_share"]["status"] = "NOT_ESTABLISHED"
+        elif mutation == "extra":
+            record["verified_fields"]["cash_rounding"] = "FLOOR_TO_CENT"
+        elif mutation == "wrong_value":
+            record["verified_fields"]["cash_per_share"] = "0.28"
+        elif mutation == "evidence":
+            record["field_evidence"] = {}
+        elif mutation == "failure":
+            record["initial_failed_checks_retained"] = []
+        elif mutation == "aggregate":
+            record["unresolved_primary_aggregate"] = None
+        elif mutation == "cash_storage":
+            record["preserve_original_cash_binary64_at_integration"] = True
+        else:
+            decision["control_fields"]["record_date"] = "2024-07-22"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:195: AttributeError
+__ test_independent_field_acceptance_and_source_decisions_must_agree[extra] ___
+
+mutation = 'extra'
+
+    @pytest.mark.parametrize(
+        "mutation",
+        [
+            "omitted",
+            "unaccepted",
+            "extra",
+            "wrong_value",
+            "evidence",
+            "failure",
+            "aggregate",
+            "cash_storage",
+            "control",
+        ],
+    )
+    def test_independent_field_acceptance_and_source_decisions_must_agree(mutation):
+        args = example()
+        record, decision = args[3][0], args[4][0]
+        if mutation == "omitted":
+            record["verified_fields"].pop("cash_pay_date")
+        elif mutation == "unaccepted":
+            decision["field_decisions"]["cash_per_share"]["status"] = "NOT_ESTABLISHED"
+        elif mutation == "extra":
+            record["verified_fields"]["cash_rounding"] = "FLOOR_TO_CENT"
+        elif mutation == "wrong_value":
+            record["verified_fields"]["cash_per_share"] = "0.28"
+        elif mutation == "evidence":
+            record["field_evidence"] = {}
+        elif mutation == "failure":
+            record["initial_failed_checks_retained"] = []
+        elif mutation == "aggregate":
+            record["unresolved_primary_aggregate"] = None
+        elif mutation == "cash_storage":
+            record["preserve_original_cash_binary64_at_integration"] = True
+        else:
+            decision["control_fields"]["record_date"] = "2024-07-22"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:195: AttributeError
+_ test_independent_field_acceptance_and_source_decisions_must_agree[wrong_value] _
+
+mutation = 'wrong_value'
+
+    @pytest.mark.parametrize(
+        "mutation",
+        [
+            "omitted",
+            "unaccepted",
+            "extra",
+            "wrong_value",
+            "evidence",
+            "failure",
+            "aggregate",
+            "cash_storage",
+            "control",
+        ],
+    )
+    def test_independent_field_acceptance_and_source_decisions_must_agree(mutation):
+        args = example()
+        record, decision = args[3][0], args[4][0]
+        if mutation == "omitted":
+            record["verified_fields"].pop("cash_pay_date")
+        elif mutation == "unaccepted":
+            decision["field_decisions"]["cash_per_share"]["status"] = "NOT_ESTABLISHED"
+        elif mutation == "extra":
+            record["verified_fields"]["cash_rounding"] = "FLOOR_TO_CENT"
+        elif mutation == "wrong_value":
+            record["verified_fields"]["cash_per_share"] = "0.28"
+        elif mutation == "evidence":
+            record["field_evidence"] = {}
+        elif mutation == "failure":
+            record["initial_failed_checks_retained"] = []
+        elif mutation == "aggregate":
+            record["unresolved_primary_aggregate"] = None
+        elif mutation == "cash_storage":
+            record["preserve_original_cash_binary64_at_integration"] = True
+        else:
+            decision["control_fields"]["record_date"] = "2024-07-22"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:195: AttributeError
+_ test_independent_field_acceptance_and_source_decisions_must_agree[evidence] _
+
+mutation = 'evidence'
+
+    @pytest.mark.parametrize(
+        "mutation",
+        [
+            "omitted",
+            "unaccepted",
+            "extra",
+            "wrong_value",
+            "evidence",
+            "failure",
+            "aggregate",
+            "cash_storage",
+            "control",
+        ],
+    )
+    def test_independent_field_acceptance_and_source_decisions_must_agree(mutation):
+        args = example()
+        record, decision = args[3][0], args[4][0]
+        if mutation == "omitted":
+            record["verified_fields"].pop("cash_pay_date")
+        elif mutation == "unaccepted":
+            decision["field_decisions"]["cash_per_share"]["status"] = "NOT_ESTABLISHED"
+        elif mutation == "extra":
+            record["verified_fields"]["cash_rounding"] = "FLOOR_TO_CENT"
+        elif mutation == "wrong_value":
+            record["verified_fields"]["cash_per_share"] = "0.28"
+        elif mutation == "evidence":
+            record["field_evidence"] = {}
+        elif mutation == "failure":
+            record["initial_failed_checks_retained"] = []
+        elif mutation == "aggregate":
+            record["unresolved_primary_aggregate"] = None
+        elif mutation == "cash_storage":
+            record["preserve_original_cash_binary64_at_integration"] = True
+        else:
+            decision["control_fields"]["record_date"] = "2024-07-22"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:195: AttributeError
+_ test_independent_field_acceptance_and_source_decisions_must_agree[failure] __
+
+mutation = 'failure'
+
+    @pytest.mark.parametrize(
+        "mutation",
+        [
+            "omitted",
+            "unaccepted",
+            "extra",
+            "wrong_value",
+            "evidence",
+            "failure",
+            "aggregate",
+            "cash_storage",
+            "control",
+        ],
+    )
+    def test_independent_field_acceptance_and_source_decisions_must_agree(mutation):
+        args = example()
+        record, decision = args[3][0], args[4][0]
+        if mutation == "omitted":
+            record["verified_fields"].pop("cash_pay_date")
+        elif mutation == "unaccepted":
+            decision["field_decisions"]["cash_per_share"]["status"] = "NOT_ESTABLISHED"
+        elif mutation == "extra":
+            record["verified_fields"]["cash_rounding"] = "FLOOR_TO_CENT"
+        elif mutation == "wrong_value":
+            record["verified_fields"]["cash_per_share"] = "0.28"
+        elif mutation == "evidence":
+            record["field_evidence"] = {}
+        elif mutation == "failure":
+            record["initial_failed_checks_retained"] = []
+        elif mutation == "aggregate":
+            record["unresolved_primary_aggregate"] = None
+        elif mutation == "cash_storage":
+            record["preserve_original_cash_binary64_at_integration"] = True
+        else:
+            decision["control_fields"]["record_date"] = "2024-07-22"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:195: AttributeError
+_ test_independent_field_acceptance_and_source_decisions_must_agree[aggregate] _
+
+mutation = 'aggregate'
+
+    @pytest.mark.parametrize(
+        "mutation",
+        [
+            "omitted",
+            "unaccepted",
+            "extra",
+            "wrong_value",
+            "evidence",
+            "failure",
+            "aggregate",
+            "cash_storage",
+            "control",
+        ],
+    )
+    def test_independent_field_acceptance_and_source_decisions_must_agree(mutation):
+        args = example()
+        record, decision = args[3][0], args[4][0]
+        if mutation == "omitted":
+            record["verified_fields"].pop("cash_pay_date")
+        elif mutation == "unaccepted":
+            decision["field_decisions"]["cash_per_share"]["status"] = "NOT_ESTABLISHED"
+        elif mutation == "extra":
+            record["verified_fields"]["cash_rounding"] = "FLOOR_TO_CENT"
+        elif mutation == "wrong_value":
+            record["verified_fields"]["cash_per_share"] = "0.28"
+        elif mutation == "evidence":
+            record["field_evidence"] = {}
+        elif mutation == "failure":
+            record["initial_failed_checks_retained"] = []
+        elif mutation == "aggregate":
+            record["unresolved_primary_aggregate"] = None
+        elif mutation == "cash_storage":
+            record["preserve_original_cash_binary64_at_integration"] = True
+        else:
+            decision["control_fields"]["record_date"] = "2024-07-22"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:195: AttributeError
+_ test_independent_field_acceptance_and_source_decisions_must_agree[cash_storage] _
+
+mutation = 'cash_storage'
+
+    @pytest.mark.parametrize(
+        "mutation",
+        [
+            "omitted",
+            "unaccepted",
+            "extra",
+            "wrong_value",
+            "evidence",
+            "failure",
+            "aggregate",
+            "cash_storage",
+            "control",
+        ],
+    )
+    def test_independent_field_acceptance_and_source_decisions_must_agree(mutation):
+        args = example()
+        record, decision = args[3][0], args[4][0]
+        if mutation == "omitted":
+            record["verified_fields"].pop("cash_pay_date")
+        elif mutation == "unaccepted":
+            decision["field_decisions"]["cash_per_share"]["status"] = "NOT_ESTABLISHED"
+        elif mutation == "extra":
+            record["verified_fields"]["cash_rounding"] = "FLOOR_TO_CENT"
+        elif mutation == "wrong_value":
+            record["verified_fields"]["cash_per_share"] = "0.28"
+        elif mutation == "evidence":
+            record["field_evidence"] = {}
+        elif mutation == "failure":
+            record["initial_failed_checks_retained"] = []
+        elif mutation == "aggregate":
+            record["unresolved_primary_aggregate"] = None
+        elif mutation == "cash_storage":
+            record["preserve_original_cash_binary64_at_integration"] = True
+        else:
+            decision["control_fields"]["record_date"] = "2024-07-22"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:195: AttributeError
+_ test_independent_field_acceptance_and_source_decisions_must_agree[control] __
+
+mutation = 'control'
+
+    @pytest.mark.parametrize(
+        "mutation",
+        [
+            "omitted",
+            "unaccepted",
+            "extra",
+            "wrong_value",
+            "evidence",
+            "failure",
+            "aggregate",
+            "cash_storage",
+            "control",
+        ],
+    )
+    def test_independent_field_acceptance_and_source_decisions_must_agree(mutation):
+        args = example()
+        record, decision = args[3][0], args[4][0]
+        if mutation == "omitted":
+            record["verified_fields"].pop("cash_pay_date")
+        elif mutation == "unaccepted":
+            decision["field_decisions"]["cash_per_share"]["status"] = "NOT_ESTABLISHED"
+        elif mutation == "extra":
+            record["verified_fields"]["cash_rounding"] = "FLOOR_TO_CENT"
+        elif mutation == "wrong_value":
+            record["verified_fields"]["cash_per_share"] = "0.28"
+        elif mutation == "evidence":
+            record["field_evidence"] = {}
+        elif mutation == "failure":
+            record["initial_failed_checks_retained"] = []
+        elif mutation == "aggregate":
+            record["unresolved_primary_aggregate"] = None
+        elif mutation == "cash_storage":
+            record["preserve_original_cash_binary64_at_integration"] = True
+        else:
+            decision["control_fields"]["record_date"] = "2024-07-22"
+        with pytest.raises(ValueError):
+>           snapshots.entitlement_facts(*args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:195: AttributeError
+___________ test_matching_decimal_cash_preserves_original_binary64 ____________
+
+    def test_matching_decimal_cash_preserves_original_binary64():
+        args = example()
+        for row in (args[2]["facts"][0], args[3][0]):
+            row["verified_fields"]["cash_per_share"] = "0.28"
+        args[4][0]["field_decisions"]["cash_per_share"]["value"] = "0.28"
+        args[3][0]["preserve_original_cash_binary64_at_integration"] = True
+>       facts = snapshots.entitlement_facts(*args)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'quantfolio.snapshots' has no attribute 'entitlement_facts'
+
+tests\test_entitlement_integration.py:204: AttributeError
+_______ test_registered_operation_reaches_accepted_entitlement_binding ________
+
+tmp_path = WindowsPath('C:/Users/wdong/AppData/Local/Temp/pytest-of-wdong/pytest-887/test_registered_operation_reac0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000264A8C275C0>
+
+    def test_registered_operation_reaches_accepted_entitlement_binding(tmp_path, monkeypatch):
+        protocol_path, source = tmp_path / "protocol.json", tmp_path / "source.joblib"
+        source.write_bytes(b"source")
+        protocol = {
+            "operation": "apply_verified_entitlements",
+            "snapshot_output": "target",
+            "review": "review.json",
+            "source_bundle": source.name,
+            "source_bundle_sha256": sha(source),
+            "source_data_cutoff": "2024-07-25",
+            "source_inputs": {},
+        }
+        save(protocol_path, protocol)
+        save(
+            tmp_path / "review.json",
+            {"extractor_sha256": sha(Path(distributions.__file__)), "source_inputs": {}, "facts": []},
+        )
+        protocol["review_sha256"] = sha(tmp_path / "review.json")
+        save(tmp_path / "manifest.json", {"files": {"review.json": protocol["review_sha256"]}})
+        monkeypatch.setattr(distributions, "registered_inputs", lambda *a: (protocol, {}))
+        monkeypatch.setattr(snapshots, "load_snapshot", lambda *a: {})
+    
+        class BindingReached(Exception):
+            pass
+    
+        def bind(*args):
+            raise BindingReached
+    
+        monkeypatch.setattr(snapshots, "_accepted_entitlement_facts", bind, raising=False)
+        paths = SimpleNamespace(root=tmp_path, manifest=tmp_path / "manifest.json")
+        with pytest.raises(BindingReached):
+>           snapshots.repair_distribution_snapshot(paths, tmp_path / "target", protocol_path, {})
+
+tests\test_entitlement_integration.py:243: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+paths = namespace(root=WindowsPath('C:/Users/wdong/AppData/Local/Temp/pytest-of-wdong/pytest-887/test_registered_operation_rea...dowsPath('C:/Users/wdong/AppData/Local/Temp/pytest-of-wdong/pytest-887/test_registered_operation_reac0/manifest.json'))
+target = WindowsPath('C:/Users/wdong/AppData/Local/Temp/pytest-of-wdong/pytest-887/test_registered_operation_reac0/target')
+protocol_path = WindowsPath('C:/Users/wdong/AppData/Local/Temp/pytest-of-wdong/pytest-887/test_registered_operation_reac0/protocol.json')
+integrity = {}
+
+    def repair_distribution_snapshot(paths, target, protocol_path, integrity):
+        """Reconstruct the complete dataset after an entitlement change, without activation."""
+        from . import distributions
+        from .preprocessing import build_dataset, compare_history
+    
+        protocol, _ = distributions.registered_inputs(paths, protocol_path)
+        if target != (paths.root / protocol["snapshot_output"]).resolve():
+            raise ValueError("Snapshot output differs from registration")
+        manifest = read(paths.manifest)
+        review_path = distributions.checked_path(
+            paths.root, protocol["review"], manifest["files"][protocol["review"]]
+        )
+        review = read(review_path)
+        source_path = distributions.checked_path(
+            paths.root, protocol["source_bundle"], protocol["source_bundle_sha256"]
+        )
+        operation = protocol.get("operation")
+        if operation not in (None, "supplement_verified_dates"):
+>           raise ValueError("Unsupported distribution repair operation")
+E           ValueError: Unsupported distribution repair operation
+
+src\quantfolio\snapshots.py:751: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_entitlement_integration.py::test_cash_reference_and_available_opening_have_distinct_roles
+FAILED tests/test_entitlement_integration.py::test_duplicate_inventory_entries_are_rejected[0]
+FAILED tests/test_entitlement_integration.py::test_duplicate_inventory_entries_are_rejected[1]
+FAILED tests/test_entitlement_integration.py::test_duplicate_inventory_entries_are_rejected[3]
+FAILED tests/test_entitlement_integration.py::test_duplicate_inventory_entries_are_rejected[4]
+FAILED tests/test_entitlement_integration.py::test_review_must_cover_the_original_inventory_without_duplicates[facts]
+FAILED tests/test_entitlement_integration.py::test_review_must_cover_the_original_inventory_without_duplicates[records]
+FAILED tests/test_entitlement_integration.py::test_missing_or_unknown_events_are_rejected[0]
+FAILED tests/test_entitlement_integration.py::test_missing_or_unknown_events_are_rejected[1]
+FAILED tests/test_entitlement_integration.py::test_missing_or_unknown_events_are_rejected[3]
+FAILED tests/test_entitlement_integration.py::test_missing_or_unknown_events_are_rejected[4]
+FAILED tests/test_entitlement_integration.py::test_target_cannot_be_rebound_after_current_action_changes[cash_per_share-0.3]
+FAILED tests/test_entitlement_integration.py::test_target_cannot_be_rebound_after_current_action_changes[id-replaced]
+FAILED tests/test_entitlement_integration.py::test_target_cannot_be_rebound_after_current_action_changes[cash_pay_date-2024-07-25]
+FAILED tests/test_entitlement_integration.py::test_existing_target_review_cannot_be_overwritten_even_with_matching_hashes[distribution_review]
+FAILED tests/test_entitlement_integration.py::test_existing_target_review_cannot_be_overwritten_even_with_matching_hashes[distribution_date_reviews]
+FAILED tests/test_entitlement_integration.py::test_independent_field_acceptance_and_source_decisions_must_agree[omitted]
+FAILED tests/test_entitlement_integration.py::test_independent_field_acceptance_and_source_decisions_must_agree[unaccepted]
+FAILED tests/test_entitlement_integration.py::test_independent_field_acceptance_and_source_decisions_must_agree[extra]
+FAILED tests/test_entitlement_integration.py::test_independent_field_acceptance_and_source_decisions_must_agree[wrong_value]
+FAILED tests/test_entitlement_integration.py::test_independent_field_acceptance_and_source_decisions_must_agree[evidence]
+FAILED tests/test_entitlement_integration.py::test_independent_field_acceptance_and_source_decisions_must_agree[failure]
+FAILED tests/test_entitlement_integration.py::test_independent_field_acceptance_and_source_decisions_must_agree[aggregate]
+FAILED tests/test_entitlement_integration.py::test_independent_field_acceptance_and_source_decisions_must_agree[cash_storage]
+FAILED tests/test_entitlement_integration.py::test_independent_field_acceptance_and_source_decisions_must_agree[control]
+FAILED tests/test_entitlement_integration.py::test_matching_decimal_cash_preserves_original_binary64
+FAILED tests/test_entitlement_integration.py::test_registered_operation_reaches_accepted_entitlement_binding
+27 failed in 0.38s

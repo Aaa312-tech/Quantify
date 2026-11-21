@@ -1,8 +1,22 @@
 # 分红与股份可用时间
 
-## 当前接入：实施范围核验后的支付日
+## 当前接入：股东现金权益与除权参考
 
-当前快照为`2026-11-20-implemented-payments`，按[独立协议](../configs/protocols/implemented_payments.json)应用31项缺失支付日，另3项已知日期保持。现金可用时间仍取支付日之后第一个已观察交易日开盘。已有经济条款、其他日期及审查记录不变，新增字段追加来源证据。
+当前快照为`2026-11-20-recipient-entitlements`，按[事前协议](../configs/protocols/recipient_entitlements.json)接入31项事件的82个已支持字段。实际更改3项每股现金、31项支付日、19项除权参考值和1项股份上市日；其余28项现金保留原binary64值，1808条范围外事件及已有来源记录保持。普通股东应收现金与除权参考扣减分别使用；现金可用日仍取已核实支付日之后首个已观察交易日。
+
+修正涉及宁德时代与宝丰能源的现金金额，不能沿用仅补日期时的全标签不变假设。独立核对20只证券每组32628个1/3/5日标签，确认18个标签变化（2/6/10个）；14183个非标签单元格覆盖64列，含其他证券的横截面排名。原始行情、日历、资格和历史状态保持；完整特征面板、评分、排名及范围外单元格均通过独立核对。24个拟合阶段的样本、目标、权重与特征矩阵在拟合前冻结，允许明确登记的增减及变化。
+
+来源绑定同时检查完整1839项事件的基础哈希和独立回执的31项有序子集哈希。初次将这两种范围误作同一范围的失败保留在[binding_failure.json](../artifacts/checks/recipient_entitlements_2026-11-22/binding_failure.json)，修正后的[字段绑定核对](../artifacts/checks/recipient_entitlements_2026-11-22/binding_closure.json)不改写任何来源或金额。27个修改前失败用例保留；736项本地测试通过，1项主机权限检查跳过。所有数值、选型、成交、风控与计划模块保持原字节。
+
+完成48次完整拟合/重载、1425个重训账户、1425个固定旧预测账户及75个纸面账户。旧输入的48个模型、1425个完整账户、75个纸面账户精确复现，37730项登记前冻结文件保持。48个模型文件及12组预测档案变化，0处窗口选型变化，0个候选通过采用条件。账户比较为：固定预测与父数据：1425/1425个完整账户一致、0个收益变化；重训与固定预测：1425/1425个完整账户一致、0个收益变化；新旧完整结果：1425/1425个完整账户一致、0个收益变化。完整收益、三档成本及同风控基准见[归因](../artifacts/checks/recipient_entitlements_2026-11-22/attribution.json)，逐项差异见[账户组成核对](../artifacts/checks/recipient_entitlements_2026-11-22/forecast_effects_review.json)。
+
+[历史结算检查](../artifacts/checks/recipient_entitlements_2026-11-22/settlement_review.json)确认这31项事件没有落入本批账户的实际持仓区间，不能据此声称已观察到它们到账。另行[登记](../configs/protocols/recipient_settlement_scenarios.json)的217个[合成场景](../artifacts/checks/recipient_entitlements_2026-11-22/settlement_scenarios.json)覆盖空持仓、100/137/10000股及单批/分批持仓；先独立计算税前现金、既有分位舍入、税款预留、净应收、股份数量和日期，再与账本逐日比较，全部通过。这些场景不计入历史账户或前向收益。除权参考不能替代股东现金；20%股息税仍是研究情景，北京君正总额冲突和未认证的零股/账户舍入保持。
+
+当前未知支付日320项、股份上市日88项，缺任一类日期的事件366项；来源未通过事件387项。内层行情质量/未解决事件为19/0次，外层为0/0次。[新计划](../artifacts/plans/recipient_entitlements_2026-11-23/plan.md)为0笔参考订单；没有新增前向观察或收益优势结论。完整验收见[completion.json](../artifacts/checks/recipient_entitlements_2026-11-22/completion.json)。
+
+## 2026-11-22：实施范围核验后的支付日
+
+该阶段快照为`2026-11-20-implemented-payments`，按[独立协议](../configs/protocols/implemented_payments.json)应用31项缺失支付日，另3项已知日期保持。现金可用时间仍取支付日之后第一个已观察交易日开盘。已有经济条款、其他日期及审查记录不变，新增字段追加来源证据。
 
 全部414612行、57个特征及1/3/5日标签精确一致。独立核对12只受影响证券的19827个标签，分别使用有理数权益核算和逐操作binary64舍入，未发现理想十进制差异或原标签不一致。全部24个训练阶段的样本、目标和权重在拟合前冻结并匹配。
 
@@ -12,7 +26,7 @@
 
 固定旧预测与父数据相比，1425/1425个完整账户一致，0个账户收益变化；重训与固定预测相比，1425/1425个完整账户一致，0个账户收益变化。48个模型中48个文件相同，0组预测文件改变，0处窗口选型改变。三档净收益与同风控动量比较见[归因](../artifacts/checks/implemented_payments_2026-11-22/attribution.json)，到账核对见[结算检查](../artifacts/checks/implemented_payments_2026-11-22/settlement_review.json)。事实修正不依赖收益方向，尚未建立独立收益优势。
 
-当前未知支付日351项、股份上市日89项，缺少任一类日期的事件397项。来源未通过事件仍有418项。内层行情质量标记22次、未解决事件0次。完整历史时点、股票池与ETF经济敞口仍未认证。[新计划](../artifacts/plans/implemented_payments_2026-11-23/plan.md)为0笔参考订单，尚无前向成交或收益。完整验收见[completion.json](../artifacts/checks/implemented_payments_2026-11-22/completion.json)。
+该阶段未知支付日351项、股份上市日89项，缺少任一类日期的事件397项。来源未通过事件仍有418项。内层行情质量标记22次、未解决事件0次。完整历史时点、股票池与ETF经济敞口仍未认证。[新计划](../artifacts/plans/implemented_payments_2026-11-23/plan.md)为0笔参考订单，尚无前向成交或收益。完整验收见[completion.json](../artifacts/checks/implemented_payments_2026-11-22/completion.json)。
 
 ## 2026-11-21：派息措辞核验后的支付日
 

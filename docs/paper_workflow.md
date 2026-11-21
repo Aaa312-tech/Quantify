@@ -21,7 +21,7 @@
 计划返回`HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED`并保留空订单。不同快照、
 审查文件被改写或不一致的解除决定会被拒绝。
 十只已核验证券的日期修正已完成完整重训与账户验收，相关暂停仅对当前快照解除。
-[最新纸面计划](../artifacts/plans/implemented_payments_2026-11-23/plan.md)的行情、账户及训练日期一致；
+[最新纸面计划](../artifacts/plans/recipient_entitlements_2026-11-23/plan.md)的行情、账户及训练日期一致；
 旧的过期记录保留。未来新快照还须另做绑定审查，不能直接复用解除决定。
 
 ## 从账户到收盘
@@ -140,5 +140,5 @@ python -m quantfolio verify-paper --output artifacts/checks/paper_replay
 表示时间与输入检查通过；`BLOCKED`表示没有有效操作建议；二者都不表示收益保证。
 
 当前支付日接入通过75个纸面账户、1386个交易日的完整对照，见
-[当前验证](../artifacts/checks/implemented_payments_2026-11-22/paper/verification.json)。
+[当前验证](../artifacts/checks/recipient_entitlements_2026-11-22/paper/verification.json)。
 纸面流程仍要求持仓有实际收盘估值，缺少流动性仍不能成交；已知停牌不会自动补齐这些输入。
