@@ -1,0 +1,42 @@
+STARTING REGISTERED DATE SNAPSHOT
+Traceback (most recent call last):
+  File "<stdin>", line 8, in <module>
+  File "D:\投资组合量化\src\quantfolio\snapshots.py", line 178, in repair_snapshot
+    return repair_distribution_snapshot(paths, target, protocol_path, integrity)
+  File "D:\投资组合量化\src\quantfolio\snapshots.py", line 638, in repair_distribution_snapshot
+    pd.testing.assert_frame_equal(original["table"], repaired["table"], check_exact=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\conda\Lib\site-packages\pandas\_testing\asserters.py", line 1303, in assert_frame_equal
+    assert_series_equal(
+    ~~~~~~~~~~~~~~~~~~~^
+        lcol,
+        ^^^^^
+    ...<12 lines>...
+        check_flags=False,
+        ^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\conda\Lib\site-packages\pandas\_testing\asserters.py", line 1021, in assert_series_equal
+    assert_numpy_array_equal(
+    ~~~~~~~~~~~~~~~~~~~~~~~~^
+        lv,
+        ^^^
+    ...<3 lines>...
+        index_values=left.index,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\conda\Lib\site-packages\pandas\_testing\asserters.py", line 696, in assert_numpy_array_equal
+    _raise(left, right, err_msg)
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\conda\Lib\site-packages\pandas\_testing\asserters.py", line 690, in _raise
+    raise_assert_detail(obj, msg, left, right, index_values=index_values)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\conda\Lib\site-packages\pandas\_testing\asserters.py", line 620, in raise_assert_detail
+    raise AssertionError(msg)
+AssertionError: DataFrame.iloc[:, 43] (column name="y1") are different
+
+DataFrame.iloc[:, 43] (column name="y1") values are different (0.00289 %)
+[index]: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, ...]
+[left]:  [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, ...]
+[right]: [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, ...]
