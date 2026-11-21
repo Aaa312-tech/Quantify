@@ -23,37 +23,17 @@ GitHub Actions result. Do not ask again for this scope or create a scheduled tas
 
 ## Research constraints
 
-- Maintain the active `quantfolio` package and walk-forward momentum strategy unless a research task changes it.
-  Balanced attack, the 8% alert and non-recovering risk remain in force. Active model/rule adoption
-  uses `positive_score`; recovery candidates remain research-only.
-- Name strategies by behavior, not iteration numbers. Keep old identifiers only where required
-  to read or trace frozen evidence; use semantic software versions for package releases.
-- The superiority gate is false. Engineering parity does not prove outperformance; the active
-  verified snapshot ends on 2026-11-20. Historical status and industry coverage remain incomplete.
-- The registered ten-security historical ST correction passed full retraining and account checks.
-  `historical_status_review` clears only that defect for its bound dataset hash. A new snapshot
-  requires a new matching review; retain the old models, ledgers and impact reports.
-- The prior sourced corporate actions and ten historical ST intervals remain unchanged.
-  The active resumption-reference correction has 48 fits, 1425 retrained accounts, 1425
-  fixed-forecast accounts and 75 paper-account comparisons. All non-label history is exact;
-  nine horizon labels across five dates changed for the reviewed Gaole suspension.
-- Archived publisher times support the one reviewed suspension interval, with explicit
-  retrospective-source limits. The new trials retain 40 Gaole carried marks and add 14
-  Dongyangguang marks plus one unresolved Caitong dividend. The affected tree50/window
-  candidates fail adoption. Follow-up issuer facts are archived but not applied.
-- 73 securities have 640 internal missing sessions; 111 other gap endpoints remain for
-  source review. Do not turn missing bars into suspension, opening capacity or closing marks.
-  Original failed source checks, ETF denominators and broader coverage limits remain.
-- Whole-queue issuer acquisition now covers 625 completed queries and 2596 documents;
-  the initial 15 failed queries and all original responses are preserved. Collection does not
-  certify event facts. The structured comparison covers all 1839 stored actions.
-- Five primary fact reviews are in `docs/references/distribution_reconciliation_2026-11-21.json`.
-  SF's 2024 special dividend is missing from current inputs; Jiangbolong's declared cash
-  truncation also needs a registered repair. No new facts or industry assignments are applied.
-  Seven CAPCO industry tables are archived; taxonomy, historical availability, aliases and
-  the incomplete guideline source remain separate open issues.
-- `artifacts/plans/reviewed_resumption_2026-11-23` is the current frozen conditional paper
-  plan with no orders, expiring November 23 at 09:25 Shanghai time. The earlier plan is kept
-  unchanged; it uses older inputs. No fills or forward returns exist yet. Do not fabricate
-  quotes or extend a frozen plan by changing its date.
+- Balanced attack, the 8% warning, original high-water mark and latched/non-recovering risk remain in force. Active adoption is `positive_score`; turnover is `legacy`. Keep the registered candidate budget and thresholds unchanged.
+- Use behavioral strategy names and semantic package versions. Keep historical identifiers only for frozen evidence compatibility; never rewrite frozen results.
+- The active dataset is `data/processed/2026-11-20-reviewed-distributions/bundle.joblib`; configuration binds its training, evaluation and historical-ST review. Numerical changes require full compatibility and retraining checks.
+- The whole-inventory distribution repair supplements 1060 payment dates, corrects SF's omitted special cash, and implements Jiangbolong's explicitly declared account-cent truncation. Raw bars, calendar, universe, eligibility, ten reviewed ST intervals and six opening-status records remain exact.
+- Source review covers 1839 events: 1119 have field-scoped evidence (1113 automated primary/structured, six manual), and 720 did not pass this review. Verified payment dates do not certify missing share-listing or other terms. Preserve every unresolved case and the original failed source checks.
+- The repair passed 48 old model reloads, 1425 exact old accounts, 75 old paper accounts, 48 new fits, 1425 retrained accounts, 1425 fixed-forecast accounts and 75 new paper accounts. Evidence is under `artifacts/checks/distribution_repair_2026-11-21`.
+- The existing opening-gap calculation has a confirmed near-zero floating-residual/rank sensitivity. See `feature_precision_diagnostic.json`; this repair does not change feature formulas. Register a separate algebraically equivalent, scale-invariant numerical repair before applying it, independent of profit direction.
+- Two unused outer rule/cost accounts still lack the Agricultural Bank 2026-05-13 payment date. Keep that event unresolved; the primary strategy having clean accounts does not clear it.
+- No superiority or forward-performance claim is established. Keep inner account quality flags explicit; actual counts and candidate decisions are in the current training exposure and adoption audits.
+- 73 securities have 640 internal missing sessions. One five-session interval has sourced opening-status handling; 111 other gap endpoints remain unresolved. Never invent bars, suspension status, opening capacity or closing marks.
+- The announcement archive contains 625 completed queries and 2596 received documents. Collection alone does not certify financial facts. Seven CAPCO industry tables and BSE aliases are archived, but historical industry assignments, taxonomy, time availability and broader universe bias remain unresolved.
+- `artifacts/plans/reviewed_distributions_2026-11-23` is the current frozen conditional paper plan, expiring November 23 at 09:25 Shanghai time. Old plans remain unchanged. Do not fabricate fills or forward returns, or extend a frozen plan by changing its date.
+- Competition fees and matching remain unconfirmed. Follow the whitepaper for confirmed rules; retain the stricter existing position cap.
 - Do not operate a trading app, broker account or WeChat.
