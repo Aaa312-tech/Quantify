@@ -1,0 +1,23 @@
+{
+  "name": "distribution_page_order",
+  "registered_at": "2026-11-21T23:50:45.662932+08:00",
+  "parent_protocol": "configs/protocols/payout_scope.json",
+  "parent_protocol_sha256": "02596a4a9864a95c476c35e0ea783f36c38a333d12fe79d7677cbf92c0dd9236",
+  "phase": "implementation_payout_scope",
+  "reason": "The visible page number is emitted first in pypdf reading order for the already inspected Sany source. The initial final-line-only removal condition is insufficient; record this extension before implementation rather than silently reinterpreting it.",
+  "source": {
+    "path": "data/raw/disclosures_2026-11-21/documents/1220348296.pdf",
+    "sha256": "31f61dc4d1be0fbefae516e723bf94294d59b4b2ef044f47ec2b093a8b12b72e",
+    "first_nonempty_lines": [
+      "- 1 -",
+      "- 2 -"
+    ]
+  },
+  "boundary_rules": [
+    "Only adjacent physical pages may continue the sentence. Require a left tail ending with an explicit per-share/per-ten-share subject and a right start containing the uninterrupted cash-payout phrase, amount and explicit gross qualifier. No new section, unrelated header, omitted text or split numeric amount may be skipped.",
+    "A dash-delimited standalone page number may occur as the first or last nonempty extracted line. Both adjacent pages must have matching actual page numbers, or neither may have such markers. Preserve removed marker text and positions in evidence; mismatched, unpaired, interior or unmarked bare numeric lines do not authorize removal.",
+    "Recognized current-implementation scope and all original tax/class/historical exclusions still apply. Retain both page numbers and source parts for independent verification and whole-page visual review. Original pages and date extraction are unchanged."
+  ],
+  "scope": "Clarifies the page-number reading-order rule only. The parent protocol, earlier diagnostics and all frozen evidence remain unchanged; active inputs and returns are not modified.",
+  "facts_applied": false
+}
