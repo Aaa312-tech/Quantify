@@ -1,0 +1,73 @@
+{
+  "status": "PRESERVED_INITIAL_CLOSURE_FAILURE",
+  "recorded_at": "2026-11-22T06:29:33.695539+08:00",
+  "failed_checker_sha256": "427bc167482c73cb47ac9033a90e97fcdf868d6cb5174abf205fb6770913b093",
+  "failed_log_sha256": "ae3c0ac57f1d10393c4256d43e2833134be5e0119f4c3e256383fc45e549b9ab",
+  "cases": [
+    {
+      "reader": "pypdf",
+      "page": 2,
+      "line_count": 23,
+      "matches": [
+        {
+          "index": 0,
+          "text": " 2 ",
+          "first_or_last": true,
+          "previous": null,
+          "next": "【注】 ； 持有首发后限售股、 股权激励限售股及无限售流通股的证券"
+        }
+      ]
+    },
+    {
+      "reader": "pypdf",
+      "page": 3,
+      "line_count": 22,
+      "matches": [
+        {
+          "index": 0,
+          "text": " 3 ",
+          "first_or_last": true,
+          "previous": null,
+          "next": "直接划入其资金账户。 "
+        }
+      ]
+    },
+    {
+      "reader": "mupdf_unsorted",
+      "page": 2,
+      "line_count": 23,
+      "matches": [
+        {
+          "index": 0,
+          "text": "2",
+          "first_or_last": true,
+          "previous": null,
+          "next": "【注】；持有首发后限售股、股权激励限售股及无限售流通股的证券"
+        }
+      ]
+    },
+    {
+      "reader": "mupdf_unsorted",
+      "page": 3,
+      "line_count": 32,
+      "matches": [
+        {
+          "index": 0,
+          "text": "3",
+          "first_or_last": true,
+          "previous": null,
+          "next": "直接划入其资金账户。 "
+        },
+        {
+          "index": 12,
+          "text": "3 ",
+          "first_or_last": false,
+          "previous": "三峡资本控股有限责任公司 ",
+          "next": "08*****116 "
+        }
+      ]
+    }
+  ],
+  "explanation": "Page3 contains a legitimate table-row index3 as well as isolated footer3. Requiring the number to occur exactly once over the whole page is overrestrictive. Only the observed boundary-line footer, corroborated by isolated PDF geometry, may be excluded; table-row3 must remain.",
+  "facts_accepted": 0
+}

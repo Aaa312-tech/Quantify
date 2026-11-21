@@ -1,0 +1,38 @@
+{
+  "name": "residual_financial_scope_closure",
+  "registered_at": "2026-11-22T06:20:58.144158+08:00",
+  "parent_protocol": {
+    "path": "configs/protocols/residual_narrative_review.json",
+    "sha256": "24649324742999877bfd1fb2af76837bccb7cf415475794f2b05c0fab72b05c5"
+  },
+  "initial_checker": {
+    "path": "artifacts/checks/distribution_residuals_2026-11-22/read_primary_financials.py",
+    "sha256": "7505df63a9b4fb408a52f0c6ad12e9516edb8d66e863912e4930391a6b52ffcc"
+  },
+  "initial_review": {
+    "path": "artifacts/checks/distribution_residuals_2026-11-22/primary_financial_review.json",
+    "sha256": "53d8e5a2af1bc8069d3244feae716e671144bc8667c627b5056aeee48f435b0f"
+  },
+  "initial_text": {
+    "path": "artifacts/checks/distribution_residuals_2026-11-22/primary_financial_text.json.gz",
+    "sha256": "e3118dc6aeae959864dd841c509037cc1fae712889fd204fbc0de38e206d6480"
+  },
+  "scope": {
+    "primary_events": 95,
+    "documents": 136,
+    "physical_pages": 498,
+    "initial_cash_reader_exceptions": 26,
+    "initial_narrative_date_exceptions": 1
+  },
+  "methods": [
+    "Preserve the first independent diagnostic and executed checker. Recheck the full 95-event and 136-document scope; never change the production reader or economic values in this source phase.",
+    "Recognize explicit gross-tax qualifier followed by a comma/semicolon and tax detail as well as a closing parenthesis. Currency, share units and numeric token boundaries remain mandatory. Retain all recognized statements and classifications.",
+    "Reconstruct only exact named implementation section headings split over text lines. Read the source page to confirm section identity and financial scope; historical approvals do not become current distributions.",
+    "For the one payment sentence interrupted by a bare printed page footer, require both whole physical pages and PDF word geometry. Record the specific isolated footer and sentence parts; do not remove arbitrary standalone numbers in the general reader.",
+    "Preserve catalogue/body-title differences. Manually bind exact printed legal issuer, labelled code and body title for exceptions; no fuzzy-title normalization. Confirm price-companion purposes separately from financial entitlement.",
+    "All newly recognized current cash statements must agree with stored and provider values within the unchanged Decimal 1e-12 tolerance. Contradictory and unsupported material remains explicitly unresolved.",
+    "Whole-page inspections count only pages actually opened and observed, separately from text extraction and geometric checks. Related-amendment review and full 387-event dispositions still gate final financial acceptance."
+  ],
+  "facts_accepted": 0,
+  "whole_goal_complete": false
+}
