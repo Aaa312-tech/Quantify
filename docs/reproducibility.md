@@ -17,11 +17,23 @@ python -m quantfolio train --first 1 --last 1 --output artifacts/experiments/fir
 
 本次[维护协议](../configs/protocols/window_range.json)不改变输入、拟合公式、候选、选型、交易和风控。当前快照包含698个交易日，仍安排11个历史窗口及最新一期；修改前后的调用参数一致，所有普通身份检查保持。日历调用记录是没有拟合的诊断，存于`artifacts/checks/window_range_2026-11-21/orchestration`，不能作为训练输出使用。其他日历长度仅在合成测试中验证，没有生成未来行情或未来训练。
 
-维护验收包含545项测试、当前48个模型重载、1425个完整账户和75个纸面账户重放；没有新增模型拟合，也不更新历史训练回执的源码身份。当前配置、历史结果和11月23日冻结计划保持原字节，最终记录见[completion.json](../artifacts/checks/window_range_2026-11-21/completion.json)。
+维护验收包含545项测试、当前48个模型重载、1425个完整账户和75个纸面账户重放；没有新增模型拟合，也不更新历史训练回执的源码身份。该维护阶段的配置、历史结果和11月23日冻结计划保持原字节，最终记录见[completion.json](../artifacts/checks/window_range_2026-11-21/completion.json)。
 
 ## 当前支付日接入
 
-当前配置与`configs/experiments/companion_payments.toml`一致；协议为`configs/protocols/companion_payments.json`，精确算术补核另见`payment_label_precision.json`。完整证据在`artifacts/checks/companion_payments_2026-11-21`，最终入口为`completion.json`、`validation.json`、`activation.json`和`input_closure.json`。`input_scope.json`保留首次独立核算失败，不能替换为最后状态。
+当前配置与`configs/experiments/declared_payments.toml`一致，协议为`configs/protocols/declared_payments.json`。完整验收在`artifacts/checks/declared_payments_2026-11-21`；读取`completion.json`、`validation.json`、`activation.json`与`input_scope.json`。首次保留比较失败另存`input_failure.json`及原程序、日志。
+
+```powershell
+python -m quantfolio --config configs/experiments/declared_payments.toml train --include-latest --output artifacts/experiments/declared_payment_reproduction
+python -m quantfolio --config configs/experiments/declared_payments.toml evaluate --run artifacts/experiments/declared_payment_reproduction --all-policies --output artifacts/evaluations/declared_payment_reproduction
+python -m quantfolio --config configs/experiments/declared_payments.toml verify --run artifacts/experiments/declared_payment_reproduction --output artifacts/checks/declared_payment_reproduction
+```
+
+输出目录须尚不存在。命令使用冻结快照，默认覆盖其全部完整窗口；重建须另行登记输出路径与来源、标签范围。旧阶段命令和验收边界保留在下方，不把原回执改成当前源码身份。
+
+## 公告角色阶段的支付日接入
+
+该阶段配置与`configs/experiments/companion_payments.toml`一致；协议为`configs/protocols/companion_payments.json`，精确算术补核另见`payment_label_precision.json`。完整证据在`artifacts/checks/companion_payments_2026-11-21`，最终入口为`completion.json`、`validation.json`、`activation.json`和`input_closure.json`。`input_scope.json`保留首次独立核算失败，不能替换为最后状态。
 
 ```powershell
 python -m quantfolio --config configs/experiments/companion_payments.toml train --first 1 --last 11 --include-latest --output artifacts/experiments/payment_reproduction
@@ -324,7 +336,7 @@ python -m quantfolio repair-status --protocol configs/protocols/historical_statu
 
 ## 六项公司行为修正
 
-当前研究按`configs/protocols/inner_event_repair.json`执行，登记提交为
+该历史阶段按`configs/protocols/inner_event_repair.json`执行，登记提交为
 `f53744dddaeffd48c09933349fc0f0d201eae80d`。保留前一轮日期化ST区间及全部非标签输入：
 
 ```powershell
@@ -363,7 +375,7 @@ CI在Windows的Python 3.11、3.13及Ubuntu的Python 3.13上，从源码分发包
 ## 已验收的11月20日扩展
 
 行情扩展阶段的完整训练、评估与状态复核保存于`daily_source_extension_2026-11-21`；
-它是历史验收阶段，当前配置使用本页开头的`2026-11-20-companion-payments`快照。
+它是历史验收阶段，当前配置使用本页开头的`2026-11-20-declared-payments`快照。
 新数据来源、单位转换和历史标签变化见同名`artifacts/checks`目录；实现兼容性、训练影响
 及固定旧预测对照分别存档，旧腾讯全池核验失败记录不变。
 

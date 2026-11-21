@@ -539,6 +539,45 @@ def accepted_date_records(protocol, registered, acceptance, independent):
         ):
             raise ValueError("Companion date acceptance binding differs")
         records = independent["fields"]
+    elif registered.get("phase") == "gross_cash_wording":
+        records = independent.get("records", [])
+        preserved = independent.get("preserved_fields", [])
+        field_checks = {"record_date", "ex_date", "cash_pay_date", "cash_per_share"}
+        checks = field_checks | {"issuer", "title"}
+        evidence = acceptance.get("evidence_sha256", {})
+        if (
+            acceptance.get("status") != "PASS_SOURCE_ONLY"
+            or acceptance.get("protocol_sha256") != protocol["review_protocol"]["sha256"]
+            or acceptance.get("facts_applied") is not False
+            or independent.get("failed_events") != 0
+            or independent.get("events") != len(records)
+            or independent.get("field_checks") != len(records) * len(field_checks)
+            or acceptance.get("independent_field_checks") != independent.get("field_checks")
+            or acceptance.get("prior_supported_fields_preserved") != len(preserved)
+            or any(len(field) != 4 for field in preserved)
+            or len({tuple(field[:3]) for field in preserved}) != len(preserved)
+            or acceptance.get("prior_supported_events_preserved")
+            != len({tuple(field[:2]) for field in preserved})
+            or evidence.get("source_review.json") != protocol["review_sha256"]
+            or evidence.get("field_acceptance.json") != protocol["independent_review"]["sha256"]
+            or acceptance.get("active_state", {}).get("bundle_sha256")
+            != protocol["source_bundle_sha256"]
+            or acceptance.get("active_missing_payment_dates_supported")
+            != protocol["expected_changes"]["cash_pay_date"]
+            or acceptance.get("added_payment_dates")
+            != protocol["verified_additions"]["cash_pay_date"]
+            or acceptance.get("already_present_matching_dates")
+            != protocol["verified_additions"]["cash_pay_date"]
+            - protocol["expected_changes"]["cash_pay_date"]
+            or len({(row["symbol"], row["ex_date"]) for row in records}) != len(records)
+            or any(
+                row.get("passed") is not True
+                or set(row.get("checks", {})) != checks
+                or any(check.get("passed") is not True for check in row["checks"].values())
+                for row in records
+            )
+        ):
+            raise ValueError("Declared payment acceptance binding differs")
     else:
         if (
             acceptance["status"] != "SOURCE_REVIEW_ACCEPTED_WITH_UNRESOLVED_EVENTS"
@@ -599,6 +638,16 @@ def _accepted_date_supplements(paths, protocol, review, original, manifest):
                 or read(frozen(reference))["status"] != "PASS"
             ):
                 raise ValueError("Companion date source closure binding differs")
+    elif registered.get("phase") == "gross_cash_wording":
+        closure = protocol["source_closure"]
+        if set(closure) != {"amendment_review.json", "visual_review.json"}:
+            raise ValueError("Declared payment source closure inventory differs")
+        for name, reference in closure.items():
+            if (
+                acceptance["evidence_sha256"].get(name) != reference["sha256"]
+                or read(frozen(reference))["status"] != "PASS"
+            ):
+                raise ValueError("Declared payment source closure binding differs")
     basis = load_snapshot(paths, basis_path, registered["source_data_cutoff"])
     if review["original_actions_sha256"] != digest(basis["actions"]):
         raise ValueError("Date review does not bind the original action inventory")

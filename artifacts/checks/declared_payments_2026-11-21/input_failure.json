@@ -1,0 +1,58 @@
+{
+  "status": "FAIL",
+  "recorded_at": "2026-11-21T22:49:24.307936+08:00",
+  "checker_sha256": "84072a992d4fbdfbf30bbfcd47003ad31acab41e722700e9a771947640681753",
+  "log_sha256": "7da72d978a5b8222b5dfb54c12c829e4e6fa1b85d14fd9d0521fbab3024cd2ce",
+  "differences": [
+    {
+      "symbol": "sz002352",
+      "ex_date": "2024-11-07",
+      "field": "cash_per_share",
+      "source_value": "1.4",
+      "runtime_value": 1.4
+    },
+    {
+      "symbol": "sz002352",
+      "ex_date": "2024-11-07",
+      "field": "ex_reference_cash_per_share",
+      "source_value": "1.3939620",
+      "runtime_value": 1.393962
+    },
+    {
+      "symbol": "sz300760",
+      "ex_date": "2025-05-29",
+      "field": "cash_per_share",
+      "source_value": "1.97",
+      "runtime_value": 1.9699999999999998
+    },
+    {
+      "symbol": "sh600989",
+      "ex_date": "2026-04-28",
+      "field": "cash_per_share",
+      "source_value": "0.4921",
+      "runtime_value": 0.4921
+    },
+    {
+      "symbol": "sh600989",
+      "ex_date": "2026-04-28",
+      "field": "ex_reference_cash_per_share",
+      "source_value": "0.42",
+      "runtime_value": 0.42
+    },
+    {
+      "symbol": "sz300760",
+      "ex_date": "2026-05-28",
+      "field": "cash_per_share",
+      "source_value": "1.56",
+      "runtime_value": 1.56
+    },
+    {
+      "symbol": "sz301308",
+      "ex_date": "2026-06-02",
+      "field": "cash_per_share",
+      "source_value": "0.9907442",
+      "runtime_value": 0.9907442
+    }
+  ],
+  "reason": "The extra preservation assertion equated source decimal strings with already accepted runtime floats. Preserve source facts exactly against the frozen review and runtime values exactly against the parent, rather than reinterpret historical monetary amounts. This failed before label checks or fitting."
+}
