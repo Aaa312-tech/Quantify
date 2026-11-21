@@ -225,6 +225,114 @@ def checked_path(root, relative, expected):
     return path
 
 
+def _compact(text):
+    return re.sub(r"\s+", "", unicodedata.normalize("NFKC", text))
+
+
+def notice_role(symbol, candidate, pages):
+    """Separate price notices only when their own issuer, title and body agree."""
+    title = _compact(candidate["title"])
+    result = {**candidate, "role": "UNKNOWN", "evidence": []}
+    if not pages or not _compact(pages[0]):
+        return {**result, "reason": "UNSUPPORTED_DOCUMENT"}
+    first = _compact(pages[0])
+    if title not in first:
+        return {**result, "reason": "TITLE_NOT_IN_FIRST_PAGE"}
+    codes = set(
+        re.findall(
+            r"(?:证券|股票)\s*代码\s*[:：]?\s*(\d{6})(?!\d)",
+            unicodedata.normalize("NFKC", pages[0]),
+        )
+    )
+    if symbol[-6:] not in codes:
+        return {**result, "reason": "LABELLED_ISSUER_NOT_FOUND"}
+    if any(word in title for word in ("更正", "修订", "补充", "取消", "终止", "撤销", "延期")):
+        return {**result, "reason": "AMENDED_OR_WITHDRAWN_NOTICE"}
+    distribution = any(word in title for word in ("分派", "分配", "分红", "派息"))
+    if (
+        distribution
+        and title.endswith("实施公告")
+        and not any(word in title for word in ("调整", "回购", "转股", "提示", "预案"))
+    ):
+        return {**result, "role": "IMPLEMENTATION", "reason": "FORMAL_IMPLEMENTATION_TITLE"}
+    objects = {"REPURCHASE_PRICE": r"回购[^。；;]{0,16}?价格", "CONVERSION_PRICE": r"转股价格"}
+    roles = [role for role, pattern in objects.items() if re.search(pattern, title)]
+    if (
+        not distribution
+        or "调整" not in title
+        or not title.endswith("公告")
+        or "实施公告" in title
+        or len(roles) != 1
+    ):
+        return {**result, "reason": "MIXED_OR_UNSUPPORTED_TITLE"}
+    role = roles[0]
+    for number, raw in enumerate(pages, 1):
+        text = _compact(raw)
+        if number == 1:
+            text = text.split(title, 1)[1]
+        for clause in re.split(r"[。；;]", text):
+            if len(clause) > 400:
+                continue
+            if (
+                re.search(objects[role], clause)
+                and "调整" in clause
+                and re.search(NUMBER + r"元(?:/股)?", clause)
+            ):
+                result["evidence"].append({"page": number, "text": clause})
+    if not result["evidence"]:
+        return {**result, "reason": "PRICE_ADJUSTMENT_BODY_NOT_SUPPORTED"}
+    return {**result, "role": role, "reason": "PRICE_ADJUSTMENT_TITLE_AND_BODY"}
+
+
+def resolve_companion_notices(symbol, candidates, documents):
+    """Keep every candidate; mixed or ambiguous document sets cannot select a primary."""
+    ids = [candidate["id"] for candidate in candidates]
+    if len(ids) != len(set(ids)) or set(ids) != set(documents):
+        raise ValueError("Candidate document identities differ or are duplicated")
+    roles = [notice_role(symbol, c, documents[c["id"]]) for c in candidates]
+    primaries = [row for row in roles if row["role"] == "IMPLEMENTATION"]
+    resolved = (
+        len(candidates) > 1
+        and len(primaries) == 1
+        and all(row["role"] != "UNKNOWN" for row in roles)
+    )
+    return {
+        "status": "RESOLVED_COMPANIONS" if resolved else "UNRESOLVED_CANDIDATES",
+        "selected_id": primaries[0]["id"] if resolved else None,
+        "candidates": roles,
+    }
+
+
+def _candidate_pages(root, symbol, candidates, frozen):
+    from pypdf import PdfReader
+
+    documents = {}
+    for candidate in candidates:
+        if candidate["id"] in documents:
+            raise ValueError("Duplicate candidate document")
+        receipt = read(checked_path(root, candidate["receipt"], frozen[candidate["receipt"]]))
+        expected = {
+            "id": candidate["id"],
+            "title": candidate["title"],
+            "catalog_date": candidate["catalog_date"],
+            "path": candidate["source"],
+            "sha256": candidate["source_sha256"],
+            "published_code": symbol[-6:],
+            "status": "RECEIVED",
+        }
+        if any(receipt.get(k) != v for k, v in expected.items()) or symbol not in receipt.get(
+            "requested_symbols", []
+        ):
+            raise ValueError("Candidate receipt identity differs")
+        pdf = checked_path(root, candidate["source"], candidate["source_sha256"])
+        documents[candidate["id"]] = (
+            [page.extract_text() or "" for page in PdfReader(pdf).pages]
+            if pdf.suffix.lower() == ".pdf"
+            else []
+        )
+    return documents
+
+
 def registered_inputs(paths, protocol_path):
     protocol_path = protocol_path.resolve()
     if not protocol_path.is_relative_to(paths.root / "configs/protocols"):
@@ -235,6 +343,8 @@ def registered_inputs(paths, protocol_path):
     protocol = read(protocol_path)
     if protocol["name"] != "distribution_repair" or set(protocol["allowed_fact_changes"]) != FIELDS:
         raise ValueError("Unsupported distribution repair protocol")
+    if protocol.get("candidate_resolution") not in (None, "price_adjustment_companions"):
+        raise ValueError("Unsupported candidate resolution rule")
     inputs = {}
     for key, item in protocol["source_inputs"].items():
         inputs[key] = read(checked_path(paths.root, item["path"], item["sha256"]))
@@ -300,6 +410,18 @@ def review_distributions(paths, protocol):
             raise ValueError("Structured review belongs to another action")
         base = {"symbol": key[0], "ex_date": key[1], "original_action_sha256": digest(action)}
         row = {**base, "verified_fields": {}}
+        candidate = None
+        if index[key]["status"] == "ONE_TEXT_CANDIDATE":
+            candidate = index[key]["candidates"][0]
+        elif (
+            index[key]["status"] == "MULTIPLE_TEXT_CANDIDATES"
+            and protocol.get("candidate_resolution") == "price_adjustment_companions"
+        ):
+            candidates = index[key]["candidates"]
+            documents = _candidate_pages(paths.root, key[0], candidates, frozen)
+            resolution = resolve_companion_notices(key[0], candidates, documents)
+            row["candidate_resolution"] = resolution
+            candidate = next((c for c in candidates if c["id"] == resolution["selected_id"]), None)
         if key in manual:
             review = manual[key]
             if review["review_status"] != "FULL_TEXT_AND_RELEVANT_PAGE_IMAGES_REVIEWED":
@@ -323,7 +445,7 @@ def review_distributions(paths, protocol):
                 evidence_pages=review["evidence_pages"],
                 known_at=known.isoformat() + "T00:00:00+08:00",
             )
-        elif index[key]["status"] != "ONE_TEXT_CANDIDATE":
+        elif candidate is None:
             row["status"] = index[key]["status"]
         elif structured[key]["status"] not in (
             "STRUCTURED_DATE_CANDIDATE",
@@ -331,7 +453,6 @@ def review_distributions(paths, protocol):
         ):
             row["status"] = structured[key]["status"]
         else:
-            candidate = index[key]["candidates"][0]
             known = source_available(candidate, action)
             row["status"] = "UNSUPPORTED_TITLE_OR_LATE_SOURCE"
             if known:

@@ -2,6 +2,19 @@
 
 项目需要Python 3.11–3.13和Git LFS。先按README克隆完整仓库，在虚拟环境中安装 `.[dev]`。数据与模型属于项目目录，不打进Python安装包；从其他目录运行时使用 `--project PATH` 或 `QUANTFOLIO_ROOT`。
 
+## 公告角色来源核对
+
+最新来源阶段的协议为`configs/protocols/distribution_roles.json`，证据位于
+`artifacts/checks/distribution_roles_2026-11-21`。使用`.[disclosures]`中的固定pypdf版本运行
+`review-distributions --protocol ...`；独立审查另需`.[industry-data]`中的PyMuPDF。
+现有输出已冻结，重跑须先登记新的输出协议，不覆盖旧检查。
+
+`source_review.json`保留1839个事件、全部原候选及角色判定；正式验收还需同时读取
+`independent_closure.json`、`amendment_closure.json`、`visual_review.json`和`completion.json`。
+首次独立读取和修订跨页断言失败保留，不能用原始提取结果代替最终验收。新增77项支付日
+只作为来源事实，73项尚待接入当前快照；本轮没有重新拟合或生成新计划。48个当前模型
+通过普通模型守卫重新加载，全部预测精确一致。后续接入须单独登记标签范围和完整验证。
+
 ## 分红可用时间与当前研究输入
 
 当前配置与`configs/experiments/distribution_availability.toml`一致，绑定新快照、训练、评估
