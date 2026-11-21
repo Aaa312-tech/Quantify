@@ -2,9 +2,31 @@
 
 项目需要Python 3.11–3.13和Git LFS。先按README克隆完整仓库，在虚拟环境中安装 `.[dev]`。数据与模型属于项目目录，不打进Python安装包；从其他目录运行时使用 `--project PATH` 或 `QUANTFOLIO_ROOT`。
 
-## ETF接入与当前研究输入
+## 分红可用时间与当前研究输入
 
-当前使用`configs/experiments/etf_reported.toml`对应的快照、训练和评估。事前协议为
+当前配置与`configs/experiments/distribution_availability.toml`一致，绑定新快照、训练、评估
+及状态审查。协议为`configs/protocols/distribution_availability.json`；原始失败协议
+`distribution_dates.json`、部分输出和实际源码均保留。验收在
+`artifacts/checks/distribution_dates_2026-11-21`，来源及标签范围见[接入说明](distribution_availability.md)。
+
+```powershell
+python -m quantfolio --config configs/experiments/distribution_availability.toml train --first 1 --last 11 --include-latest --output artifacts/experiments/distribution_reproduction
+python -m quantfolio --config configs/experiments/distribution_availability.toml evaluate --run artifacts/experiments/distribution_reproduction --all-policies --output artifacts/evaluations/distribution_reproduction
+python -m quantfolio --config configs/experiments/distribution_availability.toml verify --run artifacts/experiments/distribution_reproduction --output artifacts/checks/distribution_reproduction
+```
+
+这些命令读取已冻结的新快照，输出目录必须尚不存在。重新构建快照使用`repair-data`及
+独立登记的新输出路径，保留原来源、审查基础与106项独立标签的哈希绑定，不能改写现有协议
+或冻结快照。缺少独立标签验收的协议仍要求全部标签精确不变。
+
+原输入的48模型、1425完整账户及75纸面账户实际在首次日期补充源码下验证。后续仅改变快照
+验收范围；`compatibility/source_review.json`保留AST证明和最终源码下额外48次普通模型重载。
+原账户回执保留实际执行源码身份，不改写为最终哈希。新数据完整拟合、重载、账户与纸面
+检查均使用最终源码；24阶段目标预期在新数据拟合前冻结。
+
+## ETF接入（前一阶段）
+
+该阶段使用`configs/experiments/etf_reported.toml`对应的快照、训练和评估。事前协议为
 `configs/protocols/etf_integration.json`，三个固定对照的完整验收在
 `artifacts/checks/etf_integration_2026-11-21`。覆盖与身份组仅作归因，不能按收益另选基线。
 
@@ -299,7 +321,7 @@ CI在Windows的Python 3.11、3.13及Ubuntu的Python 3.13上，从源码分发包
 ## 已验收的11月20日扩展
 
 行情扩展阶段的完整训练、评估与状态复核保存于`daily_source_extension_2026-11-21`；
-它是历史验收阶段，当前配置使用本页开头的`2026-11-20-etf-reported`快照。
+它是历史验收阶段，当前配置使用本页开头的`2026-11-20-distribution-availability`快照。
 新数据来源、单位转换和历史标签变化见同名`artifacts/checks`目录；实现兼容性、训练影响
 及固定旧预测对照分别存档，旧腾讯全池核验失败记录不变。
 
@@ -403,4 +425,4 @@ python -m quantfolio review-distributions --protocol configs/protocols/distribut
 
 以上协议输出已经冻结，命令会拒绝覆盖。重新执行前必须登记新的`review`和`checks_output`，并保留相同事件清单、来源哈希及门槛。独立读取使用`pymupdf==1.27.2.3`，脚本`independent_fields.py`的`--output`也必须指向不存在的新文件；它不调用生产提取器。首次执行的读取器另存`independent_initial.py`，对应原11项失败，不能用修复后源码解释其旧结果。
 
-最终验收见[来源说明](distribution_terms.md)链接的三个结论文件。435项本地测试通过，1项环境检查跳过；48个模型普通重载的预测完全一致。新增字段尚未接入，因此没有新增拟合和回测结果；接入须另行登记全量重训与账户对照。
+该来源阶段的最终验收见[来源说明](distribution_terms.md)链接的三个结论文件。435项本地测试通过，1项环境检查跳过；48个模型普通重载的预测完全一致。该阶段没有接入新增字段，也没有新增拟合和回测结果；后续接入及其单独登记的重训与账户对照见[分红与股份可用时间](distribution_availability.md)。

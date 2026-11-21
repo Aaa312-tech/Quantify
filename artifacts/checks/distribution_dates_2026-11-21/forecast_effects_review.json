@@ -1,0 +1,85 @@
+{
+  "status": "PASS",
+  "checked_at": "2026-11-21T18:58:24.590855+08:00",
+  "attribution_sha256": "a3a49840a1c858ed627e8511051dcff0f95d1aff161ec66e08be9e7d0d4fbb3c",
+  "evaluation_sha256": "3ac213f77ff71e396b4c28de74f5d87c2e5735f8f3c39dead625b5b4e8f0f59e",
+  "results": {
+    "data_execution": {
+      "accounts": 1425,
+      "changed_accounts": 7,
+      "changed_components": {
+        "summary": 7,
+        "ledger/curve": 7,
+        "ledger/trades": 7,
+        "ledger/events": 7,
+        "ledger/decisions": 1
+      },
+      "examples": {
+        "summary": {
+          "path": "evaluation/continuous/10bps/fixed_all_on.json.gz",
+          "account_index": 0,
+          "first_difference": {
+            "path": "/ending_cash",
+            "before": 940375.03,
+            "after": 941737.43
+          }
+        },
+        "ledger/curve": {
+          "path": "evaluation/continuous/10bps/fixed_all_on.json.gz",
+          "account_index": 0,
+          "first_difference": {
+            "path": "/115/cash",
+            "before": 859563.57,
+            "after": 860925.97
+          }
+        },
+        "ledger/trades": {
+          "path": "evaluation/continuous/10bps/fixed_all_on.json.gz",
+          "account_index": 0,
+          "first_difference": {
+            "path": "/61/cash_after",
+            "before": 940375.03,
+            "after": 941737.43
+          }
+        },
+        "ledger/events": {
+          "path": "evaluation/continuous/10bps/fixed_all_on.json.gz",
+          "account_index": 0,
+          "first_difference": {
+            "path": "/2/pay_date",
+            "before": null,
+            "after": "2026-05-13"
+          }
+        },
+        "ledger/decisions": {
+          "path": "evaluation/continuous/30bps/fixed_remove_penalty10.json.gz",
+          "account_index": 0,
+          "first_difference": {
+            "path": "/128/drawdown",
+            "before": 0.06180744000000005,
+            "after": 0.061807439999999936
+          }
+        }
+      }
+    },
+    "retraining_selection": {
+      "accounts": 1425,
+      "changed_accounts": 878,
+      "changed_components": {
+        "ledger/decisions": 878
+      },
+      "examples": {
+        "ledger/decisions": {
+          "path": "evaluation/10bps/selected_strategy.ledgers.json.gz",
+          "account_index": 0,
+          "first_difference": {
+            "path": "/0/predicted_net_objective",
+            "before": 0.008738241822037446,
+            "after": 0.008738107367210025
+          }
+        }
+      }
+    }
+  },
+  "scope": "Explanatory comparison of every stored account component. Prior numerical acceptance, returns and complete difference records are unchanged."
+}

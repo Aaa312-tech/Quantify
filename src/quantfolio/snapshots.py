@@ -370,7 +370,80 @@ def repair_gap_snapshot(paths, target, protocol_path, integrity):
     return audit
 
 
-def reviewed_distribution_actions(actions, calendar, facts):
+def date_supplement_facts(actions, basis_actions, facts, additions, binding):
+    """Bind accepted missing dates to current events without replacing economic terms."""
+
+    def key(row):
+        return row["symbol"], row["ex_date"]
+
+    current = {key(row): row for row in actions}
+    basis = {key(row): row for row in basis_actions}
+    reviewed = {key(row): row for row in facts}
+    if (
+        len(current) != len(actions)
+        or len(basis) != len(basis_actions)
+        or current.keys() != basis.keys()
+    ):
+        raise ValueError("Date supplement action inventory differs")
+    if len(reviewed) != len(facts):
+        raise ValueError("Duplicate reviewed event")
+    economic = (
+        "symbol",
+        "code",
+        "id",
+        "record_date",
+        "ex_date",
+        "cash_per_share",
+        "share_multiplier",
+        "bonus_per_share",
+        "capitalization_per_share",
+        "ex_reference_cash_per_share",
+        "ex_reference_share_multiplier",
+        "cash_rounding",
+    )
+    seen, supplements = set(), []
+    for addition in additions:
+        identity = key(addition)
+        if identity in seen or identity not in current or not addition["passed"]:
+            raise ValueError("Duplicate, absent or unverified date supplement")
+        seen.add(identity)
+        fields = addition["added_fields"]
+        if not fields:
+            continue
+        if not set(fields) <= {"cash_pay_date", "share_list_date"} or identity not in reviewed:
+            raise ValueError("Unregistered date supplement field")
+        fact, old, action = reviewed[identity], basis[identity], current[identity]
+        if fact["status"] != "VERIFIED_FIELDS" or fact["original_action_sha256"] != digest(old):
+            raise ValueError("Reviewed date basis identity differs")
+        if any(action.get(field) != old.get(field) for field in economic):
+            raise ValueError("Current economic identity differs from the reviewed event")
+        missing = {}
+        for field, value in fields.items():
+            if fact["verified_fields"].get(field) != value:
+                raise ValueError("Independent date differs from the accepted source")
+            if not value or str(pd.Timestamp(value).date()) != value or value < action["ex_date"]:
+                raise ValueError("Invalid supplementary availability date")
+            if action.get(field) is not None and action[field] != value:
+                raise ValueError("Existing availability date conflict")
+            if action.get(field) is None:
+                missing[field] = value
+        if missing:
+            supplements.append(
+                {
+                    **deepcopy(fact),
+                    "original_action_sha256": digest(action),
+                    "verified_fields": missing,
+                    "date_basis": {
+                        **binding,
+                        "reviewed_action_sha256": digest(old),
+                        "current_action_sha256": digest(action),
+                    },
+                }
+            )
+    return supplements
+
+
+def reviewed_distribution_actions(actions, calendar, facts, *, supplement=False):
     """Apply only individually verified fields; retain opaque event identities and source bytes."""
     from .distributions import FIELDS
 
@@ -388,9 +461,13 @@ def reviewed_distribution_actions(actions, calendar, facts):
         fields = fact["verified_fields"]
         if not fields or not set(fields) <= FIELDS:
             raise ValueError("Unregistered distribution field")
+        if supplement and not set(fields) <= {"cash_pay_date", "share_list_date"}:
+            raise ValueError("Date supplements cannot change entitlements")
         changed = {}
         for field, value in fields.items():
             previous = action.get(field)
+            if supplement and previous is not None and previous != value:
+                raise ValueError("Existing availability date conflict")
             if field in ("cash_per_share", "ex_reference_cash_per_share"):
                 number = Decimal(str(value))
                 if not number.is_finite() or number < 0:
@@ -414,17 +491,127 @@ def reviewed_distribution_actions(actions, calendar, facts):
                 changed[field] = {"before": previous, "after": value}
         if action.get("cash_pay_date") and action["cash_per_share"] <= 0:
             raise ValueError("Non-cash action has a payment date")
-        action["cash_available_date"] = next_opening(calendar, action.get("cash_pay_date"))
-        action["distribution_review"] = {
+        if supplement and not changed:
+            continue
+        if not supplement or "cash_pay_date" in changed:
+            action["cash_available_date"] = next_opening(calendar, action.get("cash_pay_date"))
+        evidence = {
             "method": fact["method"],
             "fields": sorted(fields),
             "source": fact["source"],
             "pages": fact["evidence_pages"],
             "known_at": fact["known_at"],
         }
+        if supplement:
+            evidence["date_basis"] = fact["date_basis"]
+            action.setdefault("distribution_date_reviews", []).append(evidence)
+        else:
+            action["distribution_review"] = evidence
         if changed:
             changes.append({"symbol": key[0], "ex_date": key[1], "fields": changed})
     return repaired, changes
+
+
+def _accepted_date_supplements(paths, protocol, review, original, manifest):
+    """Check the frozen source-review basis before rebinding its accepted date fields."""
+    from . import distributions
+
+    def frozen(reference):
+        if manifest["files"].get(reference["path"]) != reference["sha256"]:
+            raise ValueError("Date supplement reference is not frozen")
+        return distributions.checked_path(paths.root, reference["path"], reference["sha256"])
+
+    registered_path = frozen(protocol["review_protocol"])
+    registered, _ = distributions.registered_inputs(paths, registered_path)
+    basis_path = frozen(protocol["review_basis"])
+    acceptance = read(frozen(protocol["source_acceptance"]))
+    independent = read(frozen(protocol["independent_review"]))
+    if (
+        registered["source_bundle"] != protocol["review_basis"]["path"]
+        or registered["source_bundle_sha256"] != sha(basis_path)
+        or registered["source_data_cutoff"] != protocol["source_data_cutoff"]
+        or registered["review"] != protocol["review"]
+        or review["protocol_sha256"] != sha(registered_path)
+        or review["data_snapshot_sha256"] != sha(basis_path)
+        or review["source_inputs"] != registered["source_inputs"]
+        or acceptance["status"] != "SOURCE_REVIEW_ACCEPTED_WITH_UNRESOLVED_EVENTS"
+        or not acceptance["previous_facts_preserved"]
+        or acceptance["source_review_sha256"] != protocol["review_sha256"]
+        or acceptance["active_bundle_sha256"] != protocol["source_bundle_sha256"]
+        or acceptance["independent_fields"]["sha256"] != protocol["independent_review"]["sha256"]
+        or independent["status"] != "PASS"
+        or independent["source_review_sha256"] != protocol["review_sha256"]
+        or set(protocol["supplement_fields"]) != {"cash_pay_date", "share_list_date"}
+    ):
+        raise ValueError("Accepted date review binding differs")
+    basis = load_snapshot(paths, basis_path, registered["source_data_cutoff"])
+    if review["original_actions_sha256"] != digest(basis["actions"]):
+        raise ValueError("Date review does not bind the original action inventory")
+    identities = {(r["symbol"], r["ex_date"]): digest(r) for r in basis["actions"]}
+    records = {(r["symbol"], r["ex_date"]): r["original_action_sha256"] for r in review["records"]}
+    if records != identities or len(records) != len(review["records"]):
+        raise ValueError("Date review event inventory differs")
+    counts = Counter(f for r in independent["records"] for f in r["added_fields"])
+    counts["events"] = sum(bool(r["added_fields"]) for r in independent["records"])
+    if dict(counts) != protocol["verified_additions"]:
+        raise ValueError("Verified date addition inventory differs")
+    return date_supplement_facts(
+        original["actions"],
+        basis["actions"],
+        review["facts"],
+        independent["records"],
+        {
+            "review_sha256": protocol["review_sha256"],
+            "review_basis_sha256": sha(basis_path),
+            "source_acceptance_sha256": protocol["source_acceptance"]["sha256"],
+            "independent_review_sha256": protocol["independent_review"]["sha256"],
+        },
+    )
+
+
+def restored_label_table(table, records):
+    """Restore only independently accepted unknown-action labels at their original rows."""
+    expected = table.copy(deep=True)
+    seen = set()
+    for record in records:
+        position, horizon = record["row"], record["horizon"]
+        if (
+            not isinstance(position, int)
+            or isinstance(position, bool)
+            or not 0 <= position < len(table)
+            or type(horizon) is not int
+            or horizon not in HORIZONS
+            or (position, horizon) in seen
+        ):
+            raise ValueError("Invalid or duplicate restored label row")
+        seen.add((position, horizon))
+        row = table.iloc[position]
+        names = [f"{field}{horizon}" for field in LABEL_FIELDS]
+        before = [None if pd.isna(row[name]) else row[name] for name in names]
+        after = record["after"]
+        if (
+            row.symbol != record["symbol"]
+            or row.date_index != record["date_index"]
+            or not row.eligible
+            or before != record["before"]
+            or before[0] is not None
+            or before[1] != -1
+            or before[2] != LABEL_STATUS["ACTION_UNRESOLVED"]
+            or record["independent_before"] != before
+            or record["independent_after"] != after
+            or len(after) != 4
+            or not np.isfinite(after[0])
+            or after[0] < -1
+            or not isinstance(after[1], int)
+            or not isinstance(after[3], int)
+            or not row.date_index + 1 + horizon <= after[1] <= table.date_index.max()
+            or after[2] != LABEL_STATUS["OK"]
+            or after[3] != after[1] - (row.date_index + 1 + horizon)
+        ):
+            raise ValueError("Restored label differs from its accepted censoring basis")
+        for name, value in zip(names, after):
+            expected.iat[position, expected.columns.get_loc(name)] = value
+    return expected
 
 
 def repair_distribution_snapshot(paths, target, protocol_path, integrity):
@@ -443,18 +630,32 @@ def repair_distribution_snapshot(paths, target, protocol_path, integrity):
     source_path = distributions.checked_path(
         paths.root, protocol["source_bundle"], protocol["source_bundle_sha256"]
     )
+    operation = protocol.get("operation")
+    if operation not in (None, "supplement_verified_dates"):
+        raise ValueError("Unsupported distribution repair operation")
+    supplement = operation == "supplement_verified_dates"
     if (
-        review["protocol_sha256"] != sha(protocol_path)
-        or review["data_snapshot_sha256"] != sha(source_path)
-        or review["extractor_sha256"] != sha(Path(distributions.__file__))
+        review["extractor_sha256"] != sha(Path(distributions.__file__))
         or review["source_inputs"] != protocol["source_inputs"]
+        or (supplement and sha(review_path) != protocol["review_sha256"])
+        or (
+            not supplement
+            and (
+                review["protocol_sha256"] != sha(protocol_path)
+                or review["data_snapshot_sha256"] != sha(source_path)
+            )
+        )
     ):
         raise ValueError("Frozen source review binding differs")
     for fact in review["facts"]:
         distributions.checked_path(paths.root, fact["source"]["path"], fact["source"]["sha256"])
     original = load_snapshot(paths, source_path, protocol["source_data_cutoff"])
-    if review["original_actions_sha256"] != digest(original["actions"]):
+    if supplement:
+        facts = _accepted_date_supplements(paths, protocol, review, original, manifest)
+    elif review["original_actions_sha256"] != digest(original["actions"]):
         raise ValueError("Source review does not bind the full action inventory")
+    else:
+        facts = review["facts"]
     provenance = {
         "started_at": now(),
         "protocol_sha256": sha(protocol_path),
@@ -467,9 +668,40 @@ def repair_distribution_snapshot(paths, target, protocol_path, integrity):
     parent = build_dataset(original["meta"], original["raws"], original["actions"], **rebuild_args)
     parent_check = compare_history(original, parent)
     actions, changes = reviewed_distribution_actions(
-        original["actions"], original["calendar"], review["facts"]
+        original["actions"], original["calendar"], facts, supplement=supplement
     )
+    if supplement:
+        counts = Counter(f for change in changes for f in change["fields"])
+        counts["events"] = len(changes)
+        if dict(counts) != protocol["expected_changes"]:
+            raise ValueError("Supplementary date changes differ from registration")
+        save(target / "fact_bindings.json", facts, immutable=True)
     repaired = build_dataset(original["meta"], original["raws"], actions, **rebuild_args)
+    if repaired.get("fund_mode") != original.get("fund_mode"):
+        raise ValueError("Distribution repair changed the fund control")
+    if supplement:
+        expected_table = original["table"]
+        if protocol.get("label_review"):
+            reference = protocol["label_review"]
+            if manifest["files"].get(reference["path"]) != reference["sha256"]:
+                raise ValueError("Independent label review is not frozen")
+            label_review = read(
+                distributions.checked_path(paths.root, reference["path"], reference["sha256"])
+            )
+            if (
+                label_review["status"] != "PASS"
+                or label_review["data_sha256"] != sha(source_path)
+                or label_review["actions_sha256"] != digest(actions)
+                or label_review["protocol_sha256"] != protocol["label_review_basis_protocol_sha256"]
+                or label_review["changed_labels"] != protocol["expected_label_changes"]["total"]
+                or label_review["changed_by_horizon"]
+                != protocol["expected_label_changes"]["by_horizon"]
+                or Counter(str(r["horizon"]) for r in label_review["records"])
+                != label_review["changed_by_horizon"]
+            ):
+                raise ValueError("Independent label review binding differs")
+            expected_table = restored_label_table(original["table"], label_review["records"])
+        pd.testing.assert_frame_equal(expected_table, repaired["table"], check_exact=True)
     if repaired["meta"] != original["meta"] or repaired.get("opening_status") != original.get(
         "opening_status"
     ):
