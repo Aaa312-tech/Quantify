@@ -123,27 +123,44 @@ def read_codebook(path):
     return {"records": codebook_rows(tables), "raw_tables": tables}
 
 
-def classification_row(cells, codebook):
+def classification_row(cells, codebook, *, collect_findings=False):
     if len(cells) != len(FIELDS) or any(cell is None for cell in cells):
         raise ValueError("Industry record must have eight unmerged cells")
     values = [compact(cell) for cell in cells]
     row = dict(zip(FIELDS, values))
     if not re.fullmatch(r"[0-9]{6}", row["code"]) or not row["name"]:
         raise ValueError("Invalid security identity in industry row")
+    findings = []
+
+    def mismatch(field, actual, expected, problem):
+        findings.append(
+            {"field": field, "source": actual, "expected": expected, "problem": problem}
+        )
+
     for level in ("section", "subclass", "division"):
         code, name = row[level], row[level + "_name"]
         if level == "subclass" and row["section"] != "C":
             if code or name:
-                raise ValueError("Non-manufacturing row has a subclass")
+                mismatch(level, code, "", "nonmanufacturing_subclass")
             continue
         reference = codebook.get((level, code))
-        if reference is None or reference["name"] != name:
-            raise ValueError(f"Classification name/code mismatch: {row['code']}/{level}")
+        if reference is None:
+            mismatch(level, code, None, "unknown_code")
+            continue
+        if reference["name"] != name:
+            mismatch(level + "_name", name, reference["name"], "name_mismatch")
         if reference["section"] != row["section"]:
-            raise ValueError("Classification section mismatch")
+            mismatch(level + ".section", row["section"], reference["section"], "parent_mismatch")
         if level == "division" and reference["subclass"] != (row["subclass"] or None):
-            raise ValueError("Classification subclass mismatch")
-    return {**row, "raw_cells": cells}
+            mismatch(
+                level + ".subclass",
+                row["subclass"] or None,
+                reference["subclass"],
+                "parent_mismatch",
+            )
+    if findings and not collect_findings:
+        raise ValueError(f"Classification mismatch: {row['code']}/{findings}")
+    return {**row, "raw_cells": cells, "taxonomy_findings": findings}
 
 
 def alias_row(cells):
@@ -182,7 +199,17 @@ def verify_page(records, text, aliases=False):
         raise ValueError("Independent PDF security-code inventory differs")
 
 
-def extract_pdf(path, codebook, aliases=False):
+def continuation_columns(cells, header_cells):
+    """A headerless alias page must retain the actual five-column geometry."""
+    if len(cells) != 5 or len(header_cells) != 5 or any(cell is None for cell in cells):
+        raise ValueError("Alias continuation has missing or merged columns")
+    if any(
+        abs(cell[i] - header[i]) > 0.1 for cell, header in zip(cells, header_cells) for i in (0, 2)
+    ):
+        raise ValueError("Alias continuation column positions changed")
+
+
+def extract_pdf(path, codebook, aliases=False, *, followup=False):
     try:
         import pymupdf
         from pypdf import PdfReader
@@ -190,6 +217,7 @@ def extract_pdf(path, codebook, aliases=False):
         raise ImportError("Install the industry-data extra to review industry PDFs") from error
     independent = PdfReader(path)
     records, pages = [], []
+    header_cells = None
     headers = ALIAS_HEADERS if aliases else HEADERS
     with pymupdf.open(path) as document:
         if len(document) != len(independent.pages):
@@ -199,13 +227,15 @@ def extract_pdf(path, codebook, aliases=False):
             if len(tables) != 1:
                 raise ValueError(f"Expected one table on PDF page {page_number}")
             table = tables[0]
-            current, header_found = [], False
+            current, header_found, inherited_header = [], False, False
             for row_number, cells in enumerate(table.extract(), 1):
                 values = tuple(map(compact, cells))
                 if not any(values):
                     continue
                 if values == headers:
                     header_found = True
+                    if aliases:
+                        header_cells = table.rows[row_number - 1].cells
                     continue
                 if (
                     not header_found
@@ -214,8 +244,17 @@ def extract_pdf(path, codebook, aliases=False):
                 ):
                     continue
                 if not header_found:
-                    raise ValueError(f"Missing table header on page {page_number}")
-                parsed = alias_row(cells) if aliases else classification_row(cells, codebook)
+                    if not (followup and aliases and page_number > 1 and header_cells):
+                        raise ValueError(f"Missing table header on page {page_number}")
+                    continuation_columns(table.rows[row_number - 1].cells, header_cells)
+                    header_found = inherited_header = True
+                if inherited_header:
+                    continuation_columns(table.rows[row_number - 1].cells, header_cells)
+                parsed = (
+                    alias_row(cells)
+                    if aliases
+                    else classification_row(cells, codebook, collect_findings=followup)
+                )
                 current.append(
                     {
                         **parsed,
@@ -226,9 +265,19 @@ def extract_pdf(path, codebook, aliases=False):
                 )
             if not header_found or not current:
                 raise ValueError(f"Empty industry table on page {page_number}")
-            verify_page(current, independent.pages[page_number - 1].extract_text(), aliases)
+            try:
+                verify_page(current, independent.pages[page_number - 1].extract_text(), aliases)
+            except ValueError as error:
+                raise ValueError(f"Page {page_number}: {error}") from error
             records.extend(current)
-            pages.append({"page": page_number, "rows": len(current), "text_comparison": "PASS"})
+            pages.append(
+                {
+                    "page": page_number,
+                    "rows": len(current),
+                    "text_comparison": "PASS",
+                    "header_inherited": inherited_header,
+                }
+            )
             if page_number % 25 == 0:
                 log("Industry source pages checked", source=path.name, pages=page_number)
     key = "old_code" if aliases else "code"
@@ -238,6 +287,8 @@ def extract_pdf(path, codebook, aliases=False):
     if aliases:
         if len({row["new_code"] for row in records}) != len(records):
             raise ValueError("Alias map is not one-to-one")
+        if [row["number"] for row in records] != list(range(1, len(records) + 1)):
+            raise ValueError("Alias row ordinals are not contiguous from one")
     elif codes != sorted(codes):
         raise ValueError("Stock-code-sorted source is out of order")
     return {
@@ -262,6 +313,10 @@ def review_industries(paths, protocol_path):
     protocol = read(protocol_file)
     if protocol.get("name") != "industry_sources":
         raise ValueError("Expected an industry source-review protocol")
+    if not protocol.get("releases"):
+        raise ValueError("Industry review has no registered releases")
+    if protocol.get("followup", {}).get("column_alignment_tolerance_points", 0.1) != 0.1:
+        raise ValueError("Alias continuation geometry differs from the reviewed convention")
     output = inside(protocol["output"])
     parent = (root / "data/processed").resolve()
     if not parent.is_relative_to(root) or not output.is_relative_to(parent) or output == parent:
@@ -309,7 +364,12 @@ def review_industries(paths, protocol_path):
             raise ValueError("Unregistered industry attachment")
         name = source["catalogue_date"] + ("_aliases" if source["aliases"] else "")
         try:
-            result = extract_pdf(inside(source["source"]), lookup, source["aliases"])
+            result = extract_pdf(
+                inside(source["source"]),
+                lookup,
+                source["aliases"],
+                followup=bool(protocol.get("followup")),
+            )
             if "pages" in source and len(result["pages"]) != source["pages"]:
                 raise ValueError("Registered source page count changed")
             target = output / (name + ".json.gz")
@@ -321,6 +381,9 @@ def review_industries(paths, protocol_path):
                     "rows": result["rows"],
                     "output": target.relative_to(root).as_posix(),
                     "sha256": sha(target),
+                    "taxonomy_findings": sum(
+                        len(row.get("taxonomy_findings", [])) for row in result["records"]
+                    ),
                 }
             )
         except (ValueError, KeyError, TypeError) as error:
@@ -331,11 +394,17 @@ def review_industries(paths, protocol_path):
         )
     if sha(root / "configs/project.toml") != configuration_sha:
         raise ValueError("Active configuration changed during industry source review")
+    parsed = all(row["status"] == "PARSED_AND_CROSS_CHECKED" for row in outcomes)
+    findings = sum(row.get("taxonomy_findings", 0) for row in outcomes)
     result = {
         "completed_at": now(),
-        "status": "SOURCE_TABLES_CHECKED"
-        if all(row["status"] == "PARSED_AND_CROSS_CHECKED" for row in outcomes)
+        "status": (
+            "SOURCE_CELLS_CHECKED_WITH_TAXONOMY_FINDINGS" if findings else "SOURCE_TABLES_CHECKED"
+        )
+        if parsed
         else "REVIEW_REQUIRED",
+        "source_extraction_complete": parsed,
+        "taxonomy_findings": findings,
         "protocol_sha256": sha(protocol_file),
         "source_sha256": sha(Path(__file__)),
         "codebook_sha256": sha(output / "codebook.json"),

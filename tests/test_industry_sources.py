@@ -7,6 +7,7 @@ from quantfolio.industry_sources import (
     classification_row,
     codebook_rows,
     compact,
+    continuation_columns,
     verify_page,
 )
 
@@ -114,3 +115,35 @@ def test_duplicate_or_unparented_codes_are_rejected():
         codebook_rows([[parent, division, division]])
     with pytest.raises(ValueError, match="parent"):
         codebook_rows([[division]])
+
+
+def test_name_conflict_is_retained_without_canonicalizing_source(codebook):
+    cells = ["000001", "平安银行", "J", "金融", "", "", "66", "货币金融服务"]
+    with pytest.raises(ValueError, match="Classification mismatch"):
+        classification_row(cells, codebook)
+    row = classification_row(cells, codebook, collect_findings=True)
+    assert row["section_name"] == "金融" and row["raw_cells"] == cells
+    assert row["taxonomy_findings"] == [
+        {
+            "field": "section_name",
+            "source": "金融",
+            "expected": "金融业",
+            "problem": "name_mismatch",
+        }
+    ]
+    verify_page([{**row, "row": 2}], " ".join(cells))
+
+
+def test_alias_continuation_requires_all_columns_in_the_same_positions():
+    header = [(i * 20, 50, (i + 1) * 20, 60) for i in range(5)]
+    later = [(i * 20 + 0.05, 10, (i + 1) * 20 + 0.05, 20) for i in range(5)]
+    continuation_columns(later, header)
+    with pytest.raises(ValueError, match="columns"):
+        continuation_columns(later[:-1], header)
+    shifted = list(later)
+    shifted[2] = (41, 10, 60, 20)
+    with pytest.raises(ValueError, match="positions"):
+        continuation_columns(shifted, header)
+    shifted[2] = None
+    with pytest.raises(ValueError, match="merged"):
+        continuation_columns(shifted, header)

@@ -241,7 +241,7 @@ CI在Windows的Python 3.11、3.13及Ubuntu的Python 3.13上，从源码分发包
 ## 已验收的11月20日扩展
 
 行情扩展阶段的完整训练、评估与状态复核保存于`daily_source_extension_2026-11-21`；
-当前配置已进一步切换至本页下方已核验复牌标签修正后的`resumption_reference_2026-11-21`。
+它是历史验收阶段，当前配置使用本页开头的`2026-11-20-local-gaps`快照。
 新数据来源、单位转换和历史标签变化见同名`artifacts/checks`目录；实现兼容性、训练影响
 及固定旧预测对照分别存档，旧腾讯全池核验失败记录不变。
 
@@ -265,7 +265,7 @@ python -m quantfolio repair-resumption --protocol configs/protocols/resumption_r
 对应证券的合法退出标签。输出不可覆盖；复现时须在协议副本登记新目录。构建不会启用新数据，
 还须完成48个模型、1425个新账户、1425个固定旧预测对照和75个纸面账户核对，并绑定ST专项复核。
 
-复牌修正已完成上述验收，当前配置成套绑定其独立快照、训练、评估和ST复核。
+复牌修正已完成上述验收，该阶段的配置成套绑定其独立快照、训练、评估和ST复核。
 旧输入的源码兼容性诊断保存在`artifacts/checks/resumption_reference_2026-11-21/implementation`；
 完整差异、固定旧预测、门槛敏感性和未核验缺口均在同名检查目录。
 
@@ -297,3 +297,25 @@ python -m quantfolio repair-data --protocol configs/protocols/distribution_repai
 数值验收包括旧输入的48个模型、1425个完整账户及75个纸面账户；新输入完整拟合48次，
 另评估1425个重训账户与1425个固定旧预测账户。普通评估继续拒绝执行源码不同的旧训练。
 固定旧预测仅作为独立归因诊断，不伪装成当前执行代码训练出的模型。
+
+## 行业原表审查
+
+```powershell
+python -m pip install -e ".[industry-data]"
+python -m quantfolio review-industries --protocol configs/protocols/industry_cell_review.json
+```
+
+该协议的输出已经冻结；重复运行须先复制协议，登记新的`output`和`checks_output`，且保留
+来源、输入哈希及核对规则。命令拒绝已有数据目录，不下载来源、不切换训练配置。
+`configs/protocols/industry_sources.json`记录首次严格审查，结果为`REVIEW_REQUIRED`；
+`industry_cell_review.json`保留该失败结果并登记后续规则，不能把后续成功覆盖到旧目录。
+
+后续全部来源已提取，状态为`SOURCE_CELLS_CHECKED_WITH_TAXONOMY_FINDINGS`，原始名称差异
+和首次失败仍在。完成回执、完整代码对应、逐日覆盖及精确审计源码位于
+`artifacts/checks/industry_cells_2026-11-21`；原始单元格位于
+`data/processed/industry_source_cells_2026-11-21`。这两个目录尚不是可直接训练的数据快照。
+
+本轮只增加来源审查模块、命令及可选依赖。344项测试通过，1项主机符号链接检查跳过；
+原冻结文件、交易核心源码、活跃配置和纸面计划输入逐项核对。没有数值或执行改动，
+因此未重复拟合模型，也没有新增回测收益。未来接入行业分类须另行登记并完成全量重训、
+同风控动量对照和账户核验；不能沿用本轮来源审查代替这些验证。
