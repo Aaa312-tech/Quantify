@@ -1,0 +1,30 @@
+{
+  "status": "REGISTERED_BEFORE_CLOSURE",
+  "parent_protocol": "configs/protocols/residual_notice_relations.json",
+  "cash_tolerance": "1e-12",
+  "cash_tolerance_source": "configs/protocols/residual_financial_scope.json",
+  "preserve_provider_cash_exactly": true,
+  "representation_differences": {
+    "1223954984": ["0.435", "0.43499999999999994"],
+    "1224960924": ["0.565", "0.5650000000000001"],
+    "1220197314": ["0.59", "0.5900000000000001"]
+  },
+  "first_page_labelled_price_pairs": [
+    "1221005095", "1221356477", "1221959426",
+    "1223684285", "1224720864", "1220197314"
+  ],
+  "cross_page_cash": {
+    "id": "1223749776",
+    "pages": [4, 5],
+    "left_page_ends_with": "每10股",
+    "right_page_starts_with": "派发现金股利5元(含税)",
+    "source_sha256": "e1fadd455206e10166f7d30d755fcda94ca7eadf9ef026daddfbbebbf4f13462",
+    "amount_per_share": "0.50",
+    "rule": "Join these observed adjacent page texts without deleting or repairing any numeric token. No other page boundary is authorized by this closure."
+  },
+  "preserve_initial_failures": [
+    "check_companion_relations.py", "companion_relations.log",
+    "companion_reader_diagnostic.json"
+  ],
+  "limitations": "This closes reader binding only. The remaining archive amendment review and residual event acceptance stay open."
+}
