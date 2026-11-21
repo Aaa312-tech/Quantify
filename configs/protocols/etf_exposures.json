@@ -1,0 +1,101 @@
+{
+  "name": "etf_exposures",
+  "registered_at": "2026-11-21T13:58:30.916749+08:00",
+  "baseline_commit": "a7ae64506f5660db34a91b29c09cfa48e9c6cdac",
+  "baseline_manifest_sha256": "2c215e6ccc1863b86715d9c7fe15369421083e79073adf853d572f454ed86140",
+  "baseline_frozen_files": 29444,
+  "baseline_bundle": "data/processed/2026-11-20-industry-dated/bundle.joblib",
+  "baseline_bundle_sha256": "f67395a3d187487283a345e57e16b2ead48a6d70b016939b02a172def4542231",
+  "baseline_configuration_sha256": "64fc1d75e836245c1450f15cb9c3bd26b667187aa81decffb4bd2727c6937644",
+  "source_sha256": {
+    "configs/protocols/etf_holdings.json": "499a168582323c325fdbe393fe6075733302147b1a32d193e034e60be1a6fece",
+    "artifacts/checks/etf_holdings_2026-11-21/completion.json": "5da83039a39a0e8c4847ad8d4a64aefeb300f0d107fe8bfaea1a3b711f5cce71",
+    "artifacts/checks/etf_holdings_2026-11-21/cell_closure.json": "13bd44d293458321b2ce937121c75c6185eb4ae54c951127665305678695dba7",
+    "artifacts/checks/etf_holdings_2026-11-21/extraction_reviewed.json": "5a0176746e9900c6f2cc7a25d8e269fdd6a420a37a4e8761ba9edb6b015c0d4f",
+    "data/processed/etf_holdings_cells_2026-11-21/observations.json.gz": "7ee5c8fdaa108d973b3582dca39814edd742aaea0420bced66978fed86495572",
+    "data/processed/etf_holdings_cells_2026-11-21/coverage.json": "029a372ab4c6072660ce4391e49ba98eea64510d4d55ecab5fb17dd5610b74a7",
+    "data/processed/etf_sources_2026-11-21/reviewed_observations.json": "104f5a981b489cc633aaee9f8d814afeed8e0af3da0085ca1e533e96f59c96ff",
+    "data/processed/etf_sources_2026-11-21/funds_reviewed.json": "aeb6f8563af8f8390210f34d7b9bc72eea587ca83f2052119791968b8db7f3d5",
+    "artifacts/checks/industry_cells_2026-11-21/review.json": "30b3a69f58f408ca56739a70f2218bdc085497a0a56722a6142c0bea2e378a40",
+    "artifacts/checks/industry_cells_2026-11-21/identity_links.json": "c7b90478121b7fc57c605c0ab362c6f1aefb638234e093d425c613df3caa4dc7",
+    "artifacts/checks/industry_cells_2026-11-21/availability_review.json": "932008f01101c285d7c338242cd717ce42f254955b163ad7f06f456d449e7c4a",
+    "data/processed/industry_source_cells_2026-11-21/codebook.json": "6c56196923e060cd0f21a64fe2ea9570271c19a7a27d7dcbf6022ac45ff6db75",
+    "data/processed/industry_source_cells_2026-11-21/2024-02-08.json.gz": "c4be89296d6a01147593e0e925f43d18d04e65e0a2cd0e3b75e8ce174159d6fb",
+    "data/processed/industry_source_cells_2026-11-21/2024-04-03.json.gz": "559e750c0469f1705b0c7600ce91d0438764cf8276f85dc0028801b3c7f9c928",
+    "data/processed/industry_source_cells_2026-11-21/2024-09-30.json.gz": "97440399f9f3287aac2d016c8cbb779b096c9a1916825bee2fdcbb890425010f",
+    "data/processed/industry_source_cells_2026-11-21/2025-04-18.json.gz": "75298a5907d65c45b0cffa9cdb65854e5497ed4dbe6a95e291e00407f00cc7ee",
+    "data/processed/industry_source_cells_2026-11-21/2025-09-30.json.gz": "09d50c09781d48bc9a91cf6024a12a807ef0131213d6f093caee71d7cf809428",
+    "data/processed/industry_source_cells_2026-11-21/2026-04-03.json.gz": "43bf085d3527a470c37ff80f8dcacc30088ce132536575c356d18b8719c1fdd7",
+    "data/processed/industry_source_cells_2026-11-21/2026-09-30.json.gz": "93d1028b370cd9d621729f2660f1d88e74f62908fcd69703676a678ae92b462c",
+    "data/processed/industry_source_cells_2026-11-21/2025-09-30_aliases.json.gz": "390e8222270d03688f62f517b83095dd7e788c6a6a55b9b70d208a749cd6077c",
+    "data/processed/industry_source_cells_2026-11-21/2025-04-18_aliases.json.gz": "acab2b42524c3d8018ea7f8fe83f582bc073a152b423dd7b2df47ef8add60df2"
+  },
+  "symbols": [
+    "sh510300",
+    "sh510500",
+    "sh511010",
+    "sh512000",
+    "sh512100",
+    "sh512170",
+    "sh512400",
+    "sh512480",
+    "sh512660",
+    "sh512800",
+    "sh512880",
+    "sh515030",
+    "sh515050",
+    "sh515180",
+    "sh515790",
+    "sh515880",
+    "sh516160",
+    "sh518880",
+    "sh588000",
+    "sz159915",
+    "sz159928",
+    "sz159995"
+  ],
+  "purpose": "Construct dated, source-bound fund identity and reported equity-exposure observations, including missing weights and derivative/lending caveats, before runtime integration.",
+  "scope": {
+    "reports": 528,
+    "funds": 22,
+    "catalogue_end": "2026-11-20",
+    "new_alpha_candidates": 0
+  },
+  "availability": [
+    "Each report becomes usable at 00:00 Asia/Shanghai on the first observed session strictly after the later of its catalogue and delivery dates. This is a retrospective convention; exact historical intraday publication and unchanged past bytes are uncertified.",
+    "At each information time select the greatest known reporting-period end. For the same period prefer the later available annual/interim full schedule over the quarterly partial schedule. Publication of an older-period report cannot overwrite newer-period observations. Keep all superseded sources.",
+    "Fund summary identity is the latest observation strictly before the session, no earlier than its preparation date. A known benchmark name does not establish continuous unchanged constituents.",
+    "CAPCO matching uses the latest release available at that information time. Alias correspondence can only come from already available identity sources; do not use future classification or future aliases. Carry neither omitted stocks nor absent financial fields from older sources.",
+    "Preserve report age and incomplete holdings explicitly; do not claim current portfolios, actual daily exposure or real execution availability. No performance-based freshness rule is permitted."
+  ],
+  "field_review": [
+    "Reuse frozen stock, sector, asset and NAV cells without rewriting them. Extract additional financial-note pages from the same accepted PDFs, never from the rejected truncated copy.",
+    "Review all 528 reports for stock-index futures, treasury futures, warrants, stock options, other derivative holdings and security-lending treatment. Annual/interim derivative notes outside the portfolio chapter are in scope.",
+    "Preserve whole relevant section boundaries, report dates, table headers, units, long/short signs, quantity, contract notional and fair value separately. Margin, fair value or P&L is not contract notional. A policy statement or missing table is not a zero position.",
+    "Require independent PDF readers and ordered row/code checks for extracted contract cells; visually inspect ambiguous layouts and every accepted cross-page correction. Preserve all failures and original source defects.",
+    "Preserve exact absence clauses with context; ambiguous or unreviewed clauses remain unknown. Lending must not be added twice when included in the equity schedule; absence of an inclusion statement does not certify it."
+  ],
+  "mapping": [
+    "Join each explicitly reported six-digit stock code to the current available CAPCO inventory, then only an unambiguous available one-to-one alias. Preserve unmatched identifiers, amount and cause.",
+    "Use exact reported market values divided by the independently reviewed reported NAV. Keep integer/decimal inputs and rational numerators/denominators; reported rounded percentages are validation fields, not normalized portfolio weights.",
+    "Keep the source A-S sector table distinct from CAPCO divisions. Do not map a coarse category to a finer division without security-level evidence.",
+    "Store named matched stocks, named unmatched stocks, undisclosed stock amount (sector-stock total minus named holdings), signed equity/sector residual, derivatives and non-equity assets separately. Never renormalize partial holdings, fill omissions with zero, allocate residuals to cash/industries or net derivative positions without evidence.",
+    "Derive future portfolio-proxy bounds only from reviewed positions and explicitly disclosed notional values; any unbounded/unknown component remains a blocker for claiming complete economic exposure. Report-date NAV ratios applied to market-valued ETF positions are a modelling convention, not certified daily look-through exposure."
+  ],
+  "validation": [
+    "Every fund has distinct, ordered information boundaries and complete source identities; repeated reports are not duplicate positions.",
+    "Independently rebuild direct/alias joins and exact amount partitions without calling the production lookup. All partitions reconcile, original source cells remain exact, all unmatched weights remain visible.",
+    "Check before-first-release, same-day exclusion, holiday-delayed boundaries, later older-period publications, partial/full same-period replacement, missing classifications, aliases, duplicate/sleeve codes and negative residuals.",
+    "Truncating future sources or perturbing later reports/classifications cannot alter earlier histories. Document coverage across the full active calendar without using returns, forecasts or held-position selection."
+  ],
+  "integration_gate": "Register coverage, fund identity/grouping and reported look-through exposure controls before modifying runtime inputs. Require old-input compatibility, full retraining/reloads, independent full accounts, paper-account parity and status/plan binding checks. Source review itself changes neither training inputs nor active plans; unknown economic exposure cannot be called resolved by identity grouping.",
+  "constraints": [
+    "Balanced attack; 8 percent warning; original high-water mark; latched non-recovering risk",
+    "positive_score adoption, legacy turnover; exhausted candidate budget and adoption thresholds unchanged",
+    "Competition whitepaper authoritative; fees and matching still unconfirmed",
+    "No APP, broker account or WeChat actions; no fabricated fills or forward returns"
+  ],
+  "processed_output": "data/processed/etf_exposures_2026-11-21",
+  "checks_output": "artifacts/checks/etf_exposures_2026-11-21",
+  "decision": "REGISTERED_SOURCE_CONSTRUCTION_NOT_ACTIVATED"
+}
