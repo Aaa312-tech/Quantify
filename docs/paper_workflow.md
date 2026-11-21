@@ -21,7 +21,7 @@
 计划返回`HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED`并保留空订单。不同快照、
 审查文件被改写或不一致的解除决定会被拒绝。
 十只已核验证券的日期修正已完成完整重训与账户验收，相关暂停仅对当前快照解除。
-[最新纸面计划](../artifacts/plans/reviewed_distributions_2026-11-23/plan.md)的行情、账户及训练日期一致；
+[最新纸面计划](../artifacts/plans/local_gaps_2026-11-23/plan.md)的行情、账户及训练日期一致；
 旧的过期记录保留。未来新快照还须另做绑定审查，不能直接复用解除决定。
 
 ## 从账户到收盘
