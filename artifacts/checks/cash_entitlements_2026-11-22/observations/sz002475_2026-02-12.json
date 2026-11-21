@@ -1,0 +1,70 @@
+{
+  "status": "PRIMARY_REVIEW_PENDING_INDEPENDENT_CLOSURE",
+  "reviewed_at": "2026-11-22T02:08:00.509003+08:00",
+  "protocol_sha256": "9fe8a9ec71067d118803bc24f2bf9bd975e121b1ec81a7bc2243ceab9bf4e400",
+  "scope_sha256": "cea4bc2ae18b0655baec186fad309b59e0ee143e8c275cfb2b9c952cff17420a",
+  "source_text_sha256": "56a7331db1eaff3f1ceafc134cf705df0308b20c2d875eb0bd02d69f155b3a7d",
+  "script_sha256": "a15ad862529bf49ea3fb4791765fafaaa55a684c67f13091465b83dadd78ab6b",
+  "entered_observations_sha256": "b6744b2a861892f8d6e808bc8693f42b413e0db65d5a8d13096a1b04c899bcfc",
+  "source": {
+    "path": "data/raw/disclosures_2026-11-21/documents/1224969419.pdf",
+    "sha256": "a576a06ee9944c5e246c1750d8a1992b74f9d96a24697d66646dacf2e026ec6a",
+    "url": "https://static.cninfo.com.cn/finalpage/2026-02-06/1224969419.PDF"
+  },
+  "receipt": {
+    "path": "data/raw/disclosures_2026-11-21/documents/1224969419.json",
+    "sha256": "137c9818919b52ac06e3e80d668afc7f28d69af0b449186e408fa6358444168e"
+  },
+  "symbol": "sz002475",
+  "ex_date": "2026-02-12",
+  "source_id": "1224969419",
+  "full_text_pages_read": 3,
+  "observed_fields": {
+    "record_date": "2026-02-11",
+    "ex_date": "2026-02-12",
+    "cash_pay_date": "2026-02-12",
+    "cash_per_ten_shares": "1.599147",
+    "cash_unit_shares": 10,
+    "share_multiplier": "1",
+    "earlier_total_shares": "7282103432",
+    "new_conversion_and_option_shares": "3881111",
+    "total_shares": "7285984543",
+    "participating_shares": "7285984543",
+    "proposal_cash_per_ten": "1.60",
+    "fixed_proposal_aggregate": "1165136549.12",
+    "printed_implementation_aggregate": "1165136549.12",
+    "signature_date": "2026-02-05"
+  },
+  "interpretation": "Final gross is0.1599147 per share. All registered shareholders participate; the notice states no shares yet repurchased and no repurchase during application through record date. The0.159914 deduction on page3 belongs to a repurchase-price-cap calculation, not an explicit equity ex-reference declaration. Do not use it to shorten cash precision or impose account rounding. Companion2026-019 concerns convertible pricing.",
+  "source_anomalies": [
+    "The implementation repeats the fixed proposal aggregate although the stated per-ten amount has six decimal places; independently retain and reconcile its aggregate residual without overriding the announced entitlement."
+  ],
+  "page_observations": [
+    {
+      "page": 1,
+      "observation": "002475 /2026-018, first-three-quarters2025 implementation. Proposal1.60 per ten, capital7282103432; options/conversions add3881111 to7285984543. Final1.599147 per ten, aggregate1165136549.12 and six-decimal precision. No-repurchase statement continues to page2.",
+      "image": "artifacts/checks/cash_entitlements_2026-11-22/pages/1224969419/page_01.png",
+      "image_sha256": "be746cd4be6f1e256769bdb6687c07ee3b1f099d0ca00e7d231d9af9f01c886f",
+      "whole_page_visually_inspected": true
+    },
+    {
+      "page": 2,
+      "observation": "Implemented gross1.599147 per ten is distinct from deducted1.439232. Record2026-02-11, ex/payment2026-02-12 explicitly labelled; all registered shareholders participate. Companion2026-019 and a repurchase-price-cap adjustment begin here.",
+      "image": "artifacts/checks/cash_entitlements_2026-11-22/pages/1224969419/page_02.png",
+      "image_sha256": "6299c20696a6170535da91c102428960e217fd0a225f65cde1533b37ac6b27cd",
+      "whole_page_visually_inspected": true
+    },
+    {
+      "page": 3,
+      "observation": "Repurchase cap calculation uses86.96 minus0.159914 approximately86.80 with two-decimal rounding for the cap. It does not state a rounding method for shareholder cash. Signature2026-02-05; no separate bonus/capitalisation scheme.",
+      "image": "artifacts/checks/cash_entitlements_2026-11-22/pages/1224969419/page_03.png",
+      "image_sha256": "9b893056f2e9ae2728bcda610d06a363d7acdcb5c10af95b2b8778e223e0bd14",
+      "whole_page_visually_inspected": true
+    }
+  ],
+  "source_basis_action_sha256": "3e2be3e3cd0b8efc369c3fd758a9b73ef944ce9653b05d24f49108a9e292a895",
+  "current_action_sha256": "3e2be3e3cd0b8efc369c3fd758a9b73ef944ce9653b05d24f49108a9e292a895",
+  "facts_accepted": 0,
+  "runtime_inputs_changed": false,
+  "boundary": "Complete primary text and the listed whole-page images were actually inspected. Independent text/arithmetic and related-notice closure remain required before source acceptance. Observed fields are not an instruction to modify active data."
+}

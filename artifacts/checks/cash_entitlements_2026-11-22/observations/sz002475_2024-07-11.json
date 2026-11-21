@@ -1,0 +1,63 @@
+{
+  "status": "PRIMARY_REVIEW_PENDING_INDEPENDENT_CLOSURE",
+  "reviewed_at": "2026-11-22T02:05:15.805421+08:00",
+  "protocol_sha256": "9fe8a9ec71067d118803bc24f2bf9bd975e121b1ec81a7bc2243ceab9bf4e400",
+  "scope_sha256": "cea4bc2ae18b0655baec186fad309b59e0ee143e8c275cfb2b9c952cff17420a",
+  "source_text_sha256": "56a7331db1eaff3f1ceafc134cf705df0308b20c2d875eb0bd02d69f155b3a7d",
+  "script_sha256": "a15ad862529bf49ea3fb4791765fafaaa55a684c67f13091465b83dadd78ab6b",
+  "entered_observations_sha256": "8c84a6014b4b74408aeba8d3843e9fd52c82063f330285d3fa81ba39b8e74fa6",
+  "source": {
+    "path": "data/raw/disclosures_2026-11-21/documents/1220535439.pdf",
+    "sha256": "28e231875cec344ffe4d0b1d138b7f73e33b9058ec4a81f2c3e08fcfb7e9271d",
+    "url": "https://static.cninfo.com.cn/finalpage/2024-07-05/1220535439.PDF"
+  },
+  "receipt": {
+    "path": "data/raw/disclosures_2026-11-21/documents/1220535439.json",
+    "sha256": "3fd6ef67c4a8681a89edefe0774b08ca3e326880e6d853daa6d98ea251819099"
+  },
+  "symbol": "sz002475",
+  "ex_date": "2024-07-11",
+  "source_id": "1220535439",
+  "full_text_pages_read": 3,
+  "observed_fields": {
+    "record_date": "2024-07-10",
+    "ex_date": "2024-07-11",
+    "cash_pay_date": "2024-07-11",
+    "cash_per_ten_shares": "2.989461",
+    "cash_unit_shares": 10,
+    "share_multiplier": "1",
+    "earlier_total_shares": "7178011313",
+    "new_conversion_and_option_shares": "25304331",
+    "total_shares": "7203315644",
+    "participating_shares": "7203315644",
+    "proposal_cash_per_ten": "3",
+    "fixed_proposal_aggregate": "2153403393.90",
+    "printed_implementation_aggregate": "2153403393.90",
+    "signature_date": "2024-07-04"
+  },
+  "interpretation": "Implemented gross cash is 0.2989461 per share, consistent with current stored cash. The earlier 3 per ten is a proposal; 2.690515 per ten is a separately labelled tax-deducted amount. All registered shareholders participate. The full scheme contains cash only; no separate share listing or ex-reference amount is declared. Related conversion-price notice 2024-055 requires archive closure.",
+  "source_anomalies": [
+    "The implementation paragraph repeats the fixed proposal aggregate 2153403393.90 although the printed six-decimal per-ten amount times 7203315644 shares equals 2153403118.8427884, a residual of 275.0572116. Preserve both statements and independently assess their precision; do not infer a different per-share entitlement or account settlement rule from the aggregate."
+  ],
+  "page_observations": [
+    {
+      "page": 1,
+      "observation": "002475 / 2024-054, 2023 annual implementation. Proposal 3 per ten on 7178011313 shares; options and conversions add25304331 to7203315644. Final per-ten gross2.989461 and printed aggregate2153403393.90; six decimal places explicitly stated. Implemented-scheme heading continues onto page2.",
+      "image": "artifacts/checks/cash_entitlements_2026-11-22/pages/1220535439/page_01.png",
+      "image_sha256": "43354d292dedc95990ac8d9c926868a394dddbc6c875162c21ab163d4a7bf5f0",
+      "whole_page_visually_inspected": true
+    },
+    {
+      "page": 2,
+      "observation": "Implemented gross2.989461 per ten is separate from tax-deducted2.690515. Explicit record2024-07-10, ex2024-07-11 and CSDC cash payment2024-07-11. All registered shareholders participate. Convertible-bond price changes56.98 to56.68 under companion2024-055; conversion terms are not a separate equity cash entitlement.",
+      "image": "artifacts/checks/cash_entitlements_2026-11-22/pages/1220535439/page_02.png",
+      "image_sha256": "34e761e089f53029f75f058dcbdd133973dc892f898b57bc4d9ccf4cd68fc9cf",
+      "whole_page_visually_inspected": true
+    }
+  ],
+  "source_basis_action_sha256": "287c887fe4e39f933bc8f7449fe1d472467ee89b7b62e2448a5ffae1b87a8911",
+  "current_action_sha256": "287c887fe4e39f933bc8f7449fe1d472467ee89b7b62e2448a5ffae1b87a8911",
+  "facts_accepted": 0,
+  "runtime_inputs_changed": false,
+  "boundary": "Complete primary text and the listed whole-page images were actually inspected. Independent text/arithmetic and related-notice closure remain required before source acceptance. Observed fields are not an instruction to modify active data."
+}

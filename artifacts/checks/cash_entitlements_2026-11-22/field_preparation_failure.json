@@ -1,0 +1,17 @@
+{
+  "status": "FAILED_OPTIONAL_OBSERVATION_KEY",
+  "recorded_at": "2026-11-22T03:23:36.787848+08:00",
+  "executed_script": {
+    "path": "artifacts/checks/cash_entitlements_2026-11-22/prepare_field_review.py",
+    "sha256": "feef690c3dfff574a51e0c6680958a57b7152e76ea1d20115b7912282a42a4db"
+  },
+  "exception": "KeyError: 'source_anomalies'",
+  "missing_optional_key_observations": [
+    "sz000708_2024-05-10.json",
+    "sz000708_2025-05-09.json"
+  ],
+  "outputs_created": [],
+  "cause": "Early observation records omit the optional source_anomalies member; the batch writer incorrectly required it. Existing text interpretations, source anomalies in independent closures and issuer checks remain bound.",
+  "proposed_schema_handling": "Preserve the absence as null; do not interpret it as certification of no anomaly. No financial field, threshold, initial failed check or source byte changes.",
+  "runtime_inputs_changed": false
+}

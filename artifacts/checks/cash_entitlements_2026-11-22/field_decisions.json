@@ -1,0 +1,2382 @@
+{
+  "status": "FIELD_DECISIONS_PENDING_FULL_INVENTORY_ACCEPTANCE",
+  "recorded_at": "2026-11-22T03:23:44.694261+08:00",
+  "script_sha256": "3dba5554a23593dc35fd9051cff59284bb64a797ba46ad573d1a35c647a57f52",
+  "protocol": {
+    "path": "configs/protocols/cash_entitlement_review.json",
+    "sha256": "9fe8a9ec71067d118803bc24f2bf9bd975e121b1ec81a7bc2243ceab9bf4e400"
+  },
+  "scope": {
+    "path": "artifacts/checks/cash_entitlements_2026-11-22/scope.json",
+    "sha256": "cea4bc2ae18b0655baec186fad309b59e0ee143e8c275cfb2b9c952cff17420a"
+  },
+  "context_completion": {
+    "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_context_complete.json",
+    "sha256": "8c32c213f2fdd0a12b4c022ae51ec01401cf84cc8174645e0392d3e2d4d8f3bb"
+  },
+  "events": 31,
+  "supported_field_counts": {
+    "cash_per_share": 31,
+    "cash_pay_date": 31,
+    "ex_reference_cash_per_share": 19,
+    "share_list_date": 1
+  },
+  "supported_fields": 82,
+  "cash_corrections": [
+    {
+      "symbol": "sh600989",
+      "ex_date": "2024-07-24",
+      "old": "0.27999999999999997",
+      "reviewed": "0.3158"
+    },
+    {
+      "symbol": "sh600989",
+      "ex_date": "2025-05-13",
+      "old": "0.4099932",
+      "reviewed": "0.4598"
+    },
+    {
+      "symbol": "sz300750",
+      "ex_date": "2024-04-30",
+      "old": "2.011",
+      "reviewed": "5.028"
+    }
+  ],
+  "records": [
+    {
+      "symbol": "sh600989",
+      "ex_date": "2024-07-24",
+      "source_id": "1220664181",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sh600989_2024-07-24.json",
+          "sha256": "f726a08ffa97b0b925db172f72c76351416786c51c53ee93fccf505b700e1858"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sh600989.json",
+          "sha256": "b14b94f7873b72a351bac49f93b94d0ab6521ccedcd14b80d66d5ee8a8a8f127"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2024-07-23",
+        "ex_date": "2024-07-24",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.3158",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-07-24",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.28",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "CORRECT_RECIPIENT_CASH_AFTER_SEPARATE_INTEGRATION",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [
+        "Related adjustment 1220519887 has three retained cent-scale aggregate inconsistencies; see prior shareholder_related_observations.json. Do not infer account rounding or rewrite its totals."
+      ],
+      "issuer_context_anomalies": [
+        {
+          "source_id": "1220519887",
+          "classification": "SOURCE_AGGREGATE_CONFLICTS_UNRESOLVED",
+          "differences_yuan": {
+            "stated_increment_minus_printed_minority_total_change": "0.01",
+            "stated_increment_minus_rounded_incremental_share_cash": "0.01",
+            "printed_old_subtotals_minus_stated_old_aggregate": "0.01"
+          },
+          "action": "Preserve printed amounts; no inferred account rounding."
+        },
+        {
+          "source_id": "1225136155",
+          "classification": "UNSCOPED_SOURCE_AGGREGATE_CONFLICT",
+          "printed_subtotal_sum": "3054557999.95",
+          "printed_aggregate": "3054557999.96",
+          "printed_aggregate_minus_subtotal_sum": "0.01",
+          "action": "Retain prior per-share decisions and all unscoped source fields unchanged."
+        }
+      ],
+      "interpretation": "Baofeng 600989 / 2024-040, 2023 annual distribution. Ordinary minority gross is 0.3158, controlling-holder gross 0.2650 and declared reference 0.28. The existing 0.28 cash field represents neither ordinary entitlement nor controlling entitlement. The declared reference is not the unrounded aggregate/capital quotient. All-cash scheme has zero share-count change; generic bonus-transfer boilerplate does not announce bonus shares."
+    },
+    {
+      "symbol": "sh600989",
+      "ex_date": "2025-05-13",
+      "source_id": "1223476469",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sh600989_2025-05-13.json",
+          "sha256": "49d3e2e417466e12d3e40f04171aed9ce8f39822f3213fe8a95033bee79dce1d"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sh600989.json",
+          "sha256": "b14b94f7873b72a351bac49f93b94d0ab6521ccedcd14b80d66d5ee8a8a8f127"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2025-05-12",
+        "ex_date": "2025-05-13",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.4598",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2025-05-13",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.41",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "CORRECT_RECIPIENT_CASH_AFTER_SEPARATE_INTEGRATION",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [
+        {
+          "source_id": "1220519887",
+          "classification": "SOURCE_AGGREGATE_CONFLICTS_UNRESOLVED",
+          "differences_yuan": {
+            "stated_increment_minus_printed_minority_total_change": "0.01",
+            "stated_increment_minus_rounded_incremental_share_cash": "0.01",
+            "printed_old_subtotals_minus_stated_old_aggregate": "0.01"
+          },
+          "action": "Preserve printed amounts; no inferred account rounding."
+        },
+        {
+          "source_id": "1225136155",
+          "classification": "UNSCOPED_SOURCE_AGGREGATE_CONFLICT",
+          "printed_subtotal_sum": "3054557999.95",
+          "printed_aggregate": "3054557999.96",
+          "printed_aggregate_minus_subtotal_sum": "0.01",
+          "action": "Retain prior per-share decisions and all unscoped source fields unchanged."
+        }
+      ],
+      "interpretation": "Baofeng 600989 / 2025-016, 2024 annual distribution. Ordinary minority gross is 0.4598, controlling-holder gross 0.3891 and declared reference 0.41. The existing 0.4099932 cash field approximates the aggregate average, not ordinary entitlement. All-cash, zero share-count change. Preserve the initial punctuation-only independent check failure and its later closure; no account rounding is established."
+    },
+    {
+      "symbol": "sh688025",
+      "ex_date": "2024-06-13",
+      "source_id": "1220273317",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sh688025_2024-06-13.json",
+          "sha256": "fb7933d231e382b08a455caefc9cf78e9b3953d654eae9a9100493d5253b1213"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sh688025.json",
+          "sha256": "4b5d70ffd744f19eaa7714b6bd53c631254bb525846379930fea9ff5b783f452"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2024-06-12",
+        "ex_date": "2024-06-13",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.35057",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-06-13",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.34895",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "JPT 688025 / 2024-043. Final gross 0.35057 replaces the 0.35 proposal and matches the existing cash field. Declared reference 0.34895 is different. No bonus or capitalisation; May incentive-share registration/listing is not this dividend's share-list date."
+    },
+    {
+      "symbol": "sh688627",
+      "ex_date": "2024-07-01",
+      "source_id": "1220443864",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sh688627_2024-07-01.json",
+          "sha256": "f43f7dd21b7d343a8b1390430cee11ea75f073951ed772b63f6efc2fe6733917"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sh688627.json",
+          "sha256": "a04f99dd68a29e41e35998315e195b22f53a0a8667783e92532658f316b5a442"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2024-06-28",
+        "ex_date": "2024-07-01",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.37345",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-07-01",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.37200",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [
+        "record_ex_payment_table_values"
+      ],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [
+        {
+          "source_id": "1224071706",
+          "classification": "COMPANION_EFFECTIVE_YEAR_CONFLICT",
+          "physical_page_1": "2024-07-10",
+          "physical_page_2": "2025-07-10",
+          "signature": "2025-07-04",
+          "primary_implementation": "1224071707",
+          "action": "Do not accept dates from this companion; retain its consistent financial corroboration separately."
+        }
+      ],
+      "interpretation": "Jingzhida 688627 / 2024-024. Final gross 0.37345 replaces the 0.372 proposal and matches current cash. Declared reference 0.37200 is separate. The implementation references adjustment 2024-023; no bonus or capitalisation."
+    },
+    {
+      "symbol": "sh688627",
+      "ex_date": "2025-07-10",
+      "source_id": "1224071707",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sh688627_2025-07-10.json",
+          "sha256": "ad8d7fba74e28962288cec93a555fdd1f1daf0bd76e0bf3874d6d54967b5e908"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sh688627.json",
+          "sha256": "a04f99dd68a29e41e35998315e195b22f53a0a8667783e92532658f316b5a442"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2025-07-09",
+        "ex_date": "2025-07-10",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.31910",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2025-07-10",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.31788",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [
+        "record_ex_payment_table_values"
+      ],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [
+        {
+          "source_id": "1224071706",
+          "classification": "COMPANION_EFFECTIVE_YEAR_CONFLICT",
+          "physical_page_1": "2024-07-10",
+          "physical_page_2": "2025-07-10",
+          "signature": "2025-07-04",
+          "primary_implementation": "1224071707",
+          "action": "Do not accept dates from this companion; retain its consistent financial corroboration separately."
+        }
+      ],
+      "interpretation": "Jingzhida 688627 / 2025-058. Final gross 0.31910 agrees with current cash, and differs from both the original 0.323 proposal and the intermediate 0.32351 adjustment. The notice cites final adjustment 2025-055. Reference 0.31788 is separate; no bonus/capitalisation. Final CSDC settlement is not an account rounding specification."
+    },
+    {
+      "symbol": "sz000568",
+      "ex_date": "2026-08-28",
+      "source_id": "1225481717",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz000568_2026-08-28.json",
+          "sha256": "4052470f0e9d6f28bb0ebce882ebca8cb13ccdf4acd22f0d6cf7de5fffa90c54"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz000568.json",
+          "sha256": "f654c4da62ccdf84f7cf1a845147fabcdcdaae974d07f4fc2a76ee2ee1675b40"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2026-08-27",
+        "ex_date": "2026-08-28",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "4.4171215",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2026-08-28",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "Luzhou Laojiao, 000568 / 2026-29, 2025 annual distribution. Final gross is 4.4171215 per share after cancellation, replacing the 44.17 per-ten proposal. No bonus or capitalisation; no separate final aggregate, ex-reference term or account rounding."
+    },
+    {
+      "symbol": "sz000708",
+      "ex_date": "2024-05-10",
+      "source_id": "1219912703",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz000708_2024-05-10.json",
+          "sha256": "2ed36c1da1395c9630d1082db7854d0273a910b68c7cfe7bd112316b566dcc31"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz000708.json",
+          "sha256": "5a250d21126af168ebabbdd4aca752076c6ef4d97aa51aa11756630a78488d55"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2024-05-09",
+        "ex_date": "2024-05-10",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.5646744",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-05-10",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": null,
+      "issuer_context_anomalies": [],
+      "interpretation": "Current full-precision per-share cash is consistent with the final primary entitlement. The rounded provider display is not grounds to overwrite it. A separate ex-reference cash value is not established by this document; account settlement rounding is unchanged."
+    },
+    {
+      "symbol": "sz000708",
+      "ex_date": "2025-05-09",
+      "source_id": "1223365942",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz000708_2025-05-09.json",
+          "sha256": "6ea38fedc2c0609146bc6e0c099cf7d44a1e3c055b7b4e71000a4796f090b350"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz000708.json",
+          "sha256": "5a250d21126af168ebabbdd4aca752076c6ef4d97aa51aa11756630a78488d55"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2025-05-08",
+        "ex_date": "2025-05-09",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.5072162",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2025-05-09",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": null,
+      "issuer_context_anomalies": [],
+      "interpretation": "Current full-precision per-share cash is consistent with the final primary entitlement. The rounded provider display is not grounds to overwrite it. A separate ex-reference cash value is not established by this document; account settlement rounding is unchanged."
+    },
+    {
+      "symbol": "sz000708",
+      "ex_date": "2026-05-21",
+      "source_id": "1225307365",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz000708_2026-05-21.json",
+          "sha256": "bf848c11cc1bee03bedd7a51d5a1e19386d769733b7fedc65e84f17aa3f3fca6"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz000708.json",
+          "sha256": "5a250d21126af168ebabbdd4aca752076c6ef4d97aa51aa11756630a78488d55"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2026-05-20",
+        "ex_date": "2026-05-21",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.4457954",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2026-05-21",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [
+        "The tax paragraph visibly retains an editorial instruction telling the issuer to retain or remove the Hong Kong investor category. Preserve that source defect; it does not supply a new competition tax rule."
+      ],
+      "issuer_context_anomalies": [],
+      "interpretation": "Final cash is 0.4457954 per share and is consistent with stored cash. Earlier approximate 4.46 per ten is not the final entitlement. The ex-date label continues onto the next physical page; the recipient cash-payment sentence independently repeats 2026-05-21."
+    },
+    {
+      "symbol": "sz000858",
+      "ex_date": "2026-07-16",
+      "source_id": "1225417855",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz000858_2026-07-16.json",
+          "sha256": "513b98b32daf08a216fe7a81d64175078fca1de364de573d406afdd90a0937c4"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz000858.json",
+          "sha256": "e2cb42661f10fc44ebb1f8f7ac63f874128c956bc0f1717e0de5ff5b69d71db0"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2026-07-15",
+        "ex_date": "2026-07-16",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2.5796852",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2026-07-16",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2.5779999",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "Wuliangye, 000858 / 2026-031, 2025 annual distribution. Actual gross 2.5796852 uses explicit seven-place rounding; ex-reference 2.5779999 uses explicit truncation. These rules concern ratios, not account-cent settlement. No bonus or capitalisation."
+    },
+    {
+      "symbol": "sz000988",
+      "ex_date": "2025-06-20",
+      "source_id": "1223879401",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz000988_2025-06-20.json",
+          "sha256": "d41deed56a55bba753b1df2cacbaa9ea7a59ce9bc13c5015a8f4bd8243a1b161"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_primary_checks.json",
+          "sha256": "e73b471f15b1878664c270fdea44efea9ed5131c904b252efae925931609eb66"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz000988.json",
+          "sha256": "3dc3fc1ca7e13e801c3bb06f6ada4da00ab168cbfda04ef58f5215c271edc352"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2025-06-19",
+        "ex_date": "2025-06-20",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.2019684",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2025-06-20",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.1999999",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "000988 /2025-30, Huagong2024 annual implementation. Actual participating-holder gross0.2019684 differs from declared reference0.1999999. Source defines reference using implemented per-ten cash times eligible shares divided by full capital; the original fixed proposal aggregate is not a separately printed implementation aggregate. No rounding convention is inferred."
+    },
+    {
+      "symbol": "sz002475",
+      "ex_date": "2024-07-11",
+      "source_id": "1220535439",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz002475_2024-07-11.json",
+          "sha256": "e4e684ba80a227e6c85c33aed7b5c11fef2cf2337e4d170a46dae3b973da28cd"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002475.json",
+          "sha256": "e2787d0eed20eab4c5cbb80d4349290c12e476b1ac7e06d262ba912e03875daf"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002475.json",
+          "sha256": "e2787d0eed20eab4c5cbb80d4349290c12e476b1ac7e06d262ba912e03875daf"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2024-07-10",
+        "ex_date": "2024-07-11",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.2989461",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-07-11",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [
+        "The implementation paragraph repeats the fixed proposal aggregate 2153403393.90 although the printed six-decimal per-ten amount times 7203315644 shares equals 2153403118.8427884, a residual of 275.0572116. Preserve both statements and independently assess their precision; do not infer a different per-share entitlement or account settlement rule from the aggregate."
+      ],
+      "issuer_context_anomalies": [],
+      "interpretation": "Implemented gross cash is 0.2989461 per share, consistent with current stored cash. The earlier 3 per ten is a proposal; 2.690515 per ten is a separately labelled tax-deducted amount. All registered shareholders participate. The full scheme contains cash only; no separate share listing or ex-reference amount is declared. Related conversion-price notice 2024-055 requires archive closure."
+    },
+    {
+      "symbol": "sz002475",
+      "ex_date": "2025-07-14",
+      "source_id": "1224091515",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz002475_2025-07-14.json",
+          "sha256": "33dfe748f32e5dddbc0a39f0cc5d34e175c960f7dca030762afc29e9b41f1dc3"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002475.json",
+          "sha256": "e2787d0eed20eab4c5cbb80d4349290c12e476b1ac7e06d262ba912e03875daf"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002475.json",
+          "sha256": "e2787d0eed20eab4c5cbb80d4349290c12e476b1ac7e06d262ba912e03875daf"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2025-07-11",
+        "ex_date": "2025-07-14",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.1998725",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2025-07-14",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "Implemented gross cash is 0.1998725 per share and agrees with current stored cash. The original proposal is 2 per ten; final1.998725 is distinct from after-tax1.798852. The printed implementation aggregate differs from the original fixed proposal by639.61 and agrees at cents with printed cash times final shares. All registered shareholders participate. No account settlement rounding rule or separate ex-reference amount is stated. Related conversion-price notice2025-089 requires archive closure."
+    },
+    {
+      "symbol": "sz002475",
+      "ex_date": "2026-02-12",
+      "source_id": "1224969419",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz002475_2026-02-12.json",
+          "sha256": "3fcd0e4c0adb53e1c891b37b0077436c9e5b96d15eb28a4a1dd219f23f5425d9"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002475.json",
+          "sha256": "e2787d0eed20eab4c5cbb80d4349290c12e476b1ac7e06d262ba912e03875daf"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002475.json",
+          "sha256": "e2787d0eed20eab4c5cbb80d4349290c12e476b1ac7e06d262ba912e03875daf"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2026-02-11",
+        "ex_date": "2026-02-12",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.1599147",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2026-02-12",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [
+        "The implementation repeats the fixed proposal aggregate although the stated per-ten amount has six decimal places; independently retain and reconcile its aggregate residual without overriding the announced entitlement."
+      ],
+      "issuer_context_anomalies": [],
+      "interpretation": "Final gross is0.1599147 per share. All registered shareholders participate; the notice states no shares yet repurchased and no repurchase during application through record date. The0.159914 deduction on page3 belongs to a repurchase-price-cap calculation, not an explicit equity ex-reference declaration. Do not use it to shorten cash precision or impose account rounding. Companion2026-019 concerns convertible pricing."
+    },
+    {
+      "symbol": "sz002475",
+      "ex_date": "2026-07-20",
+      "source_id": "1225419586",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz002475_2026-07-20.json",
+          "sha256": "acfd0058dcbee8a028121c5dbfbb271882ab99c36d45965d0e773bb5499d24eb"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002475.json",
+          "sha256": "e2787d0eed20eab4c5cbb80d4349290c12e476b1ac7e06d262ba912e03875daf"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002475.json",
+          "sha256": "e2787d0eed20eab4c5cbb80d4349290c12e476b1ac7e06d262ba912e03875daf"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2026-07-17",
+        "ex_date": "2026-07-20",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.1390814",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2026-07-20",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.1387467",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "Actual participating-holder cash is0.1390814, while the declared ex-reference is0.1387467 after spreading final aggregate across all shares including repurchased shares. Explicit no bonus/capitalisation. Seven-place truncation applies to the reference, not account cash. Companion2026-078 concerns convertible pricing."
+    },
+    {
+      "symbol": "sz002475",
+      "ex_date": "2026-10-22",
+      "source_id": "1225605405",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz002475_2026-10-22.json",
+          "sha256": "da6a7c1918be7fad4555e120e790633afa2a90ff9a56d48e661c5ef7a8568b8f"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002475.json",
+          "sha256": "e2787d0eed20eab4c5cbb80d4349290c12e476b1ac7e06d262ba912e03875daf"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002475.json",
+          "sha256": "e2787d0eed20eab4c5cbb80d4349290c12e476b1ac7e06d262ba912e03875daf"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2026-10-21",
+        "ex_date": "2026-10-22",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.1099231",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2026-10-22",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.1096588",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "This notice implements A-share gross0.1099231 on7329540803 eligible A shares, excluding repurchases and all H shares. Its declared A-share ex-reference0.1096588 divides by all7347206183 A shares. H-share operations explicitly fall outside this notice. Do not mix all-class proposal total, HKD H-share amount, deducted0.989308 per ten, actual A cash or A reference. No explicit account-cash or reference rounding rule is inferred."
+    },
+    {
+      "symbol": "sz002594",
+      "ex_date": "2024-07-29",
+      "source_id": "1220689427",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz002594_2024-07-29.json",
+          "sha256": "f17b79d118cef8c9374fa64a203acc73781a8e9d4a17fffd25d181b1851e38b2"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002594.json",
+          "sha256": "41681cc6705e4fb5c4ea1d4f124f8aeffd150a03997c3da7929a8a91cf60f07e"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2024-07-26",
+        "ex_date": "2024-07-29",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "3.0977722",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-07-29",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "BYD 002594 / 2024-067, 2023 annual implementation. The final gross amount is 30.977722 per ten shares (3.0977722 per share), replacing the 30.957749 proposal after cancellation of 1877000 A shares. The approximate aggregate covers A and H classes together; this notice sets the A-share payment process and refers H-share procedures to separate notices. No bonus shares or capitalisation. The deducted amount of 27.879950 per ten is distinct from gross. No account rounding or separate ex-reference cash term is established here."
+    },
+    {
+      "symbol": "sz002714",
+      "ex_date": "2025-06-26",
+      "source_id": "1223934704",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz002714_2025-06-26.json",
+          "sha256": "d13a575dd7ce0541d3fc88ce24cd76d835e276173d319b9cc870fe16dc71e998"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002714.json",
+          "sha256": "e91b408b7e5d81afa3bcb74a0e11e2de2a2fb80e25e7f0f55bd58cb1c0e3d0bd"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002714.json",
+          "sha256": "e91b408b7e5d81afa3bcb74a0e11e2de2a2fb80e25e7f0f55bd58cb1c0e3d0bd"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2025-06-25",
+        "ex_date": "2025-06-26",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.5742689",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2025-06-26",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.5643439",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "002714 /2025-059, 2024 annual implementation. Gross matches current full-precision cash; proposal, implemented gross, after-tax amount and reference are separately labelled. Neither seven-place quotient rule nor aggregate arithmetic establishes an individual account-cent settlement rule. Related archived notices still require closure."
+    },
+    {
+      "symbol": "sz002714",
+      "ex_date": "2025-10-16",
+      "source_id": "1224703353",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz002714_2025-10-16.json",
+          "sha256": "30d3172202fe0f7ba68fefc7b802c8c9b8356a6d3fd5389a935ebdf5c4c9d0db"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002714.json",
+          "sha256": "e91b408b7e5d81afa3bcb74a0e11e2de2a2fb80e25e7f0f55bd58cb1c0e3d0bd"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002714.json",
+          "sha256": "e91b408b7e5d81afa3bcb74a0e11e2de2a2fb80e25e7f0f55bd58cb1c0e3d0bd"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2025-10-15",
+        "ex_date": "2025-10-16",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.9275214",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2025-10-16",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.9157063",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "002714 /2025-092, 2025 half-year implementation. Gross matches current full-precision cash; proposal, implemented gross, after-tax amount and reference are separately labelled. Neither seven-place quotient rule nor aggregate arithmetic establishes an individual account-cent settlement rule. Related archived notices still require closure."
+    },
+    {
+      "symbol": "sz002714",
+      "ex_date": "2026-05-27",
+      "source_id": "1225321488",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz002714_2026-05-27.json",
+          "sha256": "001c1bc991385c12aa2f062ef41a848c3728be8b71f2912979178e3451e9ff2c"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002714.json",
+          "sha256": "e91b408b7e5d81afa3bcb74a0e11e2de2a2fb80e25e7f0f55bd58cb1c0e3d0bd"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz002714.json",
+          "sha256": "e91b408b7e5d81afa3bcb74a0e11e2de2a2fb80e25e7f0f55bd58cb1c0e3d0bd"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2026-05-26",
+        "ex_date": "2026-05-27",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.4269999",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2026-05-27",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.4215606",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "002714 /2026-046, 2025 annual A-share implementation. Gross matches current full-precision cash; proposal, implemented gross, after-tax amount and reference are separately labelled. Neither seven-place quotient rule nor aggregate arithmetic establishes an individual account-cent settlement rule. Related archived notices still require closure."
+    },
+    {
+      "symbol": "sz300014",
+      "ex_date": "2026-05-14",
+      "source_id": "1225282781",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz300014_2026-05-14.json",
+          "sha256": "1cc7b6cd2d5b1b59bf06463314d7986707725fed8887835f47ecb22d35969d7b"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_primary_checks.json",
+          "sha256": "e73b471f15b1878664c270fdea44efea9ed5131c904b252efae925931609eb66"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz300014.json",
+          "sha256": "e4bf7b2dc03a043c9d9a534b5a5ba979371512eca14f935bff8e5bb095543b6d"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2026-05-13",
+        "ex_date": "2026-05-14",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.2338198",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2026-05-14",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [
+        "original_proposal_arithmetic"
+      ],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [
+        {
+          "classification": "UNSCOPED_PRIMARY_COMPANION_REFERENCE_CONFLICT",
+          "primary_source_id": "1220043072",
+          "primary_reference": "0.4987882",
+          "companion_source_id": "1221508399",
+          "companion_reference": "0.4987788",
+          "action": "Preserve both source values and all unscoped decisions; neither changes the current scoped event.",
+          "visual_review": [
+            {
+              "source_id": "1220043072",
+              "page": 2,
+              "image": "artifacts/checks/cash_entitlements_2026-11-22/related_pages/1220043072/page_02.png",
+              "image_sha256": "17364e0cf003a709717669273c797bcbecc1b4920de79053bbc313c4fda01a22",
+              "whole_page_visually_inspected": true,
+              "rendering_sha256": "4cc37c869c25c93631f7633298662212f5b01a51172ddfb7f4eff154bb10fdc1",
+              "observation": "The whole page explicitly prints 0.4987882; original source retained without correction."
+            },
+            {
+              "source_id": "1221508399",
+              "page": 2,
+              "image": "artifacts/checks/cash_entitlements_2026-11-22/related_pages/1221508399/page_02.png",
+              "image_sha256": "d6b38e6058d74e6a825a6cb46c12a6143ba302116e08e243adf1f7c8590ff833",
+              "whole_page_visually_inspected": true,
+              "rendering_sha256": "6464388adafa6243b4385557386618ae0a757e89487b582efec2d98bb4a6e2d3",
+              "observation": "The whole page explicitly prints 0.4987788; original source retained without correction."
+            }
+          ]
+        }
+      ],
+      "interpretation": "300014 /2026-077, EVE2025 annual implementation. Conversion increased capital; final gross0.2338198 differs from proposal0.245. The six-decimal truncation belongs to per-ten dividend ratio, not account cash settlement. No separately declared equity reference or final aggregate is added."
+    },
+    {
+      "symbol": "sz300223",
+      "ex_date": "2025-06-24",
+      "source_id": "1223887927",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz300223_2025-06-24.json",
+          "sha256": "85f2b695895356704d7ce72cba9c2e058d5ce22006bd57ba0a82517f64de0613"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_primary_checks.json",
+          "sha256": "e73b471f15b1878664c270fdea44efea9ed5131c904b252efae925931609eb66"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz300223.json",
+          "sha256": "8466161c083a1e8e67427751ad5a89043eeca6ab2ec03d8f491cad4a0f358395"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2025-06-23",
+        "ex_date": "2025-06-24",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.0997988",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2025-06-24",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [
+        "printed_final_aggregate_at_cents"
+      ],
+      "unresolved_primary_aggregate": {
+        "status": "SOURCE_AGGREGATE_DISCREPANCY_UNRESOLVED",
+        "printed_total": "48156985.09",
+        "gross_times_participants": "48156985.1065324",
+        "failed_check_retained": "printed_final_aggregate_at_cents",
+        "decision": "The final per-ten gross 0.997988 is explicitly repeated in the adjusted scheme and implemented payout, and both independent readers agree. Accept that directly declared per-share field and independently labelled dates only. Do not infer a different entitlement from the aggregate, certify the total, clear the failed check or infer account rounding."
+      },
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [
+        {
+          "source_id": "1223887927",
+          "classification": "SOURCE_AGGREGATE_CONFLICT_UNRESOLVED",
+          "printed_aggregate": "48156985.09",
+          "exact_share_gross_product": "48156985.1065324",
+          "action": "Preserve initial failed check and arithmetic review; related notices provide no resolution."
+        }
+      ],
+      "interpretation": "300223 /2025-033, Beijing Ingenic2024 annual distribution paid in2025. Final gross0.0997988 matches current cash; original1 per ten, deducted0.898189 and tax0.099799 per ten have distinct roles. The section labels payment year2025 while the profit-distribution period is2024; retain both. No separate reference or account rounding established."
+    },
+    {
+      "symbol": "sz300418",
+      "ex_date": "2024-06-28",
+      "source_id": "1220416399",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz300418_2024-06-28.json",
+          "sha256": "4542f55db8f65d812e360b89bbd04118d2cced0f7f2824f771eb7838ea2a45ca"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_primary_checks.json",
+          "sha256": "e73b471f15b1878664c270fdea44efea9ed5131c904b252efae925931609eb66"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz300418.json",
+          "sha256": "f61c917ff30ffe633c1d909e5c4b54188992bd3e7268d9d844217092d643d3a8"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2024-06-27",
+        "ex_date": "2024-06-28",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.0493305",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-06-28",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.0493305",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "300418 /2024-045, Kunlun2023 annual implementation. Actual gross and declared reference are both0.0493305 per share. The0.5 per-ten proposal differs from final0.493305 after incentive vesting enlarged capital. Six-place per-ten truncation does not establish account-cent rounding."
+    },
+    {
+      "symbol": "sz300476",
+      "ex_date": "2025-04-30",
+      "source_id": "1223239368",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz300476_2025-04-30.json",
+          "sha256": "201ee11a027be1f5bd798f61ffc58f997e6680d854326f053af84e4995cbd885"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz300476.json",
+          "sha256": "832bfbc906553438732ab659bd9a999e81256779e7574fe09df9a99d4627c638"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2025-04-29",
+        "ex_date": "2025-04-30",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.3003304",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2025-04-30",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.2985738",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "Shenghong Technology (胜宏科技), 300476 / 2025-061, 2024 annual distribution. Final gross 0.3003304 per share differs from the proposal and the declared ex-reference 0.2985738. This notice contains a cash-only implemented scheme. No account cash rounding is established."
+    },
+    {
+      "symbol": "sz300476",
+      "ex_date": "2026-04-15",
+      "source_id": "1225091227",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz300476_2026-04-15.json",
+          "sha256": "da54ccbe4541fccc04545eb742d092c599db0a58400cd7634e4f7dc5bce51e49"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz300476.json",
+          "sha256": "832bfbc906553438732ab659bd9a999e81256779e7574fe09df9a99d4627c638"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2026-04-14",
+        "ex_date": "2026-04-15",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "1.9949377",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2026-04-15",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "1.9944405",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "Shenghong Technology (胜宏科技), 300476 / 2026-040, 2025 annual distribution. Final gross 1.9949377 per share is distinct from ex-reference 1.9944405. 2026-02-09 refers to the earlier incentive-share listing, not a distribution listing. The fixed proposal total is not a separately printed final aggregate; no account rounding is stated."
+    },
+    {
+      "symbol": "sz300750",
+      "ex_date": "2024-04-30",
+      "source_id": "1219767154",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz300750_2024-04-30.json",
+          "sha256": "c7524e7f0c5095e5ed3c22c460872990fbdf90ae2928dea7dc6b46fe292d557f"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz300750.json",
+          "sha256": "a00f4cb4c0a0c0048a3e7564b9ac9b8bc354538abc3892179ce123ac6fd33ea3"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2024-04-29",
+        "ex_date": "2024-04-30",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "5.028",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-04-30",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "5.0147304",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "CORRECT_RECIPIENT_CASH_AFTER_SEPARATE_INTEGRATION",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "CATL 300750 / 2024-030. Implemented gross is 5.028 per share, not the current 2.011 provider field. Declared ex-reference is 5.0147304 and uses a separate full-capital denominator. The notice implements cash only; generic future option/award and buyback adjustments are not current share distributions or account rounding rules."
+    },
+    {
+      "symbol": "sz300871",
+      "ex_date": "2025-06-04",
+      "source_id": "1223682968",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz300871_2025-06-04.json",
+          "sha256": "28e40ea46cdf12bd3ddf72a526a0d0142bfe6b3c56499da405ac4e7f34f38394"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz300871.json",
+          "sha256": "f811ebf640d9c262153b6a7ddd7f29b686cafd77e95e8ced898d9700cd54821d"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2025-06-03",
+        "ex_date": "2025-06-04",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.1064176",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2025-06-04",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.1060212",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "Huisheng Biology (回盛生物), 300871 / 2025-060, 2024 annual distribution. Final gross 0.1064176 differs from reference 0.1060212. Gross and reference ratios are truncated separately. The stated two-place truncation concerns the company's aggregate, and does not certify per-account truncation. No bonus/capitalisation."
+    },
+    {
+      "symbol": "sz300972",
+      "ex_date": "2026-05-06",
+      "source_id": "1225184120",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz300972_2026-05-06.json",
+          "sha256": "fc023d0938433b6fc14dc4d25812ea3543cbb09663dfbc992ca7ffbed32c033a"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_primary_checks.json",
+          "sha256": "e73b471f15b1878664c270fdea44efea9ed5131c904b252efae925931609eb66"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz300972.json",
+          "sha256": "4f57c04e5201e7f21aa6cffe304d835bd79fa943c8c76716c43b4aca435609b2"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2026-04-30",
+        "ex_date": "2026-05-06",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.8372088",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2026-05-06",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "300972 /2026-048, Wanchen2025 annual implementation. Incentive vesting changes capital and final gross to0.8372088. TheApril23 listing date concerns earlier incentive shares, not a bonus/capitalisation share listing for this cash event. No share-list date or separate reference is inferred."
+    },
+    {
+      "symbol": "sz301052",
+      "ex_date": "2024-04-01",
+      "source_id": "1219401936",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz301052_2024-04-01.json",
+          "sha256": "84908da341b95c63d9a10e85c638d377551056eef6f59efe7f0efab73c5427af"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz301052.json",
+          "sha256": "6d9b084e9326d935909be35ae4185638356429e26b949d18112da1bda5ecbe35"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2024-03-29",
+        "ex_date": "2024-04-01",
+        "share_multiplier": "1.3467532"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.0980816",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-04-01",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-04-01",
+          "basis": "Explicit start of trading for the unrestricted capitalisation shares, separately labelled in the primary notice."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [
+        "The self-paid shareholder application-range sentence incorrectly prints registration year 2023, whereas the explicit registration heading and public-recipient cutoff both say 2024-03-29. Preserve the conflict for independent contextual and related-notice closure; do not use the erroneous application range as payment or listing evidence."
+      ],
+      "issuer_context_anomalies": [
+        {
+          "source_id": "1225148375",
+          "classification": "CATALOGUE_PRECEDES_SIGNATURE",
+          "catalog_date": "2026-04-22",
+          "signature_date": "2026-04-23",
+          "action": "Preserve both timestamps; no backdated source availability or scoped data change."
+        }
+      ],
+      "interpretation": "Final cash 0.0980816 and capitalisation 0.3467532 per original share match current full-precision terms. The cash payment and start of trading in unrestricted capitalisation shares are each expressly dated 2024-04-01. Printed aggregate new-share counts do not establish how an individual fractional entitlement is allocated."
+    },
+    {
+      "symbol": "sz301313",
+      "ex_date": "2024-05-31",
+      "source_id": "1220160066",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz301313_2024-05-31.json",
+          "sha256": "89c5d51f89a3e9180eae7db916f7ea72ad7f477febfcb5daeb672c9685895c5f"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz301313.json",
+          "sha256": "6931d9d87460e45bc574e251e36aa7b9857897f67cc9e6d661a630a8089e20dc"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2024-05-30",
+        "ex_date": "2024-05-31",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.1500626",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-05-31",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "0.1493067",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [
+        "printed_aggregate_at_stated_precision"
+      ],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [
+        "Page 4 backup-document list labels the meeting 2024年度; main body and profit period say 2023年度. Preserve this source-year inconsistency without changing explicit current record/payment dates."
+      ],
+      "issuer_context_anomalies": [],
+      "interpretation": "凡拓数创, 301313 / 2024-064, 2023 annual distribution. Final gross 0.1500626 differs from reference 0.1493067. The current scheme is cash only. Buyback cap adjustment to 29.85 is not a recipient-cash rule. No account rounding."
+    },
+    {
+      "symbol": "sz301362",
+      "ex_date": "2024-06-04",
+      "source_id": "1220184983",
+      "evidence": {
+        "primary_observation": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/observations/sz301362_2024-06-04.json",
+          "sha256": "ef7908031a1f27a0f8ddeee72bab3a4631175e94ebfb8f7ddf354672d8a4a1fc"
+        },
+        "independent_primary_check": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+          "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+        },
+        "issuer_context": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/issuer_checks/sz301362.json",
+          "sha256": "e0f2a35cc856ebc8372c2d1ddc5a5deed7dce26ce6e32f9398b7dc456e42535b"
+        },
+        "related_inventory": {
+          "path": "artifacts/checks/cash_entitlements_2026-11-22/related_source_inventory.json",
+          "sha256": "4344d65bf837857e0207506e17644e3998ac3cc1ebc0702f908450b450146fc9"
+        },
+        "primary_failure_closures": [
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_closure.json",
+            "sha256": "3006e25454314370770b076a30a11c57a40b6bb4fc2c2f6ea446ece9dbfb8b77"
+          },
+          {
+            "path": "artifacts/checks/cash_entitlements_2026-11-22/adjusted_cash_arithmetic_review.json",
+            "sha256": "0be3a3a877c7f27cfc0f500af5f88a0751f2583be6de3697247e99c2f5bd466d"
+          }
+        ]
+      },
+      "control_fields": {
+        "record_date": "2024-06-03",
+        "ex_date": "2024-06-04",
+        "share_multiplier": "1"
+      },
+      "field_decisions": {
+        "cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "1.9263897",
+          "basis": "Final gross entitlement for an ordinary eligible A-share holder, with declared units; proposal, tax-net, other recipient classes and price-reference terms are excluded."
+        },
+        "cash_pay_date": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "2024-06-04",
+          "basis": "Explicit payment date for ordinary CSDC-paid holders; no intraday availability or self-paid holder date is inferred."
+        },
+        "share_list_date": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        },
+        "ex_reference_cash_per_share": {
+          "status": "SUPPORTED_PRIMARY_FIELD",
+          "value": "1.9100000",
+          "basis": "Explicit equity ex-price cash deduction; retained separately from shareholder cash and repurchase/option/bond prices."
+        },
+        "cash_rounding": {
+          "status": "NOT_ESTABLISHED",
+          "value": null,
+          "basis": "No distinct declared equity ex-reference, distribution listing date or account settlement rounding is established for this field; no amount/date/rounding is inferred from another role."
+        }
+      },
+      "cash_storage_decision": "PRESERVE_STORED_BINARY64",
+      "initial_failed_checks_retained": [],
+      "unresolved_primary_aggregate": null,
+      "primary_anomalies": [],
+      "issuer_context_anomalies": [],
+      "interpretation": "Minbao Optoelectronics (民爆光电), 301362 / 2024-027, 2023 annual distribution. Final gross 1.9263897 differs from declared reference 1.9100000. The reference formula uses the stated fixed proposal total, not a separately printed final aggregate. No bonus/capitalisation or account-cent rule. Do not replace the declared reference with a recomputed rounded-gross aggregate ratio."
+    }
+  ],
+  "facts_applied": false,
+  "whole_goal_complete": false,
+  "boundary": "Field evidence only; the whole 1839-event production review must preserve 1448 prior fields and all unscoped decisions. Aggregates and account rounding are not accepted by inference. Runtime inputs remain unchanged."
+}

@@ -1,0 +1,110 @@
+{
+  "status": "PRIMARY_CHECKS_CLOSED_WITH_AGGREGATE_ROUNDING_LIMITATION",
+  "checked_at": "2026-11-22T02:43:02.987570+08:00",
+  "script_sha256": "5a6375d5ddb94cbaca1f176891ae8917208ae2dc1be81b84906e578d883702e5",
+  "initial_receipt": {
+    "path": "artifacts/checks/cash_entitlements_2026-11-22/remaining_primary_checks.json",
+    "sha256": "9094c35b1e2759acbcf428ff53cb70c580f75a9c7a211e597c564255e6883783"
+  },
+  "initial_checks": 263,
+  "initial_passed": 260,
+  "initial_failed": 3,
+  "explained_failures": 3,
+  "records": [
+    {
+      "symbol": "sh688627",
+      "ex_date": "2024-07-01",
+      "initial_failed_check": "record_ex_payment_table_values",
+      "classification": "INDEPENDENT_CHECKER_REMOVED_DATE_TOKEN_DELIMITERS",
+      "explanation": "Removing all whitespace joined adjacent date cells. A one-digit day absorbed the next year's first digit under a greedy pattern. Both fresh readers recover the three labelled cells while preserving delimiters; source dates and acceptance rules do not change.",
+      "observation_sha256": "f43f7dd21b7d343a8b1390430cee11ea75f073951ed772b63f6efc2fe6733917",
+      "readers": {
+        "mupdf": {
+          "table_text": "\n\n\n   股权登记日      除权(息)日     现金红利发放日\n\n         2024/6/28                  2024/7/1                   2024/7/1\n\n\n\n\n",
+          "dates": [
+            "2024-06-28",
+            "2024-07-01",
+            "2024-07-01"
+          ],
+          "checks": {
+            "record_ex_payment_values": true,
+            "three_preserved_date_tokens": true,
+            "role_headers": true
+          }
+        },
+        "pypdf": {
+          "table_text": " \n股权登记日 除权(息)日 现金红利发放日 \n2024/6/28 2024/7/1 2024/7/1 \n \n",
+          "dates": [
+            "2024-06-28",
+            "2024-07-01",
+            "2024-07-01"
+          ],
+          "checks": {
+            "record_ex_payment_values": true,
+            "three_preserved_date_tokens": true,
+            "role_headers": true
+          }
+        }
+      }
+    },
+    {
+      "symbol": "sh688627",
+      "ex_date": "2025-07-10",
+      "initial_failed_check": "record_ex_payment_table_values",
+      "classification": "INDEPENDENT_CHECKER_REMOVED_DATE_TOKEN_DELIMITERS",
+      "explanation": "Removing all whitespace joined adjacent date cells. A one-digit day absorbed the next year's first digit under a greedy pattern. Both fresh readers recover the three labelled cells while preserving delimiters; source dates and acceptance rules do not change.",
+      "observation_sha256": "ad8d7fba74e28962288cec93a555fdd1f1daf0bd76e0bf3874d6d54967b5e908",
+      "readers": {
+        "mupdf": {
+          "table_text": "\n\n\n   股权登记日       除权(息)日      现金红利发放日\n         2025/7/9                  2025/7/10                  2025/7/10\n\n\n\n\n",
+          "dates": [
+            "2025-07-09",
+            "2025-07-10",
+            "2025-07-10"
+          ],
+          "checks": {
+            "record_ex_payment_values": true,
+            "three_preserved_date_tokens": true,
+            "role_headers": true
+          }
+        },
+        "pypdf": {
+          "table_text": "\n股权登记日 除权(息)日 现金红利发放日\n2025/7/9 2025/7/10 2025/7/10\n",
+          "dates": [
+            "2025-07-09",
+            "2025-07-10",
+            "2025-07-10"
+          ],
+          "checks": {
+            "record_ex_payment_values": true,
+            "three_preserved_date_tokens": true,
+            "role_headers": true
+          }
+        }
+      }
+    },
+    {
+      "symbol": "sz301313",
+      "ex_date": "2024-05-31",
+      "initial_failed_check": "printed_aggregate_at_stated_precision",
+      "classification": "CHECKER_ASSUMED_UNDECLARED_HALF_UP_AGGREGATE_ROUNDING",
+      "observation_sha256": "89c5d51f89a3e9180eae7db916f7ea72ad7f477febfcb5daeb672c9685895c5f",
+      "checks": {
+        "exact_decimal_fraction_product_agrees": true,
+        "reported_value_equals_aggregate_cent_truncation": true,
+        "independent_rational_cent_truncation": true,
+        "initial_round_half_up_expectation_does_not_match": true
+      },
+      "exact_product": "15631435.797860",
+      "reported_aggregate": "15631435.79",
+      "reported_minus_exact_product": "-0.007860",
+      "explanation": "The source's 15631435.79 equals cent truncation of 15631435.7978600. The initial checker incorrectly assumed half-up rounding for an unstated convention. This explains the check failure but does not certify issuer settlement mechanics or a per-account rounding rule. Preserve the printed total and the exact product separately.",
+      "aggregate_rounding_rule_explicitly_certified": false,
+      "account_rounding_rule_certified": false
+    }
+  ],
+  "facts_accepted": 0,
+  "runtime_inputs_changed": false,
+  "unresolved_other_source_aggregate": "Beijing Ingenic 2025-06-24 remains unresolved in adjusted_cash_arithmetic_review.json; this closure does not alter it.",
+  "boundary": "Only the three recorded checker failures are explained. All source facts remain pending batch decisions and related-notice closure. No numerical threshold, provider value, source total or account-rounding convention has been changed."
+}
