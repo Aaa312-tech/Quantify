@@ -1,5 +1,19 @@
 # 数据契约
 
+## 跳空特征的数值口径
+
+跳空因子在已收盘日计算为`(O_t / C_prev) * (M_t + D_t / C_t) - 1`。
+`C_prev`是前一条实际报价的收盘价，`M_t`、`D_t`是映射到当前报价的送转股倍数和每原持股现金。
+这与累计总回报指数上的开盘/前收盘比值代数等价，先消去累计缩放可避免它污染后续零跳空的排名。
+沿用float64计算、float32入表和平均并列排名，不增加零值阈值。
+二进制浮点的表示误差见[Python说明](https://docs.python.org/3/tutorial/floatingpoint.html)，
+平均并列排名见[pandas接口](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.api.typing.DataFrameGroupBy.rank.html)。
+
+除权日的现金项仍使用当日收盘价，因此这是已完成交易日的信号，不能用作当日开盘成交参考。
+缺失报价期间的多项事件按时间顺序合并到下一条实际报价，现金按各事件时的股数累计；
+不填补缺失K线、成交能力或收盘估值。实现和全量差异按
+[精度修正协议](../configs/protocols/gap_precision.json)单独验收。
+
 ## 分红字段的来源范围
 
 `distribution_review`记录每项已核验字段、来源文件哈希、证据页码、核验方法和保守可用时间。
@@ -18,7 +32,7 @@
 历史四舍五入，明确的`FLOOR_TO_CENT`先汇总全部应计股数再舍去不足一分部分，随后沿用既有
 税额保留情景。每十股分红比例的舍尾不等同于账户现金舍尾，连续收益标签不按账户分位处理。
 
-`configs/project.toml`声明活跃快照`bundle`、冻结核验快照`reference_bundle`、研究评估`evaluation`及完整性清单。当前活跃快照位于`data/processed/2026-11-20-reviewed-sources`，在`2026-11-19-reviewed-inner-events`上追加已核验行情与下一交易日分红。十只股票的历史ST区间、既有行情和非标签特征不变。父快照及历次修正均保留；载入前检查SHA-256及各自截止日期。joblib仅用于本地受信任的快照和模型。
+`configs/project.toml`声明活跃快照`bundle`、冻结核验快照`reference_bundle`、研究评估`evaluation`及完整性清单；实际路径以该配置为准。各快照保留登记协议、输入来源和逐字段差异，切换前必须成套验收数据、训练与账户。父快照及历次修正均保留；载入前检查SHA-256及各自截止日期。joblib仅用于本地受信任的快照和模型。
 
 | 字段 | 内容 |
 | --- | --- |
@@ -38,12 +52,12 @@
 
 新数据需要新日期目录，核查交易日、重复记录、OHLC、流动性、公司行为和历史可用性，再登记配置与完整性清单。修改路径不会自动采集行情。`configs/project.toml`的`protocol`指向当前注册的修正协议；原实验协议保存在`configs/experiment.json`，不得改写。
 
-开盘报价函数不能读取当日收盘、最高、最低或全日量额来决定成交。缺失开盘状态不等于已证明可成交；现有快照没有经过认证的开盘状态历史。执行输出应注明代理模型和单独的滑点成本。
+开盘报价函数不能读取当日收盘、最高、最低或全日量额来决定成交。当前仅补证了6条开盘状态，不能据此认证其他日期；缺失状态不等于已证明可成交。执行输出应注明代理模型和单独的滑点成本。
 
 最初确认新潮能源和亚振家居的594条历史样本违反ST剔除约定，原诊断保存在
 `artifacts/checks/historical_status_2026-11-21/impact.json`，统计范围与文件均未改写。
 当前快照已应用全部十只已核验证券的日期修正；训练和成交检查通过后，
-`historical_status_review`指向`artifacts/checks/daily_source_extension_2026-11-21/status_review.json`。
+配置中的`historical_status_review`指向当前数据专属的冻结审查。
 解除决定只适用于绑定的数据SHA-256；未来新快照必须另做一致性审查，不能沿用旧哈希或
 仅修改行情截止日。其他历史状态未知项仍保留。
 

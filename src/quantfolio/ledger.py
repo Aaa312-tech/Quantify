@@ -368,7 +368,7 @@ class Ledger:
 
 
 def causal_price_index(raw, actions):
-    """Forward-growing total-return signal index. Future actions never alter past rows."""
+    """Causal total-return bars and completed-day gaps without cumulative-scale noise."""
     mult = pd.Series(1.0, index=raw.index)
     cash = pd.Series(0.0, index=raw.index)
     for a in sorted(actions, key=lambda x: x["ex_date"]):
@@ -388,4 +388,7 @@ def causal_price_index(raw, actions):
     adj = raw.copy()
     for field in ["open", "high", "low", "close"]:
         adj[field] = raw[field] * factor
+    # Cancel consecutive index factors before dividing. This is a close-time feature:
+    # its cash term uses today's close, not an opening-time execution reference.
+    adj["opening_gap"] = (raw.open / raw.close.shift()) * (mult + cash / raw.close) - 1
     return adj, mult.cumprod()

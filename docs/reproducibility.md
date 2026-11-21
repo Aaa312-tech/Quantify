@@ -2,6 +2,29 @@
 
 项目需要Python 3.11–3.13和Git LFS。先按README克隆完整仓库，在虚拟环境中安装 `.[dev]`。数据与模型属于项目目录，不打进Python安装包；从其他目录运行时使用 `--project PATH` 或 `QUANTFOLIO_ROOT`。
 
+## 跳空因子精度修正
+
+登记协议为`configs/protocols/gap_precision.json`，登记提交为`298bdcc6`。
+修改前以旧源码全量重建594只证券、414612行数据，精确核对结果保存在
+`artifacts/checks/gap_precision_2026-11-21/parent_rebuild.json`。
+新的构建命令是：
+
+```powershell
+python -m quantfolio repair-data --protocol configs/protocols/gap_precision.json --output data/processed/2026-11-20-local-gaps
+```
+
+构建必须绑定冻结的父快照重建回执，且只允许`gap`与`rank_gap`改变；它不会自动启用新数据。
+已有目录不能覆盖。重复研究须复制协议并指定新的输出目录，在隔离检出的原提交上用
+`preprocessing.build_dataset`和`compare_history`重建父快照，生成绑定新协议哈希的回执并冻结，
+再用修正源码构建。精确重建旧算法的结果必须使用该登记协议指明的旧提交，不能用新算法
+代替旧算法后声称复现一致。
+
+独立全量检查涵盖400275条报价的有理数参照、全部并列排名，以及全部原调整价格和送转股
+序列的逐值一致性。合成失败用例和修复后测试分别保存，数值误差上限只用于验收，
+不进入因子或交易规则。训练和历史账户验收结果在同名检查目录持续追加。
+实际使用的[独立核验脚本及哈希](../artifacts/checks/gap_precision_2026-11-21/verification_sources.json)
+作为审计证据归档，不进入运行时策略包。
+
 ## 训练、评估、报告
 
 ```powershell

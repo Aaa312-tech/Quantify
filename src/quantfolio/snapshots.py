@@ -1,4 +1,4 @@
-"""Build an immutable, source-checked corporate-action repair of the reference data."""
+"""Build immutable, source-checked repairs of registered research snapshots."""
 
 from __future__ import annotations
 
@@ -172,6 +172,8 @@ def repair_snapshot(paths, output, protocol="configs/protocols/action_repair.jso
     if not protocol_path.is_relative_to((paths.root / "configs/protocols").resolve()):
         raise ValueError("Repair protocol must stay under configs/protocols")
     protocol = read(protocol_path)
+    if protocol.get("name") == "gap_precision":
+        return repair_gap_snapshot(paths, target, protocol_path, integrity)
     if protocol.get("name") == "distribution_repair":
         return repair_distribution_snapshot(paths, target, protocol_path, integrity)
     review_path = (paths.root / protocol["review"]).resolve()
@@ -273,6 +275,93 @@ def repair_snapshot(paths, output, protocol="configs/protocols/action_repair.jso
     }
     save(target / "audit.json", audit, immutable=True)
     manifest = read(paths.manifest)
+    for file in sorted(target.iterdir()):
+        manifest["files"][file.relative_to(paths.root).as_posix()] = sha(file)
+    save(paths.manifest, manifest)
+    return audit
+
+
+def repair_gap_snapshot(paths, target, protocol_path, integrity):
+    """Rebuild local opening gaps while requiring every other stored input to stay exact."""
+    from .preprocessing import build_dataset, compare_history
+
+    protocol = read(protocol_path)
+    manifest = read(paths.manifest)
+    source_path = (paths.root / protocol["source_bundle"]).resolve()
+    checks = paths.artifact_path(protocol["checks_output"], "checks")
+    parent_file = checks / "parent_rebuild.json"
+    if (
+        not source_path.is_relative_to(paths.root)
+        or target != (paths.root / protocol["snapshot_output"]).resolve()
+        or sha(source_path) != protocol["source_bundle_sha256"]
+        or manifest["files"].get(protocol_path.relative_to(paths.root).as_posix())
+        != sha(protocol_path)
+        or manifest["files"].get(parent_file.relative_to(paths.root).as_posix()) != sha(parent_file)
+    ):
+        raise ValueError("Gap repair inputs differ from registration")
+    parent = read(parent_file)
+    if (
+        parent["status"] != "PASS"
+        or parent["data_sha256"] != sha(source_path)
+        or parent["protocol_sha256"] != sha(protocol_path)
+    ):
+        raise ValueError("Parent reconstruction belongs to another input or protocol")
+    source = {f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))}
+    original = load_snapshot(paths, source_path, protocol["source_data_cutoff"])
+    repaired = build_dataset(
+        original["meta"],
+        original["raws"],
+        original["actions"],
+        opening_status=original.get("opening_status"),
+    )
+    if original["actions"] != repaired["actions"] or original.get("opening_status") != repaired.get(
+        "opening_status"
+    ):
+        raise ValueError("Gap repair changed corporate actions or opening status")
+    comparison = dict(repaired, table=repaired["table"].copy())
+    changes, counts = [], {}
+    for field in ("gap", "rank_gap"):
+        old, new = original["table"][field], repaired["table"][field]
+        pd.testing.assert_series_equal(old.isna(), new.isna(), check_exact=True)
+        changed = ~(old.eq(new) | (old.isna() & new.isna()))
+        counts[field] = int(changed.sum())
+        rows = repaired["table"].loc[changed, ["date_index", "symbol"]].copy()
+        rows["field"] = field
+        rows["before"] = old.loc[changed]
+        rows["after"] = new.loc[changed]
+        changes.extend(rows.to_dict("records"))
+        comparison["table"][field] = old
+    unchanged = compare_history(original, comparison)
+    feature_check = validate_features(repaired)
+    provenance = {
+        "purpose": "local_opening_gaps",
+        "created_at": now(),
+        "protocol_sha256": sha(protocol_path),
+        "source_bundle_sha256": sha(source_path),
+        "parent_rebuild_sha256": sha(parent_file),
+        "source_sha256": source,
+    }
+    repaired["provenance"] = provenance
+    save(target / "provenance.json", provenance, immutable=True)
+    dump_gzip(target / "feature_changes.json.gz", changes)
+    joblib.dump(repaired, target / "bundle.joblib", compress=3)
+    if source != {f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))}:
+        raise ValueError("Implementation changed during snapshot construction")
+    audit = {
+        "status": "PASS",
+        "completed_at": now(),
+        "source_integrity": integrity,
+        "bundle_sha256": sha(target / "bundle.joblib"),
+        "data_cutoff": str(repaired["cutoff"]),
+        "parent_exact_rebuild": parent,
+        "unaffected_fields_exact": unchanged,
+        "changed_rows": counts,
+        "features": feature_check,
+        "limitations": protocol["limitations"],
+    }
+    save(target / "audit.json", audit, immutable=True)
+    if sha(source_path) != protocol["source_bundle_sha256"]:
+        raise ValueError("Source bundle changed during construction")
     for file in sorted(target.iterdir()):
         manifest["files"][file.relative_to(paths.root).as_posix()] = sha(file)
     save(paths.manifest, manifest)

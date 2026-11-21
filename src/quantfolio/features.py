@@ -53,7 +53,7 @@ def price_features(raw, adj, bench_returns):
     ) - 1
     f["var1_95"] = ret.rolling(120).quantile(0.05)
     f["es1_95"] = ret.rolling(120).apply(lambda x: np.mean(x[x <= np.quantile(x, 0.05)]), raw=True)
-    f["gap"] = adj.open / c.shift() - 1
+    f["gap"] = adj.opening_gap
     f["price_ratio"] = adj.close / raw.close
     f["raw_prev"] = raw.close.shift()
     f["age"] = np.arange(1, len(f) + 1)

@@ -1,0 +1,20 @@
+{
+  "archived_at": "2026-11-21T08:48:23.709724+08:00",
+  "status": "SOURCE_ARCHIVED",
+  "scope": "Exact scripts used for the pre-edit parent reconstruction and independent complete-data numerical audit. These are frozen audit sources, not another strategy package.",
+  "working_directory": "repository root",
+  "environment": "Python 3.13.2 with PYTHONPATH=src",
+  "parent_source_commit": "ea316d8fff947e97b0b1552f7966dda184a1d074",
+  "protocol": "configs/protocols/gap_precision.json",
+  "scripts": [
+    {
+      "path": "artifacts/checks/gap_precision_2026-11-21/reproduction/rebuild_gap_parent.py",
+      "sha256": "407703396ce85eb62a3841f6799af3e586bd8bc5c65ea59d96ee2b96875a40fa"
+    },
+    {
+      "path": "artifacts/checks/gap_precision_2026-11-21/reproduction/audit_gap_snapshot.py",
+      "sha256": "9630881f2563f4a9fe962ab937d056983594450a4c440f223f3a9413a1aacf2d"
+    }
+  ],
+  "reproduction": "Use the registered old source for rebuild_gap_parent.py and the corrected source for audit_gap_snapshot.py. For a fresh run, use a protocol copy with fresh output paths and freeze its bound parent receipt; do not overwrite completed timestamped receipts."
+}
