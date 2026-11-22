@@ -24,20 +24,23 @@ A股组合研究项目。使用滚动训练和验证选择动量排序及行业�
 
 ## 安装与验证
 
-需要Python 3.11–3.13和Git LFS。以下命令在Windows PowerShell中执行：
+复核现有冻结模型使用Windows x64、Conda及Git LFS。研究环境固定原NumPy/MKL构建；通用开发环境的Windows、Linux安装方式见[复现指南](docs/reproducibility.md#运行环境)。
 
 ```powershell
 git lfs install
 git clone https://github.com/Aaa312-tech/Quantify.git
 Set-Location Quantify
 git lfs pull
-python -m venv .venv
-.\.venv\Scripts\python -m pip install -e '.[dev]'
-.\.venv\Scripts\python -m quantfolio status
-.\.venv\Scripts\python -m quantfolio verify --run artifacts/experiments/recipient_entitlements_2026-11-22
+python -m pip install uv==0.13.9
+conda create --prefix .research --file environments/research-win-64.lock --yes
+uv export --locked --all-extras --no-emit-project --python .research/python.exe --output-file .research/requirements.txt
+uv pip install --python .research/python.exe --require-hashes --no-deps -r .research/requirements.txt
+uv pip install --python .research/python.exe --no-deps -e .
+.\.research\python -m quantfolio status
+.\.research\python -m quantfolio verify --run artifacts/experiments/recipient_entitlements_2026-11-22
 ```
 
-Linux将Python路径替换为 `.venv/bin/python`。源码ZIP可能只含LFS指针；模型与数据须完整下载后再验证。上面的验证重载已有模型，不重新拟合。
+源码ZIP可能只含LFS指针，模型与数据须完整下载后再验证。上述命令重载已有模型，不重新拟合。完整的特征、训练窗口和账户对照使用[标准回归命令](docs/validation.md#标准工程回归)。
 
 ## 项目结构
 
@@ -46,6 +49,7 @@ Linux将Python路径替换为 `.venv/bin/python`。源码ZIP可能只含LFS指�
 | `src/quantfolio/` | 数据处理、训练、组合、回测、纸面账户和报告 |
 | `tests/` | 数据、来源、组合和工作流测试 |
 | `configs/` | 活跃配置、研究协议和完整性清单 |
+| `environments/` | 历史研究环境的二进制依赖锁 |
 | `data/` | 原始来源与处理后的快照 |
 | `artifacts/` | 模型、评估、账户及验证记录 |
 | `reports/` | 由评估数据生成的阅读报告 |

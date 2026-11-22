@@ -18,7 +18,7 @@ python -m ruff check src tests
 python -B -m pytest -q
 ```
 
-CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13构建并安装wheel，再于源码目录外检查导入和模板。测试使用合成输入，不在CI下载完整研究数据。
+CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13按`uv.lock`安装依赖，用固定构建后端生成并安装wheel，再于源码目录外检查导入和模板。测试使用合成输入，不在CI下载完整研究数据。现有历史模型的精确数值复现另使用[研究环境](reproducibility.md#运行环境)，不能由这些合成测试推断。
 
 ## 当前结果的复核
 
@@ -67,11 +67,14 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 | 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/regression_full_2026-11-22/history.json) |
 | 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/regression_full_2026-11-22/paper.json) |
 | 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口精确一致；无模型重训 | [计算对照](../artifacts/checks/regression_full_2026-11-22/differential.json) |
+| 独立环境 | 锁定Windows研究环境和隔离新克隆的全量回归与原环境一致；跨平台安装及测试另行验收 | [环境验收](../artifacts/checks/environment_lock_2026-11-22/completion.json) |
 | 开盘与核账 | 192组场景、2424个纸面交易日、38组拒绝路径；三档成本完整文件链路一致 | [差分对照](../artifacts/checks/paper_refactor_2026-11-22/differential.json) |
 | 仓位与风控 | 29007组状态、1024组优化器输入及完整模拟对照 | [执行验证](../artifacts/checks/execution_refactor_2026-11-22/completion.json) |
 | 训练与评估 | 12个冻结窗口以缓存重放，选型与历史结果一致 | [流程验证](../artifacts/checks/runtime_refactor_2026-11-22/completion.json) |
 
 最近一次代码检查为834项通过、1项本机符号链接权限跳过，详见[检查日志](../artifacts/checks/regression_release_2026-11-22/checks_verified.log)。首次小范围回放的模块导入与日期索引比较失败、旧测试导入失败均保留；修复后重新使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
+
+锁定环境中的Linux安装包另通过835项测试，Windows通过834项、跳过1项本机权限检查。通用OpenBLAS环境的模型误差约4.47×10⁻⁸，未通过历史数值验收；这些失败未被放宽门槛或重训覆盖。精确复现使用[历史研究环境](reproducibility.md#运行环境)。
 
 ## 源码与历史身份
 

@@ -10,6 +10,7 @@
 | `tests/` | 按数据、来源、组合、工作流分类，文件名为 `test_<behavior>.py` |
 | `scripts/` | `check.ps1`作为本地检查入口；运行统一使用 `python -m quantfolio` |
 | `configs/` | 活跃配置、注册协议、历史映射和完整性清单 |
+| `environments/` | 固定历史研究环境的二进制包、构建和哈希；环境本身不提交 |
 | `data/raw/` | 按来源、用途、日期组织的原始响应与公告 |
 | `data/processed/` | 经核验的数据快照，名称包含截止日期和处理口径 |
 | `artifacts/experiments/`、`artifacts/evaluations/` | 同名训练及评估目录 |
@@ -31,6 +32,8 @@ README负责安装和结果摘要，[文档索引](index.md)负责导航，[状�
 `.joblib`及批量公告、行业与基金PDF使用Git LFS。克隆后运行 `git lfs pull`，再按[验证说明](validation.md)检查实际对象。`.gitattributes`保留研究证据的原始换行；不要批量格式化 `data/`、`artifacts/`或冻结报告。
 
 临时脚本、环境、缓存和重复构建文件不提交。手工报价保留来源与时刻，和输出一起存档；不得用生成时间或哈希代替历史可用性证明。
+
+`uv.lock`固定通用开发依赖；`environments/research-win-64.lock`保留历史模型所用的Conda/MKL构建。安装方式和两种环境的验收边界见[复现指南](reproducibility.md#运行环境)。`.venv`和`.research`均为本地环境，不进入Git。
 
 ## 检查与发布
 

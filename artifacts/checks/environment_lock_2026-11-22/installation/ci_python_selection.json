@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "command": [
+    "/var/tmp/quantfolio-uv-0.13.9/uv",
+    "run",
+    "--project",
+    "/var/tmp/quantfolio-linux-release-20261122",
+    "--no-sync",
+    "--offline",
+    "python",
+    "-B",
+    "-c",
+    "import sys,quantfolio; print(sys.version); print(quantfolio.__file__); assert sys.version_info[:2] == (3,12); assert \"site-packages\" in quantfolio.__file__"
+  ],
+  "uv_python": "python",
+  "project_python_pin": "3.13.2",
+  "actual_python": "3.12.3",
+  "stdout": "3.12.3 (main, Mar 23 2026, 19:04:32) [GCC 13.3.0]\n/var/tmp/quantfolio-linux-locked-20261122/lib/python3.12/site-packages/quantfolio/__init__.py\n",
+  "stderr": "",
+  "returncode": 0
+}

@@ -26,6 +26,8 @@
 
 运行 `scripts/check.ps1`。数值、时序或成交逻辑改变时，再按[验证说明](docs/validation.md)核对模型与完整账本。新增测试应覆盖实际失败情形或交易约束。
 
+开发依赖按`uv.lock`安装，已有模型按[复现指南](docs/reproducibility.md#运行环境)使用固定的研究环境。更新依赖时同时检查锁文件和构建后端；通用环境的测试通过不能替代历史模型及账户的精确回归。
+
 README保留入口和当前结论；方法、实现、运行说明分别放在对应文档。机器结果放 `artifacts`，不要复制到文档目录。报告注明样本、区间、成本与基准，区分连续收益和重置本金的10日均值。
 
 有效产物和暂停状态统一维护在`docs/status.md`；待办放`docs/remediation.md`，历史过程放`docs/research_history.md`。不要向`AGENTS.md`或首页追加逐批实验流水账。

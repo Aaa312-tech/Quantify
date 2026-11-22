@@ -26,6 +26,7 @@ rules / allocation / risk → simulation → ledger → validation
 | `metrics`、`evaluation` | 账户统计、策略与成本对照、账本重放 |
 | `study`、`feasibility` | 已登记的选股、恢复和卖出预算研究 |
 | `verification`、`reporting` | 模型重载、纸面账户对照和阅读报告 |
+| `regression` | 准备Git历史实现，精确对照冻结输入、特征、模型和账户，登记完整回归证据 |
 
 ## 信号到成交
 

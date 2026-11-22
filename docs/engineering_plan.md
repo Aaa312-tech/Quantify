@@ -50,8 +50,8 @@
 | 阶段 | 工作 | 依赖 | 初估工作量 | 状态 |
 | --- | --- | --- | --- | --- |
 | E0 | 固定工程验收基线 | 无 | 0.5日 | 已完成 |
-| E1 | 标准回归入口与历史基线准备 | E0 | 1.5–3日 | 原环境通过，独立复现中 |
-| E2 | 锁定运行与构建环境 | E1 | 1–2日 | 待执行 |
+| E1 | 标准回归入口与历史基线准备 | E0 | 1.5–3日 | 已完成 |
+| E2 | 锁定运行与构建环境 | E1 | 1–2日 | 已完成 |
 | E3 | 分层CI、覆盖率和类型检查入口 | E2 | 1–2日 | 待执行 |
 | E4 | 核心数据契约与共享执行边界 | E1、E3 | 2–4日 | 待执行 |
 | E5 | 按职责拆分长函数 | E4 | 2–3日 | 待执行 |
@@ -100,11 +100,11 @@ quantfolio regression --scope core|full --baseline <commit> --output <unused-dir
 
 基线配置另绑定 `configs/archive.toml`，确保归档名称解释不能随工作区变化。`--register`仅用于全量成功后的显式登记；默认回归不修改完整性清单。
 
-原环境[全量回归](../artifacts/checks/regression_full_2026-11-22/result.json)已通过并登记兼容性，耗时36.6分钟；小范围检查耗时112.1秒。原始数据、全部预测与账户结果保持，新增拟合为0。隔离克隆中的独立环境复核与E2共同验收。
+原环境[全量回归](../artifacts/checks/regression_full_2026-11-22/result.json)已通过并登记兼容性，耗时36.6分钟；小范围检查耗时112.1秒。原始数据、全部预测与账户结果保持，新增拟合为0。原有`verify`和`verify-paper`的结果字段与基线一致，834项测试通过，1项因本机符号链接权限跳过，见[原环境验收](../artifacts/checks/regression_release_2026-11-22/completion.json)。隔离新克隆和独立研究环境的全量复核也已通过，记录见E2。
 
 ## E2：锁定环境，保留历史可运行性
 
-主要改动：`pyproject.toml`、新增 `uv.lock`、构建配置及安装说明。
+主要改动：`pyproject.toml`、`uv.lock`、`.python-version`、`environments/research-win-64.lock`、现有CI的锁定安装及安装说明。
 
 - 首次锁定保留现有直接依赖版本，补齐间接依赖、平台条件、开发工具和已支持的可选依赖。构建后端与构建工具另行固定，不能假设运行依赖锁自动覆盖隔离构建环境。
 - 使用[uv的锁定安装](https://docs.astral.sh/uv/concepts/projects/sync/)，CI检查项目配置与锁文件一致，执行期间不自动更新依赖。
@@ -112,6 +112,14 @@ quantfolio regression --scope core|full --baseline <commit> --output <unused-dir
 - Windows和Linux从锁定环境构建wheel，安装到源码目录外测试入口、模板、导入和最小流程，并运行依赖一致性检查。
 
 验收：两台干净环境能按锁文件完成安装；固定环境中完整回归不变。若新构建工具或传递依赖造成预测差异，先定位并保留旧环境，不能更新模型或放宽验收阈值来消除差异。
+
+已完成[环境验收](../artifacts/checks/environment_lock_2026-11-22/completion.json)：锁定29个Python依赖及37个Conda二进制包，构建后端固定为Setuptools 78.1.1和wheel 0.45.1。Windows与Linux（WSL）的隔离安装、依赖一致性、源码目录外导入、模板及构建包检查通过；Linux为835项测试通过，Windows为834项通过、1项主机权限跳过。Python 3.11和3.13沿用原三个CI作业检查，未实施E3的分层CI。
+
+通用环境的NumPy 2.3.4使用OpenBLAS，历史模型出现约4.47×10⁻⁸的预测差异，严格校验失败；[原始失败记录](../artifacts/checks/environment_lock_2026-11-22/portable_windows/result.json)和Linux记录均保留。研究环境锁因此同时固定原Conda/MKL构建，不能仅以包版本相同作为复现证据。
+
+独立研究环境使用安装的wheel，在从E0提交创建的新克隆中加载已核验的候选源码和49个必需LFS对象，自动从Git准备历史实现。其[全量回归](../artifacts/checks/environment_lock_2026-11-22/research/result.json)耗时36.2分钟，模型、特征、24组拟合输入、1,425个账户、114份压缩账本和75个纸面账户与原环境完全一致。候选源码与已发布E1提交逐文件对应；不依赖开发机的旧临时基线目录。项目内`.research`也按相同锁文件建好，48个模型的预测误差为0。
+
+E0–E2完成后停止本批实施，E3–E7及原研究目标均未启动。跨平台合成测试通过不等于现有模型已支持跨平台精确复现。
 
 ## E3：分层CI和检查门槛
 

@@ -2,6 +2,33 @@
 
 命令在项目根目录执行，`python`指安装了本项目的环境。安装步骤见[首页](../README.md#安装与验证)。当前研究暂停；验证已有结果可以执行，新采集、训练和研究需明确恢复后再进行。
 
+## 运行环境
+
+| 用途 | 环境文件 | 验收范围 |
+| --- | --- | --- |
+| 开发和合成测试 | `uv.lock`，支持Python 3.11–3.13 | Windows、Linux的安装、wheel、入口、模板和测试 |
+| 现有历史模型与完整账户复核 | `environments/research-win-64.lock`加`uv.lock`中的Python依赖 | Windows x64、Python 3.13.2、原NumPy/MKL构建 |
+
+开发环境使用uv 0.13.9：
+
+```sh
+python -m pip install uv==0.13.9
+uv sync --locked --all-extras
+uv run --no-sync python -B -m pytest -q
+```
+
+`.python-version`选择3.13.2；检查其他受支持版本时，安装和运行都显式传入 `--python <version>`。`--locked`要求项目配置与锁文件一致，常规安装不更新锁。构建后端单独固定为Setuptools 78.1.1和wheel 0.45.1，构建入口为 `uv build`。CI通过 `UV_PYTHON=python`使用矩阵指定的解释器，先安装锁定依赖，再安装生成的wheel，于源码目录外检查导入和模板。
+
+历史研究环境按[首页命令](../README.md#安装与验证)创建在 `.research`。Conda显式锁固定Python、NumPy、Pandas、MKL、NumExpr、Bottleneck及其二进制依赖的构建和SHA-256；pip 26.1.1单独作为安装工具固定。其余Python依赖由 `uv export --locked`导出带哈希要求，再用 `uv pip install --require-hashes --no-deps`补齐。保留Conda提供的相同版本包，使用本地wheel或可编辑安装加载项目代码。不要对该混合环境运行通用的 `uv sync`，以免替换二进制构建或移除所需计算库。
+
+相同包版本不保证相同数值实现。本次通用Windows和Linux环境的NumPy 2.3.4使用OpenBLAS，首个历史模型出现约4.47×10⁻⁸的预测差异；严格校验拒绝通过。研究锁保留原来的NumPy/MKL二进制，不修改预测、模型或误差门槛。跨平台测试通过只证明其列出的工程范围；现有模型的精确复现以研究环境的完整回归记录为准。
+
+[环境验收](../artifacts/checks/environment_lock_2026-11-22/completion.json)记录安装、构建、测试及失败范围；[独立全量回归](../artifacts/checks/environment_lock_2026-11-22/research/result.json)覆盖48个模型、1,425个历史账户及75个纸面账户，与原环境完全一致。
+
+离线安装同样从锁文件导出全部所需依赖，校验轮子哈希后使用 `uv pip sync --require-hashes --no-index --find-links <wheelhouse>`。构建依赖也须提供锁定的Setuptools和wheel。更新依赖后重新验证模型和完整账户，保留旧环境与失败记录。
+
+依据：[uv锁定安装](https://docs.astral.sh/uv/concepts/projects/sync/)、[uv构建依赖](https://docs.astral.sh/uv/concepts/projects/build/)、[Conda显式环境](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html#building-identical-conda-environments)、[NumPy构建信息](https://numpy.org/doc/stable/reference/generated/numpy.show_config.html)。
+
 ## 配置
 
 [project.toml](../configs/project.toml)是默认入口，指定行情快照、注册协议、评估目录、历史状态审查及完整性清单。项目路径可由全局参数或环境变量指定：
