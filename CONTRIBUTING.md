@@ -17,6 +17,8 @@
 
 README保留入口和当前结论；方法、实现、运行说明分别放在对应文档。机器结果放 `artifacts`，不要复制到文档目录。报告注明样本、区间、成本与基准，区分连续收益和重置本金的10日均值。
 
+有效产物和暂停状态统一维护在`docs/status.md`；待办放`docs/remediation.md`，历史过程放`docs/research_history.md`。不要向`AGENTS.md`或首页追加逐批实验流水账。
+
 提交标题说明动作与对象，例如 `fix: reject recovery in latched risk audit`。同步方式见[仓库维护](docs/repository.md)。
 
 ## 参考代码
