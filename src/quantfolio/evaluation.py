@@ -193,31 +193,57 @@ def evaluate(
     return result
 
 
+def simulate_accounts(
+    bundle,
+    start,
+    end,
+    forecasts,
+    slippage=0.001,
+    *,
+    rules="baseline",
+    mode="latched",
+    turnover="legacy",
+):
+    """Run reset-capital episodes and one continuous account over the same signal range."""
+    controls = {"rules": rules, "mode": mode, "turnover": turnover}
+    accounts = episodes(bundle, start, end, forecasts, slippage, True, **controls)
+    summary, ledger = simulate(bundle, start + 1, end + 1, forecasts, slippage, True, **controls)
+    return accounts, {"summary": summary, "ledger": ledger}
+
+
 def evaluate_accounts(
     bundle, maps, schedule, start, end, costs, policies, output, *, turnover="legacy"
 ):
     """Persist the same audited account matrix for retraining and execution diagnosis."""
+    variants = []
+    for policy in policies:
+        forecasts, rules = policy_inputs(policy, maps, schedule)
+        variants.append((policy, {"forecasts": forecasts, "rules": rules, "turnover": turnover}))
+    return evaluate_variants(bundle, variants, start, end, costs, output)
+
+
+def evaluate_variants(bundle, variants, start, end, costs, output):
+    """Run named forecast/control pairs through the same account and audit pipeline."""
+    variants = list(variants)
     results, continuous, artifacts = {}, {}, {}
     reconciliation_checks = execution_checks = accounts = 0
     for cost in sorted(set(costs)):
         key = f"{cost:02d}bps"
         results[key], continuous[key] = {}, {}
-        for policy in policies:
-            forecasts, rules = policy_inputs(policy, maps, schedule)
-            episodes_result = episodes(
-                bundle, start, end, forecasts, cost / 10000, True, rules=rules, turnover=turnover
-            )
-            summary, ledger = simulate(
+        for policy, controls in variants:
+            forecasts, rules = controls["forecasts"], controls["rules"]
+            mode = controls.get("mode", "latched")
+            turnover = controls.get("turnover", "legacy")
+            episodes_result, account = simulate_accounts(
                 bundle,
-                start + 1,
-                end + 1,
+                start,
+                end,
                 forecasts,
                 cost / 10000,
-                True,
+                mode=mode,
                 rules=rules,
                 turnover=turnover,
             )
-            account = {"summary": summary, "ledger": ledger}
             for current in [*episodes_result, account]:
                 check = reconcile(
                     current["ledger"], current["summary"], bundle["meta"], bundle["actions"]
@@ -236,7 +262,7 @@ def evaluate_accounts(
                 dump_gzip(path, content)
                 artifacts[relative] = sha(path)
             results[key][policy] = {"aggregate": episode_stats(episodes_result)}
-            continuous[key][policy] = {"summary": summary}
+            continuous[key][policy] = {"summary": account["summary"]}
             log("Evaluated accounts", cost=key, policy=policy, accounts=len(episodes_result) + 1)
     return {
         "results": results,

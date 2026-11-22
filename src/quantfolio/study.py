@@ -8,8 +8,7 @@ import numpy as np
 import pandas as pd
 
 from .dataset import check_integrity, eligible_rows, load_bundle
-from .evaluation import evaluate, experiment_folds, load_predictions
-from .metrics import episode_stats
+from .evaluation import evaluate, evaluate_variants, experiment_folds, load_predictions
 from .models import (
     CANDIDATES,
     candidate_scores,
@@ -20,10 +19,8 @@ from .models import (
 )
 from .selection import assess, select_model, select_rules
 from .settings import Paths
-from .simulation import episodes, simulate
-from .storage import digest, dump_gzip, log, now, read, save, sha
+from .storage import digest, log, now, read, save, sha
 from .training import run_training, trial
-from .validation import execution_audit, reconcile
 from .verification import verify
 
 
@@ -378,67 +375,6 @@ def _outer_inputs(bundle, fitted, windows):
     return variants
 
 
-def _evaluate_alternatives(bundle, variants, start, end, output):
-    results, continuous, artifacts = {}, {}, {}
-    account_count = accounting_checks = execution_checks = 0
-    for cost in (10, 20, 30):
-        key = f"{cost:02d}bps"
-        results[key], continuous[key] = {}, {}
-        for name, values in variants.items():
-            policies = set(values["turnover"].values())
-            turnover = next(iter(policies)) if len(policies) == 1 else values["turnover"]
-            accounts = episodes(
-                bundle,
-                start,
-                end,
-                values["forecasts"],
-                cost / 10000,
-                True,
-                values["mode"],
-                values["rules"],
-                turnover=turnover,
-            )
-            summary, ledger = simulate(
-                bundle,
-                start + 1,
-                end + 1,
-                values["forecasts"],
-                cost / 10000,
-                True,
-                values["mode"],
-                values["rules"],
-                turnover=turnover,
-            )
-            continuous_account = {"summary": summary, "ledger": ledger}
-            for account in [*accounts, continuous_account]:
-                check = reconcile(
-                    account["ledger"], account["summary"], bundle["meta"], bundle["actions"]
-                )
-                audit = execution_audit(account["ledger"], bundle)
-                if check["status"] != "PASS" or audit["status"] != "PASS":
-                    raise ValueError(f"Research account failed audit: {name} {check} {audit}")
-                account_count += 1
-                accounting_checks += check["checks"]
-                execution_checks += audit["checks"]
-            for relative, content in (
-                (f"evaluation/{key}/{name}.ledgers.json.gz", accounts),
-                (f"evaluation/continuous/{key}/{name}.json.gz", continuous_account),
-            ):
-                dump_gzip(output / relative, content)
-                artifacts[relative] = sha(output / relative)
-            results[key][name] = {"aggregate": episode_stats(accounts)}
-            continuous[key][name] = {"summary": summary}
-            log("Research accounts evaluated", policy=name, cost=key)
-    return {
-        "results": results,
-        "continuous": continuous,
-        "artifacts": artifacts,
-        "accounts": account_count,
-        "reconciliation_checks": accounting_checks,
-        "execution_checks": execution_checks,
-    }
-
-
 @pd.option_context("compute.use_numexpr", False)
 def evaluate_study(paths, run, output):
     """Evaluate frozen research choices and the deployable non-recovering primary separately."""
@@ -482,7 +418,13 @@ def evaluate_study(paths, run, output):
     # The standard evaluation is the preregistered positive-score primary, usable by the CLI.
     primary = evaluate(configured, fitted, output, [10, 20, 30], all_policies=True)
     variants.pop("positive_adoption")
-    alternatives = _evaluate_alternatives(bundle, variants, start, end, output / "alternatives")
+    for controls in variants.values():
+        policies = set(controls["turnover"].values())
+        if len(policies) == 1:
+            controls["turnover"] = next(iter(policies))
+    alternatives = evaluate_variants(
+        bundle, variants.items(), start, end, (10, 20, 30), output / "alternatives"
+    )
     result = {
         "schema_version": 1,
         "status": "COMPLETE",

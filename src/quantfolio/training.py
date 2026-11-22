@@ -7,6 +7,7 @@ import pandas as pd
 
 from .calibration import calibrate, map_calibration, rank_by_date
 from .dataset import eligible_rows, label_mask
+from .evaluation import simulate_accounts
 from .market import EXECUTION_MODEL
 from .models import (
     CANDIDATES,
@@ -18,7 +19,6 @@ from .models import (
 )
 from .rules import CONFIGS, TURNOVER_POLICIES
 from .selection import clip_for, objective, select_model, select_rules
-from .simulation import episodes, simulate
 from .storage import dump_gzip, log, now, read, save, sha
 from .validation import execution_audit, reconcile
 
@@ -128,26 +128,16 @@ def trial(bundle, fold, forecasts, config, path, identity, *, mode="latched", tu
         if out["identity"] != identity or sha(ledger_path) != out["ledger_sha256"]:
             raise ValueError(f"Cached trial identity or ledger hash mismatch: {summary_path}")
         return out
-    accounts = episodes(
+    accounts, continuous = simulate_accounts(
         bundle,
         fold["validation_start"],
         fold["validation_end"],
         forecasts,
-        detail=True,
         rules=config,
         mode=mode,
         turnover=turnover,
     )
-    continuous_summary, continuous_ledger = simulate(
-        bundle,
-        fold["validation_start"] + 1,
-        fold["validation_end"] + 1,
-        forecasts,
-        detail=True,
-        rules=config,
-        mode=mode,
-        turnover=turnover,
-    )
+    continuous_summary, continuous_ledger = continuous["summary"], continuous["ledger"]
     checks = [
         reconcile(e["ledger"], e["summary"], bundle["meta"], bundle["actions"]) for e in accounts
     ] + [reconcile(continuous_ledger, continuous_summary, bundle["meta"], bundle["actions"])]
@@ -161,7 +151,7 @@ def trial(bundle, fold, forecasts, config, path, identity, *, mode="latched", tu
         ledger_path,
         {
             "episodes": accounts,
-            "continuous": {"summary": continuous_summary, "ledger": continuous_ledger},
+            "continuous": continuous,
             "reconciliation": checks,
             "execution_audit": audits,
         },
@@ -181,49 +171,21 @@ def trial(bundle, fold, forecasts, config, path, identity, *, mode="latched", tu
     return out
 
 
-@pd.option_context("compute.use_numexpr", False)
-def run_window(
-    bundle, fold, folder, identity, final=False, *, positive_score=False, turnover="legacy"
+def _select_validation(
+    bundle,
+    fold,
+    folder,
+    identity,
+    validation_rows,
+    predictions,
+    validation_scores,
+    initial_calibration,
+    *,
+    positive_score,
+    turnover,
 ):
-    """Select rules and models on validation data, refit, then freeze outer predictions."""
-    folder.mkdir(parents=True, exist_ok=True)
+    """Select turnover rules before comparing ranking candidates on the same validation data."""
     table = bundle["table"]
-    if (folder / "result.json").exists():
-        result = read(folder / "result.json")
-        if (
-            result["identity"] != identity
-            or sha(folder / "outer_predictions.npz") != result["predictions_sha256"]
-        ):
-            raise ValueError(f"Cached window identity or prediction hash mismatch: {folder}")
-        return result
-    calibration_start = fold["train_end"] - 59
-    fit_end = calibration_start - 7
-    calibration_rows = eligible_rows(table, calibration_start, fold["train_end"])
-    validation_rows = eligible_rows(table, fold["validation_start"], fold["validation_end"])
-    test_rows = eligible_rows(table, fold["test_start"], fold["test_end"])
-    calibration_fit_rows = np.flatnonzero(
-        label_mask(table, 5, fold["train_start"], fit_end, calibration_start)
-    )
-    initial_calibration = calibrate(
-        table,
-        calibration_rows,
-        rank_by_date(
-            table, calibration_rows, table.iloc[calibration_rows].momentum_score.to_numpy()
-        ),
-        fold["validation_start"],
-        clip_for(table, calibration_fit_rows),
-    )
-    train_rows = np.flatnonzero(
-        label_mask(table, 5, fold["train_start"], fold["train_end"], fold["validation_start"])
-    )
-    predictions = fit_stage(
-        bundle,
-        train_rows,
-        validation_rows,
-        folder / "validation_fit",
-        {"experiment": identity, "fold": fold, "stage": "validation"},
-    )
-    validation_scores = candidate_scores(table, validation_rows, predictions)
     forecasts = forecasts_by_date(
         table,
         validation_rows,
@@ -280,6 +242,64 @@ def run_window(
         result["factor_check"] = factors["momentum" if name == "momentum" else name[:-2]]
         models[name] = result
     selected = select_model(models, positive_score=positive_score)
+    return selected_rules, selected, rules, models
+
+
+@pd.option_context("compute.use_numexpr", False)
+def run_window(
+    bundle, fold, folder, identity, final=False, *, positive_score=False, turnover="legacy"
+):
+    """Select rules and models on validation data, refit, then freeze outer predictions."""
+    folder.mkdir(parents=True, exist_ok=True)
+    table = bundle["table"]
+    if (folder / "result.json").exists():
+        result = read(folder / "result.json")
+        if (
+            result["identity"] != identity
+            or sha(folder / "outer_predictions.npz") != result["predictions_sha256"]
+        ):
+            raise ValueError(f"Cached window identity or prediction hash mismatch: {folder}")
+        return result
+    calibration_start = fold["train_end"] - 59
+    fit_end = calibration_start - 7
+    calibration_rows = eligible_rows(table, calibration_start, fold["train_end"])
+    validation_rows = eligible_rows(table, fold["validation_start"], fold["validation_end"])
+    test_rows = eligible_rows(table, fold["test_start"], fold["test_end"])
+    calibration_fit_rows = np.flatnonzero(
+        label_mask(table, 5, fold["train_start"], fit_end, calibration_start)
+    )
+    initial_calibration = calibrate(
+        table,
+        calibration_rows,
+        rank_by_date(
+            table, calibration_rows, table.iloc[calibration_rows].momentum_score.to_numpy()
+        ),
+        fold["validation_start"],
+        clip_for(table, calibration_fit_rows),
+    )
+    train_rows = np.flatnonzero(
+        label_mask(table, 5, fold["train_start"], fold["train_end"], fold["validation_start"])
+    )
+    predictions = fit_stage(
+        bundle,
+        train_rows,
+        validation_rows,
+        folder / "validation_fit",
+        {"experiment": identity, "fold": fold, "stage": "validation"},
+    )
+    validation_scores = candidate_scores(table, validation_rows, predictions)
+    selected_rules, selected, rules, models = _select_validation(
+        bundle,
+        fold,
+        folder,
+        identity,
+        validation_rows,
+        predictions,
+        validation_scores,
+        initial_calibration,
+        positive_score=positive_score,
+        turnover=turnover,
+    )
     outer_calibration = calibrate(
         table,
         validation_rows,
