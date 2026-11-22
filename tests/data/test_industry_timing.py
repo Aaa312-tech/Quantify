@@ -4,9 +4,6 @@ from copy import deepcopy
 
 import pandas as pd
 import pytest
-from conftest import fixture
-from test_planning import calendar_for, opening_quotes, prefix
-from test_preprocessing import inputs
 
 from quantfolio.accounts import new_account
 from quantfolio.industries import compile_histories, industry_at, metadata_at
@@ -14,6 +11,13 @@ from quantfolio.planning import make_intent, resolve_intent
 from quantfolio.preprocessing import build_dataset
 from quantfolio.simulation import simulate
 from quantfolio.validation import checked_industries, execution_audit, reconcile
+from tests.factories import (
+    bundle_prefix,
+    market_bundle,
+    opening_quotes,
+    raw_history,
+    trading_calendar,
+)
 
 
 def entry(day, industry):
@@ -21,7 +25,7 @@ def entry(day, industry):
 
 
 def changing_groups():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     dates = bundle["calendar"]
     for symbol, instrument in bundle["meta"].items():
         if instrument["kind"] == "stock":
@@ -33,7 +37,7 @@ def changing_groups():
 
 
 def test_unknown_industry_is_excluded_before_ranks_and_labels():
-    meta, raws = inputs()
+    meta, raws = raw_history()
     dates = raws["sh510300"].index
     meta["sh600001"]["industry_history"] = [entry(dates[140], "capco:C39")]
     bundle = build_dataset(meta, raws, [])
@@ -45,7 +49,7 @@ def test_unknown_industry_is_excluded_before_ranks_and_labels():
 
 
 def test_dataset_uses_the_category_available_on_each_signal_day():
-    meta, raws = inputs()
+    meta, raws = raw_history()
     dates = raws["sh510300"].index
     for instrument in meta.values():
         if instrument["kind"] == "stock":
@@ -74,10 +78,10 @@ def test_paper_preview_and_actual_opening_use_their_own_information_time():
     bundle, forecasts = changing_groups()
     day = str(bundle["calendar"][6].date())
     account = new_account(str(bundle["calendar"][5].date()), "industry_boundary")
-    intent = make_intent(prefix(bundle, 5), account, forecasts[5], "baseline", day, 0.001)
+    intent = make_intent(bundle_prefix(bundle, 5), account, forecasts[5], "baseline", day, 0.001)
     frozen = deepcopy(intent)
-    preview = resolve_intent(intent, account, [], calendar_for(bundle), {}, preview=True)
-    actual = resolve_intent(intent, account, [], calendar_for(bundle), opening_quotes(intent))
+    preview = resolve_intent(intent, account, [], trading_calendar(bundle), {}, preview=True)
+    actual = resolve_intent(intent, account, [], trading_calendar(bundle), opening_quotes(intent))
     preview_gross = sum(t["gross"] for t in preview["trades"])
     actual_gross = sum(t["gross"] for t in actual["trades"])
     assert preview_gross > 0.30 * preview["opening_nav_after_costs"]
@@ -87,7 +91,7 @@ def test_paper_preview_and_actual_opening_use_their_own_information_time():
 
 
 def test_missing_classification_for_a_holding_stops_the_account():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     dates = bundle["calendar"]
     bundle["meta"]["sh600001"]["industry_history"] = [
         entry(dates[0], "capco:C39"),
@@ -221,7 +225,7 @@ def test_malformed_history_is_rejected_by_lookup_and_independent_audit(fault):
 
 
 def test_future_classification_changes_do_not_change_any_earlier_table_value():
-    meta, raws = inputs()
+    meta, raws = raw_history()
     dates = raws["sh510300"].index
     for instrument in meta.values():
         if instrument["kind"] == "stock":
@@ -251,7 +255,7 @@ def test_independent_audit_catches_forged_industry_marks():
 
 
 def test_dated_audit_reconstructs_shares_and_receivables_across_actions():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     dates = bundle["calendar"]
     symbol = "sh600001"
     bundle["meta"][symbol]["industry_history"] = [entry(dates[0], symbol)]
@@ -276,7 +280,7 @@ def test_dated_audit_reconstructs_shares_and_receivables_across_actions():
 
 
 def test_industry_audit_retains_the_mark_for_shares_received_after_a_sale():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     dates, symbol = bundle["calendar"], "sh600001"
     bundle["meta"][symbol]["industry_history"] = [entry(dates[0], symbol)]
     forecasts[5] = {symbol: forecasts[5][symbol]}

@@ -3,12 +3,12 @@
 from copy import deepcopy
 
 import pytest
-from conftest import fixture
 
 from quantfolio.ledger import Ledger, buy_quantity
 from quantfolio.market import opening_price
 from quantfolio.simulation import simulate
 from quantfolio.validation import execution_audit, reconcile
+from tests.factories import market_bundle
 
 
 @pytest.mark.parametrize(
@@ -20,7 +20,7 @@ from quantfolio.validation import execution_audit, reconcile
     ],
 )
 def test_later_bar_fields_do_not_select_opening_orders(fields, values):
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     _, expected = simulate(bundle, 6, 6, forecasts)
     changed = deepcopy(bundle)
     date = changed["calendar"][6]
@@ -33,7 +33,7 @@ def test_later_bar_fields_do_not_select_opening_orders(fields, values):
 
 
 def test_later_sessions_do_not_change_earlier_opening_orders():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     _, expected = simulate(bundle, 6, 6, forecasts)
     changed = deepcopy(bundle)
     for raw in changed["raws"].values():
@@ -46,7 +46,7 @@ def test_later_sessions_do_not_change_earlier_opening_orders():
 
 
 def test_sell_fills_ignore_later_range_and_volume():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     forecasts[5] = dict(list(forecasts[5].items())[:2])
     # At the next rebalance, no positive edge remains, so the account exits.
     for value in forecasts[10].values():
@@ -64,7 +64,7 @@ def test_sell_fills_ignore_later_range_and_volume():
 
 @pytest.mark.parametrize("rate", [0.0, 0.001, 0.002, 0.003])
 def test_slippage_is_charged_once_without_changing_flat_market_quote(rate):
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     forecasts[5] = dict(list(forecasts[5].items())[:2])
     for value in forecasts[10].values():
         value["mu"] = -0.1
@@ -82,7 +82,7 @@ def test_slippage_is_charged_once_without_changing_flat_market_quote(rate):
 
 
 def test_affordable_quantity_reserves_cost_and_ledger_rejects_overspend():
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     symbol = "sh600001"
     date = bundle["calendar"][1]
     quantity = buy_quantity(1005.31, 10, bundle["meta"][symbol], slippage=0.001)
@@ -104,7 +104,7 @@ def test_affordable_quantity_reserves_cost_and_ledger_rejects_overspend():
     ],
 )
 def test_status_requires_evidence_known_by_open(status, reason):
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     symbol = "sh600001"
     assert opening_price(
         bundle["meta"][symbol],
@@ -117,7 +117,7 @@ def test_status_requires_evidence_known_by_open(status, reason):
 
 @pytest.mark.parametrize("side,opening", [("BUY", 11.0), ("SELL", 9.0)])
 def test_directional_limit_opening_is_still_rejected(side, opening):
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     symbol = "sh600001"
     raw = bundle["raws"][symbol]
     date, previous = bundle["calendar"][[6, 5]]
@@ -131,7 +131,7 @@ def test_directional_limit_opening_is_still_rejected(side, opening):
     [("price", 10.01, "NOT_OPENING_PROXY"), ("slippage_cost", 0.0, "SLIPPAGE_COST_MISMATCH")],
 )
 def test_independent_audit_rejects_corrupt_fill_or_missing_cost(field, value, reason):
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     summary, detail = simulate(bundle, 6, 6, forecasts)
     detail["trades"][0][field] = value
     assert any(error[0] == reason for error in execution_audit(detail, bundle)["errors"])

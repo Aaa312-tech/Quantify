@@ -5,7 +5,6 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 import pytest
-from test_market import META, bars
 
 from quantfolio.dataset import label_mask
 from quantfolio.ledger import Ledger
@@ -13,6 +12,7 @@ from quantfolio.market import gross_entitlement, opening_price
 from quantfolio.simulation import buy_ceiling
 from quantfolio.snapshots import next_opening, rebuild_labels, repair_actions
 from quantfolio.validation import opening_errors
+from tests.factories import STOCK_META, flat_bars
 
 
 def test_shift_declared_payments_once_and_preserve_unknowns():
@@ -82,7 +82,7 @@ def test_reviewed_transfer_without_cash_has_no_payment_date(cash, payment_date, 
 @pytest.mark.parametrize("available", ["2026-01-07", None])
 def test_declared_payment_is_not_spendable_at_that_open(available):
     dates = pd.bdate_range("2026-01-05", periods=3)
-    symbol = META["symbol"]
+    symbol = STOCK_META["symbol"]
     action = {
         "id": "dividend",
         "symbol": symbol,
@@ -93,7 +93,7 @@ def test_declared_payment_is_not_spendable_at_that_open(available):
         "cash_per_share": 0.1,
         "share_multiplier": 1.0,
     }
-    book = Ledger({symbol: META}, initial=1005.01)
+    book = Ledger({symbol: STOCK_META}, initial=1005.01)
     assert book.buy(dates[0], symbol, 100, 10.0)
     assert book.cash == 0
     book.snapshot_record_dates(dates[0], [action])
@@ -109,8 +109,8 @@ def test_declared_payment_is_not_spendable_at_that_open(available):
 
 
 def test_reference_multiplier_does_not_replace_share_entitlements():
-    dates, raw = bars()
-    meta = dict(META, code="688120", symbol="sh688120")
+    dates, raw = flat_bars()
+    meta = dict(STOCK_META, code="688120", symbol="sh688120")
     raw.loc[dates[0], "close"] = 140.4
     raw.loc[dates[1], "open"] = 120.0
     action = {
@@ -144,9 +144,9 @@ def test_reference_multiplier_does_not_replace_share_entitlements():
 
 
 def test_repaired_share_listing_regenerates_purged_labels():
-    dates, raw = bars()
+    dates, raw = flat_bars()
     action = {
-        "symbol": META["symbol"],
+        "symbol": STOCK_META["symbol"],
         "record_date": str(dates[1].date()),
         "ex_date": str(dates[2].date()),
         "cash_per_share": 0.0,
@@ -157,7 +157,7 @@ def test_repaired_share_listing_regenerates_purged_labels():
     table = pd.DataFrame(
         {
             "date_index": np.arange(len(dates)),
-            "symbol": META["symbol"],
+            "symbol": STOCK_META["symbol"],
             "eligible": True,
             "factor": np.arange(len(dates), dtype="float32"),
         }
@@ -173,8 +173,8 @@ def test_repaired_share_listing_regenerates_purged_labels():
             table[f"{field}{horizon}"] = np.full(len(dates), value, dtype=dtype)
     bundle = {
         "table": table,
-        "meta": {META["symbol"]: META},
-        "raws": {META["symbol"]: raw},
+        "meta": {STOCK_META["symbol"]: STOCK_META},
+        "raws": {STOCK_META["symbol"]: raw},
         "calendar": dates,
         "actions": [action],
     }

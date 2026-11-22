@@ -120,14 +120,13 @@ def test_small_real_move_is_not_rounded_to_zero_and_future_changes_preserve_pref
 def test_snapshot_rejects_changes_outside_registered_gap_values(tmp_path, monkeypatch, fault):
     from copy import deepcopy
 
-    from test_preprocessing import inputs
-
     from quantfolio import preprocessing
     from quantfolio.settings import Paths
     from quantfolio.snapshots import repair_snapshot
     from quantfolio.storage import save, sha
+    from tests.factories import raw_history
 
-    meta, raws = inputs()
+    meta, raws = raw_history()
     original = preprocessing.build_dataset(meta, raws, [])
     source = tmp_path / "data/processed/before/bundle.joblib"
     source.parent.mkdir(parents=True)

@@ -10,7 +10,11 @@ from . import __version__
 from .settings import Paths, project_root
 
 
-def main(argv: list[str] | None = None) -> None:
+def _add_output(parser: argparse.ArgumentParser, location: str, *, required: bool = True) -> None:
+    parser.add_argument("--output", required=required, help=f"New directory under {location}")
+
+
+def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="quantfolio", description=__doc__)
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("--project", help="Project directory (or QUANTFOLIO_ROOT)")
@@ -23,18 +27,14 @@ def main(argv: list[str] | None = None) -> None:
     exit_study = commands.add_parser(
         "exit-study", help="Train the registered sell-budget comparison"
     )
-    exit_study.add_argument(
-        "--output", required=True, help="New directory under artifacts/experiments"
-    )
+    _add_output(exit_study, "artifacts/experiments")
     exit_evaluation = commands.add_parser(
         "evaluate-exits", help="Evaluate the registered sell-budget comparison"
     )
     exit_evaluation.add_argument("--run", required=True, help="Completed exit-study experiment")
-    exit_evaluation.add_argument(
-        "--output", required=True, help="New directory under artifacts/evaluations"
-    )
+    _add_output(exit_evaluation, "artifacts/evaluations")
     verification = commands.add_parser("verify", help="Check frozen files, features and models")
-    verification.add_argument("--output", help="New directory under artifacts/checks")
+    _add_output(verification, "artifacts/checks", required=False)
     verification.add_argument("--refit", action="store_true", help="Refit fold 1's two estimators")
     verification.add_argument(
         "--run", help="Verify a new training run instead of the frozen reference"
@@ -42,7 +42,7 @@ def main(argv: list[str] | None = None) -> None:
     repair = commands.add_parser(
         "repair-data", help="Build the registered corporate-action snapshot"
     )
-    repair.add_argument("--output", required=True, help="New directory under data/processed")
+    _add_output(repair, "data/processed")
     repair.add_argument(
         "--protocol",
         default="configs/protocols/action_repair.json",
@@ -73,35 +73,35 @@ def main(argv: list[str] | None = None) -> None:
     status_repair = commands.add_parser(
         "repair-status", help="Rebuild eligibility from reviewed historical warning notices"
     )
-    status_repair.add_argument("--output", required=True, help="New directory under data/processed")
+    _add_output(status_repair, "data/processed")
     status_repair.add_argument(
         "--protocol", required=True, help="Registered status repair protocol"
     )
     resumption = commands.add_parser(
         "repair-resumption", help="Rebuild labels from a reviewed suspension and resumption"
     )
-    resumption.add_argument("--output", required=True, help="New directory under data/processed")
+    _add_output(resumption, "data/processed")
     resumption.add_argument("--protocol", required=True, help="Registered resumption protocol")
     refresh = commands.add_parser("refresh-data", help="Build a reviewed market-data extension")
-    refresh.add_argument("--output", required=True, help="New directory under data/processed")
+    _add_output(refresh, "data/processed")
     refresh.add_argument("--protocol", required=True, help="Registered market refresh protocol")
     collection = commands.add_parser(
         "fetch-bars", help="Collect completed daily bars for separate review"
     )
     collection.add_argument("--date", required=True, help="Completed session in YYYY-MM-DD form")
-    collection.add_argument("--output", required=True, help="New directory under data/raw")
+    _add_output(collection, "data/raw")
     collection.add_argument(
         "--retry", help="Completed raw collection with failed or missing requests"
     )
     status_collection = commands.add_parser(
         "fetch-status", help="Collect retrospective daily flags for separate source review"
     )
-    status_collection.add_argument("--output", required=True, help="New directory under data/raw")
+    _add_output(status_collection, "data/raw")
     status_collection.add_argument("--retry", help="Finished collection with missing histories")
     disclosures = commands.add_parser(
         "fetch-disclosures", help="Archive issuer notices for unresolved historical events"
     )
-    disclosures.add_argument("--output", required=True, help="New directory under data/raw")
+    _add_output(disclosures, "data/raw")
     disclosures.add_argument(
         "--retry", help="Finished source collection with failed or missing requests"
     )
@@ -111,19 +111,17 @@ def main(argv: list[str] | None = None) -> None:
     status_audit.add_argument(
         "--collection", required=True, action="append", help="Finished raw batch"
     )
-    status_audit.add_argument(
-        "--output", required=True, help="New directory under artifacts/checks"
-    )
+    _add_output(status_audit, "artifacts/checks")
     replay = commands.add_parser(
         "replay", aliases=["backtest"], help="Compare the frozen reference accounts exactly"
     )
-    replay.add_argument("--output", required=True, help="New directory under artifacts/replays")
+    _add_output(replay, "artifacts/replays")
     replay.add_argument("--cost", type=int, choices=[10, 20, 30], action="append")
     replay.add_argument("--primary-only", action="store_true")
     bridge = commands.add_parser(
         "execution-bridge", help="Diagnose execution with frozen predictions"
     )
-    bridge.add_argument("--output", required=True, help="New directory under artifacts/evaluations")
+    _add_output(bridge, "artifacts/evaluations")
     bridge.add_argument("--cost", type=int, choices=[10, 20, 30], action="append")
     bridge.add_argument("--primary-only", action="store_true")
     data_bridge = commands.add_parser(
@@ -132,33 +130,25 @@ def main(argv: list[str] | None = None) -> None:
     data_bridge.add_argument(
         "--baseline", required=True, help="Completed execution bridge under artifacts/evaluations"
     )
-    data_bridge.add_argument(
-        "--output", required=True, help="New directory under artifacts/evaluations"
-    )
+    _add_output(data_bridge, "artifacts/evaluations")
     training = commands.add_parser("train", help="Train a new run using the registered protocol")
-    training.add_argument(
-        "--output", required=True, help="New directory under artifacts/experiments"
-    )
+    _add_output(training, "artifacts/experiments")
     training.add_argument("--first", type=int, default=1)
     training.add_argument("--last", type=int, help="Last window (default: all complete windows)")
     training.add_argument("--include-latest", action="store_true")
     study = commands.add_parser("study", help="Refit and select the registered research recipes")
-    study.add_argument("--output", required=True, help="New directory under artifacts/experiments")
+    _add_output(study, "artifacts/experiments")
     study.add_argument("--protocol", default="configs/protocols/strategy_study.json")
     study_evaluation = commands.add_parser(
         "evaluate-study", help="Evaluate frozen research recipes"
     )
     study_evaluation.add_argument("--run", required=True, help="Completed study directory")
-    study_evaluation.add_argument(
-        "--output", required=True, help="New directory under artifacts/evaluations"
-    )
+    _add_output(study_evaluation, "artifacts/evaluations")
     evaluation = commands.add_parser("evaluate", help="Backtest a completed training run")
     evaluation.add_argument(
         "--run", required=True, help="Training directory under artifacts/experiments"
     )
-    evaluation.add_argument(
-        "--output", required=True, help="New directory under artifacts/evaluations"
-    )
+    _add_output(evaluation, "artifacts/evaluations")
     evaluation.add_argument("--cost", type=int, choices=[10, 20, 30], action="append")
     evaluation.add_argument(
         "--all-policies", action="store_true", help="Include all 19 rule comparisons"
@@ -167,20 +157,20 @@ def main(argv: list[str] | None = None) -> None:
     paper_check = commands.add_parser(
         "verify-paper", help="Compare daily paper workflow with all active frozen accounts"
     )
-    paper_check.add_argument("--output", required=True, help="New directory under artifacts/checks")
+    _add_output(paper_check, "artifacts/checks")
     account.add_argument("--account-id", required=True)
     account.add_argument("--as-of", help="Completed closing date; defaults to the active cutoff")
-    account.add_argument("--output", required=True, help="New directory under artifacts/accounts")
+    _add_output(account, "artifacts/accounts")
     plan = commands.add_parser("plan", help="Freeze a conditional next-opening paper plan")
     plan.add_argument("--account", required=True, help="Manual or paper closing-account JSON")
     plan.add_argument("--cost", type=int, choices=[10, 20, 30], default=10)
-    plan.add_argument("--output", required=True, help="New directory under artifacts/plans")
+    _add_output(plan, "artifacts/plans")
     resolve = commands.add_parser(
         "resolve-plan", help="Recalculate paper quantities at supplied opening quotes"
     )
     resolve.add_argument("--plan", required=True, help="Frozen plan.json")
     resolve.add_argument("--quotes", required=True, help="Manually supplied opening quotes JSON")
-    resolve.add_argument("--output", required=True, help="New directory under artifacts/plans")
+    _add_output(resolve, "artifacts/plans")
     closing = commands.add_parser(
         "account-close", help="Mark paper positions and carry account state forward"
     )
@@ -188,7 +178,7 @@ def main(argv: list[str] | None = None) -> None:
     closing.add_argument(
         "--quotes", required=True, help="Manually supplied completed closing quotes JSON"
     )
-    closing.add_argument("--output", required=True, help="New directory under artifacts/accounts")
+    _add_output(closing, "artifacts/accounts")
     report = commands.add_parser(
         "report", help="Render reference results or an evaluated experiment"
     )
@@ -197,6 +187,11 @@ def main(argv: list[str] | None = None) -> None:
     report_source.add_argument(
         "--reference", action="store_true", help="Render the archived reference"
     )
+    return parser
+
+
+def main(argv: list[str] | None = None) -> None:
+    parser = _parser()
     args = parser.parse_args(argv)
     if args.command == "verify" and args.refit and not args.output:
         parser.error("--refit requires --output artifacts/checks/<new-name>")

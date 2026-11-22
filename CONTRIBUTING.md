@@ -11,6 +11,17 @@
 - 共享交易规则集中定义；独立核账应保留自己的计算，避免执行器和验证器共享同一错误。
 - 持久化使用 `storage.save`，不写NaN/Infinity。新实验用新目录，不覆盖冻结参考文件。
 
+## 测试位置
+
+| 目录 | 覆盖范围 |
+| --- | --- |
+| `tests/data` | 行情、状态、特征、快照和数据修补 |
+| `tests/sources` | 公告、分红权益和行业来源解析 |
+| `tests/portfolio` | 成交、资金、风险、行业约束和换手 |
+| `tests/workflows` | 命令、训练、评估、纸面计划和存储 |
+
+共享的合成输入放在 `tests/factories.py`，测试模块之间不互相导入。构造函数用输入含义命名，如 `market_bundle`、`raw_history`；只有需要 pytest 生命周期管理时才在 `conftest.py` 定义 fixture。可按目录运行检查，例如 `python -m pytest tests/portfolio -q`。
+
 ## 检查与提交
 
 运行 `scripts/check.ps1`。数值、时序或成交逻辑改变时，再按[复现指南](docs/reproducibility.md)核对模型与完整账本。新增测试应覆盖实际失败情形或交易约束。

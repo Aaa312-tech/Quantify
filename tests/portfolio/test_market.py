@@ -7,53 +7,35 @@ from quantfolio.dataset import label_mask, walk_forward_folds
 from quantfolio.features import feature_frame
 from quantfolio.ledger import causal_price_index
 from quantfolio.market import LABEL_STATUS, gross_entitlement, legal_label
-
-META = {"code": "600001", "symbol": "sh600001", "kind": "stock", "name": "TEST"}
-
-
-def bars(n=12):
-    dates = pd.bdate_range("2025-01-02", periods=n)
-    raw = pd.DataFrame(
-        {
-            "open": 10.0,
-            "close": 10.0,
-            "high": 10.1,
-            "low": 9.9,
-            "volume_lots": 10000.0,
-            "amount": 10000000.0,
-            "turnover": 1.0,
-        },
-        index=dates,
-    )
-    return dates, raw
+from tests.factories import STOCK_META, flat_bars
 
 
 class TimingTests(unittest.TestCase):
     def test_minimum_exit_next_day_and_no_same_day_profit(self):
-        dates, raw = bars()
+        dates, raw = flat_bars()
         raw.loc[dates[1], "close"] = 10.8
-        y, end, status, delay = legal_label(META, raw, dates, 0, 1, [])
+        y, end, status, delay = legal_label(STOCK_META, raw, dates, 0, 1, [])
         self.assertEqual(end, 2)
         self.assertEqual(status, 0)
         self.assertAlmostEqual(y, 0.0)
 
     def test_limit_down_delays_exit_and_end_time(self):
-        dates, raw = bars()
+        dates, raw = flat_bars()
         raw.loc[dates[2], ["open", "close", "high", "low"]] = 9.0
         raw.loc[dates[3], ["open", "close", "high", "low"]] = 9.0
-        y, end, status, delay = legal_label(META, raw, dates, 0, 1, [])
+        y, end, status, delay = legal_label(STOCK_META, raw, dates, 0, 1, [])
         self.assertEqual((end, status, delay), (3, 0, 1))
         self.assertAlmostEqual(y, -0.1)
 
     def test_unbuyable_entry_is_not_fake_profit(self):
-        dates, raw = bars()
+        dates, raw = flat_bars()
         raw.loc[dates[1], ["open", "close", "high", "low"]] = 11.0
-        y, end, status, _ = legal_label(META, raw, dates, 0, 1, [])
+        y, end, status, _ = legal_label(STOCK_META, raw, dates, 0, 1, [])
         self.assertTrue(np.isnan(y))
         self.assertEqual(status, LABEL_STATUS["NO_ENTRY"])
 
     def test_record_date_rights_and_no_ex_date_inheritance(self):
-        dates, raw = bars()
+        dates, raw = flat_bars()
         action = {
             "record_date": str(dates[1].date()),
             "ex_date": str(dates[2].date()),
@@ -62,14 +44,14 @@ class TimingTests(unittest.TestCase):
             "cash_pay_date": str(dates[8].date()),
         }
         raw.loc[dates[2] :, ["open", "close", "high", "low"]] = 9.0
-        y, end, status, _ = legal_label(META, raw, dates, 0, 1, [action])
+        y, end, status, _ = legal_label(STOCK_META, raw, dates, 0, 1, [action])
         self.assertAlmostEqual(y, 0.0)
         self.assertEqual(status, 0)
         wealth, _, _ = gross_entitlement(dates[2], dates[3], 9.0, [action])
         self.assertEqual(wealth, 9.0)
 
     def test_bonus_shares_delay_full_exit_until_listing(self):
-        dates, raw = bars()
+        dates, raw = flat_bars()
         action = {
             "record_date": str(dates[1].date()),
             "ex_date": str(dates[2].date()),
@@ -78,7 +60,7 @@ class TimingTests(unittest.TestCase):
             "share_list_date": str(dates[4].date()),
         }
         raw.loc[dates[2] :, ["open", "close", "high", "low"]] = 5.0
-        y, end, status, delay = legal_label(META, raw, dates, 0, 1, [action])
+        y, end, status, delay = legal_label(STOCK_META, raw, dates, 0, 1, [action])
         self.assertEqual((end, status, delay), (4, 0, 2))
         self.assertAlmostEqual(y, 0.0)
 
@@ -102,7 +84,7 @@ class TimingTests(unittest.TestCase):
             self.assertEqual(f["test_start"] - f["validation_end"] - 1, 6)
 
     def test_future_prices_and_actions_do_not_change_prior_features(self):
-        dates, raw = bars(220)
+        dates, raw = flat_bars(220)
         raw["close"] = 10 + np.arange(220) * 0.01
         raw["open"] = raw.close
         raw["high"] = raw.close + 0.1

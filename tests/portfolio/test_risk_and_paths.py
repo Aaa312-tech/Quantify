@@ -51,7 +51,7 @@ def test_new_outputs_cannot_overwrite_frozen_artifacts(tmp_path):
 
 
 def test_project_lookup_from_another_directory(tmp_path, monkeypatch):
-    root = Path(__file__).resolve().parents[1]
+    root = Path(__file__).resolve().parents[2]
     monkeypatch.chdir(tmp_path)
     assert project_root(root) == root
 

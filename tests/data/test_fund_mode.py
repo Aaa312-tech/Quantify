@@ -4,19 +4,20 @@ from copy import deepcopy
 
 import joblib
 import pytest
-from test_funds import entry, profile
-from test_preprocessing import inputs
 
 from quantfolio.dataset import fund_mode, load_bundle, load_snapshot
 from quantfolio.preprocessing import build_dataset, compare_history
 from quantfolio.settings import Paths
 from quantfolio.snapshots import repair_snapshot
 from quantfolio.storage import save, sha
+from tests.factories import fund_history_entry, fund_profile, raw_history
 
 
 def fund_dataset():
-    meta, raws = inputs()
-    meta["sh510300"]["fund_history"] = [entry(raws["sh510300"].index[0], profile())]
+    meta, raws = raw_history()
+    meta["sh510300"]["fund_history"] = [
+        fund_history_entry(raws["sh510300"].index[0], fund_profile())
+    ]
     return build_dataset(meta, raws, [])
 
 
@@ -56,10 +57,10 @@ def test_loader_rejects_missing_or_conflicting_mode(tmp_path, mode):
 
 @pytest.mark.parametrize("mode", ["coverage", "identity", "reported"])
 def test_each_registered_control_survives_rebuilding(mode):
-    meta, raws = inputs()
-    value = profile()
+    meta, raws = raw_history()
+    value = fund_profile()
     value["mode"] = mode
-    meta["sh510300"]["fund_history"] = [entry(raws["sh510300"].index[0], value)]
+    meta["sh510300"]["fund_history"] = [fund_history_entry(raws["sh510300"].index[0], value)]
     rebuilt = build_dataset(meta, raws, [])
     assert rebuilt["fund_mode"] == mode
     assert compare_history(rebuilt, deepcopy(rebuilt))["status"] == "PASS"
@@ -67,9 +68,9 @@ def test_each_registered_control_survives_rebuilding(mode):
 
 @pytest.mark.parametrize("case", ["mixed", "unknown", "unidentified", "stock"])
 def test_fund_controls_cannot_be_ambiguous(case):
-    meta, raws = inputs()
+    meta, raws = raw_history()
     instrument = meta["sh510300"]
-    first = entry(raws["sh510300"].index[0], profile())
+    first = fund_history_entry(raws["sh510300"].index[0], fund_profile())
     instrument["fund_history"] = [first]
     if case == "mixed":
         second = deepcopy(first)

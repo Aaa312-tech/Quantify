@@ -7,7 +7,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-from conftest import fixture
 
 from quantfolio import cli, evaluation, reporting
 from quantfolio.dataset import eligible_rows
@@ -15,6 +14,7 @@ from quantfolio.market import EXECUTION_MODEL
 from quantfolio.settings import Paths
 from quantfolio.simulation import simulate
 from quantfolio.storage import digest, read, save, sha
+from tests.factories import market_bundle
 
 
 def test_configured_status_and_default_report_use_current_evaluation(experiment):
@@ -49,7 +49,7 @@ def test_configured_status_and_default_report_use_current_evaluation(experiment)
 
 @pytest.fixture
 def experiment(tmp_path, monkeypatch):
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     bundle["table"]["eligible"] = True
     bundle["cutoff"] = str(bundle["calendar"][-1].date())
     folds = [
@@ -290,7 +290,7 @@ def test_report_rejects_changed_evaluation_ledger(experiment):
 
 @pytest.mark.parametrize("previous", [True, False])
 def test_simulation_restores_callers_pandas_setting(previous):
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     with pd.option_context("compute.use_numexpr", previous):
         simulate(bundle, 6, 8, forecasts)
         assert pd.get_option("compute.use_numexpr") is previous
@@ -300,6 +300,6 @@ def test_simulation_restores_callers_pandas_setting(previous):
     "start,end,cost", [(0, 3, 0.001), (6, 5, 0.001), (6, 30, 0.001), (6, 8, -0.001), (6, 8, np.nan)]
 )
 def test_invalid_execution_range_or_cost_is_rejected(start, end, cost):
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     with pytest.raises(ValueError):
         simulate(bundle, start, end, forecasts, slippage=cost)

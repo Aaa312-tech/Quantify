@@ -5,8 +5,6 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 import pytest
-from conftest import fixture
-from test_preprocessing import inputs
 
 from quantfolio.ledger import Ledger
 from quantfolio.market import legal_label, opening_price
@@ -14,10 +12,11 @@ from quantfolio.preprocessing import build_dataset, compare_history
 from quantfolio.simulation import _Execution, buy_ceiling
 from quantfolio.snapshots import rebuild_labels
 from quantfolio.validation import execution_audit, opening_errors
+from tests.factories import market_bundle, raw_history
 
 
 def suspended_bundle():
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     symbol = "sh600001"
     dates = bundle["calendar"]
     raw = bundle["raws"][symbol].drop(dates[7:12])
@@ -119,7 +118,7 @@ def test_known_resumption_does_not_invent_liquidity_or_ignore_lower_limit():
 
 
 def test_rebuilding_or_extending_data_preserves_status_aware_labels():
-    meta, raws = inputs()
+    meta, raws = raw_history()
     symbol = "sh600001"
     dates = raws[symbol].index
     raws[symbol].loc[:, ["open", "close", "high", "low"]] = 10.0
@@ -157,7 +156,7 @@ def test_rebuilding_or_extending_data_preserves_status_aware_labels():
 def test_independent_audit_rejects_fills_without_finite_prior_capacity(adv):
     from quantfolio.simulation import simulate
 
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     _, account = simulate(bundle, 6, 6, forecasts)
     assert account["trades"]
     bundle["panels"]["adv20"].iloc[5] = adv

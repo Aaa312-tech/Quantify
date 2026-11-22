@@ -49,13 +49,16 @@ addopts = "-ra -p no:cacheprovider"
 target-version = "py311"
 line-length = 100
 src = ["src"]
-extend-exclude = ["data", "artifacts", "reports", ".venv"]
+extend-exclude = ["data/**", "artifacts/**", "reports/**", ".venv/**"]
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I", "S101"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101"]
+"tests/**/*.py" = ["S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["quantfolio", "tests"]
 
 [tool.ruff.format]
 quote-style = "double"

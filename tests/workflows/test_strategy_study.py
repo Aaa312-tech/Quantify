@@ -5,7 +5,6 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 import pytest
-from conftest import fixture
 
 from quantfolio.allocation import buffered_weights
 from quantfolio.models import factor_check, industry_holdout_check
@@ -14,6 +13,7 @@ from quantfolio.selection import assess, select_model
 from quantfolio.simulation import simulate
 from quantfolio.study import COMBINATIONS, choose_inner_policy, combination_eligible
 from quantfolio.validation import execution_audit, reconcile
+from tests.factories import market_bundle
 
 
 def test_positive_adoption_rejects_a_qualifying_but_negative_score():
@@ -126,7 +126,7 @@ def test_probe_is_bounded_by_age_drawdown_and_permanent_halt():
 
 @pytest.mark.parametrize("mode", ["staged_restore", "probe_restore"])
 def test_recovery_accounts_pass_independent_checks_and_tampering_fails(mode):
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     dates = bundle["calendar"]
     for symbol in forecasts[0]:
         bundle["raws"][symbol].loc[dates[6] :, "close"] = 9.25
@@ -167,7 +167,7 @@ def test_turnover_band_scales_with_cost_without_blocking_deleveraging():
 
 
 def test_cost_penalty_is_not_an_additional_cash_charge():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     base, original = simulate(bundle, 6, 6, forecasts)
     result, account = simulate(bundle, 6, 6, forecasts, turnover="cost_penalty")
     assert original["trades"] == account["trades"]
@@ -177,7 +177,7 @@ def test_cost_penalty_is_not_an_additional_cash_charge():
 
 
 def test_future_turnover_and_recovery_outcomes_do_not_change_earlier_execution():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     _, before = simulate(bundle, 6, 25, forecasts, mode="probe_restore")
     changed = deepcopy(bundle)
     for raw in changed["raws"].values():

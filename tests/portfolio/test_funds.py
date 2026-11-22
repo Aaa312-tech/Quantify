@@ -3,42 +3,23 @@
 from copy import deepcopy
 
 import pytest
-from conftest import fixture
-from test_planning import calendar_for, opening_quotes, prefix
 
 from quantfolio.accounts import new_account
 from quantfolio.industries import industry_at, metadata_at
 from quantfolio.planning import make_intent, resolve_intent
 from quantfolio.simulation import post_buy_limits, simulate
-
-
-def profile(*, known=None, unmatched="0", undisclosed="0", residual="0"):
-    return {
-        "mode": "reported",
-        "reported_nav_cny": "100",
-        "matched_divisions": {key: {"amount_cny": value} for key, value in (known or {}).items()},
-        "unmatched_named": {"amount_cny": unmatched},
-        "undisclosed_stocks": {"amount_cny": undisclosed},
-        "signed_equity_sector_residual": {"amount_cny": residual},
-        "reported_index_contracts": [],
-        "period_end": "2025-12-31",
-        "source_report": "synthetic/source.pdf",
-        "source_sha256": "0" * 64,
-        "complete_economic_exposure_certified": False,
-        "economic_exposure_upper_bound": None,
-    }
-
-
-def entry(day, value):
-    return {
-        "available_at": str(day.date()) + "T00:00:00+08:00",
-        "industry": "benchmark:csi_300" if value is not None else None,
-        "profile": value,
-    }
+from tests.factories import (
+    bundle_prefix,
+    fund_history_entry,
+    fund_profile,
+    market_bundle,
+    opening_quotes,
+    trading_calendar,
+)
 
 
 def opening_change():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     dates = bundle["calendar"]
     for symbol, instrument in bundle["meta"].items():
         if instrument["kind"] == "stock":
@@ -46,8 +27,8 @@ def opening_change():
                 "capco:C39" if symbol[-1] in "12" else "capco:C" + symbol[-1] * 2
             )
     bundle["meta"]["sh510300"]["fund_history"] = [
-        entry(dates[0], profile(known={"capco:C10": "100"})),
-        entry(dates[6], profile(undisclosed="100")),
+        fund_history_entry(dates[0], fund_profile(known={"capco:C10": "100"})),
+        fund_history_entry(dates[6], fund_profile(undisclosed="100")),
     ]
     for values in forecasts.values():
         del values["sh600006"]
@@ -56,9 +37,9 @@ def opening_change():
 
 
 def test_fund_identity_is_unavailable_before_its_source():
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     fund = bundle["meta"]["sh510300"]
-    fund["fund_history"] = [entry(bundle["calendar"][6], profile())]
+    fund["fund_history"] = [fund_history_entry(bundle["calendar"][6], fund_profile())]
     assert industry_at(fund, "2026-01-05T16:00:00+08:00") is None
 
 
@@ -75,11 +56,11 @@ def test_new_opening_profile_resizes_the_frozen_close_intention():
     dates = bundle["calendar"]
     account = new_account(str(dates[5].date()), "fund_boundary")
     intent = make_intent(
-        prefix(bundle, 5), account, forecasts[5], "baseline", str(dates[6].date()), 0.001
+        bundle_prefix(bundle, 5), account, forecasts[5], "baseline", str(dates[6].date()), 0.001
     )
     original = deepcopy(intent)
-    preview = resolve_intent(intent, account, [], calendar_for(bundle), {}, preview=True)
-    actual = resolve_intent(intent, account, [], calendar_for(bundle), opening_quotes(intent))
+    preview = resolve_intent(intent, account, [], trading_calendar(bundle), {}, preview=True)
+    actual = resolve_intent(intent, account, [], trading_calendar(bundle), opening_quotes(intent))
     preview_value = sum(
         t["gross"] for t in preview["trades"] if t["symbol"] in ("sh600001", "sh600002", "sh510300")
     )
@@ -94,7 +75,9 @@ def test_new_opening_profile_resizes_the_frozen_close_intention():
 
 def test_missing_new_fund_profile_stops_existing_holdings():
     bundle, forecasts = opening_change()
-    bundle["meta"]["sh510300"]["fund_history"].append(entry(bundle["calendar"][7], None))
+    bundle["meta"]["sh510300"]["fund_history"].append(
+        fund_history_entry(bundle["calendar"][7], None)
+    )
     with pytest.raises(ValueError, match="industry"):
         simulate(bundle, 6, 7, forecasts)
 
@@ -104,7 +87,7 @@ def test_unknown_and_signed_residuals_are_not_normalized_or_offset():
 
     from quantfolio.funds import reported_components
 
-    value = profile(known={"capco:C39": "20"}, unmatched="5", undisclosed="70", residual="-3")
+    value = fund_profile(known={"capco:C39": "20"}, unmatched="5", undisclosed="70", residual="-3")
     value["reported_index_contracts"] = [
         {
             "kind": "stock_index_futures",
@@ -140,8 +123,10 @@ def test_unknown_amount_is_limited_even_without_a_named_division():
 def test_non_equity_source_is_unknown_economics_with_zero_reported_stocks():
     from quantfolio.funds import exposure_report
 
-    bundle, _ = fixture()
-    bundle["meta"]["sh510300"]["fund_history"] = [entry(bundle["calendar"][0], profile())]
+    bundle, _ = market_bundle()
+    bundle["meta"]["sh510300"]["fund_history"] = [
+        fund_history_entry(bundle["calendar"][0], fund_profile())
+    ]
     meta = metadata_at(bundle["meta"], "2026-01-13T09:25:00+08:00")
     report = exposure_report(meta, {"sh510300": 100000}, 1000000, "2026-01-13T09:25:00+08:00")
     assert report["max_reported_equity_weight"] == 0
@@ -188,13 +173,12 @@ def test_reported_limits_apply_to_target_weights_and_paper_replay():
 
 
 def test_missing_fund_source_masks_features_before_cross_ranks():
-    from test_preprocessing import inputs
-
     from quantfolio.preprocessing import build_dataset
+    from tests.factories import raw_history
 
-    meta, raws = inputs()
+    meta, raws = raw_history()
     dates = raws["sh510300"].index
-    meta["sh510300"]["fund_history"] = [entry(dates[140], profile())]
+    meta["sh510300"]["fund_history"] = [fund_history_entry(dates[140], fund_profile())]
     bundle = build_dataset(meta, raws, [])
     rows = bundle["table"].query("symbol == 'sh510300' and 125 <= date_index < 140")
     assert not rows.eligible.any() and rows.y5.isna().all()
@@ -209,11 +193,15 @@ def test_fund_identity_reaches_residual_targets_and_neutral_scores():
     from quantfolio.features import INDUSTRY_FEATURES, industry_features
     from quantfolio.models import industry_residuals, neutral_scores
 
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     dates = bundle["calendar"]
     symbols = ["sh510300", "sh510301", "sh510302"]
     meta = {
-        s: {"kind": "etf", "industry": s, "fund_history": [entry(dates[0], profile())]}
+        s: {
+            "kind": "etf",
+            "industry": s,
+            "fund_history": [fund_history_entry(dates[0], fund_profile())],
+        }
         for s in symbols
     }
     table = pd.DataFrame(

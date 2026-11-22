@@ -3,13 +3,13 @@ import unittest
 
 import numpy as np
 import pandas as pd
-from conftest import fixture
 
 from quantfolio.allocation import allocate, select_names
 from quantfolio.rules import CONFIGS, RULES, config_for
 from quantfolio.selection import assess, select_model, select_rules
 from quantfolio.simulation import simulate
 from quantfolio.validation import execution_audit, reconcile
+from tests.factories import market_bundle
 
 
 def selection_fixture():
@@ -172,14 +172,14 @@ class SelectionTests(unittest.TestCase):
 
 class SimulationTests(unittest.TestCase):
     def test_all_configs_independent_ledger_and_execution_checks(self):
-        b, f = fixture()
+        b, f = market_bundle()
         for name in CONFIGS:
             s, ledger_detail = simulate(b, 6, 25, f, rules=name)
             self.assertEqual(reconcile(ledger_detail, s, b["meta"], [])["status"], "PASS")
             self.assertEqual(execution_audit(ledger_detail, b)["status"], "PASS")
 
     def test_future_rules_and_predictions_do_not_change_prefix(self):
-        b, f = fixture()
+        b, f = market_bundle()
         s, ledger_detail = simulate(b, 6, 25, f)
         g = copy.deepcopy(f)
         rules = {i: "all_on" for i in range(12, 30)}
@@ -194,14 +194,14 @@ class SimulationTests(unittest.TestCase):
             )
 
     def test_penalty_not_an_extra_realized_fee(self):
-        b, f = fixture()
+        b, f = market_bundle()
         s, ledger_detail = simulate(b, 6, 6, f)
         z, k = simulate(b, 6, 6, f, rules="add_penalty10")
         self.assertEqual(ledger_detail["trades"], k["trades"])
         self.assertEqual(s["fees"], z["fees"])
 
     def test_latched_risk_does_not_reopen_buys(self):
-        b, f = fixture()
+        b, f = market_bundle()
         for s in f[0]:
             b["raws"][s].loc[b["calendar"][6] :, "close"] = 9.15
             b["raws"][s].loc[b["calendar"][7] :, "open"] = 9.15
@@ -219,7 +219,7 @@ class SimulationTests(unittest.TestCase):
         self.assertEqual(reconcile(ledger_detail, s, b["meta"], [])["status"], "PASS")
 
     def test_audit_rejects_recovery_even_after_a_long_healthy_streak(self):
-        bundle, forecasts = fixture()
+        bundle, forecasts = market_bundle()
         for symbol in forecasts[0]:
             bundle["raws"][symbol].loc[bundle["calendar"][6] :, "close"] = 9.15
             bundle["raws"][symbol].loc[bundle["calendar"][7] :, "open"] = 9.15
@@ -232,7 +232,7 @@ class SimulationTests(unittest.TestCase):
         self.assertIn("RISK_LEVEL_RESTORED", [error[0] for error in audit["errors"]])
 
     def test_audit_rejects_a_missing_daily_decision(self):
-        bundle, forecasts = fixture()
+        bundle, forecasts = market_bundle()
         _, account = simulate(bundle, 6, 8, forecasts)
         account["decisions"].pop()
         self.assertEqual(execution_audit(account, bundle)["errors"], [["DECISION_DATES_MISMATCH"]])

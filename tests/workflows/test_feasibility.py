@@ -6,17 +6,17 @@ from unittest.mock import patch
 import numpy as np
 import pandas as pd
 import pytest
-from conftest import fixture
 from scipy.optimize import OptimizeResult
 
 from quantfolio.allocation import allocate
 from quantfolio.simulation import simulate
 from quantfolio.validation import execution_audit, reconcile
 from quantfolio.verification import _paper_account
+from tests.factories import market_bundle
 
 
 def inputs():
-    bundle, predictions = fixture()
+    bundle, predictions = market_bundle()
     names = list(predictions[5])
     previous = {s: 0.14 for s in names}
     forecasts = {s: {**predictions[5][s], "mu": -0.1} for s in names}
@@ -100,7 +100,7 @@ def test_feasible_portfolios_keep_identical_targets_and_objective():
 
 @pytest.mark.parametrize("cost", [0.001, 0.002, 0.003])
 def test_exit_priority_real_fills_reconcile_and_match_the_paper_workflow(cost):
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     for day in range(10, 30):
         for value in forecasts[day].values():
             value["mu"] = -0.1

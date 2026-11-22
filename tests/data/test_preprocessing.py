@@ -7,37 +7,11 @@ import pandas as pd
 import pytest
 
 from quantfolio.preprocessing import build_dataset, compare_history
-
-
-def inputs():
-    calendar = pd.bdate_range("2025-01-02", periods=145)
-    meta, raws = {}, {}
-    for number, symbol in enumerate(("sh510300", "sh600001", "sz300001", "sh600002")):
-        meta[symbol] = {
-            "symbol": symbol,
-            "code": symbol[2:],
-            "name": "Example",
-            "kind": "etf" if number == 0 else "stock",
-            "industry": "Example",
-        }
-        close = 10 + np.arange(len(calendar)) * (number + 1) * 0.01
-        raws[symbol] = pd.DataFrame(
-            {
-                "open": close,
-                "close": close,
-                "high": close + 0.1,
-                "low": close - 0.1,
-                "volume_lots": 10000.0,
-                "amount": 1e8,
-                "turnover": 1.0,
-            },
-            index=calendar,
-        )
-    return meta, raws
+from tests.factories import raw_history
 
 
 def test_future_bars_and_actions_preserve_all_historical_signals():
-    meta, raws = inputs()
+    meta, raws = raw_history()
     original = deepcopy(raws)
     prefix = {s: r.iloc[:-1].copy() for s, r in raws.items()}
     before = build_dataset(meta, prefix, [])
@@ -64,7 +38,7 @@ def test_future_bars_and_actions_preserve_all_historical_signals():
 
 
 def test_eligibility_requires_history_liquidity_and_clear_security_status():
-    meta, raws = inputs()
+    meta, raws = raw_history()
     meta["sh600001"]["name"] = "*ST Example"
     raws["sz300001"].loc[:, "amount"] = np.nan
     result = build_dataset(meta, raws, [], quarantined=["sh600002"])
@@ -80,7 +54,7 @@ def test_eligibility_requires_history_liquidity_and_clear_security_status():
 
 @pytest.mark.parametrize("fault", ["duplicate", "outside_calendar", "missing_benchmark"])
 def test_invalid_raw_calendar_is_rejected(fault):
-    meta, raws = inputs()
+    meta, raws = raw_history()
     if fault == "duplicate":
         raws["sh600001"] = pd.concat([raws["sh600001"], raws["sh600001"].iloc[-1:]])
     elif fault == "outside_calendar":

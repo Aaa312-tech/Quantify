@@ -5,9 +5,6 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 import pytest
-from conftest import fixture
-from test_planning import calendar_for, opening_quotes, prefix
-from test_preprocessing import inputs
 
 from quantfolio.accounts import new_account
 from quantfolio.market import LABEL_STATUS, board_limit, legal_label, opening_price, risk_warning
@@ -23,6 +20,13 @@ from quantfolio.status_repair import (
 )
 from quantfolio.storage import dump_gzip, save, sha
 from quantfolio.validation import opening_errors
+from tests.factories import (
+    bundle_prefix,
+    market_bundle,
+    opening_quotes,
+    raw_history,
+    trading_calendar,
+)
 
 
 def fact(symbol="sh600001", start="2026-01-13", end="2026-01-19", limit=0.05):
@@ -43,7 +47,7 @@ def fact(symbol="sh600001", start="2026-01-13", end="2026-01-19", limit=0.05):
 
 
 def test_effective_boundaries_and_unknown_removal():
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     original = deepcopy(bundle["meta"])
     meta = reviewed_meta(original, [fact()])["sh600001"]
     assert original == bundle["meta"] and "risk_warning_periods" not in original["sh600001"]
@@ -58,7 +62,7 @@ def test_effective_boundaries_and_unknown_removal():
 
 @pytest.mark.parametrize("growth", [False, True])
 def test_warning_excludes_buys_but_uses_sourced_limit_for_sells(growth):
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     symbol = "sh600001"
     if growth:
         bundle["meta"][symbol]["code"] = "300001"
@@ -76,7 +80,7 @@ def test_warning_excludes_buys_but_uses_sourced_limit_for_sells(growth):
 
 
 def test_label_cannot_enter_on_warning_start_and_held_exit_waits_for_legal_opening():
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     bundle["meta"] = reviewed_meta(bundle["meta"], [fact()])
     dates = bundle["calendar"]
     raw, meta = bundle["raws"]["sh600001"], bundle["meta"]["sh600001"]
@@ -88,21 +92,23 @@ def test_label_cannot_enter_on_warning_start_and_held_exit_waits_for_legal_openi
 
 
 def test_preview_uses_prior_information_and_actual_opening_rechecks_new_notice():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     account = new_account("2026-01-12", "synthetic")
     original = make_intent(
-        prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001
+        bundle_prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001
     )
     bundle["meta"] = reviewed_meta(bundle["meta"], [fact()])
-    intent = make_intent(prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001)
+    intent = make_intent(
+        bundle_prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001
+    )
     assert intent["target_weights"] == original["target_weights"]
     for symbol in intent["contracts"]:
         assert (
             intent["contracts"][symbol]["assumed_upper_limit"]
             == original["contracts"][symbol]["assumed_upper_limit"]
         )
-    preview = resolve_intent(intent, account, [], calendar_for(bundle), {}, preview=True)
-    actual = resolve_intent(intent, account, [], calendar_for(bundle), opening_quotes(intent))
+    preview = resolve_intent(intent, account, [], trading_calendar(bundle), {}, preview=True)
+    actual = resolve_intent(intent, account, [], trading_calendar(bundle), opening_quotes(intent))
     assert any(t["symbol"] == "sh600001" for t in preview["trades"])
     assert all(t["symbol"] != "sh600001" for t in actual["trades"])
     assert any(r["reason"] == "RISK_WARNING_BUY_EXCLUDED" for r in actual["rejections"])
@@ -114,12 +120,14 @@ def test_preview_uses_prior_information_and_actual_opening_rechecks_new_notice()
     known["start_available_at"] = "2026-01-12T00:00:00+08:00"
     bundle["meta"]["sh600001"].pop("risk_warning_periods")
     bundle["meta"] = reviewed_meta(bundle["meta"], [known])
-    intent = make_intent(prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001)
+    intent = make_intent(
+        bundle_prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001
+    )
     assert "sh600001" not in intent["target_weights"]
 
 
 def test_dated_eligibility_recovers_after_removal_and_future_facts_preserve_feature_prefix():
-    meta, raws = inputs()
+    meta, raws = raw_history()
     dates = raws["sh510300"].index
     original = build_dataset(meta, raws, [])
     warning = fact(start=str(dates[135].date()), end=str(dates[140].date()))
@@ -142,7 +150,7 @@ def test_dated_eligibility_recovers_after_removal_and_future_facts_preserve_feat
 
 @pytest.mark.parametrize("fault", ["overlap", "late", "naive", "basis", "inverted", "etf", "limit"])
 def test_invalid_reviewed_facts_fail_before_modifying_parent(fault):
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     original = deepcopy(bundle["meta"])
     warning = fact()
     if fault == "late":
@@ -164,7 +172,7 @@ def test_invalid_reviewed_facts_fail_before_modifying_parent(fault):
 
 
 def test_provider_crosscheck_requires_all_positive_sessions_and_securities():
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     dates = bundle["calendar"][6:10]
     records = [
         {

@@ -3,7 +3,6 @@
 from copy import deepcopy
 
 import pytest
-from conftest import fixture
 
 from quantfolio import accounts, planning
 from quantfolio.accounts import audit_fills, new_account, restore_account
@@ -19,35 +18,12 @@ from quantfolio.planning import (
 from quantfolio.settings import Paths
 from quantfolio.simulation import simulate
 from quantfolio.storage import read, save, sha
-
-
-def prefix(bundle, index):
-    return {**bundle, "calendar": bundle["calendar"][: index + 1]}
-
-
-def calendar_for(bundle):
-    return {
-        "timezone": "Asia/Shanghai",
-        "coverage_start": "2026-01-01",
-        "coverage_end": "2026-02-28",
-        "sessions": [str(d.date()) for d in bundle["calendar"]],
-    }
-
-
-def opening_quotes(intent, price=10):
-    return {
-        s: {
-            "open": price,
-            "market_at": intent["execution_date"] + "T09:25:00+08:00",
-            "suspended": False,
-        }
-        for s in intent["contracts"]
-    }
+from tests.factories import bundle_prefix, market_bundle, opening_quotes, trading_calendar
 
 
 @pytest.mark.parametrize("cost", [0.001, 0.002, 0.003])
 def test_multiday_paper_targets_fills_and_risk_match_the_simulator(cost):
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     forecasts[5] = dict(list(forecasts[5].items())[:2])
     for day in range(10, 30):
         for value in forecasts[day].values():
@@ -58,9 +34,11 @@ def test_multiday_paper_targets_fills_and_risk_match_the_simulator(cost):
     for index in range(6, 21):
         day = str(bundle["calendar"][index].date())
         intent = make_intent(
-            prefix(bundle, index - 1), account, forecasts[index - 1], "baseline", day, cost
+            bundle_prefix(bundle, index - 1), account, forecasts[index - 1], "baseline", day, cost
         )
-        result = resolve_intent(intent, account, [], calendar_for(bundle), opening_quotes(intent))
+        result = resolve_intent(
+            intent, account, [], trading_calendar(bundle), opening_quotes(intent)
+        )
         trades.extend(result["trades"])
         reference = expected["decisions"][index - 6]
         assert intent["target_weights"] == reference["target_weights"]
@@ -74,22 +52,24 @@ def test_multiday_paper_targets_fills_and_risk_match_the_simulator(cost):
 
 
 def test_missing_quotes_limits_and_later_fields_cannot_create_fills():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     account = new_account("2026-01-12", "synthetic")
-    intent = make_intent(prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001)
+    intent = make_intent(
+        bundle_prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001
+    )
     quotes = opening_quotes(intent)
-    expected = resolve_intent(intent, account, [], calendar_for(bundle), quotes)
+    expected = resolve_intent(intent, account, [], trading_calendar(bundle), quotes)
     for q in quotes.values():
         q.update(high=0.0, low=1000.0, close=999.0, volume=0)
     assert (
-        resolve_intent(intent, account, [], calendar_for(bundle), quotes)["trades"]
+        resolve_intent(intent, account, [], trading_calendar(bundle), quotes)["trades"]
         == expected["trades"]
     )
     symbols = list(quotes)
     quotes[symbols[0]]["open"] = 11
     quotes[symbols[1]]["suspended"] = True
     quotes.pop(symbols[2])
-    result = resolve_intent(intent, account, [], calendar_for(bundle), quotes)
+    result = resolve_intent(intent, account, [], trading_calendar(bundle), quotes)
     assert not {t["symbol"] for t in result["trades"]} & set(symbols[:3])
     assert {r["reason"] for r in result["rejections"]} >= {
         "OPEN_AT_UPPER_LIMIT",
@@ -99,21 +79,23 @@ def test_missing_quotes_limits_and_later_fields_cannot_create_fills():
     quotes = opening_quotes(intent)
     quotes[symbols[0]]["market_at"] = "2026-01-13T15:00:00+08:00"
     with pytest.raises(ValueError, match="auction timestamp"):
-        resolve_intent(intent, account, [], calendar_for(bundle), quotes)
+        resolve_intent(intent, account, [], trading_calendar(bundle), quotes)
 
 
 def test_independent_paper_audit_detects_changed_fees_and_balances():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     account = new_account("2026-01-12", "synthetic")
-    intent = make_intent(prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001)
-    result = resolve_intent(intent, account, [], calendar_for(bundle), opening_quotes(intent))
+    intent = make_intent(
+        bundle_prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001
+    )
+    result = resolve_intent(intent, account, [], trading_calendar(bundle), opening_quotes(intent))
     result["trades"][0]["fee"] += 0.01
     with pytest.raises(ValueError, match="cost reconciliation"):
         audit_fills(account, result, bundle["meta"], "2026-01-13", 0.001, 0.9)
 
 
 def test_halt_and_restricted_shares_survive_manual_input():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     account = new_account("2026-01-05", "manual")
     account.update(
         kind="manual",
@@ -133,16 +115,18 @@ def test_halt_and_restricted_shares_survive_manual_input():
         ],
     )
     account["risk"].update(phase="HALTED0", peak=1100000, observations=3, age=1)
-    intent = make_intent(prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001)
+    intent = make_intent(
+        bundle_prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001
+    )
     assert intent["state"]["phase"] == "HALTED0" and intent["state"]["peak"] == 1100000
-    result = resolve_intent(intent, account, [], calendar_for(bundle), opening_quotes(intent))
+    result = resolve_intent(intent, account, [], trading_calendar(bundle), opening_quotes(intent))
     assert not result["trades"] and result["opening_account"]["lots"] == account["lots"]
     assert result["opening_account"]["risk"]["phase"] == "HALTED0"
     assert result["rejections"][0]["reason"] == "T1_OR_MINIMUM_QUANTITY"
 
 
 def test_lot_identifiers_remain_unique_after_all_active_lots_are_sold():
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     account = new_account("2026-01-05", "manual")
     account.update(
         kind="manual",
@@ -160,7 +144,7 @@ def test_lot_identifiers_remain_unique_after_all_active_lots_are_sold():
 
 
 def test_fresh_cash_account_cannot_claim_historical_dividend_rights():
-    bundle, _ = fixture()
+    bundle, _ = market_bundle()
     account = new_account("2026-01-12", "synthetic")
     account.update(next_lot_id=2, entitlements={"unearned_dividend": [[1, 100, 10, "2026-01-12"]]})
     with pytest.raises(ValueError, match="fresh account"):
@@ -168,7 +152,7 @@ def test_fresh_cash_account_cannot_claim_historical_dividend_rights():
 
 
 def test_corporate_rights_and_cash_dates_cannot_be_invented():
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     account = new_account("2026-01-05", "manual")
     account.update(
         kind="manual",
@@ -200,21 +184,27 @@ def test_corporate_rights_and_cash_dates_cannot_be_invented():
         "share_list_date": None,
     }
     bundle["actions"] = [action]
-    intent = make_intent(prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001)
+    intent = make_intent(
+        bundle_prefix(bundle, 5), account, forecasts[5], "baseline", "2026-01-13", 0.001
+    )
     with pytest.raises(ValueError, match="Missing historical record"):
-        resolve_intent(intent, account, [action], calendar_for(bundle), opening_quotes(intent))
+        resolve_intent(intent, account, [action], trading_calendar(bundle), opening_quotes(intent))
     account["entitlements"] = {"dividend": [[1, 10000, 10, "2026-01-06"]]}
-    result = resolve_intent(intent, account, [action], calendar_for(bundle), opening_quotes(intent))
+    result = resolve_intent(
+        intent, account, [action], trading_calendar(bundle), opening_quotes(intent)
+    )
     assert result["opening_account"]["cash"] == 900000
     assert result["opening_account"]["receivables"][0]["cents"] == 80000
     assert result["opening_account"]["receivables"][0]["available_date"] == "2026-01-14"
     unresolved = {**action, "cash_pay_date": None}
     with pytest.raises(ValueError, match="remains unresolved"):
-        resolve_intent(intent, account, [unresolved], calendar_for(bundle), opening_quotes(intent))
+        resolve_intent(
+            intent, account, [unresolved], trading_calendar(bundle), opening_quotes(intent)
+        )
 
 
 def paper_project(tmp_path, monkeypatch):
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     paths = Paths(tmp_path)
     (tmp_path / "configs").mkdir()
     (tmp_path / "configs/project.toml").write_text(
@@ -222,7 +212,7 @@ def paper_project(tmp_path, monkeypatch):
         encoding="utf-8",
     )
     (tmp_path / "data.bin").write_bytes(b"synthetic fixture; not a pickled market snapshot")
-    save(tmp_path / "configs/calendar.json", calendar_for(bundle))
+    save(tmp_path / "configs/calendar.json", trading_calendar(bundle))
     save(tmp_path / "configs/competition.json", {"initial_cash": 1000000})
     save(tmp_path / "fit.json", {"fixture": "synthetic forecasts"})
     save(
@@ -232,7 +222,7 @@ def paper_project(tmp_path, monkeypatch):
     clock = ["2026-01-12T17:00:00+08:00"]
     monkeypatch.setattr(planning, "now", lambda: clock[0])
     monkeypatch.setattr(accounts, "now", lambda: clock[0])
-    monkeypatch.setattr(planning, "load_bundle", lambda p: prefix(bundle, 5))
+    monkeypatch.setattr(planning, "load_bundle", lambda p: bundle_prefix(bundle, 5))
     monkeypatch.setattr(
         planning,
         "latest_forecasts",
@@ -293,7 +283,7 @@ def test_frozen_plan_quote_resolution_and_closing_account_round_trip(tmp_path, m
     with pytest.raises(ValueError, match="differs from its recorded parent"):
         validate_parent(paths, changed)
     paths.config["data_cutoff"] = "2026-01-13"
-    monkeypatch.setattr(planning, "load_bundle", lambda p: prefix(bundle, 6))
+    monkeypatch.setattr(planning, "load_bundle", lambda p: bundle_prefix(bundle, 6))
     monkeypatch.setattr(
         planning,
         "latest_forecasts",
@@ -331,20 +321,20 @@ def test_plan_rejects_changes_to_its_independent_industry_auditor(tmp_path, monk
 
 @pytest.mark.parametrize("omit_quote", [False, True])
 def test_missing_opening_quote_preserves_the_backtest_rejection(omit_quote):
-    bundle, forecasts = fixture()
+    bundle, forecasts = market_bundle()
     dates, symbol = bundle["calendar"], "sh600001"
     bundle["raws"][symbol] = bundle["raws"][symbol].drop(index=dates[6])
     _, expected = simulate(bundle, 6, 6, forecasts)
     account = new_account(str(dates[5].date()), "historical_diagnostic")
     intent = make_intent(
-        prefix(bundle, 5), account, forecasts[5], "baseline", str(dates[6].date()), 0.001
+        bundle_prefix(bundle, 5), account, forecasts[5], "baseline", str(dates[6].date()), 0.001
     )
     quotes = opening_quotes(intent)
     if omit_quote:
         del quotes[symbol]
     else:
         quotes[symbol]["open"] = None
-    actual = resolve_intent(intent, account, [], calendar_for(bundle), quotes)
+    actual = resolve_intent(intent, account, [], trading_calendar(bundle), quotes)
     assert any(row["reason"] == "NO_QUOTE" for row in expected["rejections"])
     assert actual["rejections"] == expected["rejections"]
     assert actual["trades"] == expected["trades"]
