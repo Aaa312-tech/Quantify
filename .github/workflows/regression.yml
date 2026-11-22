@@ -13,6 +13,7 @@ jobs:
     timeout-minutes: 120
     env:
       PYTHONDONTWRITEBYTECODE: '1'
+      MKL_ENABLE_INSTRUCTIONS: AVX2
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -54,6 +55,7 @@ jobs:
           subprocess.check_call(['git', 'lfs', 'pull', '--include', ','.join(inputs), '--exclude', ''])
       - name: Replay the full frozen research scope
         run: |
+          Get-CimInstance Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors
           $baseline = .research/python.exe -c "import tomllib; print(tomllib.load(open('configs/regression.toml','rb'))['baseline_commit'])"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           .research/python.exe -B -m quantfolio regression --scope full --baseline $baseline --output artifacts/checks/ci-regression-${{ github.run_id }}

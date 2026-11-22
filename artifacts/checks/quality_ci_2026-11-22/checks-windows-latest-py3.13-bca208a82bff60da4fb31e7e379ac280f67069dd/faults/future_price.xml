@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="2.198" timestamp="2026-11-22T09:45:06.264448+00:00" hostname="runnervmbpeip"><testcase classname="tests.portfolio.test_opening_causality" name="test_later_bar_fields_do_not_select_opening_orders[fields0-values0]" time="0.051" /><testcase classname="tests.portfolio.test_opening_causality" name="test_later_bar_fields_do_not_select_opening_orders[fields1-values1]" time="0.019" /><testcase classname="tests.portfolio.test_opening_causality" name="test_later_bar_fields_do_not_select_opening_orders[fields2-values2]" time="0.020"><failure message="AssertionError: trades&#10;assert [{'cash_after...39740.0, ...}] == [{'cash_after...39000.0, ...}]&#10;  &#10;  At index 0 diff: {'date': '2026-01-13', 'signal_date': '2026-01-12', 'symbol': 'sh600001', 'side': 'BUY', 'quantity': 13700, 'price': 10.2, 'gross': 139740.0, 'fee': 43.32, 'slippage_rate': 0.001, 'slippage_cost': 139.74, 'cash_after': 860076.94} != {'date': '2026-01-13', 'signal_date': '2026-01-12', 'symbol': 'sh600001', 'side': 'BUY', 'quantity': 13900, 'price': 10.0, 'gross': 139000.0, 'fee': 43.09, 'slippage_rate': 0.001, 'slippage_cost': 139.0, 'cash_after': 860817.91}&#10;  &#10;  Full diff:&#10;    [&#10;        {&#10;  -         'cash_after': 860817.91,&#10;  ?                          ^^   ^&#10;  +         'cash_after': 860076.94,&#10;  ?                          ^ +  ^&#10;            'date': '2026-01-13',&#10;  -         'fee': 43.09,&#10;  ?                   ^^&#10;  +         'fee': 43.32,&#10;  ?                   ^^&#10;  -         'gross': 139000.0,&#10;  ?                     ^^&#10;  +         'gross': 139740.0,&#10;  ?                     ^^&#10;  -         'price': 10.0,&#10;  ?                     ^&#10;  +         'price': 10.2,&#10;  ?                     ^&#10;  -         'quantity': 13900,&#10;  ?                       ^&#10;  +         'quantity': 13700,&#10;  ?                       ^&#10;            'side': 'BUY',&#10;            'signal_date': '2026-01-12',&#10;  -         'slippage_cost': 139.0,&#10;  ?                              ^&#10;  +         'slippage_cost': 139.74,&#10;  ?                              ^^&#10;            'slippage_rate': 0.001,&#10;            'symbol': 'sh600001',&#10;        },&#10;        {&#10;  -         'cash_after': 721635.82,&#10;  ?                          ^ -  ^&#10;  +         'cash_after': 720153.88,&#10;  ?                         + ^   ^&#10;            'date': '2026-01-13',&#10;  -         'fee': 43.09,&#10;  ?                   ^^&#10;  +         'fee': 43.32,&#10;  ?                   ^^&#10;  -         'gross': 139000.0,&#10;  ?                     ^^&#10;  +         'gross': 139740.0,&#10;  ?                     ^^&#10;  -         'price': 10.0,&#10;  ?                     ^&#10;  +         'price': 10.2,&#10;  ?                     ^&#10;  -         'quantity': 13900,&#10;  ?                       ^&#10;  +         'quantity': 13700,&#10;  ?                       ^&#10;            'side': 'BUY',&#10;            'signal_date': '2026-01-12',&#10;  -         'slippage_cost': 139.0,&#10;  ?                              ^&#10;  +         'slippage_cost': 139.74,&#10;  ?                              ^^&#10;            'slippage_rate': 0.001,&#10;            'symbol': 'sh600002',&#10;        },&#10;        {&#10;  -         'cash_after': 582453.73,&#10;  ?                          --  ^^&#10;  +         'cash_after': 580230.82,&#10;  ?                         +  + ^^&#10;            'date': '2026-01-13',&#10;  -         'fee': 43.09,&#10;  ?                   ^^&#10;  +         'fee': 43.32,&#10;  ?                   ^^&#10;  -         'gross': 139000.0,&#10;  ?                     ^^&#10;  +         'gross': 139740.0,&#10;  ?                     ^^&#10;  -         'price': 10.0,&#10;  ?                     ^&#10;  +         'price': 10.2,&#10;  ?                     ^&#10;  -         'quantity': 13900,&#10;  ?                       ^&#10;  +         'quantity': 13700,&#10;  ?                       ^&#10;            'side': 'BUY',&#10;            'signal_date': '2026-01-12',&#10;  -         'slippage_cost': 139.0,&#10;  ?                              ^&#10;  +         'slippage_cost': 139.74,&#10;  ?                              ^^&#10;            'slippage_rate': 0.001,&#10;            'symbol': 'sh600003',&#10;        },&#10;        {&#10;  -         'cash_after': 443271.64,&#10;  ?                          ^ -  -&#10;  +         'cash_after': 440307.76,&#10;  ?                         + ^  +&#10;            'date': '2026-01-13',&#10;  -         'fee': 43.09,&#10;  ?                   ^^&#10;  +         'fee': 43.32,&#10;  ?                   ^^&#10;  -         'gross': 139000.0,&#10;  ?                     ^^&#10;  +         'gross': 139740.0,&#10;  ?                     ^^&#10;  -         'price': 10.0,&#10;  ?                     ^&#10;  +         'price': 10.2,&#10;  ?                     ^&#10;  -         'quantity': 13900,&#10;  ?                       ^&#10;  +         'quantity': 13700,&#10;  ?                       ^&#10;            'side': 'BUY',&#10;            'signal_date': '2026-01-12',&#10;  -         'slippage_cost': 139.0,&#10;  ?                              ^&#10;  +         'slippage_cost': 139.74,&#10;  ?                              ^^&#10;            'slippage_rate': 0.001,&#10;            'symbol': 'sh600004',&#10;        },&#10;        {&#10;  -         'cash_after': 304089.55,&#10;  ?                          --- ^^&#10;  +         'cash_after': 300384.7,&#10;  ?                         +++  ^&#10;            'date': '2026-01-13',&#10;  -         'fee': 43.09,&#10;  ?                   ^^&#10;  +         'fee': 43.32,&#10;  ?                   ^^&#10;  -         'gross': 139000.0,&#10;  ?                     ^^&#10;  +         'gross': 139740.0,&#10;  ?                     ^^&#10;  -         'price': 10.0,&#10;  ?                     ^&#10;  +         'price': 10.2,&#10;  ?                     ^&#10;  -         'quantity': 13900,&#10;  ?                       ^&#10;  +         'quantity': 13700,&#10;  ?                       ^&#10;            'side': 'BUY',&#10;            'signal_date': '2026-01-12',&#10;  -         'slippage_cost': 139.0,&#10;  ?                              ^&#10;  +         'slippage_cost': 139.74,&#10;  ?                              ^^&#10;            'slippage_rate': 0.001,&#10;            'symbol': 'sh600005',&#10;        },&#10;        {&#10;  -         'cash_after': 164907.46,&#10;  ?                         -- --&#10;  +         'cash_after': 160461.64,&#10;  ?                            ++++&#10;            'date': '2026-01-13',&#10;  -         'fee': 43.09,&#10;  ?                   ^^&#10;  +         'fee': 43.32,&#10;  ?                   ^^&#10;  -         'gross': 139000.0,&#10;  ?                     ^^&#10;  +         'gross': 139740.0,&#10;  ?                     ^^&#10;  -         'price': 10.0,&#10;  ?                     ^&#10;  +         'price': 10.2,&#10;  ?                     ^&#10;  -         'quantity': 13900,&#10;  ?                       ^&#10;  +         'quantity': 13700,&#10;  ?                       ^&#10;            'side': 'BUY',&#10;            'signal_date': '2026-01-12',&#10;  -         'slippage_cost': 139.0,&#10;  ?                              ^&#10;  +         'slippage_cost': 139.74,&#10;  ?                              ^^&#10;            'slippage_rate': 0.001,&#10;            'symbol': 'sh600006',&#10;        },&#10;    ]">fields = ['close', 'high', 'low'], values = [10.2, 10.2, 10.0]
+
+    @pytest.mark.parametrize(
+        "fields,values",
+        [
+            (["high", "low"], [10.0, 10.0]),
+            (["volume_lots", "amount"], [0.0, 0.0]),
+            (["close", "high", "low"], [10.2, 10.2, 10.0]),
+        ],
+    )
+    def test_later_bar_fields_do_not_select_opening_orders(fields, values):
+        bundle, forecasts = market_bundle()
+        _, expected = simulate(bundle, 6, 6, forecasts)
+        changed = deepcopy(bundle)
+        date = changed["calendar"][6]
+        for raw in changed["raws"].values():
+            raw.loc[date, fields] = values
+        _, actual = simulate(changed, 6, 6, forecasts)
+        assert expected["trades"], "The test must exercise actual opening purchases"
+        for section in ("decisions", "trades", "rejections", "intermediate_weights"):
+&gt;           assert actual[section] == expected[section], section
+E           AssertionError: trades
+E           assert [{'cash_after...39740.0, ...}] == [{'cash_after...39000.0, ...}]
+E             
+E             At index 0 diff: {'date': '2026-01-13', 'signal_date': '2026-01-12', 'symbol': 'sh600001', 'side': 'BUY', 'quantity': 13700, 'price': 10.2, 'gross': 139740.0, 'fee': 43.32, 'slippage_rate': 0.001, 'slippage_cost': 139.74, 'cash_after': 860076.94} != {'date': '2026-01-13', 'signal_date': '2026-01-12', 'symbol': 'sh600001', 'side': 'BUY', 'quantity': 13900, 'price': 10.0, 'gross': 139000.0, 'fee': 43.09, 'slippage_rate': 0.001, 'slippage_cost': 139.0, 'cash_after': 860817.91}
+E             
+E             Full diff:
+E               [
+E                   {
+E             -         'cash_after': 860817.91,
+E             ?                          ^^   ^
+E             +         'cash_after': 860076.94,
+E             ?                          ^ +  ^
+E                       'date': '2026-01-13',
+E             -         'fee': 43.09,
+E             ?                   ^^
+E             +         'fee': 43.32,
+E             ?                   ^^
+E             -         'gross': 139000.0,
+E             ?                     ^^
+E             +         'gross': 139740.0,
+E             ?                     ^^
+E             -         'price': 10.0,
+E             ?                     ^
+E             +         'price': 10.2,
+E             ?                     ^
+E             -         'quantity': 13900,
+E             ?                       ^
+E             +         'quantity': 13700,
+E             ?                       ^
+E                       'side': 'BUY',
+E                       'signal_date': '2026-01-12',
+E             -         'slippage_cost': 139.0,
+E             ?                              ^
+E             +         'slippage_cost': 139.74,
+E             ?                              ^^
+E                       'slippage_rate': 0.001,
+E                       'symbol': 'sh600001',
+E                   },
+E                   {
+E             -         'cash_after': 721635.82,
+E             ?                          ^ -  ^
+E             +         'cash_after': 720153.88,
+E             ?                         + ^   ^
+E                       'date': '2026-01-13',
+E             -         'fee': 43.09,
+E             ?                   ^^
+E             +         'fee': 43.32,
+E             ?                   ^^
+E             -         'gross': 139000.0,
+E             ?                     ^^
+E             +         'gross': 139740.0,
+E             ?                     ^^
+E             -         'price': 10.0,
+E             ?                     ^
+E             +         'price': 10.2,
+E             ?                     ^
+E             -         'quantity': 13900,
+E             ?                       ^
+E             +         'quantity': 13700,
+E             ?                       ^
+E                       'side': 'BUY',
+E                       'signal_date': '2026-01-12',
+E             -         'slippage_cost': 139.0,
+E             ?                              ^
+E             +         'slippage_cost': 139.74,
+E             ?                              ^^
+E                       'slippage_rate': 0.001,
+E                       'symbol': 'sh600002',
+E                   },
+E                   {
+E             -         'cash_after': 582453.73,
+E             ?                          --  ^^
+E             +         'cash_after': 580230.82,
+E             ?                         +  + ^^
+E                       'date': '2026-01-13',
+E             -         'fee': 43.09,
+E             ?                   ^^
+E             +         'fee': 43.32,
+E             ?                   ^^
+E             -         'gross': 139000.0,
+E             ?                     ^^
+E             +         'gross': 139740.0,
+E             ?                     ^^
+E             -         'price': 10.0,
+E             ?                     ^
+E             +         'price': 10.2,
+E             ?                     ^
+E             -         'quantity': 13900,
+E             ?                       ^
+E             +         'quantity': 13700,
+E             ?                       ^
+E                       'side': 'BUY',
+E                       'signal_date': '2026-01-12',
+E             -         'slippage_cost': 139.0,
+E             ?                              ^
+E             +         'slippage_cost': 139.74,
+E             ?                              ^^
+E                       'slippage_rate': 0.001,
+E                       'symbol': 'sh600003',
+E                   },
+E                   {
+E             -         'cash_after': 443271.64,
+E             ?                          ^ -  -
+E             +         'cash_after': 440307.76,
+E             ?                         + ^  +
+E                       'date': '2026-01-13',
+E             -         'fee': 43.09,
+E             ?                   ^^
+E             +         'fee': 43.32,
+E             ?                   ^^
+E             -         'gross': 139000.0,
+E             ?                     ^^
+E             +         'gross': 139740.0,
+E             ?                     ^^
+E             -         'price': 10.0,
+E             ?                     ^
+E             +         'price': 10.2,
+E             ?                     ^
+E             -         'quantity': 13900,
+E             ?                       ^
+E             +         'quantity': 13700,
+E             ?                       ^
+E                       'side': 'BUY',
+E                       'signal_date': '2026-01-12',
+E             -         'slippage_cost': 139.0,
+E             ?                              ^
+E             +         'slippage_cost': 139.74,
+E             ?                              ^^
+E                       'slippage_rate': 0.001,
+E                       'symbol': 'sh600004',
+E                   },
+E                   {
+E             -         'cash_after': 304089.55,
+E             ?                          --- ^^
+E             +         'cash_after': 300384.7,
+E             ?                         +++  ^
+E                       'date': '2026-01-13',
+E             -         'fee': 43.09,
+E             ?                   ^^
+E             +         'fee': 43.32,
+E             ?                   ^^
+E             -         'gross': 139000.0,
+E             ?                     ^^
+E             +         'gross': 139740.0,
+E             ?                     ^^
+E             -         'price': 10.0,
+E             ?                     ^
+E             +         'price': 10.2,
+E             ?                     ^
+E             -         'quantity': 13900,
+E             ?                       ^
+E             +         'quantity': 13700,
+E             ?                       ^
+E                       'side': 'BUY',
+E                       'signal_date': '2026-01-12',
+E             -         'slippage_cost': 139.0,
+E             ?                              ^
+E             +         'slippage_cost': 139.74,
+E             ?                              ^^
+E                       'slippage_rate': 0.001,
+E                       'symbol': 'sh600005',
+E                   },
+E                   {
+E             -         'cash_after': 164907.46,
+E             ?                         -- --
+E             +         'cash_after': 160461.64,
+E             ?                            ++++
+E                       'date': '2026-01-13',
+E             -         'fee': 43.09,
+E             ?                   ^^
+E             +         'fee': 43.32,
+E             ?                   ^^
+E             -         'gross': 139000.0,
+E             ?                     ^^
+E             +         'gross': 139740.0,
+E             ?                     ^^
+E             -         'price': 10.0,
+E             ?                     ^
+E             +         'price': 10.2,
+E             ?                     ^
+E             -         'quantity': 13900,
+E             ?                       ^
+E             +         'quantity': 13700,
+E             ?                       ^
+E                       'side': 'BUY',
+E                       'signal_date': '2026-01-12',
+E             -         'slippage_cost': 139.0,
+E             ?                              ^
+E             +         'slippage_cost': 139.74,
+E             ?                              ^^
+E                       'slippage_rate': 0.001,
+E                       'symbol': 'sh600006',
+E                   },
+E               ]
+
+tests\portfolio\test_opening_causality.py:34: AssertionError</failure></testcase></testsuite></testsuites>
