@@ -36,7 +36,9 @@ CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13按`uv.
 
 完整历史回归的[手动工作流](../.github/workflows/regression.yml)使用Windows研究锁，取得注册范围的LFS输入后执行`regression --scope full`，不拟合模型、不追加兼容登记。手动运行时选择待验收分支；报告的`run.json`绑定实际提交和源码哈希。常规CI及完整回归的结果均上传至对应Actions运行页，保留14天；正式验收另归档到`artifacts/checks`。没有定时运行。
 
-三个分层CI作业已[通过](../artifacts/checks/quality_ci_2026-11-22/completion.json)。首次云端完整回归在冻结模型预测处失败，最大误差约5.96×10⁻⁸，原始记录保存在`artifacts/checks/ci_research_2026-11-22/hosted_default`。工作流补充`MKL_ENABLE_INSTRUCTIONS=AVX2`，限定MKL可选指令集；本机48个冻结模型在此设置下误差均为0，云端完整验证另行记录。指令集选择机制见[Intel说明](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-linux/2024-0/instruction-set-specific-dispatch-on-intel-archs.html)，不能仅凭库版本相同推断不同CPU的历史结果相同。
+三个分层CI作业已[通过](../artifacts/checks/quality_ci_2026-11-22/completion.json)。云端AMD EPYC完整回归在冻结模型预测处失败，最大误差约5.96×10⁻⁸；限定`MKL_ENABLE_INSTRUCTIONS=AVX2`后仍失败。两次原始记录分别保存在`artifacts/checks/ci_research_2026-11-22/hosted_default`及`artifacts/checks/ci_research_avx2_2026-11-22`。本机Intel环境在相同AVX2设置下，48个冻结模型的误差均为0。指令集限制不保证跨厂商选择同一内核，见[Intel说明](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-linux/2024-0/instruction-set-specific-dispatch-on-intel-archs.html)。
+
+手动工作流可选择`windows-2022`或`windows-latest`托管镜像，均保持冻结预测的严格比较；操作系统标签不承诺CPU型号。发布验收使用已经验证的本地Intel/Windows研究环境执行标准完整回归，并归档结果。托管作业失败不会被转成通过，也不替代本地的完整等价证据。注册并启动一次性自托管运行器的操作被自动审批拒绝，未创建运行器或常驻服务。
 
 ## 当前结果的复核
 

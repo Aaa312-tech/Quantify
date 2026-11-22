@@ -2,6 +2,14 @@ name: Historical regression
 
 on:
   workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Hosted Windows image; frozen prediction checks remain exact.'
+        type: choice
+        default: windows-2022
+        options:
+          - windows-2022
+          - windows-latest
 
 permissions:
   contents: read
@@ -9,7 +17,7 @@ permissions:
 jobs:
   regression:
     name: Windows research environment / full regression
-    runs-on: windows-latest
+    runs-on: ${{ inputs.runner }}
     timeout-minutes: 120
     env:
       PYTHONDONTWRITEBYTECODE: '1'
