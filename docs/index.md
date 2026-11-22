@@ -19,6 +19,7 @@
 | [验证](validation.md) | 测试、模型重载、账本对照和源码兼容 |
 | [开发约定](../CONTRIBUTING.md) | 命名、代码、测试和提交 |
 | [仓库维护](repository.md) | 文件归属、冻结记录、Git LFS和发布 |
+| [工程整改计划](engineering_plan.md) | 回归入口、核心接口、CI、环境与分阶段验收 |
 
 ## 研究记录
 
