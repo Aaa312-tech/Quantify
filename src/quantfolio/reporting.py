@@ -20,8 +20,7 @@ from .status_data import load_status_review
 from .storage import load_gzip, read, sha
 
 
-def build_report(paths: Paths, run: str | Path | None = None, *, reference: bool = False) -> dict:
-    """Render frozen results or an evaluated experiment without mixing sample periods."""
+def _read_evaluation(paths, run, reference):
     check_integrity(paths)
     requested = run or (None if reference else paths.config.get("evaluation"))
     reference = requested is None
@@ -31,31 +30,19 @@ def build_report(paths: Paths, run: str | Path | None = None, *, reference: bool
         result.get("schema_version") != 1 or result["status"] not in {"COMPLETE", "PARTIAL"}
     ):
         raise ValueError("Report requires a completed evaluation summary")
-    costs = sorted(result["results"], key=lambda cost: int(cost[:-3]))
-    cost = costs[0]
-    cost_bps = int(cost[:-3])
-    benchmark = read(paths.benchmark) if reference else None
-    destination = (
-        paths.root
-        / "reports"
-        / (f"experiments/{source.name}" if run else "reference" if reference else "latest")
-    ).resolve()
-    if not destination.is_relative_to(paths.root / "reports"):
-        raise ValueError("Report destination escapes the project")
-    destination.mkdir(parents=True, exist_ok=True)
-    primary_policy = result["primary_policy"]
-    primary = result["continuous"][cost][primary_policy]["summary"]
-    aggregate = result["results"][cost][primary_policy]["aggregate"]
+    return source, result, reference
 
-    def curve_for(policy):
-        filename = paths.archive.get("policies", {}).get(policy, policy) if reference else policy
-        relative = f"evaluation/continuous/{cost}/{filename}.json.gz"
-        path = source / relative
-        if not reference and sha(path) != result["artifacts"][relative]:
-            raise ValueError(f"Evaluation ledger hash mismatch: {relative}")
-        return load_gzip(path)["ledger"]["curve"]
 
-    curve = curve_for(primary_policy)
+def _report_curve(paths, source, result, policy, cost, reference):
+    filename = paths.archive.get("policies", {}).get(policy, policy) if reference else policy
+    relative = f"evaluation/continuous/{cost}/{filename}.json.gz"
+    path = source / relative
+    if not reference and sha(path) != result["artifacts"][relative]:
+        raise ValueError(f"Evaluation ledger hash mismatch: {relative}")
+    return load_gzip(path)["ledger"]["curve"]
+
+
+def _plot_equity(curve, momentum_curve, benchmark, cost, cost_bps, destination):
     dates = pd.to_datetime([point["date"] for point in curve])
     figure, axis = plt.subplots(figsize=(11, 4.2), layout="constrained")
     figure.set_facecolor("#f7f9fc")
@@ -67,7 +54,6 @@ def build_report(paths: Paths, run: str | Path | None = None, *, reference: bool
         linewidth=2,
         label="Walk-forward momentum",
     )
-    momentum_curve = curve_for("matched_momentum")
     axis.plot(
         pd.to_datetime([point["date"] for point in momentum_curve]),
         [point["nav"] / 1e6 for point in momentum_curve],
@@ -94,6 +80,9 @@ def build_report(paths: Paths, run: str | Path | None = None, *, reference: bool
     axis.legend(frameon=False, loc="upper left")
     figure.savefig(destination / "equity_curve.png", dpi=160)
     plt.close(figure)
+
+
+def _cost_rows(result, costs, primary_policy, benchmark):
     rows = []
     for current_cost in costs:
         current = result["continuous"][current_cost][primary_policy]["summary"]
@@ -108,8 +97,10 @@ def build_report(paths: Paths, run: str | Path | None = None, *, reference: bool
             f"<td>{current['max_drawdown']:.2%}</td>"
             f"<td>{episode['mean_net_return']:.2%}</td></tr>"
         )
-    template = files("quantfolio").joinpath("templates/report.html").read_text("utf-8")
-    title = f"{paths.config['strategy_name']}回测" if reference else f"实验回测：{source.name}"
+    return "".join(rows)
+
+
+def _report_notice(paths, source, result, reference, primary_policy):
     notice = (
         "修正前的冻结记录：原成交器使用了开盘后才可知的高低价和全天成交量。"
         "这些结果只用于追溯，不能作为修正后的收益验证。原收益优势检验也未通过。"
@@ -163,6 +154,18 @@ def build_report(paths: Paths, run: str | Path | None = None, *, reference: bool
                 "历史数据待修正：已确认ST期间仍有样本通过资格筛选，且影响实际模拟买入。"
                 "此处保留原回测结果；修正与重新训练尚未完成，次日建议已暂停。 " + notice
             )
+    return notice
+
+
+def _report_document(paths, source, destination, result, reference, costs, benchmark):
+    cost = costs[0]
+    cost_bps = int(cost[:-3])
+    primary_policy = result["primary_policy"]
+    primary = result["continuous"][cost][primary_policy]["summary"]
+    aggregate = result["results"][cost][primary_policy]["aggregate"]
+    template = files("quantfolio").joinpath("templates/report.html").read_text("utf-8")
+    title = f"{paths.config['strategy_name']}回测" if reference else f"实验回测：{source.name}"
+    notice = _report_notice(paths, source, result, reference, primary_policy)
     links = {
         "methodology_link": "docs/methodology.md",
         "reproduction_link": "docs/reproducibility.md",
@@ -185,12 +188,33 @@ def build_report(paths: Paths, run: str | Path | None = None, *, reference: bool
         scope="此页展示冻结回测，不包含实时行情或新交易指令。"
         if reference
         else "仅展示本实验已完成窗口，不能与不同区间的完整历史收益直接比较。",
-        rows="".join(rows),
+        rows=_cost_rows(result, costs, primary_policy, benchmark),
         **{
             name: escape(Path(os.path.relpath(paths.root / relative, destination)).as_posix())
             for name, relative in links.items()
         },
     )
+    return document
+
+
+def build_report(paths: Paths, run: str | Path | None = None, *, reference: bool = False) -> dict:
+    """Render verified evaluation ledgers, then write their chart and HTML report."""
+    source, result, reference = _read_evaluation(paths, run, reference)
+    costs = sorted(result["results"], key=lambda cost: int(cost[:-3]))
+    cost = costs[0]
+    benchmark = read(paths.benchmark) if reference else None
+    destination = (
+        paths.root
+        / "reports"
+        / (f"experiments/{source.name}" if run else "reference" if reference else "latest")
+    ).resolve()
+    if not destination.is_relative_to(paths.root / "reports"):
+        raise ValueError("Report destination escapes the project")
+    destination.mkdir(parents=True, exist_ok=True)
+    curve = _report_curve(paths, source, result, result["primary_policy"], cost, reference)
+    momentum_curve = _report_curve(paths, source, result, "matched_momentum", cost, reference)
+    _plot_equity(curve, momentum_curve, benchmark, cost, int(cost[:-3]), destination)
+    document = _report_document(paths, source, destination, result, reference, costs, benchmark)
     (destination / "index.html").write_text(document, "utf-8", newline="\n")
     return {
         "status": "BUILT",

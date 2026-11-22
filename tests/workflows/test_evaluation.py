@@ -279,13 +279,16 @@ def test_complete_run_requires_every_registered_fold(experiment):
     assert result["folds"] == 2 and result["accounts"] == 6
 
 
-def test_report_rejects_changed_evaluation_ledger(experiment):
+@pytest.mark.parametrize("policy", ["selected_strategy", "matched_momentum"])
+def test_report_rejects_changed_evaluation_ledger(experiment, policy):
     paths, _, run, _ = experiment
     output = paths.root / "artifacts/evaluations/changed"
     evaluation.evaluate(paths, run, output, [10])
-    (output / "evaluation/continuous/10bps/selected_strategy.json.gz").write_bytes(b"changed")
+    (output / f"evaluation/continuous/10bps/{policy}.json.gz").write_bytes(b"changed")
     with pytest.raises(ValueError, match="ledger hash mismatch"):
         reporting.build_report(paths, output)
+    assert not (paths.root / "reports/experiments/changed/equity_curve.png").exists()
+    assert not (paths.root / "reports/experiments/changed/index.html").exists()
 
 
 @pytest.mark.parametrize("previous", [True, False])
