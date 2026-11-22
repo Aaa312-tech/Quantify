@@ -1,0 +1,36 @@
+{
+  "status": "DIAGNOSED",
+  "scope": "Optional pandas reduction backend; historical research remains bound to research-win-64.lock",
+  "bottleneck_installed_in_development_environment": false,
+  "numexpr_installed_in_development_environment": false,
+  "failed_stage": "training_windows",
+  "failure": "AssertionError: \nItems are not equal: validation_forecasts/momentum/383/bj920207/margin\n ACTUAL: 0.0018703886755947591\n DESIRED: 0.001870388556718152",
+  "control_cases": [
+    {
+      "bottleneck_enabled": true,
+      "calibration_equal": true,
+      "standard_error": [
+        0.004849419468665256,
+        0.0036639077623331533,
+        0.003318311459528009,
+        0.003742860575948546,
+        0.0037248476480867994
+      ],
+      "first_failed_margin": 0.001870388556718152
+    },
+    {
+      "bottleneck_enabled": false,
+      "calibration_equal": false,
+      "standard_error": [
+        0.004849419468665256,
+        0.0036639077623331533,
+        0.003318311459528009,
+        0.0037428608447982155,
+        0.0037248476480867994
+      ],
+      "first_failed_margin": 0.0018703886755947591
+    }
+  ],
+  "resolution": "Keep the existing historical research lock, which includes Bottleneck 1.4.2. The generic OpenBLAS development environment passed frozen model predictions, but is not accepted for full historical regression.",
+  "scope_clarification": "The optional-reduction probe recomputes existing isotonic calibration, as the standard regression does. Its phrase no estimator fitting refers only to no new Ridge or histogram-tree training, and must not be read as no fit_transform call. No research model, candidate or historical output was replaced."
+}

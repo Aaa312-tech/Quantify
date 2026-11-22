@@ -1,0 +1,74 @@
+............FF............                                               [100%]
+================================== FAILURES ===================================
+____ test_fused_add_matches_independent_c_runtime_bits[bits12-2139095039] _____
+
+bits = (1106771968, 2097422600, 3212836864), expected = 2139095039
+
+    @pytest.mark.parametrize(
+        "bits,expected",
+        [
+            ((0x3F800001, 0x3FC00000, 0xA1800000), 0x3FC00001),
+            ((0x3F800001, 0x3FC00000, 0x21800000), 0x3FC00002),
+            ((0x3F800003, 0x3FC00000, 0x21800000), 0x3FC00005),
+            ((0xBF800001, 0x3FC00000, 0x21800000), 0xBFC00001),
+            ((0xBF800003, 0x3FC00000, 0xA1800000), 0xBFC00005),
+            ((0x7F7FFFFF, 0x40000000, 0xFF7FFFFF), 0x7F7FFFFF),
+            ((0x00000001, 0x3F000000, 0x00000000), 0x00000000),
+            ((0x00000001, 0x3F000000, 0x00000001), 0x00000002),
+            ((0x3F800001, 0x3F7FFFFF, 0xBF800000), 0x337FFFFE),
+            ((0x7F7FFFFF, 0x40000000, 0x00000000), 0x7F800000),
+            ((0x80000000, 0x3F800000, 0x80000000), 0x80000000),
+            ((0x3F800000, 0x3F800000, 0xBF800000), 0x00000000),
+            ((0x41F80000, 0x7D042108, 0xBF800000), 0x7F7FFFFF),
+            ((0xC1F80000, 0x7D042108, 0x3F800000), 0xFF7FFFFF),
+            ((0x41F80000, 0x7D042108, 0x3F800000), 0x7F800000),
+            ((0xC1F80000, 0x7D042108, 0xBF800000), 0xFF800000),
+            ((0x41F80000, 0x7D042108, 0x00000000), 0x7F800000),
+            ((0xC1F80000, 0x7D042108, 0x00000000), 0xFF800000),
+        ],
+    )
+    def test_fused_add_matches_independent_c_runtime_bits(bits, expected):
+        left, right, total = np.array(bits, dtype=np.uint32).view(np.float32)
+        actual = float32_fma(np.array([left]), right, np.array([total]))
+>       assert actual.view(np.uint32)[0] == expected
+E       assert np.uint32(2139095040) == 2139095039
+
+tests\workflows\test_model_numerics.py:38: AssertionError
+____ test_fused_add_matches_independent_c_runtime_bits[bits13-4286578687] _____
+
+bits = (3254255616, 2097422600, 1065353216), expected = 4286578687
+
+    @pytest.mark.parametrize(
+        "bits,expected",
+        [
+            ((0x3F800001, 0x3FC00000, 0xA1800000), 0x3FC00001),
+            ((0x3F800001, 0x3FC00000, 0x21800000), 0x3FC00002),
+            ((0x3F800003, 0x3FC00000, 0x21800000), 0x3FC00005),
+            ((0xBF800001, 0x3FC00000, 0x21800000), 0xBFC00001),
+            ((0xBF800003, 0x3FC00000, 0xA1800000), 0xBFC00005),
+            ((0x7F7FFFFF, 0x40000000, 0xFF7FFFFF), 0x7F7FFFFF),
+            ((0x00000001, 0x3F000000, 0x00000000), 0x00000000),
+            ((0x00000001, 0x3F000000, 0x00000001), 0x00000002),
+            ((0x3F800001, 0x3F7FFFFF, 0xBF800000), 0x337FFFFE),
+            ((0x7F7FFFFF, 0x40000000, 0x00000000), 0x7F800000),
+            ((0x80000000, 0x3F800000, 0x80000000), 0x80000000),
+            ((0x3F800000, 0x3F800000, 0xBF800000), 0x00000000),
+            ((0x41F80000, 0x7D042108, 0xBF800000), 0x7F7FFFFF),
+            ((0xC1F80000, 0x7D042108, 0x3F800000), 0xFF7FFFFF),
+            ((0x41F80000, 0x7D042108, 0x3F800000), 0x7F800000),
+            ((0xC1F80000, 0x7D042108, 0xBF800000), 0xFF800000),
+            ((0x41F80000, 0x7D042108, 0x00000000), 0x7F800000),
+            ((0xC1F80000, 0x7D042108, 0x00000000), 0xFF800000),
+        ],
+    )
+    def test_fused_add_matches_independent_c_runtime_bits(bits, expected):
+        left, right, total = np.array(bits, dtype=np.uint32).view(np.float32)
+        actual = float32_fma(np.array([left]), right, np.array([total]))
+>       assert actual.view(np.uint32)[0] == expected
+E       assert np.uint32(4286578688) == 4286578687
+
+tests\workflows\test_model_numerics.py:38: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/workflows/test_model_numerics.py::test_fused_add_matches_independent_c_runtime_bits[bits12-2139095039]
+FAILED tests/workflows/test_model_numerics.py::test_fused_add_matches_independent_c_runtime_bits[bits13-4286578687]
+2 failed, 24 passed in 2.61s

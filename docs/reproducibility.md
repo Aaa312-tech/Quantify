@@ -21,13 +21,25 @@ uv run --no-sync python -B -m pytest -q
 
 历史研究环境按[首页命令](../README.md#安装与验证)创建在 `.research`。Conda显式锁固定Python、NumPy、Pandas、MKL、NumExpr、Bottleneck及其二进制依赖的构建和SHA-256；pip 26.1.1单独作为安装工具固定。其余Python依赖由 `uv export --locked`导出带哈希要求，再用 `uv pip install --require-hashes --no-deps`补齐。保留Conda提供的相同版本包，使用本地wheel或可编辑安装加载项目代码。不要对该混合环境运行通用的 `uv sync`，以免替换二进制构建或移除所需计算库。
 
-相同包版本不保证相同数值实现。本次通用Windows和Linux环境的NumPy 2.3.4使用OpenBLAS，首个历史模型出现约4.47×10⁻⁸的预测差异；严格校验拒绝通过。研究锁保留原来的NumPy/MKL二进制，不修改预测、模型或误差门槛。跨平台测试通过只证明其列出的工程范围；现有模型的精确复现以研究环境的完整回归记录为准。
+相同包版本不保证相同数值实现。环境锁验收时，通用Windows和Linux环境的NumPy 2.3.4使用OpenBLAS，首个历史模型曾出现约4.47×10⁻⁸的预测差异；严格校验拒绝通过。后续推理修复见下节，原失败仍保留。研究锁固定原来的NumPy/MKL及其他数值依赖，不修改预测、模型或误差门槛；跨平台工程测试不能替代完整历史回归。
 
 [环境验收](../artifacts/checks/environment_lock_2026-11-22/completion.json)记录安装、构建、测试及失败范围；[独立全量回归](../artifacts/checks/environment_lock_2026-11-22/research/result.json)覆盖48个模型、1,425个历史账户及75个纸面账户，与原环境完全一致。
 
 离线安装同样从锁文件导出全部所需依赖，校验轮子哈希后使用 `uv pip sync --require-hashes --no-index --find-links <wheelhouse>`。构建依赖也须提供锁定的Setuptools和wheel。更新依赖后重新验证模型和完整账户，保留旧环境与失败记录。
 
 依据：[uv锁定安装](https://docs.astral.sh/uv/concepts/projects/sync/)、[uv构建依赖](https://docs.astral.sh/uv/concepts/projects/build/)、[Conda显式环境](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html#building-identical-conda-environments)、[NumPy构建信息](https://numpy.org/doc/stable/reference/generated/numpy.show_config.html)。
+
+## 预测数值一致性
+
+云端逐阶段对照确认：48个模型的输入、补值、标准化、参数及所记录的数学库文件哈希一致；24个树模型完全一致，24个Ridge模型在最后的矩阵向量乘法处出现差异。MKL日志显示本机使用AVX2分支，AMD托管机使用通用处理器分支。原始失败及[对照记录](../artifacts/checks/prediction_diagnostics_2026-11-22/cloud_comparison.json)保留；限制指令集不能代替跨处理器验证，见[Intel说明](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-windows/2025-0/get-started-with-conditional-num-reproducibility.html)。
+
+`models.predict_model`对float32、单输出Ridge固定八路乘加及最终求和顺序，保留历史计算的舍入结果。float32乘积在float64中精确表示；加法舍入落在float32中点时，用加法残差决定最终舍入方向。其余模型、float64及多输出格式沿用估计器原入口。预处理、模型构造、参数和冻结文件均不变；该实现不读取历史预测生成输出。
+
+训练流程与模型重载验证共用此推理入口。诊断同时记录项目入口和估计器原生调用的结果，原生差异不会被删去。最终实现通过独立C运行库的297,989组乘加对照，其中1,446组专门覆盖舍入中点；float32溢出边界为`2**128 - 2**103`，也参与残差修正。首次溢出中点失败及中断的回归另存，未作为通过证据。全部24个冻结Ridge模型用于检查历史结果；精确预测仍须结合完整账户回归验收，不从模型检查推断收益或账本一致。
+
+这项修复针对已有模型的推理。它不保证重新训练在任意数学库或处理器上产生相同系数，也不恢复研究；历史研究环境锁继续保留。
+
+通用OpenBLAS开发环境中的48个模型也通过了精确预测检查，但其完整回归在历史校准处被拒绝：该环境缺少Bottleneck，Pandas标准差采用了不同的归约实现。在原环境中关闭Bottleneck可复现相同差值，见[环境诊断](../artifacts/checks/portable_predictions_2026-11-23/environment_diagnosis.json)。正式历史验收继续使用已包含Bottleneck 1.4.2的研究锁，未改动校准公式或接受该通用环境的完整结果。
 
 ## 配置
 

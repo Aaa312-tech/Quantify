@@ -1,0 +1,27 @@
+{
+  "status": "INTERRUPTED",
+  "at": "2026-11-23T00:08:52.889458+08:00",
+  "reason": "Independent C fmaf oracle found overflow-midpoint rounding errors in the new portable helper; stopped before changing source. Frozen model checks had passed, but this run is not a full acceptance.",
+  "boundary_failures": [
+    {
+      "operands_hex": [
+        "41f80000",
+        "7d042108",
+        "bf800000"
+      ],
+      "expected_hex": "7f7fffff",
+      "actual_hex": "7f800000"
+    },
+    {
+      "operands_hex": [
+        "c1f80000",
+        "7d042108",
+        "3f800000"
+      ],
+      "expected_hex": "ff7fffff",
+      "actual_hex": "ff800000"
+    }
+  ],
+  "new_model_fits": 0,
+  "model_source_sha256": "7181de3b41d0d5638cdfd17537b20de8e238baf1c2442d970fd79a650cd351ef"
+}

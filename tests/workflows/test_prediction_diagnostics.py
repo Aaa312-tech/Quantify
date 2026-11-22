@@ -6,6 +6,7 @@ from sklearn.linear_model import Ridge
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
+from quantfolio.models import predict_model
 from quantfolio.settings import Paths
 
 
@@ -38,7 +39,7 @@ def test_pipeline_diagnostics_do_not_fit_or_change_model(monkeypatch):
     matrix = np.array([[1, np.nan], [2, 4], [3, 8], [4, 9]], dtype=np.float32)
     model = make_pipeline(SimpleImputer(add_indicator=True), StandardScaler(), Ridge())
     model.fit(matrix, np.array([0, 1, 3, 2], dtype=np.float32))
-    expected = model.predict(matrix)
+    expected = predict_model(model, matrix)
     coefficients = model[-1].coef_.copy()
 
     def forbid_fit(*args, **kwargs):

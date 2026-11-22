@@ -17,7 +17,7 @@ from .dataset import (
     validate_features,
     walk_forward_folds,
 )
-from .models import fit_stage
+from .models import fit_stage, predict_model
 from .settings import Paths
 from .storage import now, read, save, sha
 
@@ -43,7 +43,7 @@ def verify_models(bundle, result_paths, root):
                     raise ValueError(f"Model changed: {folder}")
                 model = joblib.load(folder / "model.joblib")
                 with threadpool_limits(limits=2):
-                    actual = model.predict(matrix[rows])
+                    actual = predict_model(model, matrix[rows])
                 expected = np.load(folder / "predictions.npy")
                 np.testing.assert_allclose(actual, expected, rtol=0, atol=1e-12)
                 before = start + int(result["final_fit"] and stage == "outer_fit")

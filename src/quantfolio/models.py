@@ -43,6 +43,54 @@ def make_model(name):
     )
 
 
+def float32_fma(left, right, total):
+    """Round a float32 product and sum once, correcting float64 midpoint ties."""
+    product = left.astype(np.float64) * np.float64(right)
+    addend = total.astype(np.float64)
+    summed = product + addend
+    with np.errstate(over="ignore"):
+        rounded = summed.astype(np.float32)
+        direction = np.where(summed > rounded.astype(np.float64), np.inf, -np.inf).astype(
+            np.float32
+        )
+        adjacent = np.nextafter(rounded, direction)
+    midpoint = (rounded.astype(np.float64) + adjacent.astype(np.float64)) * 0.5
+    midpoint = np.where(np.isinf(rounded), np.copysign(float(2**128 - 2**103), summed), midpoint)
+    ties = np.isfinite(summed) & (summed == midpoint)
+    if ties.any():
+        # Recover the addition residual before choosing a side of the float32 midpoint.
+        virtual = summed[ties] - product[ties]
+        error = (product[ties] - (summed[ties] - virtual)) + (addend[ties] - virtual)
+        move = ((error > 0) & (adjacent[ties] > rounded[ties])) | (
+            (error < 0) & (adjacent[ties] < rounded[ties])
+        )
+        rounded[ties] = np.where(move, adjacent[ties], rounded[ties])
+    return rounded
+
+
+def predict_model(model, matrix):
+    """Preserve the frozen float32 Ridge reduction independently of BLAS dispatch."""
+    estimator = model.steps[-1][1]
+    if not isinstance(estimator, Ridge):
+        return model.predict(matrix)
+    transformed = model[:-1].transform(matrix)
+    coefficients = estimator.coef_
+    if (
+        transformed.dtype != np.float32
+        or coefficients.dtype != np.float32
+        or coefficients.ndim != 1
+    ):
+        return model.predict(matrix)
+    if transformed.shape[1] != len(coefficients):
+        raise ValueError("Ridge feature and coefficient counts differ")
+    lanes = np.zeros((len(transformed), 8), dtype=np.float32)
+    for column, coefficient in enumerate(coefficients):
+        lane = column % 8
+        lanes[:, lane] = float32_fma(transformed[:, column], coefficient, lanes[:, lane])
+    a, b, c, d, e, f, g, h = lanes.T
+    return (((a + b) + (e + f)) + ((c + d) + (g + h))) + estimator.intercept_
+
+
 def industry_residuals(sub):
     """Subtract leave-own-stock-out industry returns from already-purged labels."""
     industry_returns = sub.groupby(["date_index", "industry"], sort=False).y5
@@ -124,7 +172,7 @@ def fit_stage(bundle, train_rows, pred_rows, path, identity):
         estimator_step = list(model.named_steps)[-1]
         with threadpool_limits(limits=2):
             model.fit(matrix[fit_rows], target, **{estimator_step + "__sample_weight": weights})
-            predicted = model.predict(matrix[pred_rows])
+            predicted = predict_model(model, matrix[pred_rows])
         if not np.isfinite(predicted).all():
             raise ValueError(f"Model produced non-finite predictions: {name}")
         joblib.dump(model, folder / "model.joblib", compress=3)

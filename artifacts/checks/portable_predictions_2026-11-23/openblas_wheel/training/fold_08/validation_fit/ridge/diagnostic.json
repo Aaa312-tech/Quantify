@@ -1,0 +1,380 @@
+{
+  "stages": {
+    "input": {
+      "sha256": "ad0729ba4e085f2a38dc2600e3e7f9bed9dc937e83d9536cecd243b90053d2e8",
+      "shape": [
+        34405,
+        57
+      ],
+      "dtype": "float32",
+      "strides": [
+        228,
+        4
+      ],
+      "alignment_mod_64": 0,
+      "nonfinite": 1772
+    },
+    "simpleimputer": {
+      "sha256": "994103a89ea78397bd81b3964593fdb8ad5116ac61309847742900a400bd1dc2",
+      "shape": [
+        34405,
+        61
+      ],
+      "dtype": "float32",
+      "strides": [
+        244,
+        4
+      ],
+      "alignment_mod_64": 0,
+      "nonfinite": 0
+    },
+    "standardscaler": {
+      "sha256": "7176dbd3867dd946a6cea3f98be99b00322ffcb872bc4d8b22341301ca75a347",
+      "shape": [
+        34405,
+        61
+      ],
+      "dtype": "float32",
+      "strides": [
+        244,
+        4
+      ],
+      "alignment_mod_64": 0,
+      "nonfinite": 0
+    }
+  },
+  "prediction": {
+    "sha256": "7570d213668e2ab67d42eca6fe6985b5c16a7f7a3c59b2ee0730e1372979d98f",
+    "shape": [
+      34405
+    ],
+    "dtype": "float32",
+    "strides": [
+      4
+    ],
+    "alignment_mod_64": 48,
+    "nonfinite": 0
+  },
+  "frozen_prediction": {
+    "sha256": "7570d213668e2ab67d42eca6fe6985b5c16a7f7a3c59b2ee0730e1372979d98f",
+    "shape": [
+      34405
+    ],
+    "dtype": "float32",
+    "strides": [
+      4
+    ],
+    "alignment_mod_64": 16,
+    "nonfinite": 0
+  },
+  "comparison": {
+    "exact": true,
+    "different": 0,
+    "above_1e_12": 0,
+    "max_absolute_error": 0.0,
+    "examples": []
+  },
+  "native_prediction": {
+    "sha256": "e3a6d45c2c2565e153d097c71811dc6c49eaf986905ad8f132d90faeec95d854",
+    "shape": [
+      34405
+    ],
+    "dtype": "float32",
+    "strides": [
+      4
+    ],
+    "alignment_mod_64": 16,
+    "nonfinite": 0
+  },
+  "native_comparison": {
+    "exact": false,
+    "different": 26314,
+    "above_1e_12": 26314,
+    "max_absolute_error": 4.470348358154297e-08,
+    "examples": [
+      {
+        "row": 0,
+        "actual": -0.12853439152240753,
+        "expected": -0.12853436172008514
+      },
+      {
+        "row": 1,
+        "actual": -0.11409877240657806,
+        "expected": -0.11409877985715866
+      },
+      {
+        "row": 4,
+        "actual": -0.14378312230110168,
+        "expected": -0.14378313720226288
+      },
+      {
+        "row": 5,
+        "actual": -0.06389667093753815,
+        "expected": -0.06389664858579636
+      },
+      {
+        "row": 7,
+        "actual": -0.09228780120611191,
+        "expected": -0.09228777885437012
+      },
+      {
+        "row": 8,
+        "actual": -0.1254260390996933,
+        "expected": -0.1254260241985321
+      },
+      {
+        "row": 9,
+        "actual": -0.05710988491773605,
+        "expected": -0.05710989236831665
+      },
+      {
+        "row": 10,
+        "actual": 0.06882811337709427,
+        "expected": 0.06882812082767487
+      }
+    ]
+  },
+  "staged_comparison": {
+    "exact": true,
+    "different": 0,
+    "above_1e_12": 0,
+    "max_absolute_error": 0.0,
+    "examples": []
+  },
+  "coefficients": {
+    "sha256": "b7c7b032748e9a9dbf0267ccaae8ccc867c1644754f2c8767f053349bb3cfdd8",
+    "shape": [
+      61
+    ],
+    "dtype": "float32",
+    "strides": [
+      4
+    ],
+    "alignment_mod_64": 16,
+    "nonfinite": 0
+  },
+  "intercept": {
+    "sha256": "594426f70fc6ca7d9018ba35f0382316036942fb9b69e44927d34ab333f439f1",
+    "shape": [],
+    "dtype": "float32",
+    "strides": [],
+    "alignment_mod_64": 16,
+    "nonfinite": 0
+  },
+  "linear_probes": {
+    "linear": {
+      "fingerprint": {
+        "sha256": "e3a6d45c2c2565e153d097c71811dc6c49eaf986905ad8f132d90faeec95d854",
+        "shape": [
+          34405
+        ],
+        "dtype": "float32",
+        "strides": [
+          4
+        ],
+        "alignment_mod_64": 16,
+        "nonfinite": 0
+      },
+      "comparison": {
+        "exact": false,
+        "different": 26314,
+        "above_1e_12": 26314,
+        "max_absolute_error": 4.470348358154297e-08,
+        "examples": [
+          {
+            "row": 0,
+            "actual": -0.12853439152240753,
+            "expected": -0.12853436172008514
+          },
+          {
+            "row": 1,
+            "actual": -0.11409877240657806,
+            "expected": -0.11409877985715866
+          },
+          {
+            "row": 4,
+            "actual": -0.14378312230110168,
+            "expected": -0.14378313720226288
+          },
+          {
+            "row": 5,
+            "actual": -0.06389667093753815,
+            "expected": -0.06389664858579636
+          },
+          {
+            "row": 7,
+            "actual": -0.09228780120611191,
+            "expected": -0.09228777885437012
+          },
+          {
+            "row": 8,
+            "actual": -0.1254260390996933,
+            "expected": -0.1254260241985321
+          },
+          {
+            "row": 9,
+            "actual": -0.05710988491773605,
+            "expected": -0.05710989236831665
+          },
+          {
+            "row": 10,
+            "actual": 0.06882811337709427,
+            "expected": 0.06882812082767487
+          }
+        ]
+      }
+    },
+    "column_major": {
+      "fingerprint": {
+        "sha256": "d404d6ab51d7418310bd48d4c277cc592cc005706c34b6ec8663defb58b6b842",
+        "shape": [
+          34405
+        ],
+        "dtype": "float32",
+        "strides": [
+          4
+        ],
+        "alignment_mod_64": 48,
+        "nonfinite": 0
+      },
+      "comparison": {
+        "exact": false,
+        "different": 26859,
+        "above_1e_12": 26859,
+        "max_absolute_error": 4.842877388000488e-08,
+        "examples": [
+          {
+            "row": 1,
+            "actual": -0.11409877240657806,
+            "expected": -0.11409877985715866
+          },
+          {
+            "row": 2,
+            "actual": -0.13277779519557953,
+            "expected": -0.13277781009674072
+          },
+          {
+            "row": 3,
+            "actual": -0.09180931746959686,
+            "expected": -0.09180930256843567
+          },
+          {
+            "row": 4,
+            "actual": -0.14378315210342407,
+            "expected": -0.14378313720226288
+          },
+          {
+            "row": 5,
+            "actual": -0.06389667838811874,
+            "expected": -0.06389664858579636
+          },
+          {
+            "row": 6,
+            "actual": -0.09122814238071442,
+            "expected": -0.09122812747955322
+          },
+          {
+            "row": 7,
+            "actual": -0.09228779375553131,
+            "expected": -0.09228777885437012
+          },
+          {
+            "row": 8,
+            "actual": -0.12542599439620972,
+            "expected": -0.1254260241985321
+          }
+        ]
+      }
+    },
+    "einsum": {
+      "fingerprint": {
+        "sha256": "8740783bf257643934feec192e0aa98f906b97e36f3562862b347c636aec5cbb",
+        "shape": [
+          34405
+        ],
+        "dtype": "float32",
+        "strides": [
+          4
+        ],
+        "alignment_mod_64": 48,
+        "nonfinite": 0
+      },
+      "comparison": {
+        "exact": false,
+        "different": 24621,
+        "above_1e_12": 24621,
+        "max_absolute_error": 5.960464477539063e-08,
+        "examples": [
+          {
+            "row": 0,
+            "actual": -0.12853437662124634,
+            "expected": -0.12853436172008514
+          },
+          {
+            "row": 1,
+            "actual": -0.11409877240657806,
+            "expected": -0.11409877985715866
+          },
+          {
+            "row": 2,
+            "actual": -0.13277778029441833,
+            "expected": -0.13277781009674072
+          },
+          {
+            "row": 3,
+            "actual": -0.09180929511785507,
+            "expected": -0.09180930256843567
+          },
+          {
+            "row": 5,
+            "actual": -0.06389666348695755,
+            "expected": -0.06389664858579636
+          },
+          {
+            "row": 6,
+            "actual": -0.09122813493013382,
+            "expected": -0.09122812747955322
+          },
+          {
+            "row": 7,
+            "actual": -0.09228778630495071,
+            "expected": -0.09228777885437012
+          },
+          {
+            "row": 9,
+            "actual": -0.05710986256599426,
+            "expected": -0.05710989236831665
+          }
+        ]
+      }
+    }
+  },
+  "threads": [
+    {
+      "api": "openblas",
+      "threads": 2
+    },
+    {
+      "api": "openmp",
+      "threads": 2
+    },
+    {
+      "api": "openblas",
+      "threads": 2
+    }
+  ],
+  "path": "training/fold_08/validation_fit/ridge",
+  "model_sha256": "c5c8ddad2361b60ec44dbe5c637480cabce0d62babf719c097b38af29e9b8154",
+  "rows": {
+    "sha256": "8e73f69c4e309e878246eb04e623dc1551ff1a48a55514dc23dba51a59640afc",
+    "shape": [
+      34405
+    ],
+    "dtype": "int64",
+    "strides": [
+      8
+    ],
+    "alignment_mod_64": 16,
+    "nonfinite": 0
+  }
+}

@@ -1,6 +1,6 @@
 # 项目状态
 
-截至2026-11-22。研究暂停，继续维护已有代码和成果；数据采集、新训练、策略试验及前向观察均未恢复。
+截至2026-11-23。研究暂停，继续维护已有代码和成果；数据采集、新训练、策略试验及前向观察均未恢复。
 
 ## 结论
 
@@ -20,7 +20,7 @@
 | 来源核查 | [正文上下文审查](../artifacts/checks/distribution_residuals_2026-11-22/body_context_review.json) |
 | 纸面计划 | [2026-11-23](../artifacts/plans/recipient_entitlements_2026-11-23/plan.md)：0笔参考订单，100万元现金，09:25上海时间到期 |
 | 验证 | [验证说明](validation.md) · [完整性清单](../configs/integrity_manifest.json) |
-| 工程维护 | [实施进度](engineering_plan.md#阶段和依赖) · [契约与职责拆分验收](../artifacts/checks/responsibility_checks_2026-11-22/completion.json) · [完整回归](../artifacts/checks/contracts_and_responsibilities_full_2026-11-22/result.json) · [发布核验](../artifacts/checks/responsibility_checks_2026-11-22/publication.json) |
+| 工程维护 | [实施进度](engineering_plan.md#阶段和依赖) · [数值修复本地验收](../artifacts/checks/portable_predictions_2026-11-23/local_acceptance.json) · [完整回归](../artifacts/checks/portable_inference_full_2026-11-23/result.json) |
 
 旧模型、旧计划及失败记录保留。配置决定实际使用的输入与实验，历史回测不会因文档或报告重排而重新选择。
 
@@ -41,6 +41,6 @@
 | ETF | 使用披露股票敞口代理，完整每日经济敞口未知 |
 | 比赛 | 以白皮书为准；费用、分红税及撮合细节待确认 |
 | 收益 | 没有优于基准或新增前向成交的证据；8%预警不保证实际损失上限 |
-| 工程环境 | 最终源码的三个常规CI作业通过；托管AMD环境的历史模型精确复现失败，完整金融验收使用已验证的本地Intel研究环境 |
+| 工程环境 | 已定位Ridge原生归约的处理器差异，固定推理顺序后本地完整回归通过；修复后的托管完整回归待验证。通用开发环境缺少Bottleneck时历史校准仍不一致，完整验收使用研究锁 |
 
 后续工作及验收条件见[研究待办](remediation.md)。恢复研究需要明确指令；过期计划不能改日期后继续使用。

@@ -17,6 +17,7 @@ import numpy as np
 from threadpoolctl import threadpool_info, threadpool_limits
 
 from quantfolio.dataset import eligible_rows, load_bundle
+from quantfolio.models import predict_model
 from quantfolio.regression import check_inputs, read_baseline, runtime_sources
 from quantfolio.settings import Paths, project_root
 from quantfolio.storage import array_sha, now, read, save, sha
@@ -95,13 +96,16 @@ def inspect_model(model, matrix, expected):
         stages[name] = fingerprint(transformed)
     estimator = model.steps[-1][1]
     staged = estimator.predict(transformed)
-    actual = model.predict(matrix)
+    native = model.predict(matrix)
+    actual = predict_model(model, matrix)
     record = {
         "stages": stages,
         "prediction": fingerprint(actual),
         "frozen_prediction": fingerprint(expected),
         "comparison": compare_predictions(actual, expected),
-        "staged_comparison": compare_predictions(staged, actual),
+        "native_prediction": fingerprint(native),
+        "native_comparison": compare_predictions(native, expected),
+        "staged_comparison": compare_predictions(staged, native),
     }
     if hasattr(estimator, "coef_"):
         record["coefficients"] = fingerprint(estimator.coef_)

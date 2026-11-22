@@ -42,7 +42,7 @@ CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13按`uv.
 
 完整历史回归的[手动工作流](../.github/workflows/regression.yml)使用Windows研究锁，取得注册范围的LFS输入后执行`regression --scope full`，不拟合模型、不追加兼容登记。手动运行时选择待验收分支；报告的`run.json`绑定实际提交和源码哈希。常规CI及完整回归的结果均上传至对应Actions运行页，保留14天；正式验收另归档到`artifacts/checks`。没有定时运行。
 
-该工作流先运行`scripts/diagnose_predictions.py`，逐一保存48个冻结模型的输入、补值、标准化、系数和预测指纹，以及原始重算预测、实际数学库哈希和线程设置。选择`scope=diagnostics`可只收集诊断；默认`full`仍执行完整回归。诊断遇到数值不符后继续收集其他模型，最终返回失败，不覆盖模型或调整容差。诊断不替代完整验收。
+该工作流先运行`scripts/diagnose_predictions.py`，逐一保存48个冻结模型的输入、补值、标准化、系数和预测指纹，以及项目入口的重算预测、实际数学库哈希和线程设置；估计器原生调用的指纹与差异另外保留。选择`scope=diagnostics`可只收集诊断；默认`full`仍执行完整回归。项目入口遇到数值不符后继续收集其他模型，最终返回失败，不覆盖模型或调整容差。诊断不替代完整验收。
 
 本地对应命令如下，输出目录必须未使用；执行脚本按原字节随结果归档：
 
@@ -52,7 +52,7 @@ CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13按`uv.
 
 三个分层CI作业已[通过](../artifacts/checks/quality_ci_2026-11-22/completion.json)。云端AMD EPYC完整回归在冻结模型预测处失败，最大误差约5.96×10⁻⁸；限定`MKL_ENABLE_INSTRUCTIONS=AVX2`后仍失败。两次原始记录分别保存在`artifacts/checks/ci_research_2026-11-22/hosted_default`及`artifacts/checks/ci_research_avx2_2026-11-22`。本机Intel环境在相同AVX2设置下，48个冻结模型的误差均为0。指令集限制不保证跨厂商选择同一内核，见[Intel说明](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-linux/2024-0/instruction-set-specific-dispatch-on-intel-archs.html)。
 
-手动工作流可选择`windows-2022`或`windows-latest`托管镜像，均保持冻结预测的严格比较；操作系统标签不承诺CPU型号。两种镜像均出现上述差异，Windows 2022记录另保存在`artifacts/checks/ci_research_windows2022_2026-11-22`。发布验收使用已验证的本地Intel/Windows研究环境执行标准完整回归，并归档结果。托管作业失败不会被转成通过，也不替代本地完整证据；当前没有常驻研究运行器。
+手动工作流可选择`windows-2022`或`windows-latest`托管镜像，均保持冻结预测的严格比较；操作系统标签不承诺CPU型号。两种镜像均出现上述差异，Windows 2022记录另保存在`artifacts/checks/ci_research_windows2022_2026-11-22`。新增的[逐阶段对照](../artifacts/checks/prediction_diagnostics_2026-11-22/cloud_comparison.json)将差异定位到Ridge原生归约。固定项目推理顺序后，本地完整回归通过；修复后的托管全量结果待验证。原失败保留，当前没有常驻研究运行器。
 
 ## 当前结果的复核
 
@@ -97,19 +97,19 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 
 | 范围 | 结果 | 记录 |
 | --- | --- | --- |
-| 模型 | 48个模型重载，最大预测误差0 | [全量回归](../artifacts/checks/contracts_and_responsibilities_full_2026-11-22/result.json) |
-| 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/contracts_and_responsibilities_full_2026-11-22/history.json) |
-| 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/contracts_and_responsibilities_full_2026-11-22/paper.json) |
-| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口精确一致；无模型重训 | [计算对照](../artifacts/checks/contracts_and_responsibilities_full_2026-11-22/differential.json) |
+| 模型 | 48个模型重载，最大预测误差0 | [全量回归](../artifacts/checks/portable_inference_full_2026-11-23/result.json) |
+| 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/portable_inference_full_2026-11-23/history.json) |
+| 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/portable_inference_full_2026-11-23/paper.json) |
+| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口精确一致；无模型重训 | [计算对照](../artifacts/checks/portable_inference_full_2026-11-23/differential.json) |
 | 报告 | 默认、指定实验和历史参考入口的HTML及PNG逐字节一致 | [渲染对照](../artifacts/checks/responsibility_checks_2026-11-22/report_render/result.json) |
 | 独立环境 | 锁定Windows研究环境和隔离新克隆的全量回归与原环境一致；跨平台安装及测试另行验收 | [环境验收](../artifacts/checks/environment_lock_2026-11-22/completion.json) |
 | 开盘与核账 | 192组场景、2424个纸面交易日、38组拒绝路径；三档成本完整文件链路一致 | [差分对照](../artifacts/checks/paper_refactor_2026-11-22/differential.json) |
 | 仓位与风控 | 29007组状态、1024组优化器输入及完整模拟对照 | [执行验证](../artifacts/checks/execution_refactor_2026-11-22/completion.json) |
 | 训练与评估 | 12个冻结窗口以缓存重放，选型与历史结果一致 | [流程验证](../artifacts/checks/runtime_refactor_2026-11-22/completion.json) |
 
-最终代码通过785项单元测试与71项集成测试，1项因本机符号链接权限跳过；16个模块的类型检查、39个模块的覆盖率门槛与四项缺陷检测通过，详见[验收记录](../artifacts/checks/responsibility_checks_2026-11-22/completion.json)。独立安装的wheel也通过相同856项测试；轮包中的39个Python模块与已验证源码逐字节一致。首次导入、日期索引、覆盖率及安装包类型检查失败均保留；修复后使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
+当前代码通过819项单元测试与71项集成测试，1项因本机符号链接权限跳过；16个模块的类型检查、39个模块的覆盖率门槛与四项缺陷检测通过，详见[本地验收](../artifacts/checks/portable_predictions_2026-11-23/local_acceptance.json)。独立安装的OpenBLAS wheel通过48个冻结模型的精确预测检查；轮包中的39个Python模块与完整回归源码逐字节一致。其完整回归因缺少Bottleneck而在历史校准处失败，不能作为完整金融验收。舍入边界初次失败及中断记录保留；修复后使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
 
-最终源码的Windows Python 3.11、Windows Python 3.13及Linux Python 3.13三个CI作业均通过，106个发布文件的独立远端字节核对也通过，见[发布核验](../artifacts/checks/responsibility_checks_2026-11-22/publication.json)。CI结果对应记录中的实际提交，完整历史金融等价另由上述本地研究环境记录证明。
+此前职责拆分源码的三个CI作业及106个发布文件核对通过，见[历史发布核验](../artifacts/checks/responsibility_checks_2026-11-22/publication.json)。新增诊断入口的三个CI作业和130个发布文件核对也通过，见[诊断发布核验](../artifacts/checks/prediction_diagnostics_2026-11-22/initial_publication.json)。这些记录绑定各自提交，不替代本次数值修复的云端验收。
 
 E2锁定环境验收时，Linux安装包通过835项测试，Windows通过834项、跳过1项本机权限检查。通用OpenBLAS环境的模型误差约4.47×10⁻⁸，未通过历史数值验收；这些失败未被放宽门槛或重训覆盖。精确复现使用[历史研究环境](reproducibility.md#运行环境)。
 
@@ -119,6 +119,6 @@ E2锁定环境验收时，Linux安装包通过835项测试，Windows通过834项
 
 训练协议和纸面计划保留生成时的源码哈希。等价重构通过单独冻结的 `source_compatibility.json` 关联原文件身份、当前全部Python源码、差分验证和完整历史账本验证，不修改原协议。
 
-缺少登记、哈希不符、证据不完整或引用越出项目时拒绝使用。模型输入、日期、预测和计划到期仍单独检查。活跃登记见[源码兼容记录](../artifacts/checks/contracts_and_responsibilities_full_2026-11-22/source_compatibility.json)。
+缺少登记、哈希不符、证据不完整或引用越出项目时拒绝使用。模型输入、日期、预测和计划到期仍单独检查。活跃登记见[源码兼容记录](../artifacts/checks/portable_inference_full_2026-11-23/source_compatibility.json)。
 
 更改数值、时序、成交或持仓行为时，须重新完成对应模型和完整账户验证，并保留失败记录。验证脚本一经执行即作为证据保存；重试使用新文件，不能覆盖原结果。
