@@ -52,7 +52,9 @@ def concentration_rows(meta, names):
     names = list(names)
     if any(meta[s]["industry"] is None for s in names):
         raise ValueError("Unknown industry in concentration constraints")
-    rows = {group: {} for group in sorted({meta[s]["industry"] for s in names})}
+    rows: dict[str, dict[str, float]] = {
+        group: {} for group in sorted({meta[s]["industry"] for s in names})
+    }
     funds = {}
     divisions = {group for group in rows if group.startswith("capco:")}
     for symbol in names:
@@ -198,7 +200,9 @@ def compile_fund_histories(meta, calendar, profiles, sessions, financial, varian
         ) != Fraction(profile["source_sector_stocks"]["amount_cny"]):
             raise ValueError("Fund stock partition does not reconcile")
         compiled.append(profile)
-    by_symbol = {s: {} for s, item in meta.items() if item["kind"] == "etf"}
+    by_symbol: dict[str, dict[str, int | None]] = {
+        s: {} for s, item in meta.items() if item["kind"] == "etf"
+    }
     days = [str(day.date()) for day in calendar]
     for row in sessions:
         symbol, day, index = row["symbol"], row["session"], row["profile"]
@@ -218,25 +222,30 @@ def compile_fund_histories(meta, calendar, profiles, sessions, financial, varian
     for symbol, history in by_symbol.items():
         if sorted(history) != days:
             raise ValueError("Fund session inventory does not cover the signal calendar")
-        entries, previous = [], -1
+        entries = []
+        previous: int | None = -1
         for day in days:
-            index = history[day]
-            if index == previous:
+            profile_index = history[day]
+            if profile_index == previous:
                 continue
-            profile = compiled[index] if index is not None else None
+            current_profile = compiled[profile_index] if profile_index is not None else None
             group = (
                 None
-                if profile is None
+                if current_profile is None
                 else (
                     meta[symbol]["industry"]
                     if variant == "coverage"
-                    else profile["identity"]["benchmark_id"]
+                    else current_profile["identity"]["benchmark_id"]
                 )
             )
             entries.append(
-                {"available_at": day + "T00:00:00+08:00", "industry": group, "profile": profile}
+                {
+                    "available_at": day + "T00:00:00+08:00",
+                    "industry": group,
+                    "profile": current_profile,
+                }
             )
-            previous = index
+            previous = profile_index
         result[symbol]["fund_history"] = entries
     return result
 

@@ -11,7 +11,8 @@ import pandas as pd
 
 @lru_cache(maxsize=4096)
 def _schedule(entries):
-    times, groups = [], []
+    times: list[int] = []
+    groups = []
     for available_at, industry in entries:
         available = pd.Timestamp(available_at)
         if pd.isna(available) or available.tzinfo is None:
@@ -160,7 +161,7 @@ def compile_histories(meta, calendar, releases, aliases, variant):
         if instrument["kind"] != "stock":
             continue
         latest = match(symbol, inventories[-1])
-        history = []
+        history: list[dict] = []
         for release, rows, available_at in zip(releases, inventories, openings):
             row = match(symbol, rows)
             classification, group = None, None
@@ -248,7 +249,7 @@ def build_industry_snapshot(paths, protocol_path, variant):
             if protocol["source_sha256"].get(item["output"]) != item["sha256"]:
                 raise ValueError("Industry extraction is not bound to the protocol")
             releases.append(load_gzip(inside(item["output"])))
-    aliases = {}
+    aliases: dict[str, str] = {}
     for record in read(inside(protocol["identity_links"]))["records"]:
         old, new = record["old_symbol"], record["current_symbol"]
         if old in aliases and aliases[old] != new:

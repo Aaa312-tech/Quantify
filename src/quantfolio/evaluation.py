@@ -16,7 +16,7 @@ from .dataset import (
 )
 from .market import EXECUTION_MODEL
 from .metrics import episode_stats
-from .models import CANDIDATES, prediction_map
+from .models import CANDIDATES, Forecast, prediction_map
 from .rules import CONFIGS
 from .settings import Paths
 from .simulation import episodes, simulate
@@ -32,7 +32,7 @@ def load_predictions(
     bundle: dict, run: Path, folds: list | None = None, identity: str | None = None
 ) -> tuple:
     """Combine non-overlapping outer folds and their validation-selected rule schedule."""
-    maps = {"selected": {}, "momentum": {}}
+    maps: dict[str, dict[int, dict[str, Forecast]]] = {"selected": {}, "momentum": {}}
     schedule = {}
     results = []
     folds = walk_forward_folds(bundle["calendar"]) if folds is None else folds
@@ -232,7 +232,9 @@ def evaluate_accounts(
 def evaluate_variants(bundle, variants, start, end, costs, output):
     """Run named forecast/control pairs through the same account and audit pipeline."""
     variants = list(variants)
-    results, continuous, artifacts = {}, {}, {}
+    results: dict[str, dict] = {}
+    continuous: dict[str, dict] = {}
+    artifacts = {}
     reconciliation_checks = execution_checks = accounts = 0
     for cost in sorted(set(costs)):
         key = f"{cost:02d}bps"
@@ -439,7 +441,7 @@ def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) ->
         )
     bundle = load_bundle(paths)
     maps, schedule, folds, start, end = load_predictions(bundle, paths.reference)
-    results = {}
+    results: dict[str, dict] = {}
     accounts = 0
     reconciliation_checks = execution_checks = 0
     for cost in costs:

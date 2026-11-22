@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import joblib
 import numpy as np
@@ -167,7 +167,7 @@ def load_snapshot(paths: Paths, path: Path, cutoff: str) -> dict[str, Any]:
     # Rename the freshly loaded frame; preserve values, dtypes and model input order.
     bundle["table"].columns = columns
     bundle["features"] = features
-    return bundle
+    return cast(dict[str, Any], bundle)
 
 
 def validate_features(bundle: dict[str, Any]) -> dict[str, Any]:
@@ -193,7 +193,7 @@ def walk_forward_folds(calendar, train=252, validation=63, test=21, gap=6, first
     """Create chronological train, validation and test windows with purging gaps."""
     if min(train, validation, test) <= 0 or min(gap, first) < 0:
         raise ValueError("Window lengths must be positive; gap and first must be nonnegative")
-    folds = []
+    folds: list[dict[str, int]] = []
     start = first
     while True:
         train_end = start + train - 1

@@ -1,5 +1,7 @@
 """Price, momentum and industry features."""
 
+from typing import cast
+
 import numpy as np
 import pandas as pd
 
@@ -136,7 +138,7 @@ def momentum_features(table):
         extra.where(table.eligible, axis=0).groupby(table.date_index, sort=False).rank(pct=True)
         - 0.5
     )
-    ranked.columns = ["rank_" + c for c in extra]
+    ranked.columns = ["rank_" + cast(str, c) for c in extra]
     ranked["momentum_percentile"] = (
         table.momentum_score.where(table.eligible)
         .groupby(table.date_index, sort=False)

@@ -45,6 +45,60 @@ def test_fund_identity_is_unavailable_before_its_source():
     assert industry_at(fund, "2026-01-05T16:00:00+08:00") is None
 
 
+@pytest.mark.parametrize("variant", ["coverage", "identity", "reported"])
+def test_compiled_fund_history_keeps_unknown_periods_and_source_availability(variant):
+    from quantfolio.funds import compile_fund_histories
+
+    bundle, _ = market_bundle()
+    dates = bundle["calendar"][:4]
+    days = [str(day.date()) for day in dates]
+    meta = {"sh510300": bundle["meta"]["sh510300"]}
+    profile = fund_profile()
+    profile.update(
+        symbol="sh510300", first_session=days[1], identity={"benchmark_id": "benchmark:csi_300"}
+    )
+    for name in (
+        "matched_named",
+        "unmatched_named",
+        "undisclosed_stocks",
+        "source_sector_stocks",
+        "signed_equity_sector_residual",
+    ):
+        profile[name] = {"amount_cny": "0", "nav_fraction": {"numerator": 0, "denominator": 1}}
+    financial = [
+        {
+            "source": profile["source_report"],
+            "symbol": "sh510300",
+            "source_sha256": profile["source_sha256"],
+            "identity": {"period_end": profile["period_end"]},
+            "contracts": {"tables": []},
+            "nominal": [],
+            "security_lending": [],
+            "explicit_absence_clauses": [],
+        }
+    ]
+    sessions = [
+        {"symbol": "sh510300", "session": day, "profile": index, "report_age_days": age}
+        for day, index, age in zip(days, [None, 0, 0, None], [None, 6, 7, None])
+    ]
+    before = deepcopy((meta, profile, sessions, financial))
+    result = compile_fund_histories(meta, dates, [profile], sessions, financial, variant)
+    history = result["sh510300"]["fund_history"]
+    assert [row["available_at"] for row in history] == [
+        day + "T00:00:00+08:00" for day in (days[0], days[1], days[3])
+    ]
+    assert history[0]["industry"] is None and history[0]["profile"] is None
+    assert history[2]["industry"] is None and history[2]["profile"] is None
+    assert history[1]["industry"] == (
+        meta["sh510300"]["industry"] if variant == "coverage" else "benchmark:csi_300"
+    )
+    assert history[1]["profile"]["source_sha256"] == profile["source_sha256"]
+    assert (meta, profile, sessions, financial) == before
+    sessions[0]["profile"] = 0
+    with pytest.raises(ValueError, match="unavailable at the session"):
+        compile_fund_histories(meta, dates, [profile], sessions, financial, variant)
+
+
 def test_partial_stock_schedule_cannot_hide_concentration():
     bundle, _ = opening_change()
     meta = metadata_at(bundle["meta"], "2026-01-13T09:25:00+08:00")

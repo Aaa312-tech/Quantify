@@ -60,6 +60,9 @@ files = [
     "src/quantfolio/models.py", "src/quantfolio/allocation.py",
     "src/quantfolio/ledger.py", "src/quantfolio/accounts.py",
     "src/quantfolio/risk.py", "src/quantfolio/simulation.py", "src/quantfolio/planning.py",
+    "src/quantfolio/validation.py", "src/quantfolio/features.py",
+    "src/quantfolio/industries.py", "src/quantfolio/dataset.py",
+    "src/quantfolio/status_data.py", "src/quantfolio/funds.py", "src/quantfolio/evaluation.py",
 ]
 check_untyped_defs = true
 warn_unused_ignores = true
@@ -68,7 +71,7 @@ warn_return_any = true
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = ["scipy.*", "sklearn.*", "joblib", "threadpoolctl"]
+module = ["scipy.*", "sklearn.*", "joblib", "threadpoolctl", "baostock"]
 ignore_missing_imports = true
 
 [tool.coverage.run]

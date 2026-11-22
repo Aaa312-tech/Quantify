@@ -6,6 +6,7 @@ import collections
 import datetime as dt
 import math
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal
+from typing import TypedDict, cast
 
 import pandas as pd
 
@@ -215,8 +216,8 @@ def fund_exposure_equal(actual, expected):
 def dated_industry_audit(ledger, bundle):
     """Rebuild post-fill groups and values from reconciled quantities and opening bars."""
     errors, checks = [], 0
-    previous_positions = {}
-    last_close = {}
+    previous_positions: dict[str, dict] = {}
+    last_close: dict[str, float] = {}
     trades, events = collections.defaultdict(list), collections.defaultdict(list)
     for index, trade in enumerate(ledger["trades"], 1):
         trades[trade["date"]].append((index, trade))
@@ -259,7 +260,7 @@ def dated_industry_audit(ledger, bundle):
             quantities[symbol] = quantities.get(symbol, 0) + change
             prices[symbol] = trade["price"]
             values = {s: money(q * prices[s]) / 100 for s, q in quantities.items() if q}
-            sectors = collections.defaultdict(float)
+            sectors: dict[str | None, float] = collections.defaultdict(float)
             for name, value in values.items():
                 sectors[groups[name]] += value
             nav = trade["cash_after"] + sum(values.values()) + closing["receivables"]
@@ -457,7 +458,7 @@ def _reconcile_distributions(day, day_events, byaction, meta, rights, outstandin
             rounding = (
                 ROUND_CEILING if action.get("fractional_rounding") == "CEILING" else ROUND_FLOOR
             )
-            total = int(sum(exact).to_integral_value(rounding=rounding))
+            total = int(cast(Decimal, sum(exact)).to_integral_value(rounding=rounding))
             for j in sorted(
                 range(len(exact)), key=lambda j: exact[j] - quantities[j], reverse=True
             )[: total - sum(quantities)]:
@@ -565,9 +566,9 @@ def reconcile(detail, summary, meta, actions):
     """Reconstruct cash, shares, distributions and marked equity independently of the simulator."""
     cash = 100_000_000
     receivables = 0
-    outstanding = {}
-    lots = collections.defaultdict(list)
-    rights = {}
+    outstanding: dict[str, dict] = {}
+    lots: dict[str, list[dict]] = collections.defaultdict(list)
+    rights: dict[tuple[str, str | None], list[dict]] = {}
     fees = 0
     slippage = 0
     previous = 100_000_000
@@ -610,7 +611,14 @@ def reconcile(detail, summary, meta, actions):
     return {"status": "PASS" if not errors else "FAIL", "checks": checks, "errors": errors}
 
 
-def _risk_transition_evidence(mode, history, nav, drawdown, healthy, index):
+class _RiskHistory(TypedDict):
+    phase: str
+    age: int
+    healthy_streak: int
+    probe_anchor: float | None
+
+
+def _risk_transition_evidence(mode, history: _RiskHistory, nav, drawdown, healthy, index):
     """Rebuild transition evidence independently of RiskState and its transition method."""
     previous_phase = history["phase"]
     state_age, healthy_streak, probe_anchor = (
@@ -718,7 +726,7 @@ def execution_audit(ledger, bundle):
     peak = 1e6
     marks = {(x["date"], x["after_fill"]): x for x in ledger["intermediate_weights"]}
     decisions = {decision["execution_date"]: decision for decision in ledger["decisions"]}
-    history = {"phase": "NORMAL", "age": 0, "healthy_streak": 0, "probe_anchor": None}
+    history: _RiskHistory = {"phase": "NORMAL", "age": 0, "healthy_streak": 0, "probe_anchor": None}
     execution = ledger.get("execution")
     if execution is None or (
         execution.get("model") != "opening_proxy_separate_cost"
