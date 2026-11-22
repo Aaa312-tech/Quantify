@@ -18,7 +18,7 @@ from .models import (
     neutral_scores,
 )
 from .rules import CONFIGS, TURNOVER_POLICIES
-from .selection import clip_for, objective, select_model, select_rules
+from .selection import label_clip_bounds, select_model, select_rules, validation_summary
 from .storage import dump_gzip, log, now, read, save, sha
 from .validation import execution_audit, reconcile
 
@@ -157,7 +157,7 @@ def trial(bundle, fold, forecasts, config, path, identity, *, mode="latched", tu
         },
     )
     out = {
-        **objective(accounts),
+        **validation_summary(accounts),
         "identity": identity,
         "config": config,
         "continuous": continuous_summary,
@@ -275,7 +275,7 @@ def run_window(
             table, calibration_rows, table.iloc[calibration_rows].momentum_score.to_numpy()
         ),
         fold["validation_start"],
-        clip_for(table, calibration_fit_rows),
+        label_clip_bounds(table, calibration_fit_rows),
     )
     train_rows = np.flatnonzero(
         label_mask(table, 5, fold["train_start"], fold["train_end"], fold["validation_start"])
@@ -305,7 +305,7 @@ def run_window(
         validation_rows,
         validation_scores["momentum"],
         fold["test_start"],
-        clip_for(table, train_rows),
+        label_clip_bounds(table, train_rows),
     )
     refit_rows = np.flatnonzero(
         label_mask(table, 5, fold["train_start"], fold["validation_end"], fold["test_start"])

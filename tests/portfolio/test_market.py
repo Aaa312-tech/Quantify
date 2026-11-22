@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from quantfolio.dataset import label_mask, walk_forward_folds
-from quantfolio.features import feature_frame
+from quantfolio.features import base_features, price_features
 from quantfolio.ledger import causal_price_index
 from quantfolio.market import LABEL_STATUS, gross_entitlement, legal_label
 from tests.factories import STOCK_META, flat_bars
@@ -89,8 +89,6 @@ class TimingTests(unittest.TestCase):
         raw["open"] = raw.close
         raw["high"] = raw.close + 0.1
         raw["low"] = raw.close - 0.1
-        causal, split = causal_price_index(raw, [])
-        a = feature_frame(raw, causal, split, causal.close.pct_change(fill_method=None))
         changed = raw.copy()
         changed.loc[dates[180] :, ["open", "close", "high", "low"]] *= 1.3
         future = {
@@ -100,9 +98,14 @@ class TimingTests(unittest.TestCase):
             "share_multiplier": 1.0,
             "share_list_date": None,
         }
-        causal2, split2 = causal_price_index(changed, [future])
-        b = feature_frame(changed, causal2, split2, causal2.close.pct_change(fill_method=None))
-        pd.testing.assert_frame_equal(a.iloc[:180], b.iloc[:180])
+        frames = []
+        for history, actions in ((raw, []), (changed, [future])):
+            causal, splits = causal_price_index(history, actions)
+            normalized = history.copy()
+            normalized["volume_lots"] = history.volume_lots / splits
+            prices = price_features(normalized, causal, causal.close.pct_change(fill_method=None))
+            frames.append(base_features(history, prices))
+        pd.testing.assert_frame_equal(frames[0].iloc[:180], frames[1].iloc[:180])
 
 
 if __name__ == "__main__":

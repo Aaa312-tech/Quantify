@@ -8,92 +8,106 @@ import numpy as np
 def episode_stats(episodes):
     """Summarize complete ten-session accounts, excluding partial tails from means."""
     complete = [episode for episode in episodes if episode["complete_10_sessions"]]
-    full = [episode["summary"] for episode in complete]
+    summaries = [episode["summary"] for episode in complete]
     days = [day for episode in complete for day in episode["ledger"]["curve"]]
-    v = np.array([x["return"] for x in full])
-    worst = np.quantile(v, 0.05)
+    returns = np.array([summary["return"] for summary in summaries])
+    lower_tail = np.quantile(returns, 0.05)
     return {
-        "complete_episodes": len(full),
-        "partial_episodes": len(episodes) - len(full),
-        "mean_net_return": float(v.mean()),
-        "median_net_return": float(np.median(v)),
-        "worst_episode": float(v.min()),
-        "best_episode": float(v.max()),
-        "win_rate": float(np.mean(v > 0)),
-        "worst_drawdown": min(x["max_drawdown"] for x in full),
-        "episode_es95": float(v[v <= worst].mean()),
-        "trades": sum(x["trades"] for x in full),
-        "mean_fees": float(np.mean([x["fees"] for x in full])),
-        "mean_slippage_cost": float(np.mean([x.get("slippage_cost", 0.0) for x in full])),
-        "mean_turnover": float(np.mean([x["turnover"] for x in full])),
-        "unresolved_events": sum(x["unresolved_events"] for x in full),
-        "quality_issues": sum(x["quality_issues"] for x in full),
+        "complete_episodes": len(summaries),
+        "partial_episodes": len(episodes) - len(summaries),
+        "mean_net_return": float(returns.mean()),
+        "median_net_return": float(np.median(returns)),
+        "worst_episode": float(returns.min()),
+        "best_episode": float(returns.max()),
+        "win_rate": float(np.mean(returns > 0)),
+        "worst_drawdown": min(summary["max_drawdown"] for summary in summaries),
+        "episode_es95": float(returns[returns <= lower_tail].mean()),
+        "trades": sum(summary["trades"] for summary in summaries),
+        "mean_fees": float(np.mean([summary["fees"] for summary in summaries])),
+        "mean_slippage_cost": float(
+            np.mean([summary.get("slippage_cost", 0.0) for summary in summaries])
+        ),
+        "mean_turnover": float(np.mean([summary["turnover"] for summary in summaries])),
+        "unresolved_events": sum(summary["unresolved_events"] for summary in summaries),
+        "quality_issues": sum(summary["quality_issues"] for summary in summaries),
         "rejection_counts": dict(
-            sum((collections.Counter(x["rejection_counts"]) for x in full), collections.Counter())
+            sum(
+                (collections.Counter(summary["rejection_counts"]) for summary in summaries),
+                collections.Counter(),
+            )
         ),
         "solver_counts": dict(
-            sum((collections.Counter(x["solver_counts"]) for x in full), collections.Counter())
+            sum(
+                (collections.Counter(summary["solver_counts"]) for summary in summaries),
+                collections.Counter(),
+            )
         ),
-        "mean_exposure": float(np.mean([d["holdings_value"] / d["nav"] for d in days])),
-        "cash_only_days": sum(d["holdings_value"] == 0 for d in days),
+        "mean_exposure": float(np.mean([day["holdings_value"] / day["nav"] for day in days])),
+        "cash_only_days": sum(day["holdings_value"] == 0 for day in days),
         "total_full_episode_days": len(days),
-        "days_beyond_8pct_alert": sum(d.get("risk_level", 0) >= 3 for d in days),
-        "target_exposure_breach_days": sum(d.get("exposure_above_target", False) for d in days),
-        "probe_entries": sum(e["summary"]["probe_entries"] for e in complete),
-        "probe_failures": sum(e["summary"]["probe_failures"] for e in complete),
-        "episodes_beyond_8pct": sum(e["summary"]["max_drawdown"] < -0.08 for e in complete),
+        "days_beyond_8pct_alert": sum(day.get("risk_level", 0) >= 3 for day in days),
+        "target_exposure_breach_days": sum(day.get("exposure_above_target", False) for day in days),
+        "probe_entries": sum(episode["summary"]["probe_entries"] for episode in complete),
+        "probe_failures": sum(episode["summary"]["probe_failures"] for episode in complete),
+        "episodes_beyond_8pct": sum(
+            episode["summary"]["max_drawdown"] < -0.08 for episode in complete
+        ),
     }
 
 
 def account_stats(ledger, curve, decisions, quality, mode):
     """Summarize one account, including its initial capital in the drawdown calculation."""
-    navs = np.r_[1e6, [r["nav"] for r in curve]]
-    daily = np.diff(navs) / navs[:-1]
-    worst = float(np.quantile(daily, 0.05))
-    unresolved = [
-        e
-        for e in ledger.events
-        if e["type"] == "CORPORATE_ACTION"
+    nav = np.r_[1e6, [day["nav"] for day in curve]]
+    returns = np.diff(nav) / nav[:-1]
+    lower_tail = float(np.quantile(returns, 0.05))
+    unresolved_actions = [
+        event
+        for event in ledger.events
+        if event["type"] == "CORPORATE_ACTION"
         and (
-            e["unknown_cash_pay_date"]
-            or e.get("unknown_cash_available_date", False)
-            or e["unknown_share_list_date"]
-            or e["bonus_tax_not_modelled"]
-            or e["fractional_shares_discarded"] > 0
+            event["unknown_cash_pay_date"]
+            or event.get("unknown_cash_available_date", False)
+            or event["unknown_share_list_date"]
+            or event["bonus_tax_not_modelled"]
+            or event["fractional_shares_discarded"] > 0
         )
     ]
     return {
         "start": curve[0]["date"],
         "end": curve[-1]["date"],
         "sessions": len(curve),
-        "return": navs[-1] / 1e6 - 1,
-        "max_drawdown": float(np.min(navs / np.maximum.accumulate(navs) - 1)),
-        "es95": float(daily[daily <= worst].mean()),
-        "fees": sum(t["fee"] for t in ledger.trades),
-        "slippage_cost": sum(t["slippage_cost"] for t in ledger.trades),
-        "total_cost": sum(t["fee"] + t["slippage_cost"] for t in ledger.trades),
+        "return": nav[-1] / 1e6 - 1,
+        "max_drawdown": float(np.min(nav / np.maximum.accumulate(nav) - 1)),
+        "es95": float(returns[returns <= lower_tail].mean()),
+        "fees": sum(trade["fee"] for trade in ledger.trades),
+        "slippage_cost": sum(trade["slippage_cost"] for trade in ledger.trades),
+        "total_cost": sum(trade["fee"] + trade["slippage_cost"] for trade in ledger.trades),
         "trades": len(ledger.trades),
-        "turnover": sum(t["gross"] for t in ledger.trades) / 1e6,
+        "turnover": sum(trade["gross"] for trade in ledger.trades) / 1e6,
         "ending_cash": ledger.cash / 100,
         "ending_receivables": sum(item["cents"] for item in ledger.receivables) / 100,
-        "unresolved_events": len(unresolved),
+        "unresolved_events": len(unresolved_actions),
         "quality_issues": len(quality),
-        "rejection_counts": dict(collections.Counter(x["reason"] for x in ledger.rejections)),
-        "solver_counts": dict(collections.Counter(x["status"] for x in decisions)),
-        "mean_exposure": float(np.mean([r["holdings_value"] / r["nav"] for r in curve])),
-        "target_exposure_breach_days": sum(r["exposure_above_target"] for r in curve),
+        "rejection_counts": dict(collections.Counter(item["reason"] for item in ledger.rejections)),
+        "solver_counts": dict(collections.Counter(item["status"] for item in decisions)),
+        "mean_exposure": float(np.mean([day["holdings_value"] / day["nav"] for day in curve])),
+        "target_exposure_breach_days": sum(day["exposure_above_target"] for day in curve),
         "risk_mode": mode,
-        "rule_config_days": dict(collections.Counter(d["rule_config"] for d in decisions)),
-        "phase_days": dict(collections.Counter(r["risk_phase"] for r in curve)),
+        "rule_config_days": dict(
+            collections.Counter(decision["rule_config"] for decision in decisions)
+        ),
+        "phase_days": dict(collections.Counter(day["risk_phase"] for day in curve)),
         "recovery_transitions": [
-            {"date": d["execution_date"], **d["recovery"]}
-            for d in decisions
-            if d["recovery"]["changed"]
+            {"date": decision["execution_date"], **decision["recovery"]}
+            for decision in decisions
+            if decision["recovery"]["changed"]
         ],
         "probe_entries": sum(
-            d["recovery"]["changed"] and d["recovery"]["phase"] == "PROBE20" for d in decisions
+            decision["recovery"]["changed"] and decision["recovery"]["phase"] == "PROBE20"
+            for decision in decisions
         ),
         "probe_failures": sum(
-            d["recovery"]["reason"] in ("PROBE_LOSS_1", "PROBE_DRAWDOWN_7") for d in decisions
+            decision["recovery"]["reason"] in ("PROBE_LOSS_1", "PROBE_DRAWDOWN_7")
+            for decision in decisions
         ),
     }

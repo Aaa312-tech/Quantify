@@ -1,0 +1,138 @@
+{
+  "status": "PASS",
+  "completed_at": "2026-11-22T14:55:15.479576+08:00",
+  "baseline_commit": "3be5abf2df690541d4b128376ab6d499d26e8700",
+  "scope": "Core-code maintenance; frozen research and strategy settings unchanged.",
+  "goal_status": "paused",
+  "new_model_fits": 0,
+  "changed_runtime_files": [
+    {
+      "path": "src/quantfolio/models.py",
+      "before": "97324ddc38de9935fbed8a231817ab0c92c545f65d11648ecb1de1ad1d202dbd",
+      "after": "f6acad2f390269b9c77dd2344ae9a9c15b7a7a3fef1f3d7233dbeb9f61dbed0e"
+    },
+    {
+      "path": "src/quantfolio/calibration.py",
+      "before": "0727196e4d378f814f16bf84fcf13b172cbf4f139e19374a671c3fb5002c2f91",
+      "after": "9b30489b53425a5fdf43679803bf3549fb01b843bf1d5e2979db2c408db2007c"
+    },
+    {
+      "path": "src/quantfolio/selection.py",
+      "before": "69098b220a0c2268a84a572164d9bb29243499c69e969645e4a1d7b5776ecbb9",
+      "after": "a22415f1f10302340b867c98d781793b66ee593510d507a2d027f42d148848e6"
+    },
+    {
+      "path": "src/quantfolio/metrics.py",
+      "before": "63619e807886de901232c8fc9f61704aebe067286b90b8d1d5336096f621b77f",
+      "after": "161cdbd83080d9c2c022036e0e5d2661c13d98086bb3f5574092155bda09a624"
+    },
+    {
+      "path": "src/quantfolio/features.py",
+      "before": "6b03eb10d860202dac9875fa7bba885455ca022be9c15caf8d2e7a41d2078cba",
+      "after": "132e6d60f65b986b66bbcb3cd68b47ac3d67b2ace01dd620f3f2a5f4175f8933"
+    },
+    {
+      "path": "src/quantfolio/storage.py",
+      "before": "39b2692d46fa4e06df614368ef614afc2dde576d1d6bfad09b4674514926b76d",
+      "after": "729d97b7d4e725d82073739a608aa92e9e93cbf8777f6f06af0681a79bf2cb82"
+    },
+    {
+      "path": "src/quantfolio/training.py",
+      "before": "f7fcba133b911402345b89f7403572a6d07dbbca1eef1c8055af381983a5e2fa",
+      "after": "c9a41f6e31e363667ce2501056e7367cf2f8d4221b7789aa47f5b8142a04e65b"
+    }
+  ],
+  "tests": {
+    "passed": 799,
+    "skipped": 1,
+    "skip_reason": "Host does not permit directory symlinks"
+  },
+  "syntax": {
+    "formula_and_control_flow_equal": true,
+    "preserved_failed_checks": [
+      "syntax.json",
+      "syntax_scopes.json"
+    ],
+    "failed_check_reason": "The first two audit normalizers conflated names from independent comprehensions; the binding-aware comparison passes. No runtime change was required."
+  },
+  "features": {
+    "securities": 594,
+    "raw_rows": 400869,
+    "panel_rows": 414612,
+    "all_columns_and_dtypes_equal": true
+  },
+  "training_replay": {
+    "windows": 12,
+    "fit_input_comparisons": 24,
+    "validation_forecast_comparisons": 240,
+    "all_result_fields_equal": true,
+    "old_fit_cache_rejected_by_current_source": true,
+    "note": "Existing Ridge/tree estimators and trials were reused for equivalence checks; calibration was recomputed, without new alpha experiments."
+  },
+  "selection": {
+    "cases": 28,
+    "selection_and_adoption_records_equal": true
+  },
+  "forecast_edges": {
+    "cases": 16,
+    "empty_reverse_repeated_rows_and_float_dtypes_equal": true
+  },
+  "models": {
+    "reloaded": 48,
+    "max_prediction_error": 0.0
+  },
+  "historical_replay": {
+    "accounts": 1425,
+    "ledger_files": 114,
+    "all_result_fields_equal": true,
+    "reconciliation_checks": 438160,
+    "execution_checks": 889158
+  },
+  "paper_replay": {
+    "accounts": 75,
+    "sessions": 1386,
+    "reconciliation_checks": 26567,
+    "execution_checks": 50439,
+    "paper_fill_checks": 15528
+  },
+  "frozen_integrity": {
+    "status": "PASS",
+    "completed_at": "2026-11-22T14:45:34.181368+08:00",
+    "original_frozen_files": 39051,
+    "additional_protected_files": 286,
+    "baseline_commit": "3be5abf2df690541d4b128376ab6d499d26e8700",
+    "original_manifest_entries_unchanged": true
+  },
+  "ordinary_guards_passed": true,
+  "wheel": {
+    "status": "PASS",
+    "wheel_sha256": "6a4c090869a9f44d8282aa10df880fb35515dc60749b40d9f00b47e22d3ace30",
+    "runtime_files_equal": 39,
+    "outside_checkout": true,
+    "renamed_helpers_importable": true,
+    "template_present": true,
+    "version": "0.28.0",
+    "cli_help_passed": true
+  },
+  "evidence_sha256": {
+    "checks.log": "31da1c741e9d10ee230d3a84e4e6431338c83d1f4cbe8a5ec6608f7d21b1506c",
+    "differential.json": "9e435aa44e7cd27902827d503121ff0ea0bfd92a3417f5a4060bd9f9687b4f0b",
+    "guards.json": "e8a0d5e208d1eade204ce7eb9509e9f685bc48f936df2923a7017b259f16f931",
+    "history.json": "47ae325a155ef7932d46f212aeb564a74f2b211a7aef8894cfebcb7e2a131917",
+    "integrity.json": "ef7a418bd0656c9e6d20fd567fe54430fc421787b1f0305d719d34e281a4685f",
+    "models/verification.json": "a50f220a04dd43fde5b8c1d4c40dcfd63961a1436a514988a7faa5746eef23b2",
+    "paper/verification.json": "85bcba8b86f66bac7cb0a2f5da4ca11249c2af5012345323196a3b0ef9a9f8a2",
+    "renames.json": "324bcf9db0170aecf46e0e649609de288b93a12c7486f0830efc968b6984f294",
+    "scope.json": "3f75e8d968fed0fb001657984a60f877e62129acfe26b44c9db4c11432ff379e",
+    "source_compatibility.json": "2d9d49022b584bb8d940eccb293bef504d62d1f4bb74aa9b9f8070de228fe478",
+    "syntax.json": "5fa2f93f76ff60cc6512e169ca7fa32da6768cee1f3200db0568d2bf25b40e19",
+    "syntax_bindings.json": "2ca733e334f948d76859c41a7205aa00aa0c6a1739320fdabfda93d7857b8241",
+    "syntax_scopes.json": "cb14e9671e1f7dcb888e94b6a4fd571d3e5314f2c179ca3157711256d4ccdded",
+    "verify_calculations.py": "d3662c570ae950a2029db54cab0cb1ca5e6ea77db68b6e48e5bd575b11f39e1e",
+    "verify_history.py": "52b31c16fd96f385af5ed0b6a8a0b1e9d9c921cb4a5a0c4df8a6aca093ccfeb2",
+    "verify_syntax.py": "6c48cc2a841db6b80bc26b5ffb087a3bc26055107c299e81e0b3abf029166ae5",
+    "verify_syntax_bindings.py": "296049c67a30b2bacc956331f33041d226544d4bdffe368b925d58ebbcf26af4",
+    "verify_syntax_scopes.py": "9dd54904760a23fd7e5042cb402c5dead9ec496d03e8f3d88a7c543886419b5d",
+    "wheel.json": "ee98022cd4149da72fb9c461fb3150c1b180225f2404386e8707fc2b88541842"
+  }
+}

@@ -1,4 +1,4 @@
-"""Causal price features and cross-sectional transformations used by the dataset contract."""
+"""Price, momentum and industry features."""
 
 import numpy as np
 import pandas as pd
@@ -7,58 +7,65 @@ import pandas as pd
 @pd.option_context("compute.use_numexpr", False)
 def price_features(raw, adj, bench_returns):
     """Compute trailing price and liquidity features from causal adjusted bars."""
-    f = pd.DataFrame(index=adj.index)
-    c = adj.close
-    ret = c.pct_change(fill_method=None)
-    f["raw_close"] = raw.close
-    f["close"] = c
-    f["open"] = adj.open
-    f["raw_open"] = raw.open
-    f["raw_high"] = raw.high
-    f["raw_low"] = raw.low
-    f["ret1"] = ret
-    for n in [5, 10, 20, 60, 120]:
-        f[f"mom{n}"] = c.pct_change(n, fill_method=None)
-    for n in [5, 10, 20, 60]:
-        f[f"ma{n}"] = c.rolling(n).mean()
-    f["trend20"] = c / f.ma20 - 1
-    f["trend60"] = c / f.ma60 - 1
-    f["vol20"] = ret.rolling(20).std(ddof=1) * np.sqrt(252)
-    f["vol60"] = ret.rolling(60).std(ddof=1) * np.sqrt(252)
-    f["downvol60"] = ret.clip(upper=0).pow(2).rolling(60).mean().pow(0.5) * np.sqrt(252)
-    tr = pd.concat(
-        [adj.high - adj.low, (adj.high - c.shift()).abs(), (adj.low - c.shift()).abs()], axis=1
+    features = pd.DataFrame(index=adj.index)
+    close = adj.close
+    returns = close.pct_change(fill_method=None)
+    features["raw_close"] = raw.close
+    features["close"] = close
+    features["open"] = adj.open
+    features["raw_open"] = raw.open
+    features["raw_high"] = raw.high
+    features["raw_low"] = raw.low
+    features["ret1"] = returns
+    for window in [5, 10, 20, 60, 120]:
+        features[f"mom{window}"] = close.pct_change(window, fill_method=None)
+    for window in [5, 10, 20, 60]:
+        features[f"ma{window}"] = close.rolling(window).mean()
+    features["trend20"] = close / features.ma20 - 1
+    features["trend60"] = close / features.ma60 - 1
+    features["vol20"] = returns.rolling(20).std(ddof=1) * np.sqrt(252)
+    features["vol60"] = returns.rolling(60).std(ddof=1) * np.sqrt(252)
+    features["downvol60"] = returns.clip(upper=0).pow(2).rolling(60).mean().pow(0.5) * np.sqrt(252)
+    true_range = pd.concat(
+        [adj.high - adj.low, (adj.high - close.shift()).abs(), (adj.low - close.shift()).abs()],
+        axis=1,
     ).max(axis=1)
-    f["atr14"] = tr.rolling(14).mean()
-    f["atr_pct"] = f.atr14 / c
-    delta = c.diff()
+    features["atr14"] = true_range.rolling(14).mean()
+    features["atr_pct"] = features.atr14 / close
+    delta = close.diff()
     up = delta.clip(lower=0).ewm(alpha=1 / 14, adjust=False, min_periods=14).mean()
     down = (-delta.clip(upper=0)).ewm(alpha=1 / 14, adjust=False, min_periods=14).mean()
-    f["rsi14"] = 100 - 100 / (1 + up / down.replace(0, np.nan))
-    f.loc[(down == 0) & (up > 0), "rsi14"] = 100
-    f["macd_dif"] = c.ewm(span=12, adjust=False).mean() - c.ewm(span=26, adjust=False).mean()
-    f["macd_dea"] = f.macd_dif.ewm(span=9, adjust=False).mean()
-    f["macd_hist"] = 2 * (f.macd_dif - f.macd_dea)
-    f["distance_high20"] = c / adj.high.shift(1).rolling(20).max() - 1
-    f["distance_high60"] = c / adj.high.rolling(60).max() - 1
-    f["dd60"] = c.rolling(60).apply(lambda x: np.min(x / np.maximum.accumulate(x) - 1), raw=True)
-    f["adv20"] = raw.amount.rolling(20).mean()
-    f["amount"] = raw.amount
-    f["volume_ratio"] = raw.volume_lots / raw.volume_lots.shift(1).rolling(20).mean()
-    f["turnover20"] = raw.turnover.rolling(20).mean() / 100
-    f["beta60"] = ret.rolling(60).cov(bench_returns) / bench_returns.rolling(60).var()
-    f["corr60"] = ret.rolling(60).corr(bench_returns)
-    f["relative20"] = (1 + f.mom20) / (
+    features["rsi14"] = 100 - 100 / (1 + up / down.replace(0, np.nan))
+    features.loc[(down == 0) & (up > 0), "rsi14"] = 100
+    features["macd_dif"] = (
+        close.ewm(span=12, adjust=False).mean() - close.ewm(span=26, adjust=False).mean()
+    )
+    features["macd_dea"] = features.macd_dif.ewm(span=9, adjust=False).mean()
+    features["macd_hist"] = 2 * (features.macd_dif - features.macd_dea)
+    features["distance_high20"] = close / adj.high.shift(1).rolling(20).max() - 1
+    features["distance_high60"] = close / adj.high.rolling(60).max() - 1
+    features["dd60"] = close.rolling(60).apply(
+        lambda x: np.min(x / np.maximum.accumulate(x) - 1), raw=True
+    )
+    features["adv20"] = raw.amount.rolling(20).mean()
+    features["amount"] = raw.amount
+    features["volume_ratio"] = raw.volume_lots / raw.volume_lots.shift(1).rolling(20).mean()
+    features["turnover20"] = raw.turnover.rolling(20).mean() / 100
+    features["beta60"] = returns.rolling(60).cov(bench_returns) / bench_returns.rolling(60).var()
+    features["corr60"] = returns.rolling(60).corr(bench_returns)
+    features["relative20"] = (1 + features.mom20) / (
         1 + bench_returns.add(1).rolling(20).apply(np.prod, raw=True).sub(1)
     ) - 1
-    f["var1_95"] = ret.rolling(120).quantile(0.05)
-    f["es1_95"] = ret.rolling(120).apply(lambda x: np.mean(x[x <= np.quantile(x, 0.05)]), raw=True)
-    f["gap"] = adj.opening_gap
-    f["price_ratio"] = adj.close / raw.close
-    f["raw_prev"] = raw.close.shift()
-    f["age"] = np.arange(1, len(f) + 1)
-    f["rising_days20"] = (ret > 0).rolling(20).mean()
-    return f
+    features["var1_95"] = returns.rolling(120).quantile(0.05)
+    features["es1_95"] = returns.rolling(120).apply(
+        lambda x: np.mean(x[x <= np.quantile(x, 0.05)]), raw=True
+    )
+    features["gap"] = adj.opening_gap
+    features["price_ratio"] = adj.close / raw.close
+    features["raw_prev"] = raw.close.shift()
+    features["age"] = np.arange(1, len(features) + 1)
+    features["rising_days20"] = (returns > 0).rolling(20).mean()
+    return features
 
 
 BASE_FEATURES = [
@@ -91,25 +98,15 @@ BASE_FEATURES = [
 
 
 @pd.option_context("compute.use_numexpr", False)
-def feature_frame(raw, causal, splits, benchmark):
-    """Build the base feature frame with split-normalized volume and finite values."""
-    normalized = raw.copy()
-    normalized["volume_lots"] = raw.volume_lots / splits
-    f = price_features(normalized, causal, benchmark)
-    return base_features(raw, f)
-
-
-@pd.option_context("compute.use_numexpr", False)
 def base_features(raw, prices):
-    """Select model inputs from an already computed trailing-price frame."""
-    f = prices
-    x = f[BASE_FEATURES].copy()
-    x["log_adv20"] = np.log1p(f.adv20)
-    x["amount_ratio"] = raw.amount / f.adv20
-    x["range_pct"] = (raw.high - raw.low) / raw.close.shift()
-    x["close_location"] = (raw.close - raw.low) / (raw.high - raw.low).replace(0, np.nan)
-    x["macd_scaled"] = f.macd_hist / f.close
-    return x.replace([np.inf, -np.inf], np.nan)
+    """Select model inputs and replace infinities with missing values."""
+    features = prices[BASE_FEATURES].copy()
+    features["log_adv20"] = np.log1p(prices.adv20)
+    features["amount_ratio"] = raw.amount / prices.adv20
+    features["range_pct"] = (raw.high - raw.low) / raw.close.shift()
+    features["close_location"] = (raw.close - raw.low) / (raw.high - raw.low).replace(0, np.nan)
+    features["macd_scaled"] = prices.macd_hist / prices.close
+    return features.replace([np.inf, -np.inf], np.nan)
 
 
 @pd.option_context("compute.use_numexpr", False)
@@ -124,22 +121,26 @@ def cross_ranks(table, columns):
 @pd.option_context("compute.use_numexpr", False)
 def momentum_features(table):
     """Build trailing momentum interactions and their same-date cross-sectional ranks."""
-    t = table
     eps = 1e-8
-    extra = pd.DataFrame(index=t.index)
-    extra["momentum20_ex5"] = (1 + t.mom20) / (1 + t.mom5) - 1
-    extra["momentum60_ex20"] = (1 + t.mom60) / (1 + t.mom20) - 1
-    extra["short_acceleration"] = t.mom5 - t.mom20 / 4
-    extra["vol_ratio"] = t.vol20 / (t.vol60 + eps)
-    extra["momentum_atr"] = t.mom20 / (t.atr_pct + eps)
-    extra["downside_share"] = t.downvol60 / (t.vol60 + eps)
-    extra["rebound_risk"] = t.mom5 / (t.dd60.abs() + t.atr_pct + eps)
-    extra["volume_confirmation"] = t.mom5 * np.log1p(t.amount_ratio.clip(0, 10))
+    extra = pd.DataFrame(index=table.index)
+    extra["momentum20_ex5"] = (1 + table.mom20) / (1 + table.mom5) - 1
+    extra["momentum60_ex20"] = (1 + table.mom60) / (1 + table.mom20) - 1
+    extra["short_acceleration"] = table.mom5 - table.mom20 / 4
+    extra["vol_ratio"] = table.vol20 / (table.vol60 + eps)
+    extra["momentum_atr"] = table.mom20 / (table.atr_pct + eps)
+    extra["downside_share"] = table.downvol60 / (table.vol60 + eps)
+    extra["rebound_risk"] = table.mom5 / (table.dd60.abs() + table.atr_pct + eps)
+    extra["volume_confirmation"] = table.mom5 * np.log1p(table.amount_ratio.clip(0, 10))
     extra = extra.replace([np.inf, -np.inf], np.nan)
-    ranked = extra.where(t.eligible, axis=0).groupby(t.date_index, sort=False).rank(pct=True) - 0.5
+    ranked = (
+        extra.where(table.eligible, axis=0).groupby(table.date_index, sort=False).rank(pct=True)
+        - 0.5
+    )
     ranked.columns = ["rank_" + c for c in extra]
     ranked["momentum_percentile"] = (
-        t.momentum_score.where(t.eligible).groupby(t.date_index, sort=False).rank(pct=True)
+        table.momentum_score.where(table.eligible)
+        .groupby(table.date_index, sort=False)
+        .rank(pct=True)
     )
     return ranked.astype("float32")
 

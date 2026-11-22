@@ -1,0 +1,125 @@
+{
+  "calibration.py": {
+    "rank_by_date": {
+      "sub": "frame"
+    },
+    "calibrate": {
+      "sub": "history",
+      "daily": "daily_returns",
+      "grand": "overall_mean",
+      "d": "bucket_returns",
+      "se": "standard_error",
+      "iso": "calibrated_means",
+      "errors": "standard_errors",
+      "counts": "day_counts"
+    }
+  },
+  "models.py": {
+    "industry_residuals": {
+      "group": "industry_returns",
+      "count": "group_size",
+      "other": "peer_mean"
+    },
+    "training_targets": {
+      "sub": "labels",
+      "relative": "residuals",
+      "s": "candidates",
+      "days": "daily_count",
+      "groups": "industry_count",
+      "sectors": "sector_count"
+    },
+    "fit_stage": {
+      "rows": "fit_rows",
+      "info": "target_details",
+      "out": "predictions",
+      "pred": "predicted"
+    },
+    "neutral_scores": {
+      "s": "frame",
+      "g": "industry_groups",
+      "n": "group_size"
+    },
+    "candidate_scores": {
+      "trend": "momentum_rank",
+      "out": "scores",
+      "r": "model_rank",
+      "v": "blended"
+    },
+    "factor_check": {
+      "sub": "signals",
+      "good": "available_labels",
+      "g": "daily_scores",
+      "raw": "raw_ic",
+      "ic": "industry_ic",
+      "q": "bucket_returns",
+      "blockmeans": "block_means",
+      "denom": "eligible_labels"
+    },
+    "industry_holdout_check": {
+      "sub": "signals",
+      "ic": "industry_ic"
+    }
+  },
+  "selection.py": {
+    "objective": {
+      "eps": "episodes",
+      "full": "summaries",
+      "ret": "returns"
+    },
+    "assess": {
+      "diff": "advantages",
+      "n": "episode_count",
+      "ix": "sample_indices",
+      "lower": "lower_bound",
+      "se": "standard_error",
+      "c": "candidate_account",
+      "b": "baseline_account",
+      "req": "requirements"
+    },
+    "select_rules": {
+      "a": "adoption",
+      "best": "best_score"
+    },
+    "select_model": {
+      "a": "adoption",
+      "best": "best_score"
+    }
+  },
+  "metrics.py": {
+    "episode_stats": {
+      "full": "summaries",
+      "v": "returns",
+      "worst": "lower_tail",
+      "x": "summary",
+      "d": "day",
+      "e": "episode"
+    },
+    "account_stats": {
+      "navs": "nav",
+      "daily": "returns",
+      "worst": "lower_tail",
+      "unresolved": "unresolved_actions",
+      "e": "event",
+      "r": "day",
+      "t": "trade",
+      "x": "item",
+      "d": "decision"
+    }
+  },
+  "features.py": {
+    "price_features": {
+      "f": "features",
+      "c": "close",
+      "ret": "returns",
+      "tr": "true_range",
+      "n": "window"
+    },
+    "base_features": {
+      "f": "prices",
+      "x": "features"
+    },
+    "momentum_features": {
+      "t": "table"
+    }
+  }
+}

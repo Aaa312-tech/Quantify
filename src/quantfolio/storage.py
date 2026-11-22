@@ -21,14 +21,13 @@ def now() -> str:
 
 
 def native_scalar(value: Any) -> Any:
-    """Convert numpy scalar values while refusing silently lossy serialization."""
+    """Convert a NumPy scalar for JSON encoding."""
     if isinstance(value, np.generic):
         return value.item()
     raise TypeError(f"Unsupported persisted value: {type(value).__name__}")
 
 
 def read(path: str | Path) -> Any:
-    """Read UTF-8 JSON without pickle execution."""
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
@@ -107,12 +106,10 @@ def dump_gzip(path: str | Path, value: Any) -> None:
 
 
 def load_gzip(path: str | Path) -> Any:
-    """Load a compressed JSON ledger."""
     return json.loads(gzip.decompress(Path(path).read_bytes()))
 
 
 def log(message: str, **fields: Any) -> None:
-    """Emit structured progress through standard logging, without mutating reference runs."""
     logging.getLogger("quantfolio").info(
         json.dumps(
             {"at": now(), "message": message, **fields}, ensure_ascii=False, default=native_scalar
