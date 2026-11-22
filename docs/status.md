@@ -20,7 +20,7 @@
 | 来源核查 | [正文上下文审查](../artifacts/checks/distribution_residuals_2026-11-22/body_context_review.json) |
 | 纸面计划 | [2026-11-23](../artifacts/plans/recipient_entitlements_2026-11-23/plan.md)：0笔参考订单，100万元现金，09:25上海时间到期 |
 | 验证 | [验证说明](validation.md) · [完整性清单](../configs/integrity_manifest.json) |
-| 工程维护 | [实施进度](engineering_plan.md#阶段和依赖) · [数值修复本地验收](../artifacts/checks/portable_predictions_2026-11-23/local_acceptance.json) · [完整回归](../artifacts/checks/portable_inference_full_2026-11-23/result.json) |
+| 工程维护 | [实施进度](engineering_plan.md#阶段和依赖) · [数值修复验收](../artifacts/checks/portable_predictions_2026-11-23/completion.json) · [本地完整回归](../artifacts/checks/portable_inference_full_2026-11-23/result.json) · [托管AMD完整回归](../artifacts/checks/portable_predictions_2026-11-23/cloud/ci-regression-45046246783/result.json) |
 
 旧模型、旧计划及失败记录保留。配置决定实际使用的输入与实验，历史回测不会因文档或报告重排而重新选择。
 
@@ -41,6 +41,6 @@
 | ETF | 使用披露股票敞口代理，完整每日经济敞口未知 |
 | 比赛 | 以白皮书为准；费用、分红税及撮合细节待确认 |
 | 收益 | 没有优于基准或新增前向成交的证据；8%预警不保证实际损失上限 |
-| 工程环境 | 已定位Ridge原生归约的处理器差异，固定推理顺序后本地完整回归通过；修复后的托管完整回归待验证。通用开发环境缺少Bottleneck时历史校准仍不一致，完整验收使用研究锁 |
+| 工程环境 | 固定Ridge推理顺序后，本地Intel与托管AMD均通过完整历史回归。24组重算训练权重的跨环境哈希仍不同，原因尚未定位；不认证跨环境重训。缺少Bottleneck的通用环境校准失败，完整验收仍使用研究锁 |
 
 后续工作及验收条件见[研究待办](remediation.md)。恢复研究需要明确指令；过期计划不能改日期后继续使用。

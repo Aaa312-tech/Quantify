@@ -52,7 +52,7 @@ CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13按`uv.
 
 三个分层CI作业已[通过](../artifacts/checks/quality_ci_2026-11-22/completion.json)。云端AMD EPYC完整回归在冻结模型预测处失败，最大误差约5.96×10⁻⁸；限定`MKL_ENABLE_INSTRUCTIONS=AVX2`后仍失败。两次原始记录分别保存在`artifacts/checks/ci_research_2026-11-22/hosted_default`及`artifacts/checks/ci_research_avx2_2026-11-22`。本机Intel环境在相同AVX2设置下，48个冻结模型的误差均为0。指令集限制不保证跨厂商选择同一内核，见[Intel说明](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-linux/2024-0/instruction-set-specific-dispatch-on-intel-archs.html)。
 
-手动工作流可选择`windows-2022`或`windows-latest`托管镜像，均保持冻结预测的严格比较；操作系统标签不承诺CPU型号。两种镜像均出现上述差异，Windows 2022记录另保存在`artifacts/checks/ci_research_windows2022_2026-11-22`。新增的[逐阶段对照](../artifacts/checks/prediction_diagnostics_2026-11-22/cloud_comparison.json)将差异定位到Ridge原生归约。固定项目推理顺序后，本地完整回归通过；修复后的托管全量结果待验证。原失败保留，当前没有常驻研究运行器。
+手动工作流可选择`windows-2022`或`windows-latest`托管镜像，均保持冻结预测的严格比较；操作系统标签不承诺CPU型号。两种镜像均出现上述差异，Windows 2022记录另保存在`artifacts/checks/ci_research_windows2022_2026-11-22`。新增的[逐阶段对照](../artifacts/checks/prediction_diagnostics_2026-11-22/cloud_comparison.json)将差异定位到Ridge原生归约。固定项目推理顺序后，本地Intel及托管AMD EPYC 7763的完整回归均通过；[托管结果](../artifacts/checks/portable_predictions_2026-11-23/cloud/ci-regression-45046246783/result.json)覆盖全部原验收范围，耗时60.3分钟。原失败保留，当前没有常驻研究运行器。
 
 ## 当前结果的复核
 
@@ -85,7 +85,7 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 | 历史账户、压缩账本 | 主策略10bp：25 / 2 | 19项政策、三档成本：1,425 / 114 |
 | 纸面账户、交易日 | 前2个账户：2 / 20 | 三档成本：75 / 1,386 |
 
-两种范围均检查完整输入清单和加载后的数据。`core`缩小计算范围，不能替代发布验收。`full`要求全部范围一致，模型预测误差为0；比较字段顺序、数组类型、标签、权重、历史校准、选择结果及压缩预测和账本字节。历史校准按原窗口重算，模型拟合次数必须为0。
+两种范围均检查完整输入清单和加载后的数据。`core`缩小计算范围，不能替代发布验收。`full`要求全部范围一致，模型预测误差为0；比较字段顺序、数组类型、标签、权重、历史校准、选择结果及压缩预测和账本字节。拟合输入权重与旧实现的比较在同一运行环境内进行，不代表跨环境重新训练相等。历史校准按原窗口重算，模型拟合次数必须为0。
 
 输出目录必须未使用。`run.json`记录命令、环境、Git提交和实际源码哈希；`result.json`记录完成状态、范围和失败位置；`differential.json`、`history.json`、`paper.json`保存分项证据，`run.log`保存进度。运行失败返回非零状态，已有文件不覆盖；旧、新实现产生的重复临时账本在比较后清理。
 
@@ -100,7 +100,7 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 | 模型 | 48个模型重载，最大预测误差0 | [全量回归](../artifacts/checks/portable_inference_full_2026-11-23/result.json) |
 | 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/portable_inference_full_2026-11-23/history.json) |
 | 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/portable_inference_full_2026-11-23/paper.json) |
-| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口精确一致；无模型重训 | [计算对照](../artifacts/checks/portable_inference_full_2026-11-23/differential.json) |
+| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口与同环境旧实现精确一致；无模型重训 | [计算对照](../artifacts/checks/portable_inference_full_2026-11-23/differential.json) |
 | 报告 | 默认、指定实验和历史参考入口的HTML及PNG逐字节一致 | [渲染对照](../artifacts/checks/responsibility_checks_2026-11-22/report_render/result.json) |
 | 独立环境 | 锁定Windows研究环境和隔离新克隆的全量回归与原环境一致；跨平台安装及测试另行验收 | [环境验收](../artifacts/checks/environment_lock_2026-11-22/completion.json) |
 | 开盘与核账 | 192组场景、2424个纸面交易日、38组拒绝路径；三档成本完整文件链路一致 | [差分对照](../artifacts/checks/paper_refactor_2026-11-22/differential.json) |
@@ -110,6 +110,8 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 当前代码通过819项单元测试与71项集成测试，1项因本机符号链接权限跳过；16个模块的类型检查、39个模块的覆盖率门槛与四项缺陷检测通过，详见[本地验收](../artifacts/checks/portable_predictions_2026-11-23/local_acceptance.json)。独立安装的OpenBLAS wheel通过48个冻结模型的精确预测检查；轮包中的39个Python模块与完整回归源码逐字节一致。其完整回归因缺少Bottleneck而在历史校准处失败，不能作为完整金融验收。舍入边界初次失败及中断记录保留；修复后使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
 
 此前职责拆分源码的三个CI作业及106个发布文件核对通过，见[历史发布核验](../artifacts/checks/responsibility_checks_2026-11-22/publication.json)。新增诊断入口的三个CI作业和130个发布文件核对也通过，见[诊断发布核验](../artifacts/checks/prediction_diagnostics_2026-11-22/initial_publication.json)。这些记录绑定各自提交，不替代本次数值修复的云端验收。
+
+本次数值修复的三个CI作业及695个发布文件的独立远端字节核对通过，见[源码发布核验](../artifacts/checks/portable_predictions_2026-11-23/source_publication.json)。托管完整回归使用同一提交和39个源码哈希。下载产物的SHA-256与GitHub记录一致；48份重算预测、历史账户和纸面账户对照文件与本地逐字节相同。额外跨环境比较发现24组重算训练权重哈希不同，其他拟合输入字段、冻结窗口、校准与历史结果一致；该差异未被转成“全部计算跨平台一致”，见[完整对照](../artifacts/checks/portable_predictions_2026-11-23/cloud_comparison.json)。
 
 E2锁定环境验收时，Linux安装包通过835项测试，Windows通过834项、跳过1项本机权限检查。通用OpenBLAS环境的模型误差约4.47×10⁻⁸，未通过历史数值验收；这些失败未被放宽门槛或重训覆盖。精确复现使用[历史研究环境](reproducibility.md#运行环境)。
 

@@ -39,6 +39,8 @@ uv run --no-sync python -B -m pytest -q
 
 这项修复针对已有模型的推理。它不保证重新训练在任意数学库或处理器上产生相同系数，也不恢复研究；历史研究环境锁继续保留。
 
+修复后的本地Intel和托管AMD完整历史回归均通过。两端48份预测及历史账户、纸面账户对照文件逐字节一致，全部校准和冻结窗口结果一致。额外比较发现24组重算训练权重的哈希不同，其他拟合输入字段一致。原完整回归检查的是同一环境中新旧实现的拟合输入，不是跨环境重训；这些权重未用于重新拟合。局部对照中的NumPy数组/标量及Python指数函数均重现本地权重，未重现托管哈希，剩余权重差异的原因尚未定位，见[跨环境对照](../artifacts/checks/portable_predictions_2026-11-23/cloud_comparison.json)。
+
 通用OpenBLAS开发环境中的48个模型也通过了精确预测检查，但其完整回归在历史校准处被拒绝：该环境缺少Bottleneck，Pandas标准差采用了不同的归约实现。在原环境中关闭Bottleneck可复现相同差值，见[环境诊断](../artifacts/checks/portable_predictions_2026-11-23/environment_diagnosis.json)。正式历史验收继续使用已包含Bottleneck 1.4.2的研究锁，未改动校准公式或接受该通用环境的完整结果。
 
 ## 配置
