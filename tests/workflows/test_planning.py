@@ -20,6 +20,8 @@ from quantfolio.simulation import simulate
 from quantfolio.storage import read, save, sha
 from tests.factories import bundle_prefix, market_bundle, opening_quotes, trading_calendar
 
+pytestmark = pytest.mark.integration
+
 
 @pytest.mark.parametrize("cost", [0.001, 0.002, 0.003])
 def test_multiday_paper_targets_fills_and_risk_match_the_simulator(cost):

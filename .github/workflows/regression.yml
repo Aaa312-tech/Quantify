@@ -1,0 +1,66 @@
+name: Historical regression
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    name: Windows research environment / full regression
+    runs-on: windows-latest
+    timeout-minutes: 120
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - name: Install pinned environment manager
+        run: python -m pip install uv==0.13.9
+      - uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
+        with:
+          activate-environment: ''
+          auto-activate: false
+      - name: Create the locked historical environment
+        run: |
+          conda create --prefix .research --file environments/research-win-64.lock --yes
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          uv export --locked --all-extras --no-emit-project --python .research/python.exe --output-file .research/requirements.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          uv pip install --python .research/python.exe --require-hashes --no-deps -r .research/requirements.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          uv build --python .research/python.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          uv pip install --python .research/python.exe --no-deps (Get-ChildItem dist/*.whl).FullName
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          uv pip check --python .research/python.exe
+      - name: Download registered LFS inputs
+        shell: python
+        run: |
+          import json
+          import subprocess
+          import tomllib
+          from pathlib import Path
+
+          config = tomllib.loads(Path('configs/regression.toml').read_text())
+          scope = json.loads(Path(config['scope']).read_text())
+          inputs = [name for name in scope['inputs_sha256'] if name.endswith('.joblib')]
+          subprocess.check_call(['git', 'lfs', 'pull', '--include', ','.join(inputs), '--exclude', ''])
+      - name: Replay the full frozen research scope
+        run: |
+          $baseline = .research/python.exe -c "import tomllib; print(tomllib.load(open('configs/regression.toml','rb'))['baseline_commit'])"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          .research/python.exe -B -m quantfolio regression --scope full --baseline $baseline --output artifacts/checks/ci-regression-${{ github.run_id }}
+      - name: Upload regression evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: regression-${{ github.sha }}-${{ github.run_id }}
+          path: artifacts/checks/ci-regression-${{ github.run_id }}/
+          retention-days: 14

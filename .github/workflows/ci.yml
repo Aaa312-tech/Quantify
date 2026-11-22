@@ -49,9 +49,29 @@ jobs:
         run: |
           uv run --project "${{ github.workspace }}" --no-sync python -m quantfolio --version
           uv run --project "${{ github.workspace }}" --no-sync python -c "import os, pathlib, quantfolio; from importlib.resources import files; assert not pathlib.Path(quantfolio.__file__).is_relative_to(pathlib.Path(os.environ['GITHUB_WORKSPACE'])); assert files('quantfolio').joinpath('templates/report.html').is_file()"
+      - name: Prepare check outputs
+        run: uv run --no-sync python -c "import pathlib, subprocess; pathlib.Path('quality-results').mkdir(); pathlib.Path('quality-results/commit.txt').write_bytes(subprocess.check_output(['git', 'rev-parse', 'HEAD']))"
       - name: Check formatting
-        run: uv run --no-sync ruff format --check src tests
+        run: uv run --no-sync ruff format --check src tests scripts
       - name: Lint
-        run: uv run --no-sync ruff check src tests
-      - name: Test installed package and synthetic workflows
-        run: uv run --no-sync python -B -m pytest -q
+        run: uv run --no-sync ruff check src tests scripts
+      - name: Check migrated types
+        run: uv run --no-sync mypy --junit-xml quality-results/types.xml
+      - name: Run unit tests
+        run: uv run --no-sync coverage run --data-file=quality-results/.coverage.unit -m pytest -q -m "not integration" --junitxml=quality-results/unit.xml
+      - name: Run offline integration tests
+        run: uv run --no-sync coverage run --data-file=quality-results/.coverage.integration -m pytest -q -m integration --junitxml=quality-results/integration.xml
+      - name: Check coverage against the frozen baseline
+        run: |
+          uv run --no-sync coverage combine --data-file=quality-results/.coverage quality-results/.coverage.unit quality-results/.coverage.integration
+          uv run --no-sync coverage json --data-file=quality-results/.coverage -o quality-results/coverage.json
+          uv run --no-sync python scripts/check_coverage.py quality-results/coverage.json
+      - name: Check financial and integrity fault detection
+        run: uv run --no-sync python -B scripts/check_faults.py --output quality-results/faults
+      - name: Upload check results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: checks-${{ matrix.os }}-py${{ matrix.python }}-${{ github.sha }}
+          path: quality-results/
+          retention-days: 14

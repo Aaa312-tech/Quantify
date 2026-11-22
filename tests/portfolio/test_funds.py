@@ -17,6 +17,8 @@ from tests.factories import (
     trading_calendar,
 )
 
+pytestmark = pytest.mark.integration
+
 
 def opening_change():
     bundle, forecasts = market_bundle()

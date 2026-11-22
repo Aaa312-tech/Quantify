@@ -5,6 +5,8 @@ import pytest
 from quantfolio import evaluation
 from tests.factories import market_bundle
 
+pytestmark = pytest.mark.integration
+
 
 def test_duplicate_policies_keep_their_account_count(tmp_path):
     bundle, forecasts = market_bundle()

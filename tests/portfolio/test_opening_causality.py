@@ -10,6 +10,8 @@ from quantfolio.simulation import simulate
 from quantfolio.validation import execution_audit, reconcile
 from tests.factories import market_bundle
 
+pytestmark = pytest.mark.integration
+
 
 @pytest.mark.parametrize(
     "fields,values",

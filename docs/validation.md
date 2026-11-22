@@ -7,18 +7,34 @@
 Windows：
 
 ```powershell
-scripts/check.ps1 -Python '.\.venv\Scripts\python'
+scripts/check.ps1 -Python '.\.research\python.exe'
 ```
 
 Linux或已激活环境：
 
 ```sh
-python -m ruff format --check src tests
-python -m ruff check src tests
-python -B -m pytest -q
+python -m ruff format --check src tests scripts
+python -m ruff check src tests scripts
+python -m mypy
+mkdir -p quality-results
+python -m coverage run -m pytest -q
+python -m coverage json -o quality-results/coverage.json
+python scripts/check_coverage.py quality-results/coverage.json
 ```
 
 CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13按`uv.lock`安装依赖，用固定构建后端生成并安装wheel，再于源码目录外检查导入和模板。测试使用合成输入，不在CI下载完整研究数据。现有历史模型的精确数值复现另使用[研究环境](reproducibility.md#运行环境)，不能由这些合成测试推断。
+
+## 分层工程检查
+
+`scripts/check.ps1`依次执行格式、lint、类型、单元与集成测试、覆盖率比较和缺陷注入。结果写到新的`quality-results`子目录，可用`-Output`指定未使用的本地目录；检查失败即返回非零。Linux命令将输出写到`quality-results`，缺陷检测另运行`python scripts/check_faults.py --output <unused-directory>`。
+
+`integration`标记覆盖固定样本的信号、开盘、账户结转和拒绝路径。CI分开执行`-m 'not integration'`与`-m integration`，合并覆盖结果后检查[覆盖率基线](../artifacts/checks/quality_baseline_2026-11-22/baseline.json)。`configs/coverage.toml`绑定基线哈希，逐模块检查语句和分支比例；缺少模块、未登记的新模块或降低任一比例均失败。模块拆分时只能明确列出共同承接原职责的文件，不能直接下调基线。
+
+`check_faults.py`先运行未修改代码的控制测试，再分别注入未来价格读取、元/分换算错误、漏记成交和省略输入哈希检查。只有实际断言失败才算检出，导入或收集错误不能算成功。副本放在临时目录，原源码和历史产物不改写。
+
+类型检查采用[渐进迁移](https://mypy.readthedocs.io/en/stable/existing_code.html)，当前明确检查`settings`、`storage`；存储层的`Any`用于未知JSON及NumPy标量的序列化边界。尚未纳入的业务模块为：`accounts`、`allocation`、`calibration`、`cli`、`daily_sources`、`dataset`、`disclosures`、`distributions`、`evaluation`、`feasibility`、`features`、`funds`、`industries`、`industry_sources`、`ledger`、`market`、`market_data`、`metrics`、`models`、`planning`、`preprocessing`、`refresh`、`regression`、`reporting`、`risk`、`rules`、`selection`、`simulation`、`snapshots`、`status_data`、`status_repair`、`study`、`training`、`validation`、`verification`。E4迁移金融边界后更新这个范围；当前不声称全库已完成类型化。
+
+完整历史回归的[手动工作流](../.github/workflows/regression.yml)使用Windows研究锁，取得注册范围的LFS输入后执行`regression --scope full`，不拟合模型、不追加兼容登记。手动运行时选择待验收分支；报告的`run.json`绑定实际提交和源码哈希。常规CI及完整回归的结果均上传至对应Actions运行页，保留14天；正式验收另归档到`artifacts/checks`。没有定时运行。
 
 ## 当前结果的复核
 

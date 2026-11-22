@@ -14,6 +14,8 @@ from quantfolio.validation import execution_audit, reconcile
 from quantfolio.verification import replay_paper_account
 from tests.factories import market_bundle
 
+pytestmark = pytest.mark.integration
+
 
 def inputs():
     bundle, predictions = market_bundle()
