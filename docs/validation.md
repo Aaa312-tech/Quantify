@@ -32,11 +32,13 @@ CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13按`uv.
 
 `check_faults.py`先运行未修改代码的控制测试，再分别注入未来价格读取、元/分换算错误、漏记成交和省略输入哈希检查。只有实际断言失败才算检出，导入或收集错误不能算成功。副本放在临时目录，原源码和历史产物不改写。
 
-类型检查采用[渐进迁移](https://mypy.readthedocs.io/en/stable/existing_code.html)，当前检查9个模块：`settings`、`storage`、`models`、`allocation`、`ledger`、`accounts`、`risk`、`simulation`、`planning`。预测、报价、仓位、成交、账户和风险使用具体契约；运行器和账户调用方受检查，包内`py.typed`同时提供安装包的类型信息。测试确认六种非法金融字段赋值会被mypy拒绝。
+类型检查采用[渐进迁移](https://mypy.readthedocs.io/en/stable/existing_code.html)，当前显式检查16个模块：`settings`、`storage`、`models`、`allocation`、`ledger`、`accounts`、`risk`、`simulation`、`planning`、`validation`、`features`、`industries`、`dataset`、`status_data`、`funds`、`evaluation`。预测、报价、仓位、成交、账户和风险使用具体契约；运行器和账户调用方受检查，包内`py.typed`同时提供安装包的类型信息。测试确认六种非法金融字段赋值会被mypy拒绝。
 
-这些模块中的原始快照、来源元数据、诊断结果和未迁移的函数参数仍保留动态字典；不声称已完整类型化。只有缺少类型元数据的`scipy.*`、`sklearn.*`、`joblib`、`threadpoolctl`设置精确的外部导入豁免，不忽略本项目模块错误。Decimal非空求和及已校验的JSON字段使用不转换数值的`cast`；旧模型、预测和金额仍由完整回归检查。
+这些模块中的原始快照、来源元数据、诊断结果和未迁移的函数参数仍保留动态字典；不声称已完整类型化。只有缺少类型元数据的`scipy.*`、`sklearn.*`、`joblib`、`threadpoolctl`、`baostock`设置精确的外部导入豁免，不忽略本项目模块错误。Decimal非空求和及已校验的字段使用不转换数值的`cast`；旧模型、预测和金额仍由完整回归检查。
 
-尚未纳入mypy的模块为：`calibration`、`cli`、`daily_sources`、`dataset`、`disclosures`、`distributions`、`evaluation`、`feasibility`、`features`、`funds`、`industries`、`industry_sources`、`market`、`market_data`、`metrics`、`preprocessing`、`refresh`、`regression`、`reporting`、`rules`、`selection`、`snapshots`、`status_data`、`status_repair`、`study`、`training`、`validation`、`verification`。存储层的`Any`限于未知JSON及NumPy标量的序列化边界。
+尚未显式列入检查入口的业务模块为：`calibration`、`cli`、`daily_sources`、`disclosures`、`distributions`、`feasibility`、`industry_sources`、`market`、`market_data`、`metrics`、`preprocessing`、`refresh`、`regression`、`reporting`、`rules`、`selection`、`snapshots`、`status_repair`、`study`、`training`、`verification`；另有`__init__`和`__main__`两个包入口。存储层的`Any`限于未知JSON及NumPy标量的序列化边界。
+
+初次契约CI在安装的wheel环境中发现20处传递导入诊断，编辑安装仅检查原9个指定模块时未报告这些问题。[失败记录](../artifacts/checks/contract_ci_failed_2026-11-22/run.json)保留了三个作业的原始输出。补齐声明并把相关模块明确列入检查后，编辑安装和独立wheel均通过16模块检查；没有设置项目模块的忽略规则。基金来源历史新增三个控制模式的可用时间与未知区间场景，语句和分支覆盖率门槛再次通过，见[修复记录](../artifacts/checks/responsibility_checks_2026-11-22/type_check_resolution.json)。
 
 完整历史回归的[手动工作流](../.github/workflows/regression.yml)使用Windows研究锁，取得注册范围的LFS输入后执行`regression --scope full`，不拟合模型、不追加兼容登记。手动运行时选择待验收分支；报告的`run.json`绑定实际提交和源码哈希。常规CI及完整回归的结果均上传至对应Actions运行页，保留14天；正式验收另归档到`artifacts/checks`。没有定时运行。
 
@@ -87,16 +89,17 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 
 | 范围 | 结果 | 记录 |
 | --- | --- | --- |
-| 模型 | 48个模型重载，最大预测误差0 | [全量回归](../artifacts/checks/contracts_full_2026-11-22/result.json) |
-| 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/contracts_full_2026-11-22/history.json) |
-| 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/contracts_full_2026-11-22/paper.json) |
-| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口精确一致；无模型重训 | [计算对照](../artifacts/checks/contracts_full_2026-11-22/differential.json) |
+| 模型 | 48个模型重载，最大预测误差0 | [全量回归](../artifacts/checks/contracts_and_responsibilities_full_2026-11-22/result.json) |
+| 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/contracts_and_responsibilities_full_2026-11-22/history.json) |
+| 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/contracts_and_responsibilities_full_2026-11-22/paper.json) |
+| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口精确一致；无模型重训 | [计算对照](../artifacts/checks/contracts_and_responsibilities_full_2026-11-22/differential.json) |
+| 报告 | 默认、指定实验和历史参考入口的HTML及PNG逐字节一致 | [渲染对照](../artifacts/checks/responsibility_checks_2026-11-22/report_render/result.json) |
 | 独立环境 | 锁定Windows研究环境和隔离新克隆的全量回归与原环境一致；跨平台安装及测试另行验收 | [环境验收](../artifacts/checks/environment_lock_2026-11-22/completion.json) |
 | 开盘与核账 | 192组场景、2424个纸面交易日、38组拒绝路径；三档成本完整文件链路一致 | [差分对照](../artifacts/checks/paper_refactor_2026-11-22/differential.json) |
 | 仓位与风控 | 29007组状态、1024组优化器输入及完整模拟对照 | [执行验证](../artifacts/checks/execution_refactor_2026-11-22/completion.json) |
 | 训练与评估 | 12个冻结窗口以缓存重放，选型与历史结果一致 | [流程验证](../artifacts/checks/runtime_refactor_2026-11-22/completion.json) |
 
-核心契约改动通过775项单元测试与68项集成测试，1项因本机符号链接权限跳过；9个模块的类型检查、39个模块的覆盖率门槛与四项缺陷检测通过，详见[验收记录](../artifacts/checks/contract_checks_2026-11-22/completion.json)。首次小范围回放的模块导入与日期索引比较失败、旧测试导入失败均保留；修复后重新使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
+最终代码通过785项单元测试与71项集成测试，1项因本机符号链接权限跳过；16个模块的类型检查、39个模块的覆盖率门槛与四项缺陷检测通过，详见[验收记录](../artifacts/checks/responsibility_checks_2026-11-22/completion.json)。独立安装的wheel也通过相同856项测试；轮包中的39个Python模块与已验证源码逐字节一致。首次导入、日期索引、覆盖率及安装包类型检查失败均保留；修复后使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
 
 E2锁定环境验收时，Linux安装包通过835项测试，Windows通过834项、跳过1项本机权限检查。通用OpenBLAS环境的模型误差约4.47×10⁻⁸，未通过历史数值验收；这些失败未被放宽门槛或重训覆盖。精确复现使用[历史研究环境](reproducibility.md#运行环境)。
 
@@ -106,6 +109,6 @@ E2锁定环境验收时，Linux安装包通过835项测试，Windows通过834项
 
 训练协议和纸面计划保留生成时的源码哈希。等价重构通过单独冻结的 `source_compatibility.json` 关联原文件身份、当前全部Python源码、差分验证和完整历史账本验证，不修改原协议。
 
-缺少登记、哈希不符、证据不完整或引用越出项目时拒绝使用。模型输入、日期、预测和计划到期仍单独检查。活跃登记见[源码兼容记录](../artifacts/checks/contracts_full_2026-11-22/source_compatibility.json)。
+缺少登记、哈希不符、证据不完整或引用越出项目时拒绝使用。模型输入、日期、预测和计划到期仍单独检查。活跃登记见[源码兼容记录](../artifacts/checks/contracts_and_responsibilities_full_2026-11-22/source_compatibility.json)。
 
 更改数值、时序、成交或持仓行为时，须重新完成对应模型和完整账户验证，并保留失败记录。验证脚本一经执行即作为证据保存；重试使用新文件，不能覆盖原结果。
