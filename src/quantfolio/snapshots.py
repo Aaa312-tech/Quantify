@@ -916,15 +916,10 @@ def restored_label_table(table, records):
     return expected
 
 
-def repair_distribution_snapshot(paths, target, protocol_path, integrity):
-    """Reconstruct the complete dataset after an entitlement change, without activation."""
+def _checked_distribution_review(paths, protocol, protocol_path, manifest):
+    """Bind the reviewed facts, extractor and source snapshot before reconstruction."""
     from . import distributions
-    from .preprocessing import build_dataset, compare_history
 
-    protocol, _ = distributions.registered_inputs(paths, protocol_path)
-    if target != (paths.root / protocol["snapshot_output"]).resolve():
-        raise ValueError("Snapshot output differs from registration")
-    manifest = read(paths.manifest)
     review_path = distributions.checked_path(
         paths.root, protocol["review"], manifest["files"][protocol["review"]]
     )
@@ -952,65 +947,39 @@ def repair_distribution_snapshot(paths, target, protocol_path, integrity):
         raise ValueError("Frozen source review binding differs")
     for fact in review["facts"]:
         distributions.checked_path(paths.root, fact["source"]["path"], fact["source"]["sha256"])
-    original = load_snapshot(paths, source_path, protocol["source_data_cutoff"])
-    if supplement:
-        facts = _accepted_date_supplements(paths, protocol, review, original, manifest)
-    elif entitlement:
-        facts = _accepted_entitlement_facts(paths, protocol, review, original, manifest)
-    elif review["original_actions_sha256"] != digest(original["actions"]):
-        raise ValueError("Source review does not bind the full action inventory")
-    else:
-        facts = review["facts"]
-    provenance = {
-        "started_at": now(),
-        "protocol_sha256": sha(protocol_path),
-        "review_sha256": sha(review_path),
-        "source_bundle_sha256": sha(source_path),
-        "source_sha256": {f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))},
-    }
-    save(target / "provenance.json", provenance, immutable=True)
-    rebuild_args = {"opening_status": original.get("opening_status")}
-    parent = build_dataset(original["meta"], original["raws"], original["actions"], **rebuild_args)
-    parent_check = compare_history(original, parent)
-    actions, changes = reviewed_distribution_actions(
-        original["actions"], original["calendar"], facts, supplement=supplement
-    )
-    if supplement or entitlement:
-        counts = Counter(f for change in changes for f in change["fields"])
-        counts["events"] = len(changes)
-        if dict(counts) != protocol["expected_changes"]:
-            raise ValueError(
-                "Entitlement changes differ from registration"
-                if entitlement
-                else "Supplementary date changes differ from registration"
-            )
-        save(target / "fact_bindings.json", facts, immutable=True)
-    repaired = build_dataset(original["meta"], original["raws"], actions, **rebuild_args)
-    if repaired.get("fund_mode") != original.get("fund_mode"):
-        raise ValueError("Distribution repair changed the fund control")
-    if supplement:
-        expected_table = original["table"]
-        if protocol.get("label_review"):
-            reference = protocol["label_review"]
-            if manifest["files"].get(reference["path"]) != reference["sha256"]:
-                raise ValueError("Independent label review is not frozen")
-            label_review = read(
-                distributions.checked_path(paths.root, reference["path"], reference["sha256"])
-            )
-            if (
-                label_review["status"] != "PASS"
-                or label_review["data_sha256"] != sha(source_path)
-                or label_review["actions_sha256"] != digest(actions)
-                or label_review["protocol_sha256"] != protocol["label_review_basis_protocol_sha256"]
-                or label_review["changed_labels"] != protocol["expected_label_changes"]["total"]
-                or label_review["changed_by_horizon"]
-                != protocol["expected_label_changes"]["by_horizon"]
-                or Counter(str(r["horizon"]) for r in label_review["records"])
-                != label_review["changed_by_horizon"]
-            ):
-                raise ValueError("Independent label review binding differs")
-            expected_table = restored_label_table(original["table"], label_review["records"])
-        pd.testing.assert_frame_equal(expected_table, repaired["table"], check_exact=True)
+    return review, review_path, source_path
+
+
+def _check_supplemented_labels(paths, protocol, manifest, source_path, original, repaired, actions):
+    """Permit only label changes covered by the independent registered review."""
+    from . import distributions
+
+    expected_table = original["table"]
+    if protocol.get("label_review"):
+        reference = protocol["label_review"]
+        if manifest["files"].get(reference["path"]) != reference["sha256"]:
+            raise ValueError("Independent label review is not frozen")
+        label_review = read(
+            distributions.checked_path(paths.root, reference["path"], reference["sha256"])
+        )
+        if (
+            label_review["status"] != "PASS"
+            or label_review["data_sha256"] != sha(source_path)
+            or label_review["actions_sha256"] != digest(actions)
+            or label_review["protocol_sha256"] != protocol["label_review_basis_protocol_sha256"]
+            or label_review["changed_labels"] != protocol["expected_label_changes"]["total"]
+            or label_review["changed_by_horizon"]
+            != protocol["expected_label_changes"]["by_horizon"]
+            or Counter(str(r["horizon"]) for r in label_review["records"])
+            != label_review["changed_by_horizon"]
+        ):
+            raise ValueError("Independent label review binding differs")
+        expected_table = restored_label_table(original["table"], label_review["records"])
+    pd.testing.assert_frame_equal(expected_table, repaired["table"], check_exact=True)
+
+
+def _distribution_changes(original, repaired, changes, entitlement):
+    """Check unchanged market inputs and prefixes, then count the accepted field differences."""
     if repaired["meta"] != original["meta"] or repaired.get("opening_status") != original.get(
         "opening_status"
     ):
@@ -1056,6 +1025,66 @@ def repair_distribution_snapshot(paths, target, protocol_path, integrity):
     for name in original["table"]:
         old, new = original["table"][name], repaired["table"][name]
         field_changes["table"][name] = int((~(old.eq(new) | (old.isna() & new.isna()))).sum())
+    return boundary, entitlement_dates, label_summary, labels, field_changes
+
+
+def repair_distribution_snapshot(paths, target, protocol_path, integrity):
+    """Reconstruct the complete dataset after an entitlement change, without activation."""
+    from . import distributions
+    from .preprocessing import build_dataset, compare_history
+
+    protocol, _ = distributions.registered_inputs(paths, protocol_path)
+    if target != (paths.root / protocol["snapshot_output"]).resolve():
+        raise ValueError("Snapshot output differs from registration")
+    manifest = read(paths.manifest)
+    review, review_path, source_path = _checked_distribution_review(
+        paths, protocol, protocol_path, manifest
+    )
+    supplement = protocol.get("operation") == "supplement_verified_dates"
+    entitlement = protocol.get("operation") == "apply_verified_entitlements"
+    original = load_snapshot(paths, source_path, protocol["source_data_cutoff"])
+    if supplement:
+        facts = _accepted_date_supplements(paths, protocol, review, original, manifest)
+    elif entitlement:
+        facts = _accepted_entitlement_facts(paths, protocol, review, original, manifest)
+    elif review["original_actions_sha256"] != digest(original["actions"]):
+        raise ValueError("Source review does not bind the full action inventory")
+    else:
+        facts = review["facts"]
+    provenance = {
+        "started_at": now(),
+        "protocol_sha256": sha(protocol_path),
+        "review_sha256": sha(review_path),
+        "source_bundle_sha256": sha(source_path),
+        "source_sha256": {f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))},
+    }
+    save(target / "provenance.json", provenance, immutable=True)
+    rebuild_args = {"opening_status": original.get("opening_status")}
+    parent = build_dataset(original["meta"], original["raws"], original["actions"], **rebuild_args)
+    parent_check = compare_history(original, parent)
+    actions, changes = reviewed_distribution_actions(
+        original["actions"], original["calendar"], facts, supplement=supplement
+    )
+    if supplement or entitlement:
+        counts = Counter(f for change in changes for f in change["fields"])
+        counts["events"] = len(changes)
+        if dict(counts) != protocol["expected_changes"]:
+            raise ValueError(
+                "Entitlement changes differ from registration"
+                if entitlement
+                else "Supplementary date changes differ from registration"
+            )
+        save(target / "fact_bindings.json", facts, immutable=True)
+    repaired = build_dataset(original["meta"], original["raws"], actions, **rebuild_args)
+    if repaired.get("fund_mode") != original.get("fund_mode"):
+        raise ValueError("Distribution repair changed the fund control")
+    if supplement:
+        _check_supplemented_labels(
+            paths, protocol, manifest, source_path, original, repaired, actions
+        )
+    boundary, entitlement_dates, label_summary, labels, field_changes = _distribution_changes(
+        original, repaired, changes, entitlement
+    )
     features = validate_features(repaired)
     repaired["provenance"] = {
         **provenance,

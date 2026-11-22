@@ -243,6 +243,23 @@ def test_registered_operation_reaches_accepted_entitlement_binding(tmp_path, mon
         snapshots.repair_distribution_snapshot(paths, tmp_path / "target", protocol_path, {})
 
 
+def test_date_supplement_without_a_label_review_requires_exact_labels():
+    original = {"table": pd.DataFrame({"date_index": [0], "y1": [0.02]})}
+    repaired = deepcopy(original)
+    snapshots._check_supplemented_labels(None, {}, {}, None, original, repaired, [])
+    repaired["table"].loc[0, "y1"] += 1e-12
+    with pytest.raises(AssertionError):
+        snapshots._check_supplemented_labels(None, {}, {}, None, original, repaired, [])
+
+
+def test_date_supplement_rejects_an_unregistered_label_review():
+    protocol = {"label_review": {"path": "review.json", "sha256": "0" * 64}}
+    with pytest.raises(ValueError, match="Independent label review is not frozen"):
+        snapshots._check_supplemented_labels(
+            None, protocol, {"files": {}}, None, {"table": pd.DataFrame()}, {}, []
+        )
+
+
 def receipt_example(tmp_path, monkeypatch, mutation=None):
     actions, basis, review, additions, decisions, binding = example()
     counts = {"cash_per_share": 1, "cash_pay_date": 1, "ex_reference_cash_per_share": 1}
