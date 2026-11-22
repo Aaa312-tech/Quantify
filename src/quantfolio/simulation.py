@@ -257,6 +257,147 @@ class _Execution:
                 self._observe()
 
 
+def _signal_decision(
+    bundle, ledger, last_close, risk, forecasts, index, start, slippage, rules, turnover
+):
+    """Use the preceding close to select targets before applying execution-day events."""
+    calendar, panels = bundle["calendar"], bundle["panels"]
+    date = calendar[index]
+    previous = calendar[index - 1]
+    meta = metadata_at(
+        bundle["meta"], previous.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16)
+    )
+    ledger.meta = meta
+    require_industries(meta, ledger.lots)
+    day = str(date.date())
+    active_config = config_for(rules, index - 1)
+    active_turnover = turnover_for(turnover, index - 1)
+    prior = ledger.nav(last_close)
+    prior_values = ledger.values(last_close)
+    state = risk.update(prior, healthy_market(panels, previous))
+    drawdown = state["drawdown"]
+    level = state["level"]
+    exposure = min(regime(panels, previous)[0], state["cap"])
+    cap = exposure
+    stopped = {
+        symbol
+        for symbol in prior_values
+        if last_close[symbol] / ledger.stop_cost(symbol) - 1 <= -0.08
+    }
+    scheduled = (index - start) % 5 == 0
+    forced = state["changed"] or sum(prior_values.values()) / prior > cap + 0.01
+    planned = scheduled or forced
+    forecasts_today = {
+        symbol: v
+        for symbol, v in forecasts.get(index - 1, {}).items()
+        if panels["eligible"].at[previous, symbol]
+        and meta[symbol]["industry"] is not None
+        and risk_warning(
+            meta[symbol],
+            date,
+            as_of=previous.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16),
+        )
+        is None
+        and np.isfinite(v["mu"])
+        and np.isfinite(v["margin"])
+    }
+    if planned:
+        weights = {symbol: v / prior for symbol, v in prior_values.items()}
+        sellable = {
+            symbol: ledger.available(symbol, date) * last_close[symbol] / prior
+            for symbol in prior_values
+        }
+        target_weights, decision = allocate(
+            meta,
+            forecasts_today,
+            weights,
+            exposure,
+            level,
+            panels["adv20"].loc[previous].to_dict(),
+            prior,
+            sellable,
+            panels["ret1"].loc[:previous].tail(60),
+            slippage,
+            sum(x["cents"] for x in ledger.receivables) / 100 / prior,
+            config=active_config,
+            turnover=active_turnover,
+            allow_probe=state["phase"] == "PROBE20",
+        )
+    else:
+        target_weights = {}
+        decision = {
+            "status": "HOLD_BETWEEN_REBALANCES",
+            "cap": cap,
+            "level": level,
+            "selected": [],
+        }
+    decision.update(
+        signal_date=str(previous.date()),
+        execution_date=day,
+        drawdown=drawdown,
+        scheduled=scheduled,
+        forced=forced,
+    )
+    decision["recovery"] = state
+    decision["rule_config"] = active_config
+    if active_turnover != "legacy":
+        decision["turnover_policy"] = active_turnover
+    decision["target_weights"] = dict(target_weights)
+    return decision, forecasts_today, stopped, prior, cap
+
+
+def _closing_row(bundle, ledger, date, prices, last_close, record_actions, prior, state, cap):
+    """Mark closing holdings and retain the prior-close risk evidence for this session."""
+    raws = bundle["raws"]
+    day = str(date.date())
+    level, drawdown = state["level"], state["drawdown"]
+    closing = {}
+    for symbol in ledger.lots:
+        close = raws[symbol].at[date, "close"] if date in raws[symbol].index else np.nan
+        closing[symbol] = close if np.isfinite(close) else last_close.get(symbol, prices[symbol])
+        last_close[symbol] = closing[symbol]
+    ledger.snapshot_record_dates(date, record_actions)
+    position_values = ledger.values(closing)
+    nav = ledger.nav(closing)
+    receivables = sum(x["cents"] for x in ledger.receivables) / 100
+    positions = {
+        symbol: {
+            "quantity": ledger.quantity(symbol),
+            "available": ledger.available(symbol, date),
+            "close": closing[symbol],
+            "value": position_values[symbol],
+        }
+        for symbol in position_values
+    }
+    row = {
+        "date": day,
+        "prior_close_nav": prior,
+        "nav": nav,
+        "cash": ledger.cash / 100,
+        "holdings_value": sum(position_values.values()),
+        "receivables": receivables,
+        "positions": positions,
+        "risk_level": level,
+        "max_nav_weight": max(position_values.values(), default=0) / nav,
+        "risk_cap": cap,
+        "risk_phase": state["phase"],
+        "risk_peak": state["peak"],
+        "risk_drawdown": drawdown,
+        "can_buy": state["can_buy"],
+        "exposure_above_target": sum(position_values.values()) / nav > cap + 0.01,
+    }
+    if bundle.get("fund_mode") == "reported":
+        closing_at = date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16)
+        row["fund_exposure"] = exposure_report(
+            metadata_at(bundle["meta"], closing_at),
+            position_values,
+            nav,
+            closing_at,
+            sources=True,
+        )
+    return row
+
+
 @pd.option_context("compute.use_numexpr", False)
 def simulate(
     bundle,
@@ -279,7 +420,6 @@ def simulate(
         raise ValueError("Slippage must be finite and nonnegative")
     meta = bundle["meta"]
     raws = bundle["raws"]
-    panels = bundle["panels"]
     calendar = bundle["calendar"]
     actions = bundle["actions"]
     ex_dates = collections.defaultdict(list)
@@ -307,86 +447,14 @@ def simulate(
     risk = RiskState(mode=mode)
     for index in range(start, end + 1):
         date = calendar[index]
-        previous = calendar[index - 1]
-        meta = metadata_at(
-            bundle["meta"], previous.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16)
-        )
-        ledger.meta = meta
-        require_industries(meta, ledger.lots)
         day = str(date.date())
-        active_config = config_for(rules, index - 1)
-        active_turnover = turnover_for(turnover, index - 1)
-        prior = ledger.nav(last_close)
-        prior_values = ledger.values(last_close)
-        state = risk.update(prior, healthy_market(panels, previous))
-        drawdown = state["drawdown"]
-        level = state["level"]
-        exposure = min(regime(panels, previous)[0], state["cap"])
-        cap = exposure
-        stopped = {
-            symbol
-            for symbol in prior_values
-            if last_close[symbol] / ledger.stop_cost(symbol) - 1 <= -0.08
-        }
-        scheduled = (index - start) % 5 == 0
-        forced = state["changed"] or sum(prior_values.values()) / prior > cap + 0.01
-        planned = scheduled or forced
-        forecasts_today = {
-            symbol: v
-            for symbol, v in forecasts.get(index - 1, {}).items()
-            if panels["eligible"].at[previous, symbol]
-            and meta[symbol]["industry"] is not None
-            and risk_warning(
-                meta[symbol],
-                date,
-                as_of=previous.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16),
-            )
-            is None
-            and np.isfinite(v["mu"])
-            and np.isfinite(v["margin"])
-        }
-        if planned:
-            weights = {symbol: v / prior for symbol, v in prior_values.items()}
-            sellable = {
-                symbol: ledger.available(symbol, date) * last_close[symbol] / prior
-                for symbol in prior_values
-            }
-            target_weights, decision = allocate(
-                meta,
-                forecasts_today,
-                weights,
-                exposure,
-                level,
-                panels["adv20"].loc[previous].to_dict(),
-                prior,
-                sellable,
-                panels["ret1"].loc[:previous].tail(60),
-                slippage,
-                sum(x["cents"] for x in ledger.receivables) / 100 / prior,
-                config=active_config,
-                turnover=active_turnover,
-                allow_probe=state["phase"] == "PROBE20",
-            )
-        else:
-            target_weights = {}
-            decision = {
-                "status": "HOLD_BETWEEN_REBALANCES",
-                "cap": cap,
-                "level": level,
-                "selected": [],
-            }
-        decision.update(
-            signal_date=str(previous.date()),
-            execution_date=day,
-            drawdown=drawdown,
-            scheduled=scheduled,
-            forced=forced,
+        decision, forecasts_today, stopped, prior, cap = _signal_decision(
+            bundle, ledger, last_close, risk, forecasts, index, start, slippage, rules, turnover
         )
-        decision["recovery"] = state
-        decision["rule_config"] = active_config
-        if active_turnover != "legacy":
-            decision["turnover_policy"] = active_turnover
-        decision["target_weights"] = dict(target_weights)
+        state = decision["recovery"]
+        level = state["level"]
+        planned = decision["scheduled"] or decision["forced"]
+        target_weights = decision["target_weights"]
         decisions.append(decision)
         for action in ex_dates[day]:
             if ledger.quantity(action["symbol"]) and (
@@ -435,54 +503,11 @@ def simulate(
         execution.sell(targets)
         if planned and state["can_buy"]:
             execution.buy(targets, stopped, forecasts_today, decision)
-        closing = {}
-        for symbol in ledger.lots:
-            close = raws[symbol].at[date, "close"] if date in raws[symbol].index else np.nan
-            closing[symbol] = (
-                close if np.isfinite(close) else last_close.get(symbol, prices[symbol])
-            )
-            last_close[symbol] = closing[symbol]
-        ledger.snapshot_record_dates(date, record_dates[day])
-        position_values = ledger.values(closing)
-        nav = ledger.nav(closing)
-        receivables = sum(x["cents"] for x in ledger.receivables) / 100
-        positions = {
-            symbol: {
-                "quantity": ledger.quantity(symbol),
-                "available": ledger.available(symbol, date),
-                "close": closing[symbol],
-                "value": position_values[symbol],
-            }
-            for symbol in position_values
-        }
         curve.append(
-            {
-                "date": day,
-                "prior_close_nav": prior,
-                "nav": nav,
-                "cash": ledger.cash / 100,
-                "holdings_value": sum(position_values.values()),
-                "receivables": receivables,
-                "positions": positions,
-                "risk_level": level,
-                "max_nav_weight": max(position_values.values(), default=0) / nav,
-                "risk_cap": cap,
-                "risk_phase": state["phase"],
-                "risk_peak": state["peak"],
-                "risk_drawdown": drawdown,
-                "can_buy": state["can_buy"],
-                "exposure_above_target": sum(position_values.values()) / nav > cap + 0.01,
-            }
-        )
-        if bundle.get("fund_mode") == "reported":
-            closing_at = date.tz_localize("Asia/Shanghai") + pd.Timedelta(hours=16)
-            curve[-1]["fund_exposure"] = exposure_report(
-                metadata_at(bundle["meta"], closing_at),
-                position_values,
-                nav,
-                closing_at,
-                sources=True,
+            _closing_row(
+                bundle, ledger, date, prices, last_close, record_dates[day], prior, state, cap
             )
+        )
         if ledger.cash < 0:
             raise ValueError("Negative cash")
     summary = account_stats(ledger, curve, decisions, quality, mode)

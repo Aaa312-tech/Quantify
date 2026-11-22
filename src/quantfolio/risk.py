@@ -37,30 +37,7 @@ class RiskState:
         self.observations += 1
         self.healthy_streak = self.healthy_streak + 1 if healthy else 0
         previous = self.phase
-        next_phase, reason = previous, "UNCHANGED"
-        if previous == "HALTED0":
-            pass
-        elif drawdown >= 0.08 - 1e-12:
-            next_phase, reason = "HALTED0", "GLOBAL_DRAWDOWN_8"
-        elif drawdown >= 0.06 - 1e-12 and LEVELS[previous] < 2:
-            next_phase, reason = "FROZEN20", "GLOBAL_DRAWDOWN_6"
-        elif drawdown >= 0.04 - 1e-12 and LEVELS[previous] < 1:
-            next_phase, reason = "CAUTION45", "GLOBAL_DRAWDOWN_4"
-        elif previous == "PROBE20" and drawdown >= 0.07 - 1e-12:
-            next_phase, reason = "FROZEN20", "PROBE_DRAWDOWN_7"
-        elif self.mode != "latched" and self.age >= 5 and self.healthy_streak >= 3:
-            if previous in ("FROZEN20", "PROBE20") and drawdown < 0.05 - 1e-12:
-                next_phase, reason = "CAUTION45", "RESTORE_BELOW_5"
-            elif previous == "CAUTION45" and drawdown < 0.025 - 1e-12:
-                next_phase, reason = "NORMAL", "RESTORE_BELOW_2_5"
-            elif (
-                self.mode == "probe_restore"
-                and previous == "FROZEN20"
-                and self.age >= 10
-                and self.healthy_streak >= 5
-                and drawdown < 0.07 - 1e-12
-            ):
-                next_phase, reason = "PROBE20", "PROBE_AFTER_HEALTHY_MARKET"
+        next_phase, reason = self._transition(drawdown)
         evidence = {
             "state_age_before": self.age,
             "healthy_streak_before": self.healthy_streak,
@@ -88,6 +65,34 @@ class RiskState:
             "healthy": bool(healthy),
             "mode": self.mode,
         }
+
+    def _transition(self, drawdown):
+        """Choose one transition in priority order without mutating risk state."""
+        previous = self.phase
+        if previous == "HALTED0":
+            return previous, "UNCHANGED"
+        if drawdown >= 0.08 - 1e-12:
+            return "HALTED0", "GLOBAL_DRAWDOWN_8"
+        if drawdown >= 0.06 - 1e-12 and LEVELS[previous] < 2:
+            return "FROZEN20", "GLOBAL_DRAWDOWN_6"
+        if drawdown >= 0.04 - 1e-12 and LEVELS[previous] < 1:
+            return "CAUTION45", "GLOBAL_DRAWDOWN_4"
+        if previous == "PROBE20" and drawdown >= 0.07 - 1e-12:
+            return "FROZEN20", "PROBE_DRAWDOWN_7"
+        if self.mode != "latched" and self.age >= 5 and self.healthy_streak >= 3:
+            if previous in ("FROZEN20", "PROBE20") and drawdown < 0.05 - 1e-12:
+                return "CAUTION45", "RESTORE_BELOW_5"
+            if previous == "CAUTION45" and drawdown < 0.025 - 1e-12:
+                return "NORMAL", "RESTORE_BELOW_2_5"
+            if (
+                self.mode == "probe_restore"
+                and previous == "FROZEN20"
+                and self.age >= 10
+                and self.healthy_streak >= 5
+                and drawdown < 0.07 - 1e-12
+            ):
+                return "PROBE20", "PROBE_AFTER_HEALTHY_MARKET"
+        return previous, "UNCHANGED"
 
 
 def healthy_market(panels: dict, date: Any) -> bool:

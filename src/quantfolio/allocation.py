@@ -106,6 +106,41 @@ def select_names(meta, forecasts, previous, returns, slippage, config="baseline"
     return chosen, audit
 
 
+def _constraints(meta, names, cost_rates, cap, receivable_weight, budget):
+    """Build ordered holding, cash, concentration and turnover constraints."""
+    n = len(names)
+    eq = np.zeros((n, 3 * n))
+    for i in range(n):
+        eq[i, i] = 1
+        eq[i, n + i] = -1
+        eq[i, 2 * n + i] = 1
+    A = []
+    rhs = []
+
+    def add(values, upper):
+        row = np.zeros(3 * n)
+        for k, v in values.items():
+            row[k] = v
+        A.append(row)
+        rhs.append(upper)
+
+    add({i: 1 for i in range(n)}, cap)
+    cash = {i: 1 for i in range(n)}
+    cash.update({n + i: cost_rates[s][0] for i, s in enumerate(names)})
+    cash.update({2 * n + i: cost_rates[s][1] for i, s in enumerate(names)})
+    add(cash, max(0.0, 1 - receivable_weight))
+    if uses_reported_exposure(meta):
+        for row in concentration_rows(meta, names).values():
+            add({i: row.get(s, 0.0) for i, s in enumerate(names)}, 0.28)
+    else:
+        for sector in {meta[s]["industry"] for s in names}:
+            add({i: 1 for i, s in enumerate(names) if meta[s]["industry"] == sector}, 0.28)
+    if budget is not None:
+        add({n + i: 1 for i in range(n)}, budget)
+        add({2 * n + i: 1 for i in range(n)}, budget)
+    return eq, A, rhs
+
+
 def allocate(
     meta,
     forecasts,
@@ -161,8 +196,9 @@ def allocate(
     sells = []
     penalty = 0.001 if cfg["penalty10"] else 0.0
     penalties = {}
+    cost_rates = {s: costs(meta, s, slippage) for s in names}
     for i, s in enumerate(names):
-        buy, sell = costs(meta, s, slippage)
+        buy, sell = cost_rates[s]
         extra = (buy + sell) / 2 if turnover == "cost_penalty" else penalty
         penalties[s] = extra
         v = forecasts.get(s, {"mu": -0.05, "margin": 0})
@@ -178,40 +214,12 @@ def allocate(
         buys.append((0.0, max(0.0, limit) if s in selected and (level < 2 or allow_probe) else 0.0))
         sells.append((0.0, max_sell))
     bounds += buys + sells
-    eq = np.zeros((n, 3 * n))
-    for i in range(n):
-        eq[i, i] = 1
-        eq[i, n + i] = -1
-        eq[i, 2 * n + i] = 1
-    A = []
-    rhs = []
-
-    def add(values, upper):
-        row = np.zeros(3 * n)
-        for k, v in values.items():
-            row[k] = v
-        A.append(row)
-        rhs.append(upper)
-
-    add({i: 1 for i in range(n)}, cap)
-    cash = {i: 1 for i in range(n)}
-    cash.update({n + i: costs(meta, s, slippage)[0] for i, s in enumerate(names)})
-    cash.update({2 * n + i: costs(meta, s, slippage)[1] for i, s in enumerate(names)})
-    add(cash, max(0.0, 1 - receivable_weight))
-    if uses_reported_exposure(meta):
-        for row in concentration_rows(meta, names).values():
-            add({i: row.get(s, 0.0) for i, s in enumerate(names)}, 0.28)
-    else:
-        for sector in {meta[s]["industry"] for s in names}:
-            add({i: 1 for i, s in enumerate(names) if meta[s]["industry"] == sector}, 0.28)
     budget = None
     if previous and level == 0:
         budget = 0.25 if cfg["normal_budget25"] else 0.50
     elif previous and level == 1 and cfg["caution_budget25"]:
         budget = 0.25
-    if budget is not None:
-        add({n + i: 1 for i in range(n)}, budget)
-        add({2 * n + i: 1 for i in range(n)}, budget)
+    eq, A, rhs = _constraints(meta, names, cost_rates, cap, receivable_weight, budget)
     problem = dict(
         A_ub=np.array(A),
         b_ub=np.array(rhs),

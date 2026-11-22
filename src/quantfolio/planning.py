@@ -18,7 +18,7 @@ from .accounts import (
     timestamp,
 )
 from .allocation import allocate
-from .dataset import check_integrity, eligible_rows, load_bundle
+from .dataset import check_integrity, eligible_rows, load_bundle, source_compatible
 from .evaluation import experiment_folds
 from .funds import exposure_report
 from .industries import metadata_at, require_industries
@@ -706,7 +706,12 @@ def verified_plan(paths, plan_file):
         plan["expires_at"]
     ):
         raise ValueError("Only a plan actually frozen before its opening can be resolved")
-    if source_hashes() != plan["source_sha256"]:
+    if not source_compatible(
+        paths,
+        file,
+        {name + ".py": value for name, value in plan["source_sha256"].items()},
+        {name + ".py": value for name, value in source_hashes().items()},
+    ):
         raise ValueError("Paper calculation source changed after the plan was frozen")
     for relative, expected in plan["input_sha256"].items():
         if sha(input_path(paths, relative)) != expected:

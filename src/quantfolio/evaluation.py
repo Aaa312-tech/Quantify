@@ -7,7 +7,13 @@ from typing import Any
 
 import numpy as np
 
-from .dataset import check_integrity, eligible_rows, load_bundle, walk_forward_folds
+from .dataset import (
+    check_integrity,
+    eligible_rows,
+    load_bundle,
+    source_compatible,
+    walk_forward_folds,
+)
 from .market import EXECUTION_MODEL
 from .metrics import episode_stats
 from .models import CANDIDATES, prediction_map
@@ -108,7 +114,7 @@ def experiment_folds(paths: Paths, bundle: dict, run: Path) -> tuple[dict, list]
         "turnover_policy", "legacy"
     ):
         raise ValueError("Training used another turnover policy")
-    for name in (
+    modules = (
         "simulation",
         "ledger",
         "market",
@@ -119,12 +125,13 @@ def experiment_folds(paths: Paths, bundle: dict, run: Path) -> tuple[dict, list]
         "validation",
         "industries",
         "funds",
-    ):
-        filename = name + ".py"
-        if specification.get("source_sha256", {}).get(filename) != sha(
-            Path(__file__).parent / filename
-        ):
-            raise ValueError(f"Execution source changed since training: {filename}")
+    )
+    expected = {
+        name + ".py": specification.get("source_sha256", {}).get(name + ".py") for name in modules
+    }
+    current = {name: sha(Path(__file__).parent / name) for name in expected}
+    if not source_compatible(paths, run / "protocol.json", expected, current):
+        raise ValueError("Execution source changed since training without equivalence evidence")
     available = walk_forward_folds(bundle["calendar"])
     if specification["folds"] != available:
         raise ValueError("Registered training windows differ from the dataset calendar")

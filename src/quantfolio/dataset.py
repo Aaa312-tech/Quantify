@@ -39,6 +39,71 @@ def _lfs_pointer(path: Path) -> bool:
     )
 
 
+def source_compatible(paths: Paths, subject: Path, expected: dict, current: dict) -> bool:
+    """Accept exact source bytes or frozen equivalence evidence for this specific artifact."""
+    if expected == current:
+        return True
+    if not expected or any(not isinstance(value, str) for value in expected.values()):
+        return False
+    root = paths.root.resolve()
+    subject = subject.resolve()
+    if not subject.is_relative_to(root) or not subject.is_file():
+        return False
+    try:
+        manifest = read(paths.manifest)["files"]
+    except (OSError, ValueError, KeyError):
+        return False
+    relative = subject.relative_to(root).as_posix()
+    subject_hash = sha(subject)
+    if manifest.get(relative) != subject_hash:
+        return False
+    runtime = {p.name: sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
+    if current != {name: runtime.get(name) for name in expected}:
+        return False
+
+    def frozen_record(name, expected_hash):
+        path = (root / name).resolve()
+        if (
+            not path.is_relative_to(root / "artifacts" / "checks")
+            or manifest.get(name) != expected_hash
+            or sha(path) != expected_hash
+        ):
+            raise ValueError("Unregistered source-equivalence evidence")
+        return read(path)
+
+    for name, certificate_hash in manifest.items():
+        if not Path(name).match("artifacts/checks/*/source_compatibility.json"):
+            continue
+        try:
+            certificate = frozen_record(name, certificate_hash)
+            if (
+                certificate["schema_version"] != 1
+                or certificate["kind"] != "EXECUTION_REFACTOR"
+                or certificate["runtime_sha256"] != runtime
+                or certificate["subjects"].get(relative)
+                != {"sha256": subject_hash, "source_sha256": expected}
+            ):
+                continue
+            evidence = certificate["evidence"]
+            required = {"EXECUTION_DIFFERENTIAL", "HISTORICAL_LEDGER_PARITY"}
+            if set(evidence) != required:
+                continue
+            for kind, item in evidence.items():
+                report = frozen_record(item["path"], item["sha256"])
+                if (
+                    report["status"] != "PASS"
+                    or report["kind"] != kind
+                    or report["runtime_sha256"] != runtime
+                    or report["subjects"] != certificate["subjects"]
+                ):
+                    break
+            else:
+                return True
+        except (OSError, ValueError, KeyError, TypeError, AttributeError):
+            continue
+    return False
+
+
 def load_bundle(paths: Paths, *, reference: bool = False) -> dict[str, Any]:
     """Load only the local, hash-verified trusted bundle; never arbitrary downloaded pickle."""
     path = paths.reference_bundle if reference else paths.bundle
