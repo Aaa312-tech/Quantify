@@ -39,6 +39,15 @@ def _parser() -> argparse.ArgumentParser:
     verification.add_argument(
         "--run", help="Verify a new training run instead of the frozen reference"
     )
+    regression = commands.add_parser(
+        "regression", help="Replay the registered engineering baseline without fitting models"
+    )
+    regression.add_argument("--scope", choices=("core", "full"), default="core")
+    regression.add_argument("--baseline", required=True, help="Registered Git baseline commit")
+    _add_output(regression, "artifacts/checks")
+    regression.add_argument(
+        "--register", action="store_true", help="Register source compatibility after full success"
+    )
     repair = commands.add_parser(
         "repair-data", help="Build the registered corporate-action snapshot"
     )
@@ -195,6 +204,8 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
     if args.command == "verify" and args.refit and not args.output:
         parser.error("--refit requires --output artifacts/checks/<new-name>")
+    if args.command == "regression" and args.register and args.scope != "full":
+        parser.error("--register requires --scope full")
     if args.command == "train" and (
         args.first < 1 or (args.last is not None and args.last < args.first)
     ):
@@ -213,6 +224,12 @@ def main(argv: list[str] | None = None) -> None:
 def run(args: argparse.Namespace, paths: Paths) -> dict:
     from .storage import read, sha
 
+    if args.command == "regression":
+        from .regression import run_regression
+
+        return run_regression(
+            paths, args.output, args.baseline, scope=args.scope, register=args.register
+        )
     if args.command == "exit-study":
         from .feasibility import run_exit_study
 

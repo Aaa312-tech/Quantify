@@ -22,26 +22,11 @@ from .settings import Paths
 from .storage import now, read, save, sha
 
 
-def verify(
-    paths: Paths, output: Path | None = None, refit: bool = False, run: str | Path | None = None
-) -> dict:
-    """Validate every stored model against its predictions; refit only to a new output."""
-    if refit and output is None:
-        raise ValueError("Refit verification requires a new output directory")
-    integrity = check_integrity(paths)
-    bundle = load_bundle(paths, reference=run is None)
-    source = paths.reference if run is None else paths.artifact_path(run, "experiments")
-    if run is not None:
-        from .evaluation import experiment_folds
-
-        experiment_folds(paths, bundle, source)
+def verify_models(bundle, result_paths, root):
+    """Reload frozen models and check predictions and label availability."""
     table = bundle["table"]
-    feature_check = validate_features(bundle)
     matrix = table[bundle["features"]].to_numpy(dtype=np.float32)
     records = []
-    result_paths = sorted(source.glob("training/fold_*/result.json"))
-    if (source / "final_fit/result.json").is_file():
-        result_paths.append(source / "final_fit/result.json")
     for result_path in result_paths:
         result = read(result_path)
         fold = result["fold"]
@@ -66,12 +51,34 @@ def verify(
                     raise AssertionError(f"Label availability violation: {folder}")
                 records.append(
                     {
-                        "path": folder.relative_to(paths.root).as_posix(),
+                        "path": folder.relative_to(root).as_posix(),
                         "predictions": len(rows),
                         "max_error": float(np.max(np.abs(actual - expected))),
                         "label_availability_pass": True,
                     }
                 )
+    return records
+
+
+def verify(
+    paths: Paths, output: Path | None = None, refit: bool = False, run: str | Path | None = None
+) -> dict:
+    """Validate every stored model against its predictions; refit only to a new output."""
+    if refit and output is None:
+        raise ValueError("Refit verification requires a new output directory")
+    integrity = check_integrity(paths)
+    bundle = load_bundle(paths, reference=run is None)
+    source = paths.reference if run is None else paths.artifact_path(run, "experiments")
+    if run is not None:
+        from .evaluation import experiment_folds
+
+        experiment_folds(paths, bundle, source)
+    table = bundle["table"]
+    feature_check = validate_features(bundle)
+    result_paths = sorted(source.glob("training/fold_*/result.json"))
+    if (source / "final_fit/result.json").is_file():
+        result_paths.append(source / "final_fit/result.json")
+    records = verify_models(bundle, result_paths, paths.root)
     fresh = None
     if refit:
         fold = walk_forward_folds(bundle["calendar"])[0]
@@ -112,7 +119,7 @@ def verify(
     return result
 
 
-def _paper_account(bundle, forecasts, rules, reference, cost, *, turnover="legacy"):
+def replay_paper_account(bundle, forecasts, rules, reference, cost, *, turnover="legacy"):
     """Replay a complete stored account through daily manual-account round trips."""
     from .accounts import new_account, restore_account, snapshot_account
     from .funds import exposure_report
@@ -239,24 +246,29 @@ def _paper_account(bundle, forecasts, rules, reference, cost, *, turnover="legac
     }, paper_checks
 
 
-def verify_paper(paths: Paths, output: Path) -> dict:
-    """Compare every active-policy account, including complete ledgers and decisions."""
-    from .evaluation import experiment_folds, first_difference, load_predictions
-    from .planning import source_hashes
+def compare_paper_accounts(
+    bundle,
+    forecasts,
+    rules,
+    evaluation,
+    result,
+    *,
+    turnover="legacy",
+    costs=(10, 20, 30),
+    account_limit=None,
+    replay=None,
+):
+    """Compare historical accounts through a supplied or current daily paper replay."""
+    from .evaluation import first_difference
     from .storage import digest, load_gzip, log
     from .validation import execution_audit, reconcile
 
-    output = paths.output_path(output, "checks")
-    integrity = check_integrity(paths)
-    bundle = load_bundle(paths)
-    evaluation = paths.artifact_path(paths.config["evaluation"], "evaluations")
-    result = read(evaluation / "evaluation_summary.json")
-    run = paths.artifact_path(result["source_run"], "experiments")
-    status, folds = experiment_folds(paths, bundle, run)
-    forecasts, rules, _, _, _ = load_predictions(bundle, run, folds, status["identity"])
+    if account_limit is not None and account_limit < 1:
+        raise ValueError("Paper account limit must be positive")
+    replay = replay or replay_paper_account
     records = []
     accounting_checks = execution_checks = paper_checks = 0
-    for cost in (10, 20, 30):
+    for cost in costs:
         key = f"{cost:02d}bps"
         names = [
             f"evaluation/{key}/selected_strategy.ledgers.json.gz",
@@ -269,14 +281,16 @@ def verify_paper(paths: Paths, output: Path) -> dict:
             stored = load_gzip(file)
             references = stored if isinstance(stored, list) else [stored]
             for index, reference in enumerate(references):
+                if account_limit is not None and len(records) >= account_limit:
+                    break
                 expected = {k: reference[k] for k in ("summary", "ledger")}
-                actual, checks = _paper_account(
+                actual, checks = replay(
                     bundle,
-                    forecasts["selected"],
+                    forecasts,
                     rules,
                     expected,
                     cost / 10000,
-                    turnover=paths.config.get("turnover_policy", "legacy"),
+                    turnover=turnover,
                 )
                 audit = execution_audit(actual["ledger"], bundle)
                 reconciliation = reconcile(
@@ -303,15 +317,51 @@ def verify_paper(paths: Paths, output: Path) -> dict:
                     or audit["status"] != "PASS"
                     or reconciliation["status"] != "PASS"
                 ):
-                    save(
-                        output / "verification.json",
-                        {"status": "FAIL", "records": records},
-                        immutable=True,
-                    )
-                    raise ValueError(
-                        f"Paper workflow differs from its frozen baseline: {relative}/{index}: {record['first_difference']}"
-                    )
+                    return {
+                        "status": "FAIL",
+                        "records": records,
+                        "error": f"Paper workflow differs from its frozen baseline: {relative}/{index}: {record['first_difference']}",
+                    }
             log("Paper workflow account comparison complete", cost=key, source=relative)
+    return {
+        "status": "PASS",
+        "accounts": len(records),
+        "sessions": sum(r["sessions"] for r in records),
+        "reconciliation_checks": accounting_checks,
+        "execution_checks": execution_checks,
+        "paper_fill_checks": paper_checks,
+        "records": records,
+    }
+
+
+def verify_paper(paths: Paths, output: Path) -> dict:
+    """Compare every active-policy account, including complete ledgers and decisions."""
+    from .evaluation import experiment_folds, load_predictions
+    from .planning import source_hashes
+
+    output = paths.output_path(output, "checks")
+    integrity = check_integrity(paths)
+    bundle = load_bundle(paths)
+    evaluation = paths.artifact_path(paths.config["evaluation"], "evaluations")
+    result = read(evaluation / "evaluation_summary.json")
+    run = paths.artifact_path(result["source_run"], "experiments")
+    status, folds = experiment_folds(paths, bundle, run)
+    forecasts, rules, _, _, _ = load_predictions(bundle, run, folds, status["identity"])
+    comparison = compare_paper_accounts(
+        bundle,
+        forecasts["selected"],
+        rules,
+        evaluation,
+        result,
+        turnover=paths.config.get("turnover_policy", "legacy"),
+    )
+    if comparison["status"] != "PASS":
+        save(
+            output / "verification.json",
+            {"status": "FAIL", "records": comparison["records"]},
+            immutable=True,
+        )
+        raise ValueError(comparison["error"])
     report = {
         "status": "PASS",
         "completed_at": now(),
@@ -320,13 +370,13 @@ def verify_paper(paths: Paths, output: Path) -> dict:
         "evaluation_sha256": sha(evaluation / "evaluation_summary.json"),
         "data_sha256": sha(paths.bundle),
         "source_sha256": {**source_hashes(), "verification": sha(Path(__file__))},
-        "accounts": len(records),
-        "sessions": sum(r["sessions"] for r in records),
+        "accounts": comparison["accounts"],
+        "sessions": comparison["sessions"],
         "integrity": integrity,
-        "reconciliation_checks": accounting_checks,
-        "execution_checks": execution_checks,
-        "paper_fill_checks": paper_checks,
-        "records": records,
+        "reconciliation_checks": comparison["reconciliation_checks"],
+        "execution_checks": comparison["execution_checks"],
+        "paper_fill_checks": comparison["paper_fill_checks"],
+        "records": comparison["records"],
     }
     save(output / "verification.json", report, immutable=True)
     return {k: v for k, v in report.items() if k != "records"}

@@ -29,6 +29,8 @@ python -m quantfolio verify --run artifacts/experiments/recipient_entitlements_2
 
 输出目录须未使用。不要复用示例目录覆盖已有检查。
 
+工程维护使用统一的 `regression`命令，自动准备Git历史实现，比较已有模型、特征、训练输入、选择结果及全部账户，不执行新拟合。小范围与全量命令、所需文件及兼容登记方式见[标准工程回归](validation.md#标准工程回归)。
+
 ## 训练与评估
 
 以下为恢复研究后的操作方式。先固定输入、候选范围和协议，再运行：

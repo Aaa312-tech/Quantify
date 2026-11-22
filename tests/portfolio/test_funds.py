@@ -159,7 +159,7 @@ def test_independent_audit_detects_tampered_exposure_mark():
 
 def test_reported_limits_apply_to_target_weights_and_paper_replay():
     from quantfolio.funds import concentration_values
-    from quantfolio.verification import _paper_account
+    from quantfolio.verification import replay_paper_account
 
     bundle, forecasts = opening_change()
     bundle["fund_mode"] = "reported"
@@ -168,7 +168,7 @@ def test_reported_limits_apply_to_target_weights_and_paper_replay():
     decision = ledger["decisions"][0]
     assert max(concentration_values(meta, decision["target_weights"]).values()) <= 0.28 + 1e-8
     reference = {"summary": summary, "ledger": ledger}
-    actual, _ = _paper_account(bundle, forecasts, "baseline", reference, 0.001)
+    actual, _ = replay_paper_account(bundle, forecasts, "baseline", reference, 0.001)
     assert actual == reference
 
 

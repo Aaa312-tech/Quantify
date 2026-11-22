@@ -11,7 +11,7 @@ from scipy.optimize import OptimizeResult
 from quantfolio.allocation import allocate
 from quantfolio.simulation import simulate
 from quantfolio.validation import execution_audit, reconcile
-from quantfolio.verification import _paper_account
+from quantfolio.verification import replay_paper_account
 from tests.factories import market_bundle
 
 
@@ -112,7 +112,7 @@ def test_exit_priority_real_fills_reconcile_and_match_the_paper_workflow(cost):
     assert reconcile(ledger, summary, bundle["meta"], [])["status"] == "PASS"
     assert execution_audit(ledger, bundle)["status"] == "PASS"
     expected = {"summary": summary, "ledger": ledger}
-    replay, checks = _paper_account(
+    replay, checks = replay_paper_account(
         bundle, forecasts, "baseline", expected, cost, turnover="exit_priority"
     )
     assert replay == expected and checks > 0
