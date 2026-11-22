@@ -38,7 +38,7 @@ README保留入口和当前结论；方法、实现、运行说明分别放在�
 
 职责划分和命名参考以下实现，未复制第三方代码：
 
-- [Backtesting.py的Broker](https://github.com/kernc/backtesting.py/blob/master/backtesting/backtesting.py)：订单处理与每日账户推进分开。本项目用 `_Execution` 集中处理开盘成交，`simulate`保留信号和估值流程。
+- [Backtesting.py的Broker](https://github.com/kernc/backtesting.py/blob/master/backtesting/backtesting.py)：订单处理与每日账户推进分开。本项目用 `Execution` 集中处理开盘成交，`simulate`保留信号和估值流程。
 - [Qlib的Account](https://github.com/microsoft/qlib/blob/main/qlib/backtest/account.py)：区分持仓核算和绩效统计。本项目由 `Ledger`记账，`metrics`统计账户与区间结果。
 - [pysystemtrade的portfolioWeights](https://github.com/pst-group/pysystemtrade/blob/develop/sysquant/optimisation/weights.py)：区分权重、金额和数量，按资产键对齐。重命名仓位和训练变量时遵循这一点，没有引入其框架层级。
 

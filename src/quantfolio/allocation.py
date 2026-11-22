@@ -2,11 +2,34 @@
 
 from __future__ import annotations
 
+from typing import TypedDict
+
 import numpy as np
+import pandas as pd
 from scipy.optimize import linprog
 
 from .funds import concentration_rows, concentration_values, uses_reported_exposure
+from .models import Forecast
 from .rules import CONFIGS, TURNOVER_POLICIES
+
+TargetWeights = dict[str, float]
+
+
+class AllocationAccount(TypedDict):
+    """Preceding-close NAV in CNY and position, sellable and receivable NAV fractions."""
+
+    weights: TargetWeights
+    nav: float
+    sellable: dict[str, float]
+    receivable_weight: float
+
+
+class AllocationMarket(TypedDict):
+    """Signal-date metadata, average daily turnover in CNY and historical return fractions."""
+
+    meta: dict
+    adv: dict[str, float]
+    returns: pd.DataFrame
 
 
 def costs(meta, s, slippage):
@@ -65,7 +88,7 @@ def select_names(meta, forecasts, previous, returns, slippage, config="baseline"
             return False
         return not chosen or not (returns[chosen].corrwith(returns[s]) > 0.85).any()
 
-    chosen = []
+    chosen: list[str] = []
     retain = 18 if cfg["retain18"] else 12
     for s in sorted(previous, key=lambda x: (ordinal.get(x, 10**9), x)):
         if (
@@ -142,23 +165,21 @@ def _constraints(meta, names, cost_rates, cap, receivable_weight, budget):
 
 
 def allocate(
-    meta,
-    forecasts,
-    previous,
-    exposure,
-    level,
-    adv,
-    nav,
-    sellable,
-    returns,
-    slippage=0.001,
-    receivable_weight=0.0,
-    config="baseline",
+    account: AllocationAccount,
+    forecasts: dict[str, Forecast],
+    market: AllocationMarket,
     *,
-    turnover="legacy",
-    allow_probe=False,
-):
+    exposure: float,
+    level: int,
+    slippage: float = 0.001,
+    config: str = "baseline",
+    turnover: str = "legacy",
+    allow_probe: bool = False,
+) -> tuple[TargetWeights, dict]:
     """Optimize target weights under cash, liquidity, concentration and turnover constraints."""
+    previous, nav, sellable = account["weights"], account["nav"], account["sellable"]
+    receivable_weight = account["receivable_weight"]
+    meta, adv, returns = market["meta"], market["adv"], market["returns"]
     cfg = CONFIGS[config]
     if turnover not in TURNOVER_POLICIES:
         raise ValueError("Unknown turnover policy")
@@ -178,7 +199,7 @@ def allocate(
     )
     names = list(dict.fromkeys(selected + list(previous)))
     n = len(names)
-    common = {
+    common: dict = {
         "cap": cap,
         "level": level,
         "selected": selected,

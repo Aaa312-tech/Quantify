@@ -46,7 +46,7 @@ where = ["src"]
 version = {attr = "quantfolio.__version__"}
 
 [tool.setuptools.package-data]
-quantfolio = ["templates/*.html"]
+quantfolio = ["templates/*.html", "py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -55,12 +55,21 @@ markers = ["integration: fixed offline signal, execution and account workflows"]
 
 [tool.mypy]
 python_version = "3.11"
-files = ["src/quantfolio/settings.py", "src/quantfolio/storage.py"]
+files = [
+    "src/quantfolio/settings.py", "src/quantfolio/storage.py",
+    "src/quantfolio/models.py", "src/quantfolio/allocation.py",
+    "src/quantfolio/ledger.py", "src/quantfolio/accounts.py",
+    "src/quantfolio/risk.py", "src/quantfolio/simulation.py", "src/quantfolio/planning.py",
+]
 check_untyped_defs = true
 warn_unused_ignores = true
 warn_redundant_casts = true
 warn_return_any = true
 show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "sklearn.*", "joblib", "threadpoolctl"]
+ignore_missing_imports = true
 
 [tool.coverage.run]
 branch = true

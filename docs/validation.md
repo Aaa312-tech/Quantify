@@ -32,13 +32,17 @@ CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13按`uv.
 
 `check_faults.py`先运行未修改代码的控制测试，再分别注入未来价格读取、元/分换算错误、漏记成交和省略输入哈希检查。只有实际断言失败才算检出，导入或收集错误不能算成功。副本放在临时目录，原源码和历史产物不改写。
 
-类型检查采用[渐进迁移](https://mypy.readthedocs.io/en/stable/existing_code.html)，当前明确检查`settings`、`storage`；存储层的`Any`用于未知JSON及NumPy标量的序列化边界。尚未纳入的业务模块为：`accounts`、`allocation`、`calibration`、`cli`、`daily_sources`、`dataset`、`disclosures`、`distributions`、`evaluation`、`feasibility`、`features`、`funds`、`industries`、`industry_sources`、`ledger`、`market`、`market_data`、`metrics`、`models`、`planning`、`preprocessing`、`refresh`、`regression`、`reporting`、`risk`、`rules`、`selection`、`simulation`、`snapshots`、`status_data`、`status_repair`、`study`、`training`、`validation`、`verification`。E4迁移金融边界后更新这个范围；当前不声称全库已完成类型化。
+类型检查采用[渐进迁移](https://mypy.readthedocs.io/en/stable/existing_code.html)，当前检查9个模块：`settings`、`storage`、`models`、`allocation`、`ledger`、`accounts`、`risk`、`simulation`、`planning`。预测、报价、仓位、成交、账户和风险使用具体契约；运行器和账户调用方受检查，包内`py.typed`同时提供安装包的类型信息。测试确认六种非法金融字段赋值会被mypy拒绝。
+
+这些模块中的原始快照、来源元数据、诊断结果和未迁移的函数参数仍保留动态字典；不声称已完整类型化。只有缺少类型元数据的`scipy.*`、`sklearn.*`、`joblib`、`threadpoolctl`设置精确的外部导入豁免，不忽略本项目模块错误。Decimal非空求和及已校验的JSON字段使用不转换数值的`cast`；旧模型、预测和金额仍由完整回归检查。
+
+尚未纳入mypy的模块为：`calibration`、`cli`、`daily_sources`、`dataset`、`disclosures`、`distributions`、`evaluation`、`feasibility`、`features`、`funds`、`industries`、`industry_sources`、`market`、`market_data`、`metrics`、`preprocessing`、`refresh`、`regression`、`reporting`、`rules`、`selection`、`snapshots`、`status_data`、`status_repair`、`study`、`training`、`validation`、`verification`。存储层的`Any`限于未知JSON及NumPy标量的序列化边界。
 
 完整历史回归的[手动工作流](../.github/workflows/regression.yml)使用Windows研究锁，取得注册范围的LFS输入后执行`regression --scope full`，不拟合模型、不追加兼容登记。手动运行时选择待验收分支；报告的`run.json`绑定实际提交和源码哈希。常规CI及完整回归的结果均上传至对应Actions运行页，保留14天；正式验收另归档到`artifacts/checks`。没有定时运行。
 
 三个分层CI作业已[通过](../artifacts/checks/quality_ci_2026-11-22/completion.json)。云端AMD EPYC完整回归在冻结模型预测处失败，最大误差约5.96×10⁻⁸；限定`MKL_ENABLE_INSTRUCTIONS=AVX2`后仍失败。两次原始记录分别保存在`artifacts/checks/ci_research_2026-11-22/hosted_default`及`artifacts/checks/ci_research_avx2_2026-11-22`。本机Intel环境在相同AVX2设置下，48个冻结模型的误差均为0。指令集限制不保证跨厂商选择同一内核，见[Intel说明](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-linux/2024-0/instruction-set-specific-dispatch-on-intel-archs.html)。
 
-手动工作流可选择`windows-2022`或`windows-latest`托管镜像，均保持冻结预测的严格比较；操作系统标签不承诺CPU型号。发布验收使用已经验证的本地Intel/Windows研究环境执行标准完整回归，并归档结果。托管作业失败不会被转成通过，也不替代本地的完整等价证据。注册并启动一次性自托管运行器的操作被自动审批拒绝，未创建运行器或常驻服务。
+手动工作流可选择`windows-2022`或`windows-latest`托管镜像，均保持冻结预测的严格比较；操作系统标签不承诺CPU型号。两种镜像均出现上述差异，Windows 2022记录另保存在`artifacts/checks/ci_research_windows2022_2026-11-22`。发布验收使用已验证的本地Intel/Windows研究环境执行标准完整回归，并归档结果。托管作业失败不会被转成通过，也不替代本地完整证据；当前没有常驻研究运行器。
 
 ## 当前结果的复核
 
@@ -83,18 +87,18 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 
 | 范围 | 结果 | 记录 |
 | --- | --- | --- |
-| 模型 | 48个模型重载，最大预测误差0 | [全量回归](../artifacts/checks/regression_full_2026-11-22/result.json) |
-| 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/regression_full_2026-11-22/history.json) |
-| 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/regression_full_2026-11-22/paper.json) |
-| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口精确一致；无模型重训 | [计算对照](../artifacts/checks/regression_full_2026-11-22/differential.json) |
+| 模型 | 48个模型重载，最大预测误差0 | [全量回归](../artifacts/checks/contracts_full_2026-11-22/result.json) |
+| 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/contracts_full_2026-11-22/history.json) |
+| 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/contracts_full_2026-11-22/paper.json) |
+| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口精确一致；无模型重训 | [计算对照](../artifacts/checks/contracts_full_2026-11-22/differential.json) |
 | 独立环境 | 锁定Windows研究环境和隔离新克隆的全量回归与原环境一致；跨平台安装及测试另行验收 | [环境验收](../artifacts/checks/environment_lock_2026-11-22/completion.json) |
 | 开盘与核账 | 192组场景、2424个纸面交易日、38组拒绝路径；三档成本完整文件链路一致 | [差分对照](../artifacts/checks/paper_refactor_2026-11-22/differential.json) |
 | 仓位与风控 | 29007组状态、1024组优化器输入及完整模拟对照 | [执行验证](../artifacts/checks/execution_refactor_2026-11-22/completion.json) |
 | 训练与评估 | 12个冻结窗口以缓存重放，选型与历史结果一致 | [流程验证](../artifacts/checks/runtime_refactor_2026-11-22/completion.json) |
 
-最近一次代码检查为834项通过、1项本机符号链接权限跳过，详见[检查日志](../artifacts/checks/regression_release_2026-11-22/checks_verified.log)。首次小范围回放的模块导入与日期索引比较失败、旧测试导入失败均保留；修复后重新使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
+核心契约改动通过775项单元测试与68项集成测试，1项因本机符号链接权限跳过；9个模块的类型检查、39个模块的覆盖率门槛与四项缺陷检测通过，详见[验收记录](../artifacts/checks/contract_checks_2026-11-22/completion.json)。首次小范围回放的模块导入与日期索引比较失败、旧测试导入失败均保留；修复后重新使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
 
-锁定环境中的Linux安装包另通过835项测试，Windows通过834项、跳过1项本机权限检查。通用OpenBLAS环境的模型误差约4.47×10⁻⁸，未通过历史数值验收；这些失败未被放宽门槛或重训覆盖。精确复现使用[历史研究环境](reproducibility.md#运行环境)。
+E2锁定环境验收时，Linux安装包通过835项测试，Windows通过834项、跳过1项本机权限检查。通用OpenBLAS环境的模型误差约4.47×10⁻⁸，未通过历史数值验收；这些失败未被放宽门槛或重训覆盖。精确复现使用[历史研究环境](reproducibility.md#运行环境)。
 
 首次环境锁发布的CI在工作流校验阶段失败，未启动作业；任务级环境变量使用了该层不支持的`runner`上下文。修复后改用`github.workspace`的同级环境目录，保留[失败记录](../artifacts/checks/environment_ci_2026-11-22/workflow_failure.json)。上下文作用域以[GitHub说明](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability)为准。
 
@@ -102,6 +106,6 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 
 训练协议和纸面计划保留生成时的源码哈希。等价重构通过单独冻结的 `source_compatibility.json` 关联原文件身份、当前全部Python源码、差分验证和完整历史账本验证，不修改原协议。
 
-缺少登记、哈希不符、证据不完整或引用越出项目时拒绝使用。模型输入、日期、预测和计划到期仍单独检查。活跃登记见[源码兼容记录](../artifacts/checks/regression_full_2026-11-22/source_compatibility.json)。
+缺少登记、哈希不符、证据不完整或引用越出项目时拒绝使用。模型输入、日期、预测和计划到期仍单独检查。活跃登记见[源码兼容记录](../artifacts/checks/contracts_full_2026-11-22/source_compatibility.json)。
 
 更改数值、时序、成交或持仓行为时，须重新完成对应模型和完整账户验证，并保留失败记录。验证脚本一经执行即作为证据保存；重试使用新文件，不能覆盖原结果。

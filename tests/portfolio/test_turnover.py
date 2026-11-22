@@ -79,25 +79,53 @@ class RuleTests(unittest.TestCase):
             (1, "add_normal_budget25", None),
             (1, "add_caution_budget25", 0.25),
         ]:
-            w, d = allocate(m, f, old, 0.9, level, adv, 1000000.0, old, r, config=cfg)
+            w, d = allocate(
+                dict(weights=old, nav=1000000.0, sellable=old, receivable_weight=0.0),
+                f,
+                dict(meta=m, adv=adv, returns=r),
+                exposure=0.9,
+                level=level,
+                config=cfg,
+            )
             self.assertEqual(d["status"], "OPTIMAL")
             self.assertEqual(d["turnover_budget"], budget)
 
     def test_initial_funding_exempt_and_frozen_has_no_buys(self):
         ss, m, r, f = selection_fixture()
         adv = {s: 1000000000.0 for s in ss}
-        w, d = allocate(m, f, {}, 0.9, 0, adv, 1000000.0, {}, r, config="all_on")
+        w, d = allocate(
+            dict(weights={}, nav=1000000.0, sellable={}, receivable_weight=0.0),
+            f,
+            dict(meta=m, adv=adv, returns=r),
+            exposure=0.9,
+            level=0,
+            config="all_on",
+        )
         self.assertIsNone(d["turnover_budget"])
         self.assertGreater(sum(w.values()), 0.25)
         old = {ss[0]: 0.14}
-        w, d = allocate(m, f, old, 0.9, 2, adv, 1000000.0, old, r, config="all_on")
+        w, d = allocate(
+            dict(weights=old, nav=1000000.0, sellable=old, receivable_weight=0.0),
+            f,
+            dict(meta=m, adv=adv, returns=r),
+            exposure=0.9,
+            level=2,
+            config="all_on",
+        )
         self.assertLessEqual(sum(w.values()), 0.14)
         self.assertEqual(set(w), set(old))
 
     def test_terminal_exit_ignores_all_turnover_controls(self):
         ss, m, r, f = selection_fixture()
         old = {ss[0]: 0.5}
-        w, d = allocate(m, f, old, 0.9, 3, {}, 1000000.0, {}, r, config="all_on")
+        w, d = allocate(
+            dict(weights=old, nav=1000000.0, sellable={}, receivable_weight=0.0),
+            f,
+            dict(meta=m, adv={}, returns=r),
+            exposure=0.9,
+            level=3,
+            config="all_on",
+        )
         self.assertEqual(w, {ss[0]: 0.0})
         self.assertEqual(d["status"], "RISK_EXIT")
 
@@ -105,15 +133,11 @@ class RuleTests(unittest.TestCase):
         ss, m, r, f = selection_fixture()
         old = {s: 0.13 for s in ss[:6]}
         w, d = allocate(
-            m,
+            dict(weights=old, nav=1000000.0, sellable=old, receivable_weight=0.0),
             f,
-            old,
-            0.12,
-            1,
-            {s: 1000000000.0 for s in ss},
-            1000000.0,
-            old,
-            r,
+            dict(meta=m, adv={s: 1000000000.0 for s in ss}, returns=r),
+            exposure=0.12,
+            level=1,
             config="add_deadband2",
         )
         self.assertLessEqual(sum(w.values()), 0.12 + 1e-08)

@@ -9,16 +9,43 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal
+from typing import Literal, TypedDict, cast
 
 import pandas as pd
 
 
-def cents(x):
+class Trade(TypedDict):
+    """Settled fill: integer shares, CNY prices/amounts and a fractional slippage rate."""
+
+    date: str
+    signal_date: str | None
+    symbol: str
+    side: Literal["BUY", "SELL"]
+    quantity: int
+    price: float
+    gross: float
+    fee: float
+    slippage_rate: float
+    slippage_cost: float
+    cash_after: float
+
+
+class Receivable(TypedDict):
+    """Cash entitlement in integer cents; unknown payment/availability dates remain null."""
+
+    symbol: str
+    cents: int
+    pay_date: str | None
+    available_date: str | None
+    event_id: str
+
+
+def cents(x: float | Decimal) -> int:
     """Convert currency to integer cents using decimal half-up rounding."""
     return int((Decimal(str(x)) * 100).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
 
 
-def tick_price(x, tick, up=False):
+def tick_price(x: float, tick: float, up: bool = False) -> float:
     """Round a price down or up to the instrument's tick size."""
     d = Decimal(str(tick))
     return float(
@@ -27,13 +54,13 @@ def tick_price(x, tick, up=False):
     )
 
 
-def nearest_tick(x, tick):
+def nearest_tick(x: float, tick: float) -> float:
     """Round a reference price to the nearest valid tick using decimal arithmetic."""
     d = Decimal(str(tick))
     return float((Decimal(str(x)) / d).quantize(Decimal("1"), rounding=ROUND_HALF_UP) * d)
 
 
-def lot_rule(m):
+def lot_rule(m: dict) -> tuple[int, int]:
     """Return the minimum buy size and quantity increment for an instrument."""
     if m["kind"] == "stock" and m["code"].startswith(("688", "689")):
         return 200, 1
@@ -42,7 +69,16 @@ def lot_rule(m):
     return 100, 100
 
 
-def buy_quantity(budget, price, m, commission=0.0003, minimum=5, transfer=0.00001, *, slippage=0.0):
+def buy_quantity(
+    budget: float,
+    price: float,
+    m: dict,
+    commission: float = 0.0003,
+    minimum: float = 5,
+    transfer: float = 0.00001,
+    *,
+    slippage: float = 0.0,
+) -> int:
     """Find an affordable legal buy quantity including minimum commissions."""
     if budget <= 0 or price <= 0:
         return 0
@@ -60,7 +96,15 @@ def buy_quantity(budget, price, m, commission=0.0003, minimum=5, transfer=0.0000
     return q if q >= minimum_qty else 0
 
 
-def fees_cents(gross, m, side, commission=0.0003, minimum=5, transfer=0.00001, stamp=0.0005):
+def fees_cents(
+    gross: float,
+    m: dict,
+    side: str,
+    commission: float = 0.0003,
+    minimum: float = 5,
+    transfer: float = 0.00001,
+    stamp: float = 0.0005,
+) -> int:
     """Calculate the realized fee in cents for a buy or sell."""
     if gross <= 0:
         return 0
@@ -71,7 +115,7 @@ def fees_cents(gross, m, side, commission=0.0003, minimum=5, transfer=0.00001, s
     )
 
 
-def slippage_cents(gross, rate):
+def slippage_cents(gross: float, rate: float) -> int:
     """Debit one declared cost on proxy gross; the quote itself is not displaced."""
     if not math.isfinite(rate) or rate < 0 or not math.isfinite(gross) or gross < 0:
         raise ValueError("Slippage rate and gross must be finite and nonnegative")
@@ -92,35 +136,35 @@ class Lot:
 class Ledger:
     """Track integer shares, cent cash, receivables and independently auditable events."""
 
-    def __init__(self, meta, initial=1_000_000.0, dividend_tax=0.20):
+    def __init__(self, meta: dict, initial: float = 1_000_000.0, dividend_tax: float = 0.20):
         self.meta = meta
         self.initial = cents(initial)
         self.cash = self.initial
-        self.lots = {}
-        self.receivables = []
-        self.trades = []
-        self.events = []
-        self.rejections = []
-        self.entitlements = {}
+        self.lots: dict[str, list[Lot]] = {}
+        self.receivables: list[Receivable] = []
+        self.trades: list[Trade] = []
+        self.events: list[dict] = []
+        self.rejections: list[dict] = []
+        self.entitlements: dict[str, list[tuple[int, int, float, pd.Timestamp]]] = {}
         self.next_id = 1
         self.dividend_tax = dividend_tax
 
-    def quantity(self, s):
+    def quantity(self, s: str) -> int:
         return sum(x.quantity for x in self.lots.get(s, []))
 
-    def available(self, s, date):
+    def available(self, s: str, date: pd.Timestamp) -> int:
         return sum(
             x.quantity
             for x in self.lots.get(s, [])
             if x.available is not None and x.available <= date
         )
 
-    def values(self, prices):
+    def values(self, prices: dict[str, float]) -> dict[str, float]:
         return {
             s: cents(self.quantity(s) * prices[s]) / 100 for s in self.lots if self.quantity(s) > 0
         }
 
-    def nav(self, prices):
+    def nav(self, prices: dict[str, float]) -> float:
         return (
             self.cash / 100
             + sum(self.values(prices).values())
@@ -132,7 +176,16 @@ class Ledger:
             {"date": str(date.date()), "symbol": s, "side": side, "reason": reason}
         )
 
-    def buy(self, date, s, quantity, price, signal_date=None, *, slippage=0.0):
+    def buy(
+        self,
+        date: pd.Timestamp,
+        s: str,
+        quantity: int,
+        price: float,
+        signal_date: pd.Timestamp | None = None,
+        *,
+        slippage: float = 0.0,
+    ) -> bool:
         mn, step = lot_rule(self.meta[s])
         if quantity < mn or quantity % step:
             raise ValueError("Illegal buy quantity")
@@ -152,7 +205,16 @@ class Ledger:
         )
         return True
 
-    def sell(self, date, s, requested, price, signal_date=None, *, slippage=0.0):
+    def sell(
+        self,
+        date: pd.Timestamp,
+        s: str,
+        requested: int,
+        price: float,
+        signal_date: pd.Timestamp | None = None,
+        *,
+        slippage: float = 0.0,
+    ) -> int:
         available = self.available(s, date)
         q = min(int(requested), available)
         mn, step = lot_rule(self.meta[s])
@@ -184,8 +246,18 @@ class Ledger:
         return q
 
     def _record_trade(
-        self, date, s, side, quantity, price, signal_date, gross, fee, slippage, impact
-    ):
+        self,
+        date: pd.Timestamp,
+        s: str,
+        side: Literal["BUY", "SELL"],
+        quantity: int,
+        price: float,
+        signal_date: pd.Timestamp | None,
+        gross: int,
+        fee: int,
+        slippage: float,
+        impact: int,
+    ) -> None:
         """Append the common journal schema after the position and cash have settled."""
         self.trades.append(
             {
@@ -254,7 +326,7 @@ class Ledger:
             share_ratio = multiplier - 1
             exact = [share_ratio * x[1] for x in rights]
             allocation = [int(x.to_integral_value(rounding=ROUND_FLOOR)) for x in exact]
-            total_exact = sum(exact)
+            total_exact = cast(Decimal, sum(exact))
             extra_total = int(total_exact.to_integral_value(rounding=ROUND_FLOOR))
             fraction = float(total_exact - extra_total)
             # Aggregate-account floor, then deterministic largest-remainder allocation to
@@ -271,7 +343,7 @@ class Ledger:
                 rounding = (
                     ROUND_CEILING if a.get("fractional_rounding") == "CEILING" else ROUND_FLOOR
                 )
-                new_total = int(sum(exact).to_integral_value(rounding=rounding))
+                new_total = int(cast(Decimal, sum(exact)).to_integral_value(rounding=rounding))
                 for j in sorted(
                     range(len(exact)), key=lambda j: exact[j] - allocation[j], reverse=True
                 )[: new_total - sum(allocation)]:
@@ -288,7 +360,7 @@ class Ledger:
                                 lot_id,
                                 new_qty,
                                 bought,
-                                max(old[lot_id].available, available)
+                                max(cast(pd.Timestamp, old[lot_id].available), available)
                                 if old[lot_id].available is not None and available is not None
                                 else None,
                                 (cost - a["cash_per_share"]) / a["share_multiplier"],
@@ -297,7 +369,9 @@ class Ledger:
                 self.lots[s] = new_lots
                 extra_total = new_total - q
                 fraction = (
-                    0.0 if a.get("fractional_rounding") else float(abs(sum(exact) - new_total))
+                    0.0
+                    if a.get("fractional_rounding")
+                    else float(abs(cast(Decimal, sum(exact)) - new_total))
                 )
             for (lot_id, qty, cost, bought), extra in (
                 [] if multiplier < 1 else zip(rights, allocation)

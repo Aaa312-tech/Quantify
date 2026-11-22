@@ -5,16 +5,47 @@ import re
 from collections import defaultdict
 from dataclasses import asdict
 from decimal import ROUND_HALF_UP, Decimal
+from typing import NotRequired, TypedDict, cast
 
 import pandas as pd
 
-from .ledger import Ledger, Lot, cents
-from .risk import RiskState
+from .ledger import Ledger, Lot, Receivable, cents
+from .risk import RiskSnapshot, RiskState
 from .storage import now
 from .validation import checked_fund_exposure, checked_industries, fund_exposure_equal
 
 
-def date_only(value):
+class AccountLot(TypedDict):
+    id: int
+    symbol: str
+    quantity: int
+    bought: str
+    available: str | None
+    stop_cost: float
+
+
+class AccountSnapshot(TypedDict):
+    """Closing JSON account: cash/principal in CNY, lots in shares, receivables in cents."""
+
+    schema_version: int
+    account_id: str
+    kind: str
+    created_at: str
+    as_of: str
+    initial_date: str
+    initial_cash: float
+    cash: float
+    lots: list[AccountLot]
+    next_lot_id: int
+    receivables: list[Receivable]
+    entitlements: dict[str, list[list[int | float | str]]]
+    risk: RiskSnapshot
+    sessions_completed: int
+    parent: dict[str, str] | None
+    valuation: NotRequired[dict]
+
+
+def date_only(value: object) -> pd.Timestamp:
     """Require an unambiguous ISO date, without silently discarding a time or timezone."""
     if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
         raise ValueError("Dates must use YYYY-MM-DD")
@@ -29,7 +60,7 @@ def timestamp(value):
     return result.tz_convert("Asia/Shanghai")
 
 
-def number(value, name, *, positive=False):
+def number(value: object, name: str, *, positive: bool = False) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
         raise ValueError(f"Invalid {name}")
     if value < 0 or (positive and value == 0):
@@ -37,20 +68,20 @@ def number(value, name, *, positive=False):
     return value
 
 
-def integer(value, name, *, positive=False):
+def integer(value: object, name: str, *, positive: bool = False) -> int:
     if type(value) is not int:
         raise ValueError(f"{name} must be an integer")
-    return number(value, name, positive=positive)
+    return cast(int, number(value, name, positive=positive))
 
 
-def money(value, name):
+def money(value: float, name: str) -> float:
     number(value, name)
     if abs(cents(value) / 100 - value) > 1e-8:
         raise ValueError(f"{name} must have cent precision")
     return value
 
 
-def new_account(as_of, account_id):
+def new_account(as_of: str, account_id: str) -> AccountSnapshot:
     """Create a fresh virtual account, with no assertion about a real broker balance."""
     date_only(as_of)
     if not re.fullmatch(r"[a-zA-Z0-9_-]{1,64}", account_id):
@@ -68,13 +99,13 @@ def new_account(as_of, account_id):
         "next_lot_id": 1,
         "receivables": [],
         "entitlements": {},
-        "risk": asdict(RiskState()),
+        "risk": cast(RiskSnapshot, asdict(RiskState())),
         "sessions_completed": 0,
         "parent": None,
     }
 
 
-def restore_account(account, meta):
+def restore_account(account: AccountSnapshot, meta: dict) -> tuple[Ledger, RiskState]:
     """Reject incomplete holdings or risk history instead of assuming cash or normal risk."""
     if account["schema_version"] != 1 or account["kind"] not in ("paper", "manual"):
         raise ValueError("Unsupported account schema or kind")
@@ -106,30 +137,30 @@ def restore_account(account, meta):
         cost = number(item["stop_cost"], "adjusted stop cost", positive=True)
         book.lots.setdefault(symbol, []).append(Lot(lot_id, quantity, bought, available, cost))
     events = set()
-    for item in account["receivables"]:
-        if item["symbol"] not in meta or item["event_id"] in events:
+    for receivable in account["receivables"]:
+        if receivable["symbol"] not in meta or receivable["event_id"] in events:
             raise ValueError("Unknown or duplicate receivable")
-        events.add(item["event_id"])
-        integer(item["cents"], "receivable cents", positive=True)
-        pay, available = item["pay_date"], item["available_date"]
+        events.add(receivable["event_id"])
+        integer(receivable["cents"], "receivable cents", positive=True)
+        pay, cash_available = receivable["pay_date"], receivable["available_date"]
         if pay is not None:
             date_only(pay)
-        if available is not None:
-            date_only(available)
-            if pay is None or available <= pay or available <= account["as_of"]:
+        if cash_available is not None:
+            date_only(cash_available)
+            if pay is None or cash_available <= pay or cash_available <= account["as_of"]:
                 raise ValueError("Receivable availability is inconsistent with the closing account")
-        book.receivables.append(dict(item))
+        book.receivables.append(cast(Receivable, dict(receivable)))
     for event_id, rights in account["entitlements"].items():
         seen = set()
         stored = []
-        for lot_id, quantity, cost, bought in rights:
-            integer(lot_id, "entitlement lot id", positive=True)
-            integer(quantity, "entitled quantity", positive=True)
-            number(cost, "entitled stop cost", positive=True)
-            if lot_id in seen or not initial <= date_only(bought) <= as_of:
+        for stored_id, shares, stop_cost, purchase_date in rights:
+            entitled_id = integer(stored_id, "entitlement lot id", positive=True)
+            entitled_quantity = integer(shares, "entitled quantity", positive=True)
+            entitled_cost = number(stop_cost, "entitled stop cost", positive=True)
+            if entitled_id in seen or not initial <= date_only(purchase_date) <= as_of:
                 raise ValueError("Invalid entitlement lot")
-            seen.add(lot_id)
-            stored.append((lot_id, quantity, cost, date_only(bought)))
+            seen.add(entitled_id)
+            stored.append((entitled_id, entitled_quantity, entitled_cost, date_only(purchase_date)))
         book.entitlements[event_id] = stored
     book.next_id = integer(account["next_lot_id"], "next lot id", positive=True)
     previous_ids = ids | {item[0] for rights in book.entitlements.values() for item in rights}
@@ -138,7 +169,7 @@ def restore_account(account, meta):
     return book, _restore_risk(account, book)
 
 
-def _restore_risk(account, book):
+def _restore_risk(account: AccountSnapshot, book: Ledger) -> RiskState:
     """Validate carried risk observations and the fresh-account boundary."""
     state = account["risk"]
     if set(state) != set(asdict(RiskState())) or state["mode"] != "latched":
@@ -164,8 +195,17 @@ def _restore_risk(account, book):
     return RiskState(**state)
 
 
-def snapshot_account(book, original, as_of, risk, sessions_completed, parent):
+def snapshot_account(
+    book: Ledger,
+    original: AccountSnapshot,
+    as_of: str,
+    risk: RiskState,
+    sessions_completed: int,
+    parent: dict[str, str] | None,
+) -> AccountSnapshot:
     """Store cent cash, individual availability dates and the original risk high-water mark."""
+    if book.initial != cents(original["initial_cash"]):
+        raise ValueError("Ledger principal differs from the original account")
     return {
         **original,
         "created_at": now(),
@@ -189,7 +229,7 @@ def snapshot_account(book, original, as_of, risk, sessions_completed, parent):
             event_id: [[i, q, c, str(b.date())] for i, q, c, b in rights]
             for event_id, rights in book.entitlements.items()
         },
-        "risk": asdict(risk),
+        "risk": cast(RiskSnapshot, asdict(risk)),
         "sessions_completed": sessions_completed,
         "parent": parent,
     }
@@ -197,7 +237,7 @@ def snapshot_account(book, original, as_of, risk, sessions_completed, parent):
 
 def _check_buy_exposure(meta, groups, values, nav, cap, information_at):
     """Check post-fee capital and reported fund limits independently of execution."""
-    sectors = defaultdict(int)
+    sectors: dict[str, float] = defaultdict(int)
     for s, value in values.items():
         if groups[s] is None:
             raise ValueError("Paper purchase has an unknown industry")
@@ -227,7 +267,8 @@ def audit_fills(opening, result, meta, date, rate, cap):
     )
     groups = checked_industries(meta, information_at)
     cash = amount(opening["cash"])
-    quantities, available = defaultdict(int), defaultdict(int)
+    quantities: dict[str, int] = defaultdict(int)
+    available: dict[str, int] = defaultdict(int)
     for lot in opening["lots"]:
         quantities[lot["symbol"]] += lot["quantity"]
         if lot["available"] is not None and lot["available"] <= date:
@@ -288,7 +329,7 @@ def audit_fills(opening, result, meta, date, rate, cap):
             checks += 1
         checks += 9
     closing = result["opening_account"]
-    actual = defaultdict(int)
+    actual: dict[str, int] = defaultdict(int)
     for lot in closing["lots"]:
         actual[lot["symbol"]] += lot["quantity"]
     if cash != amount(closing["cash"]) or {s: q for s, q in quantities.items() if q} != dict(

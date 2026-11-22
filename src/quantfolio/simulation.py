@@ -20,6 +20,7 @@ from .industries import metadata_at, require_industries
 from .ledger import Ledger, buy_quantity, cents, fees_cents, lot_rule, slippage_cents
 from .market import EXECUTION_MODEL, opening_price, regime, risk_warning
 from .metrics import account_stats
+from .models import Forecast
 from .risk import RISK_MODES, RiskState, healthy_market
 from .rules import config_for, turnover_for
 
@@ -39,7 +40,7 @@ def post_buy_limits(values, meta, symbol, purchase, after_fee_nav, cap):
             value <= 0.30 * after_fee_nav + 1e-8
             for value in concentration_values(meta, proposed).values()
         )
-    sectors = collections.defaultdict(float)
+    sectors: dict[str, float] = collections.defaultdict(float)
     for s, v in proposed.items():
         sectors[meta[s]["industry"]] += v
     return all(v <= 0.30 * after_fee_nav + 1e-8 for v in sectors.values())
@@ -63,17 +64,17 @@ def buy_ceiling(raw, previous, date, actions, atr):
 
 
 @dataclass
-class _Execution:
+class Execution:
     """Execute prior-close targets at opening proxies with separately debited costs."""
 
     ledger: Ledger
     bundle: dict
     index: int
-    prices: dict
-    actions: dict
+    prices: dict[str, float]
+    actions: dict[str, list[dict]]
     slippage: float
     cap: float
-    marks: list
+    marks: list[dict]
 
     def __post_init__(self):
         self.date = self.bundle["calendar"][self.index]
@@ -129,7 +130,8 @@ class _Execution:
                 self.ledger.meta, position_values, nav, information_at
             )
 
-    def sell(self, targets):
+    def sell(self, targets: dict[str, float]) -> None:
+        """Reduce positions to CNY target values using sellable opening lots."""
         for symbol in list(self.ledger.lots):
             current = self.ledger.quantity(symbol) * self.prices[symbol]
             desired = targets.get(symbol, 0.0)
@@ -154,7 +156,14 @@ class _Execution:
             self.prices[symbol] = price
             self._observe()
 
-    def buy(self, targets, stopped, valid, decision):
+    def buy(
+        self,
+        targets: dict[str, float],
+        stopped: list[str],
+        valid: dict[str, Forecast],
+        decision: dict,
+    ) -> None:
+        """Fund CNY target values after sells, checking each settled fill."""
         for symbol, desired in targets.items():
             if desired <= 0 or symbol in stopped:
                 continue
@@ -308,17 +317,21 @@ def _signal_decision(
             for symbol in prior_values
         }
         target_weights, decision = allocate(
-            meta,
+            {
+                "weights": weights,
+                "nav": prior,
+                "sellable": sellable,
+                "receivable_weight": sum(x["cents"] for x in ledger.receivables) / 100 / prior,
+            },
             forecasts_today,
-            weights,
-            exposure,
-            level,
-            panels["adv20"].loc[previous].to_dict(),
-            prior,
-            sellable,
-            panels["ret1"].loc[:previous].tail(60),
-            slippage,
-            sum(x["cents"] for x in ledger.receivables) / 100 / prior,
+            {
+                "meta": meta,
+                "adv": panels["adv20"].loc[previous].to_dict(),
+                "returns": panels["ret1"].loc[:previous].tail(60),
+            },
+            exposure=exposure,
+            level=level,
+            slippage=slippage,
             config=active_config,
             turnover=active_turnover,
             allow_probe=state["phase"] == "PROBE20",
@@ -403,7 +416,7 @@ def simulate(
     bundle,
     start,
     end,
-    forecasts,
+    forecasts: dict[int, dict[str, Forecast]],
     slippage=0.001,
     detail=True,
     mode="latched",
@@ -439,12 +452,12 @@ def simulate(
         }
         bundle["atr_lookup"] = atr
     ledger = Ledger(meta)
-    last_close = {}
+    last_close: dict[str, float] = {}
     curve = []
     quality = []
     decisions = []
-    intermediate = []
-    risk = RiskState(mode=mode)
+    intermediate: list[dict] = []
+    risk = RiskState(mode=mode, peak=ledger.initial / 100)
     for index in range(start, end + 1):
         date = calendar[index]
         day = str(date.date())
@@ -497,7 +510,7 @@ def simulate(
         if level == 3:
             targets = {symbol: 0.0 for symbol in values}
 
-        execution = _Execution(
+        execution = Execution(
             ledger, bundle, index, prices, actions_by_symbol, slippage, cap, intermediate
         )
         execution.sell(targets)
@@ -511,7 +524,7 @@ def simulate(
         if ledger.cash < 0:
             raise ValueError("Negative cash")
     summary = account_stats(ledger, curve, decisions, quality, mode)
-    full = {
+    full: dict = {
         "execution": {"model": EXECUTION_MODEL, "slippage_rate": slippage},
         "curve": curve,
         "trades": ledger.trades,

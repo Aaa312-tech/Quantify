@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import TypedDict, cast
+
 import joblib
 import numpy as np
 import pandas as pd
@@ -176,8 +179,22 @@ def candidate_scores(table, rows, predictions):
     return scores
 
 
-def _group_forecasts(dates, symbols, ranks, means, margins):
-    forecasts = {}
+class Forecast(TypedDict):
+    """Signal-close rank and calibrated return/margin, all expressed as fractions."""
+
+    rank: float
+    mu: float
+    margin: float
+
+
+def _group_forecasts(
+    dates: Iterable[int],
+    symbols: Iterable[str],
+    ranks: Iterable[float],
+    means: Iterable[float],
+    margins: Iterable[float],
+) -> dict[int, dict[str, Forecast]]:
+    forecasts: dict[int, dict[str, Forecast]] = {}
     for date_index, symbol, rank, mean, margin in zip(dates, symbols, ranks, means, margins):
         forecasts.setdefault(int(date_index), {})[str(symbol)] = {
             "rank": float(rank),
@@ -187,7 +204,7 @@ def _group_forecasts(dates, symbols, ranks, means, margins):
     return forecasts
 
 
-def forecasts_by_date(table, rows, rank, original_rank, cal):
+def forecasts_by_date(table, rows, rank, original_rank, cal) -> dict[int, dict[str, Forecast]]:
     """Calibrate ranks and group forecasts by signal date."""
     mean, margin = map_calibration(original_rank, cal)
     return _group_forecasts(
@@ -234,15 +251,17 @@ def factor_check(table, rows, scores, available_before):
             }
         )
     origin = int(signals.date_index.min())
-    blocks = {}
+    blocks: dict[int, list[float]] = {}
     for day in daily:
-        blocks.setdefault((day["date_index"] - origin) // 10, []).append(day["q5_minus_q1"])
+        blocks.setdefault((cast(int, day["date_index"]) - origin) // 10, []).append(
+            day["q5_minus_q1"]
+        )
     block_means = [
         float(np.mean(spreads)) for block, spreads in sorted(blocks.items()) if block < 6
     ]
     eligible_labels = int((pool & available_labels).sum())
     coverage = len(selected) / max(1, eligible_labels)
-    result = {
+    result: dict = {
         "dates": len(daily),
         "coverage": coverage,
         "mean_raw_ic": float(np.mean([day["raw_ic"] for day in daily])) if daily else 0.0,
@@ -312,7 +331,7 @@ def industry_holdout_check(table, rows, scores, available_before):
     }
 
 
-def prediction_map(table, arrays, name):
+def prediction_map(table, arrays, name) -> dict[int, dict[str, Forecast]]:
     """Group stored outer predictions by signal date."""
     signals = table.iloc[arrays["row_indices"]]
     return _group_forecasts(

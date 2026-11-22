@@ -9,7 +9,7 @@ import pytest
 from quantfolio.ledger import Ledger
 from quantfolio.market import legal_label, opening_price
 from quantfolio.preprocessing import build_dataset, compare_history
-from quantfolio.simulation import _Execution, buy_ceiling
+from quantfolio.simulation import Execution, buy_ceiling
 from quantfolio.snapshots import rebuild_labels
 from quantfolio.validation import execution_audit, opening_errors
 from tests.factories import market_bundle, raw_history
@@ -108,7 +108,7 @@ def test_known_resumption_does_not_invent_liquidity_or_ignore_lower_limit():
     bundle["panels"]["adv20"].at[dates[11], symbol] = np.nan
     book = Ledger(bundle["meta"])
     book.buy(dates[6], symbol, 100, 10.0)
-    executor = _Execution(book, bundle, 12, {symbol: 10.0}, {symbol: []}, 0.001, 0.9, [])
+    executor = Execution(book, bundle, 12, {symbol: 10.0}, {symbol: []}, 0.001, 0.9, [])
     executor.sell({symbol: 0.0})
     assert book.quantity(symbol) == 100
     assert book.rejections[-1]["reason"] == "MISSING_LIQUIDITY"

@@ -4,11 +4,44 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypedDict
 
 CAPS = {"NORMAL": 0.9, "CAUTION45": 0.45, "FROZEN20": 0.2, "HALTED0": 0.0, "PROBE20": 0.2}
 LEVELS = {"NORMAL": 0, "CAUTION45": 1, "FROZEN20": 2, "HALTED0": 3, "PROBE20": 2}
 RISK_MODES = ("latched", "staged_restore", "probe_restore")
+
+
+class RiskSnapshot(TypedDict):
+    mode: str
+    phase: str
+    peak: float
+    age: int
+    healthy_streak: int
+    probe_anchor: float | None
+    observations: int
+
+
+class _PreviousRisk(TypedDict):
+    state_age_before: int
+    healthy_streak_before: int
+    previous_phase: str
+    probe_anchor_before: float | None
+
+
+class RiskDecision(_PreviousRisk):
+    phase: str
+    level: int
+    cap: float
+    can_buy: bool
+    changed: bool
+    reason: str
+    peak: float
+    drawdown: float
+    state_age: int
+    healthy_streak: int
+    probe_anchor: float | None
+    healthy: bool
+    mode: str
 
 
 @dataclass
@@ -23,7 +56,7 @@ class RiskState:
     probe_anchor: float | None = None
     observations: int = 0
 
-    def update(self, nav: float, healthy: bool) -> dict[str, Any]:
+    def update(self, nav: float, healthy: bool) -> RiskDecision:
         """Use preceding-close NAV, preserving the frozen ledger evidence schema."""
         if self.mode not in RISK_MODES:
             raise ValueError("Unknown risk mode")
@@ -38,7 +71,7 @@ class RiskState:
         self.healthy_streak = self.healthy_streak + 1 if healthy else 0
         previous = self.phase
         next_phase, reason = self._transition(drawdown)
-        evidence = {
+        evidence: _PreviousRisk = {
             "state_age_before": self.age,
             "healthy_streak_before": self.healthy_streak,
             "previous_phase": previous,

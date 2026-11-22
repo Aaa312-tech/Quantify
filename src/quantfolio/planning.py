@@ -4,11 +4,13 @@ from collections import defaultdict
 from copy import deepcopy
 from dataclasses import asdict
 from pathlib import Path
+from typing import TypedDict
 
 import numpy as np
 import pandas as pd
 
 from .accounts import (
+    AccountSnapshot,
     audit_fills,
     date_only,
     new_account,
@@ -22,11 +24,11 @@ from .dataset import check_integrity, eligible_rows, load_bundle, source_compati
 from .evaluation import experiment_folds
 from .funds import exposure_report
 from .industries import metadata_at, require_industries
-from .ledger import lot_rule, nearest_tick, tick_price
+from .ledger import Ledger, lot_rule, nearest_tick, tick_price
 from .market import board_limit, regime, risk_warning
-from .models import prediction_map
+from .models import Forecast, prediction_map
 from .risk import RiskState, healthy_market
-from .simulation import _Execution, buy_ceiling
+from .simulation import Execution, buy_ceiling
 from .status_data import load_status_review
 from .storage import digest, now, read, save, sha
 
@@ -44,6 +46,14 @@ SOURCE_MODULES = (
     "funds",
     "validation",
 )
+
+
+class OpeningQuote(TypedDict):
+    """Observed auction price in CNY, with its zoned timestamp and explicit suspension status."""
+
+    open: float | None
+    market_at: str
+    suspended: bool
 
 
 def load_calendar(paths):
@@ -234,7 +244,16 @@ def _opening_contracts(
 
 
 @pd.option_context("compute.use_numexpr", False)
-def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, turnover="legacy"):
+def make_intent(
+    bundle: dict,
+    account: AccountSnapshot,
+    forecasts: dict[str, Forecast],
+    config: str,
+    execute_on: str,
+    slippage: float,
+    *,
+    turnover: str = "legacy",
+) -> dict:
     """Calculate the same completed-close targets as the historical strategy, before quotes."""
     signal = date_only(account["as_of"])
     execution = date_only(execute_on)
@@ -281,17 +300,21 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, tur
     }
     if planned:
         targets, decision = allocate(
-            meta_at_signal,
+            {
+                "weights": {s: v / prior for s, v in values.items()},
+                "nav": prior,
+                "sellable": {s: book.available(s, execution) * close[s] / prior for s in values},
+                "receivable_weight": sum(r["cents"] for r in book.receivables) / 100 / prior,
+            },
             valid,
-            {s: v / prior for s, v in values.items()},
-            cap,
-            state["level"],
-            panels["adv20"].loc[signal].to_dict(),
-            prior,
-            {s: book.available(s, execution) * close[s] / prior for s in values},
-            panels["ret1"].loc[:signal].tail(60),
-            slippage,
-            sum(r["cents"] for r in book.receivables) / 100 / prior,
+            {
+                "meta": meta_at_signal,
+                "adv": panels["adv20"].loc[signal].to_dict(),
+                "returns": panels["ret1"].loc[:signal].tail(60),
+            },
+            exposure=cap,
+            level=state["level"],
+            slippage=slippage,
             config=config,
             turnover=turnover,
         )
@@ -364,7 +387,16 @@ def prepared_actions(account, actions, calendar, execute_on):
     return result
 
 
-def _opening_market(intent, book, meta, quotes, preview, signal, execution, opening_at):
+def _opening_market(
+    intent: dict,
+    book: Ledger,
+    meta: dict,
+    quotes: dict[str, OpeningQuote],
+    preview: bool,
+    signal: pd.Timestamp,
+    execution: pd.Timestamp,
+    opening_at: pd.Timestamp,
+) -> tuple[dict, dict[str, float]]:
     """Validate auction observations and construct the execution engine's two-session input."""
     contracts = intent["contracts"]
     prices, raws, statuses = {}, {}, {}
@@ -410,7 +442,15 @@ def _opening_market(intent, book, meta, quotes, preview, signal, execution, open
     return bundle, prices
 
 
-def resolve_intent(intent, account, actions, calendar, quotes, *, preview=False):
+def resolve_intent(
+    intent: dict,
+    account: AccountSnapshot,
+    actions: list[dict],
+    calendar: dict,
+    quotes: dict[str, OpeningQuote],
+    *,
+    preview: bool = False,
+) -> dict:
     """Apply only the frozen intention and supplied opening quotes to a separate paper ledger."""
     contracts = intent["contracts"]
     meta = {s: item["meta"] for s, item in contracts.items()}
@@ -459,8 +499,8 @@ def resolve_intent(intent, account, actions, calendar, quotes, *, preview=False)
     if intent["state"]["level"] == 3:
         targets = {s: 0.0 for s in values}
     decision = deepcopy(intent["decision"])
-    marks = []
-    execution_engine = _Execution(
+    marks: list[dict] = []
+    execution_engine = Execution(
         book, bundle, 1, prices, by_symbol, intent["slippage_rate"], intent["cap"], marks
     )
     execution_engine.sell(targets)
