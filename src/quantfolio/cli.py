@@ -221,9 +221,63 @@ def main(argv: list[str] | None = None) -> None:
     print(json.dumps(result, ensure_ascii=False, indent=2, default=str, allow_nan=False))
 
 
-def run(args: argparse.Namespace, paths: Paths) -> dict:
+def _project_status(paths: Paths) -> dict:
+    """Read the active evaluation and verify its training and frozen-file identities."""
+    from .market import EXECUTION_MODEL
+    from .status_data import load_status_review
     from .storage import read, sha
 
+    active = paths.config.get("evaluation")
+    source = paths.artifact_path(active, "evaluations") if active else paths.reference
+    path = source / "evaluation_summary.json"
+    manifest = read(paths.manifest)
+    if sha(path) != manifest["files"][path.relative_to(paths.root).as_posix()]:
+        raise ValueError("Configured evaluation summary hash mismatch")
+    result = read(path)
+    corrected = False
+    no_positive_excess = all(
+        values[result["primary_policy"]]["summary"]["return"]
+        <= values["matched_momentum"]["summary"]["return"]
+        for values in result["continuous"].values()
+    )
+    if active:
+        from .evaluation import experiment_folds, load_bundle
+
+        training = paths.artifact_path(result["source_run"], "experiments")
+        status, _ = experiment_folds(paths, load_bundle(paths), training)
+        if result["identity"] != status["identity"]:
+            raise ValueError("Configured evaluation and training identities differ")
+        corrected = status["status"] == "COMPLETE" and status.get("latest_fit_included", False)
+    return {
+        "software_version": __version__,
+        "strategy": paths.config["strategy"],
+        "strategy_name": paths.config["strategy_name"],
+        "decision": result["decision"],
+        "execution_model": EXECUTION_MODEL,
+        "displayed_results_scope": "CAUSAL_RETRAINING"
+        if active
+        else "ARCHIVED_EXECUTION_WITH_KNOWN_CAUSALITY_DEFECT",
+        "corrected_retraining_completed": corrected,
+        "source_evaluation": source.relative_to(paths.root).as_posix(),
+        "data_cutoff": paths.config["data_cutoff"],
+        "historical_status_review": load_status_review(paths),
+        "test_start": result["trade_start"],
+        "test_end": result["trade_end"],
+        "gates": result.get("gates", {"superiority": False}),
+        "superiority_assessment": "NO_POSITIVE_EXCESS_TO_MATCHED_MOMENTUM"
+        if active and no_positive_excess
+        else result.get("superiority_assessment", "NOT_PASSED"),
+        "continuous": {
+            key: {
+                name: values[result["primary_policy"]]["summary"][name]
+                for name in ("return", "max_drawdown", "trades", "fees")
+            }
+            for key, values in result["continuous"].items()
+        },
+    }
+
+
+def run(args: argparse.Namespace, paths: Paths) -> dict:
     if args.command == "regression":
         from .regression import run_regression
 
@@ -259,57 +313,7 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
 
         return close_account(paths, args.resolution, args.quotes, args.output)
     if args.command == "status":
-        from .market import EXECUTION_MODEL
-        from .status_data import load_status_review
-
-        active = paths.config.get("evaluation")
-        source = paths.artifact_path(active, "evaluations") if active else paths.reference
-        path = source / "evaluation_summary.json"
-        manifest = read(paths.manifest)
-        if sha(path) != manifest["files"][path.relative_to(paths.root).as_posix()]:
-            raise ValueError("Configured evaluation summary hash mismatch")
-        result = read(path)
-        corrected = False
-        no_positive_excess = all(
-            values[result["primary_policy"]]["summary"]["return"]
-            <= values["matched_momentum"]["summary"]["return"]
-            for values in result["continuous"].values()
-        )
-        if active:
-            from .evaluation import experiment_folds, load_bundle
-
-            training = paths.artifact_path(result["source_run"], "experiments")
-            status, _ = experiment_folds(paths, load_bundle(paths), training)
-            if result["identity"] != status["identity"]:
-                raise ValueError("Configured evaluation and training identities differ")
-            corrected = status["status"] == "COMPLETE" and status.get("latest_fit_included", False)
-        return {
-            "software_version": __version__,
-            "strategy": paths.config["strategy"],
-            "strategy_name": paths.config["strategy_name"],
-            "decision": result["decision"],
-            "execution_model": EXECUTION_MODEL,
-            "displayed_results_scope": "CAUSAL_RETRAINING"
-            if active
-            else "ARCHIVED_EXECUTION_WITH_KNOWN_CAUSALITY_DEFECT",
-            "corrected_retraining_completed": corrected,
-            "source_evaluation": source.relative_to(paths.root).as_posix(),
-            "data_cutoff": paths.config["data_cutoff"],
-            "historical_status_review": load_status_review(paths),
-            "test_start": result["trade_start"],
-            "test_end": result["trade_end"],
-            "gates": result.get("gates", {"superiority": False}),
-            "superiority_assessment": "NO_POSITIVE_EXCESS_TO_MATCHED_MOMENTUM"
-            if active and no_positive_excess
-            else result.get("superiority_assessment", "NOT_PASSED"),
-            "continuous": {
-                key: {
-                    name: values[result["primary_policy"]]["summary"][name]
-                    for name in ("return", "max_drawdown", "trades", "fees")
-                }
-                for key, values in result["continuous"].items()
-            },
-        }
+        return _project_status(paths)
     if args.command == "verify":
         from .verification import verify
 

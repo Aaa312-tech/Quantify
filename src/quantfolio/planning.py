@@ -541,6 +541,14 @@ def source_hashes():
     return {name: sha(Path(__file__).with_name(name + ".py")) for name in SOURCE_MODULES}
 
 
+def _plan_metadata(plan):
+    """Include retained entitlement instruments as well as today's execution contracts."""
+    meta = {s: c["meta"] for s, c in plan["intent"]["contracts"].items()}
+    meta.update(plan["intent"]["account_meta"])
+    meta.update({a["symbol"]: a["paper_meta"] for a in plan["actions"]})
+    return meta
+
+
 def validate_parent(paths, account):
     """A carried paper account must retain the actual balances and risk of its frozen parent."""
     parent = account["parent"]
@@ -572,9 +580,7 @@ def validate_parent(paths, account):
         if account[key] != original[key]:
             raise ValueError(f"Paper account differs from its recorded parent: {key}")
     _, plan = verified_plan(paths, result["plan"])
-    meta = {s: c["meta"] for s, c in plan["intent"]["contracts"].items()}
-    meta.update(plan["intent"]["account_meta"])
-    meta.update({a["symbol"]: a["paper_meta"] for a in plan["actions"]})
+    meta = _plan_metadata(plan)
     book, risk = restore_account(original, meta)
     book.snapshot_record_dates(date_only(account["as_of"]), plan["actions"])
     expected = snapshot_account(
@@ -582,6 +588,56 @@ def validate_parent(paths, account):
     )
     if account["entitlements"] != expected["entitlements"]:
         raise ValueError("Paper record-date entitlements differ from the frozen account")
+
+
+def _plan_blockers(paths, account, cutoff, execute_on, created):
+    """Validate account timing and collect dated reasons that prevent a new intention."""
+    if timestamp(account["created_at"]) > created:
+        raise ValueError("The account snapshot was created in the future")
+    blockers = []
+    status_review = load_status_review(paths)
+    if status_review is not None and status_review["blocking"]:
+        blockers.append("HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED")
+    if account["as_of"] != cutoff:
+        blockers.append("ACCOUNT_DATE_DIFFERS_FROM_DATA")
+    if any(item["available_date"] is None for item in account["receivables"]):
+        blockers.append("UNRESOLVED_RECEIVABLE_AVAILABILITY")
+    if created < session_time(cutoff, 16):
+        blockers.append("SIGNAL_SESSION_NOT_COMPLETE")
+    if created >= session_time(execute_on, 9, 25):
+        blockers.append("NEXT_OPEN_ALREADY_OCCURRED_OR_DATA_STALE")
+    return blockers, status_review
+
+
+def _preview_plan(record, bundle, forecasts, fitted, cost):
+    """Resolve the frozen intention at reference quotes and retain unresolved-action blocks."""
+    cutoff, execute_on, account = record["signal_date"], record["execution_date"], record["account"]
+    actions = deepcopy(
+        [
+            a
+            for a in bundle["actions"]
+            if a["ex_date"] == execute_on or a.get("record_date") in (cutoff, execute_on)
+        ]
+    )
+    for action in actions:
+        action["paper_meta"] = bundle["meta"][action["symbol"]]
+    try:
+        intent = make_intent(
+            bundle,
+            account,
+            forecasts,
+            fitted["selected_rules"],
+            execute_on,
+            cost / 10000,
+            turnover=fitted.get("turnover_policy", "legacy"),
+        )
+        preview = resolve_intent(intent, account, actions, record["calendar"], {}, preview=True)
+    except ValueError as error:
+        record["status"] = "BLOCKED"
+        record["blockers"].append(str(error))
+    else:
+        record.update(intent=intent, actions=actions, preview=preview)
+        record["orders"] = preview["trades"]
 
 
 def freeze_plan(paths, account_file, output, cost=10):
@@ -597,20 +653,7 @@ def freeze_plan(paths, account_file, output, cost=10):
     cutoff = paths.config["data_cutoff"]
     execute_on = next_session(calendar, cutoff)
     created = timestamp(now())
-    if timestamp(account["created_at"]) > created:
-        raise ValueError("The account snapshot was created in the future")
-    blockers = []
-    status_review = load_status_review(paths)
-    if status_review is not None and status_review["blocking"]:
-        blockers.append("HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED")
-    if account["as_of"] != cutoff:
-        blockers.append("ACCOUNT_DATE_DIFFERS_FROM_DATA")
-    if any(item["available_date"] is None for item in account["receivables"]):
-        blockers.append("UNRESOLVED_RECEIVABLE_AVAILABILITY")
-    if created < session_time(cutoff, 16):
-        blockers.append("SIGNAL_SESSION_NOT_COMPLETE")
-    if created >= session_time(execute_on, 9, 25):
-        blockers.append("NEXT_OPEN_ALREADY_OCCURRED_OR_DATA_STALE")
+    blockers, status_review = _plan_blockers(paths, account, cutoff, execute_on, created)
     bundle = load_bundle(paths)
     restore_account(account, bundle["meta"])
     forecasts, fitted, files = latest_forecasts(paths, bundle)
@@ -662,32 +705,7 @@ def freeze_plan(paths, account_file, output, cost=10):
             "data_ready_after": session_time(required, 16).isoformat() if required else None,
         }
     if not blockers:
-        actions = deepcopy(
-            [
-                a
-                for a in bundle["actions"]
-                if a["ex_date"] == execute_on or a.get("record_date") in (cutoff, execute_on)
-            ]
-        )
-        for action in actions:
-            action["paper_meta"] = bundle["meta"][action["symbol"]]
-        try:
-            intent = make_intent(
-                bundle,
-                account,
-                forecasts,
-                fitted["selected_rules"],
-                execute_on,
-                cost / 10000,
-                turnover=fitted.get("turnover_policy", "legacy"),
-            )
-            preview = resolve_intent(intent, account, actions, calendar, {}, preview=True)
-        except ValueError as error:
-            record["status"] = "BLOCKED"
-            record["blockers"].append(str(error))
-        else:
-            record.update(intent=intent, actions=actions, preview=preview)
-            record["orders"] = preview["trades"]
+        _preview_plan(record, bundle, forecasts, fitted, cost)
     record["identity"] = digest(record)
     save(output / "plan.json", record, immutable=True)
     write_plan_report(record, output / "plan.md")
@@ -820,9 +838,8 @@ def resolve_plan(paths, plan_file, quotes_file, output):
     }
 
 
-def close_account(paths, resolution_file, closing_file, output):
-    """Mark a frozen paper result at supplied closes and carry shares and risk to the next plan."""
-    output = paths.output_path(output, "accounts")
+def _verified_resolution(paths, resolution_file):
+    """Bind the frozen opening account to its plan and original quote evidence."""
     file = input_path(paths, resolution_file)
     manifest = read(paths.manifest)["files"]
     if sha(file) != manifest.get(file.relative_to(paths.root).as_posix()):
@@ -835,6 +852,24 @@ def close_account(paths, resolution_file, closing_file, output):
         raise ValueError("Opening result belongs to a different plan")
     if sha(input_path(paths, result["quotes"])) != result["quotes_sha256"]:
         raise ValueError("Opening quote evidence changed")
+    return file, result, plan
+
+
+def _closing_marks(book, closing, day):
+    """Require the completed close for every held instrument before marking the account."""
+    prices = {}
+    for symbol in book.lots:
+        quote = closing["quotes"].get(symbol)
+        if not quote or timestamp(quote["market_at"]) != session_time(day, 15):
+            raise ValueError(f"Missing completed closing mark: {symbol}")
+        prices[symbol] = number(quote["close"], "closing quote", positive=True)
+    return prices
+
+
+def close_account(paths, resolution_file, closing_file, output):
+    """Mark a frozen paper result at supplied closes and carry shares and risk to the next plan."""
+    output = paths.output_path(output, "accounts")
+    file, result, plan = _verified_resolution(paths, resolution_file)
     closing_path = input_path(paths, closing_file)
     closing = read(closing_path)
     observed = timestamp(now())
@@ -843,17 +878,10 @@ def close_account(paths, resolution_file, closing_file, output):
         raise ValueError("Closing account requires completed-session quotes")
     if not session_time(day, 15) <= timestamp(closing["recorded_at"]) <= observed:
         raise ValueError("Closing quote timestamp is invalid")
-    meta = {s: c["meta"] for s, c in plan["intent"]["contracts"].items()}
-    meta.update(plan["intent"]["account_meta"])
-    meta.update({a["symbol"]: a["paper_meta"] for a in plan["actions"]})
+    meta = _plan_metadata(plan)
     account = result["opening_account"]
     book, risk = restore_account(account, meta)
-    prices = {}
-    for symbol in book.lots:
-        quote = closing["quotes"].get(symbol)
-        if not quote or timestamp(quote["market_at"]) != session_time(day, 15):
-            raise ValueError(f"Missing completed closing mark: {symbol}")
-        prices[symbol] = number(quote["close"], "closing quote", positive=True)
+    prices = _closing_marks(book, closing, day)
     book.snapshot_record_dates(date_only(day), plan["actions"])
     parent = {
         "resolution": file.relative_to(paths.root).as_posix(),
