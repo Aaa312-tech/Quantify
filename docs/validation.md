@@ -101,6 +101,8 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 
 最终代码通过785项单元测试与71项集成测试，1项因本机符号链接权限跳过；16个模块的类型检查、39个模块的覆盖率门槛与四项缺陷检测通过，详见[验收记录](../artifacts/checks/responsibility_checks_2026-11-22/completion.json)。独立安装的wheel也通过相同856项测试；轮包中的39个Python模块与已验证源码逐字节一致。首次导入、日期索引、覆盖率及安装包类型检查失败均保留；修复后使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
 
+最终源码的Windows Python 3.11、Windows Python 3.13及Linux Python 3.13三个CI作业均通过，106个发布文件的独立远端字节核对也通过，见[发布核验](../artifacts/checks/responsibility_checks_2026-11-22/publication.json)。CI结果对应记录中的实际提交，完整历史金融等价另由上述本地研究环境记录证明。
+
 E2锁定环境验收时，Linux安装包通过835项测试，Windows通过834项、跳过1项本机权限检查。通用OpenBLAS环境的模型误差约4.47×10⁻⁸，未通过历史数值验收；这些失败未被放宽门槛或重训覆盖。精确复现使用[历史研究环境](reproducibility.md#运行环境)。
 
 首次环境锁发布的CI在工作流校验阶段失败，未启动作业；任务级环境变量使用了该层不支持的`runner`上下文。修复后改用`github.workspace`的同级环境目录，保留[失败记录](../artifacts/checks/environment_ci_2026-11-22/workflow_failure.json)。上下文作用域以[GitHub说明](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability)为准。
