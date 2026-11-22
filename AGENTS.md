@@ -10,7 +10,7 @@
 ## Changes and verification
 
 - Follow `CONTRIBUTING.md`. Code belongs in `src/quantfolio`, tests in `tests`; use behavioral strategy names and semantic software versions.
-- Run `scripts/check.ps1` for code changes. Numerical, timing or execution changes also require the registered model, forecast and full-ledger checks in [reproducibility](docs/reproducibility.md). Documentation-only changes do not require refitting.
+- Run `scripts/check.ps1` for code changes. Numerical, timing or execution changes also require the registered model, forecast and full-ledger checks in [validation](docs/validation.md). Documentation-only changes do not require refitting.
 - Never edit frozen files or executed audit scripts, including failed checks. Create new named outputs; before adding a file, verify that its path is unused. Do not regenerate hashes to hide a byte change.
 - Preserve the existing integrity-manifest entries. A requested path migration must retain original hashes, register aliases in `configs/archive.toml` and validate all consumers.
 - Before publishing, verify frozen-file integrity. Track code, configuration, research data, models, reports and evidence; exclude credentials, environments, caches and temporary scripts. Keep `.gitattributes` and Git LFS conventions.

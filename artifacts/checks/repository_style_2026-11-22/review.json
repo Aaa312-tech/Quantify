@@ -1,0 +1,257 @@
+{
+  "status": "PASS",
+  "completed_at": "2026-11-22T12:26:17.813539+08:00",
+  "baseline_commit": "8f3bca316bfca68fa36fb7b3506af78c0fcc146b",
+  "goal_status": "paused",
+  "original_frozen_files_unchanged": 39042,
+  "additional_protected_files_unchanged": 280,
+  "python_runtime_files_unchanged": 38,
+  "documentation": {
+    "files": 25,
+    "local_links": 263,
+    "parsed_commands": 22,
+    "commands": [
+      {
+        "document": "README.md",
+        "arguments": [
+          "status"
+        ]
+      },
+      {
+        "document": "README.md",
+        "arguments": [
+          "verify",
+          "--run",
+          "artifacts/experiments/recipient_entitlements_2026-11-22"
+        ]
+      },
+      {
+        "document": "docs/exit_budget_repair.md",
+        "arguments": [
+          "exit-study",
+          "--output",
+          "artifacts/experiments/exit_priority_2026-11-20"
+        ]
+      },
+      {
+        "document": "docs/exit_budget_repair.md",
+        "arguments": [
+          "evaluate-exits",
+          "--run",
+          "artifacts/experiments/exit_priority_2026-11-20",
+          "--output",
+          "artifacts/evaluations/exit_priority_2026-11-20"
+        ]
+      },
+      {
+        "document": "docs/paper_workflow.md",
+        "arguments": [
+          "account-init",
+          "--account-id",
+          "research_paper",
+          "--as-of",
+          "2026-11-20",
+          "--output",
+          "artifacts/accounts/paper_2026-11-20"
+        ]
+      },
+      {
+        "document": "docs/paper_workflow.md",
+        "arguments": [
+          "plan",
+          "--account",
+          "artifacts/accounts/paper_2026-11-20/account.json",
+          "--cost",
+          "10",
+          "--output",
+          "artifacts/plans/paper_2026-11-23"
+        ]
+      },
+      {
+        "document": "docs/paper_workflow.md",
+        "arguments": [
+          "resolve-plan",
+          "--plan",
+          "artifacts/plans/paper_2026-11-23/plan.json",
+          "--quotes",
+          "artifacts/plans/quotes_2026-11-23/opening.json",
+          "--output",
+          "artifacts/plans/opening_2026-11-23"
+        ]
+      },
+      {
+        "document": "docs/paper_workflow.md",
+        "arguments": [
+          "account-close",
+          "--resolution",
+          "artifacts/plans/opening_2026-11-23/resolution.json",
+          "--quotes",
+          "artifacts/plans/quotes_2026-11-23/closing.json",
+          "--output",
+          "artifacts/accounts/paper_2026-11-23"
+        ]
+      },
+      {
+        "document": "docs/paper_workflow.md",
+        "arguments": [
+          "verify-paper",
+          "--output",
+          "artifacts/checks/paper_review"
+        ]
+      },
+      {
+        "document": "docs/reproducibility.md",
+        "arguments": [
+          "--project",
+          "D:/投资组合量化",
+          "status"
+        ]
+      },
+      {
+        "document": "docs/reproducibility.md",
+        "arguments": [
+          "status"
+        ]
+      },
+      {
+        "document": "docs/reproducibility.md",
+        "arguments": [
+          "verify",
+          "--run",
+          "artifacts/experiments/recipient_entitlements_2026-11-22"
+        ]
+      },
+      {
+        "document": "docs/reproducibility.md",
+        "arguments": [
+          "verify",
+          "--run",
+          "artifacts/experiments/recipient_entitlements_2026-11-22",
+          "--output",
+          "artifacts/checks/model_review"
+        ]
+      },
+      {
+        "document": "docs/reproducibility.md",
+        "arguments": [
+          "train",
+          "--include-latest",
+          "--output",
+          "artifacts/experiments/replication"
+        ]
+      },
+      {
+        "document": "docs/reproducibility.md",
+        "arguments": [
+          "evaluate",
+          "--run",
+          "artifacts/experiments/replication",
+          "--all-policies",
+          "--output",
+          "artifacts/evaluations/replication"
+        ]
+      },
+      {
+        "document": "docs/reproducibility.md",
+        "arguments": [
+          "verify",
+          "--run",
+          "artifacts/experiments/replication",
+          "--output",
+          "artifacts/checks/replication"
+        ]
+      },
+      {
+        "document": "docs/reproducibility.md",
+        "arguments": [
+          "report",
+          "--run",
+          "artifacts/evaluations/replication"
+        ]
+      },
+      {
+        "document": "docs/reproducibility.md",
+        "arguments": [
+          "verify-paper",
+          "--output",
+          "artifacts/checks/paper_review"
+        ]
+      },
+      {
+        "document": "docs/strategy_study.md",
+        "arguments": [
+          "study",
+          "--output",
+          "artifacts/experiments/strategy_study_2026-11-20"
+        ]
+      },
+      {
+        "document": "docs/strategy_study.md",
+        "arguments": [
+          "evaluate-study",
+          "--run",
+          "artifacts/experiments/strategy_study_2026-11-20",
+          "--output",
+          "artifacts/evaluations/strategy_study_2026-11-20"
+        ]
+      },
+      {
+        "document": "docs/validation.md",
+        "arguments": [
+          "verify",
+          "--run",
+          "artifacts/experiments/recipient_entitlements_2026-11-22"
+        ]
+      },
+      {
+        "document": "docs/validation.md",
+        "arguments": [
+          "verify-paper",
+          "--output",
+          "artifacts/checks/paper_review"
+        ]
+      }
+    ]
+  },
+  "report": {
+    "summary_cells_equal": 4,
+    "cost_cells_equal": 15,
+    "equity_curve_byte_equal": true,
+    "template_fields_equal": [
+      "average",
+      "benchmark_header",
+      "cost_bps",
+      "data_cutoff",
+      "drawdown",
+      "episodes",
+      "folds",
+      "methodology_link",
+      "net_return",
+      "notice",
+      "readme_link",
+      "reproduction_link",
+      "results_link",
+      "rows",
+      "scope",
+      "title",
+      "trade_end",
+      "trade_start"
+    ],
+    "html_sha256": "769b15c7af9f970e115f95876cabcfaf69fb320e64dde6b6becff648246275bf",
+    "chart_sha256": "9581ee66f7c65b67ef2f5d5fd06e2394803be342980fdd5739c4c89be5aa15c8"
+  },
+  "tests": {
+    "passed": 799,
+    "host_symlink_skip": 1,
+    "log_sha256": "6e8b2de6a65735b78abb462cb4cfc56de4aa87816ea68c51fb6ebdecd63ecd13"
+  },
+  "guards_sha256": "e62086529d58d3c383f514936098a4a5f70139e25d287a0364f7b8c2c38b19b2",
+  "wheel_sha256": "43731e37e1d21f7b05c9de41a9bbd3474b2fcb53b85342a0ce2ee754cac2c6c2",
+  "historical_evidence_reused": {
+    "path": "artifacts/checks/paper_refactor_2026-11-22/history.json",
+    "sha256": "134d5e1876a7c4375493cb9c6d027b811c392299b4c81be60c228a73c89bdd4e",
+    "reason": "All Python runtime files, original inputs, predictions and ledgers are byte-identical to the verified baseline."
+  },
+  "new_model_fits": 0,
+  "new_historical_replays": 0
+}

@@ -3,72 +3,106 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Quantfolio · $title</title>
+  <title>Quantify · $title</title>
   <style>
-    :root { font-family: system-ui, "Microsoft YaHei", sans-serif; color: #1c2c45; background: #f2f5f9; }
-    body { margin: 0; }
-    main { max-width: 1120px; margin: auto; padding: 40px 24px; }
-    h1 { margin-bottom: 12px; }
-    h2 { font-size: 20px; }
-    p, li { line-height: 1.8; }
-    a { color: #185adb; }
-    .notice { border-left: 4px solid #ad6600; padding: 12px 18px; background: #fff4df; }
-    .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-    .card, section { background: white; border: 1px solid #dce3ed; border-radius: 10px; padding: 20px; }
-    .card span { display: block; color: #52657e; font-size: 13px; }
-    .card strong { display: block; font-size: 28px; margin-top: 10px; }
-    section { margin-top: 22px; }
-    img { display: block; width: 100%; height: auto; }
-    .scroll { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { padding: 14px 10px; text-align: right; border-bottom: 1px solid #e4e9f0; white-space: nowrap; }
+    :root { color: #202020; background: #fff; font-family: Arial, "Microsoft YaHei", sans-serif; }
+    body { margin: 0; font-size: 15px; line-height: 1.7; }
+    main { max-width: 960px; margin: 40px auto; padding: 0 28px; }
+    header { border-bottom: 2px solid #222; padding-bottom: 16px; }
+    .series { margin: 0; font-size: 12px; letter-spacing: .08em; color: #555; }
+    h1 { margin: 8px 0; font-size: 28px; line-height: 1.4; }
+    h2 { margin: 0 0 12px; font-size: 18px; }
+    p { margin: 10px 0; }
+    .source { overflow-wrap: anywhere; color: #555; font-size: 13px; }
+    .notice { padding: 12px 0; border-bottom: 1px solid #aaa; }
+    section { margin-top: 28px; }
+    a { color: #244b68; text-underline-offset: .18em; }
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    caption { text-align: left; margin-bottom: 8px; font-size: 13px; color: #555; }
+    th, td { padding: 9px 12px; border-bottom: 1px solid #ddd; text-align: right; }
+    thead th { border-top: 1px solid #444; border-bottom: 1px solid #444; font-weight: 600; }
     th:first-child, td:first-child { text-align: left; }
-    footer { margin-top: 24px; color: #52657e; font-size: 13px; }
-    @media (max-width: 700px) {
-      main { padding: 24px 14px; }
-      .cards { grid-template-columns: repeat(2, 1fr); }
-      .card { padding: 16px; }
+    .summary th { width: 65%; font-weight: normal; text-align: left; }
+    .summary td { font-weight: 600; }
+    .scroll { overflow-x: auto; }
+    .comparison { white-space: nowrap; font-size: 14px; }
+    figure { margin: 0; }
+    img { display: block; width: 100%; height: auto; }
+    figcaption, .note { margin-top: 8px; color: #555; font-size: 13px; }
+    ul { padding-left: 22px; }
+    footer { margin-top: 28px; border-top: 1px solid #aaa; padding-top: 12px; font-size: 12px; color: #555; }
+    @media (max-width: 600px) {
+      main { margin: 24px auto; padding: 0 16px; }
+      h1 { font-size: 24px; }
+      th, td { padding: 8px; }
+      .comparison { font-size: 12px; }
+      .comparison th, .comparison td { padding: 8px 5px; }
+    }
+    @page { size: A4; margin: 14mm; }
+    @media print {
+      body { font-size: 9pt; line-height: 1.45; }
+      main { max-width: none; margin: 0; padding: 0; }
+      header { padding-bottom: 8px; }
+      h1 { font-size: 19pt; margin: 4px 0; }
+      h2 { font-size: 12pt; margin-bottom: 8px; }
+      p { margin: 6px 0; }
+      .notice { padding: 7px 0; }
+      section { margin-top: 12px; break-inside: avoid; }
+      th, td { padding: 4px 8px; }
+      .comparison, .source, .note, figcaption { font-size: 8pt; }
+      img { max-height: 64mm; object-fit: contain; }
+      a { color: inherit; }
+      footer { margin-top: 16px; font-size: 8pt; }
     }
   </style>
 </head>
 <body>
 <main>
-  <h1>$title</h1>
-  <p>均衡进攻 · 8%回撤预警 · 仓位降级后不恢复<br>
-    连续账户：$trade_start — $trade_end ｜ 数据截止：$data_cutoff</p>
+  <header>
+    <p class="series">QUANTIFY · 组合研究</p>
+    <h1>策略回测报告</h1>
+    <p class="source">$title</p>
+    <p>连续账户：$trade_start — $trade_end<br>数据截止：$data_cutoff</p>
+  </header>
   <p class="notice">$notice</p>
-  <div class="cards">
-    <div class="card"><span>连续净收益 · ${cost_bps}bp</span><strong>$net_return</strong></div>
-    <div class="card"><span>最大回撤 · ${cost_bps}bp</span><strong>$drawdown</strong></div>
-    <div class="card"><span>10日账户平均净收益</span><strong>$average</strong></div>
-    <div class="card"><span>外层窗口 / 完整10日账户</span><strong>$folds / $episodes</strong></div>
-  </div>
-  <section>
-    <h2>连续账户净值</h2>
-    <img src="equity_curve.png" alt="所选策略与同风控动量的连续净值比较">
-    <p>10日账户每期重置本金，其平均收益不能连乘为连续账户收益。</p>
+  <section aria-labelledby="summary-title">
+    <h2 id="summary-title">结果摘要</h2>
+    <table class="summary">
+      <caption>均衡进攻 · 8%回撤预警 · 降仓后不恢复</caption>
+      <tbody>
+        <tr><th scope="row">连续净收益 · ${cost_bps}bp</th><td>$net_return</td></tr>
+        <tr><th scope="row">最大回撤 · ${cost_bps}bp</th><td>$drawdown</td></tr>
+        <tr><th scope="row">10日账户平均净收益</th><td>$average</td></tr>
+        <tr><th scope="row">外层窗口 / 完整10日账户</th><td>$folds / $episodes</td></tr>
+      </tbody>
+    </table>
   </section>
-  <section>
-    <h2>成本敏感性与基准</h2>
-    <div class="scroll"><table>
-      <thead><tr><th>每边滑点</th><th>策略连续净收益</th><th>同风控动量</th>$benchmark_header<th>策略最大回撤</th><th>策略平均10日</th></tr></thead>
+  <section aria-labelledby="curve-title">
+    <h2 id="curve-title">连续账户净值</h2>
+    <figure>
+      <img src="equity_curve.png" alt="策略与同风控动量的连续账户净值比较">
+      <figcaption>10日账户每期重置本金，其平均收益不能连乘为连续账户收益。</figcaption>
+    </figure>
+  </section>
+  <section aria-labelledby="cost-title">
+    <h2 id="cost-title">成本敏感性</h2>
+    <div class="scroll"><table class="comparison">
+      <thead><tr><th scope="col">每边滑点</th><th scope="col">策略净收益</th><th scope="col">同风控动量</th>$benchmark_header<th scope="col">最大回撤</th><th scope="col">平均10日</th></tr></thead>
       <tbody>$rows</tbody>
     </table></div>
-    <p>另计佣金、过户费、印花税。各档独立重放，费用会改变成交和持仓路径，净收益不一定随成本单调变化。</p>
+    <p class="note">另计佣金、过户费、印花税。各档独立重放，费用会改变成交和持仓路径，净收益不一定随成本单调变化。</p>
   </section>
-  <section>
-    <h2>适用范围</h2>
+  <section aria-labelledby="scope-title">
+    <h2 id="scope-title">数据与适用范围</h2>
     <ul>
       <li>历史区间已用于多轮研究，股票池和行业分类不属于认证的历史时点数据。</li>
       <li>8%是预警和下个可交易时点的退出目标，实际回撤仍可能超过8%。</li>
       <li>$scope</li>
     </ul>
-    <p><a href="$methodology_link">方法与限制</a> ·
-      <a href="$reproduction_link">复现命令</a> ·
-      <a href="$results_link">完整回测数据</a> ·
-      <a href="$readme_link">项目首页</a></p>
+    <p><a href="$methodology_link">策略方法</a> · <a href="$reproduction_link">复现指南</a> ·
+      <a href="$results_link">评估数据</a> · <a href="$readme_link">项目首页</a></p>
   </section>
-  <footer>由 quantfolio report 从已完成的回测记录生成。</footer>
+  <footer>来源：quantfolio report读取的已完成评估。金额、成本与样本范围以评估数据为准。</footer>
 </main>
 </body>
 </html>

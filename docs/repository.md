@@ -1,61 +1,52 @@
 # 仓库维护
 
-仓库：[Aaa312-tech/Quantify](https://github.com/Aaa312-tech/Quantify)，默认分支 `main`。代码、配置、研究数据、模型与验证证据一同版本化；环境、凭据、缓存和打包输出留在本地。
+仓库为 [Aaa312-tech/Quantify](https://github.com/Aaa312-tech/Quantify)，默认分支 `main`。代码、配置、研究数据、模型和验证记录共同版本化；环境、凭据、缓存和构建产物留在本地。
 
-研究推进已暂停。仓库维护负责整理和验证已有成果；原研究计划不会因同步仓库而自动恢复。当前入口见[项目状态](status.md)。
+## 目录与命名
 
-## 目录职责
-
-| 目录 | 内容 |
+| 路径 | 内容与命名 |
 | --- | --- |
-| `src/quantfolio` | 可安装的运行代码及报告模板 |
-| `tests` | 按数据、来源、组合和工作流分组的测试；[共享输入约定](../CONTRIBUTING.md#测试位置) |
-| `scripts` | 本地运行、检查和同步入口 |
-| `configs` | 活跃配置、注册协议、兼容映射与完整性清单 |
-| `data` | 原始来源和处理后的研究快照 |
-| `artifacts`、`reports` | 实验、模型、账户、校验证据及阅读报告 |
-| `docs` | 方法、数据契约、复现说明和项目状态 |
+| `src/quantfolio/` | 按职责命名的Python模块；报告模板放 `templates/` |
+| `tests/` | 按数据、来源、组合、工作流分类，文件名为 `test_<behavior>.py` |
+| `scripts/` | `check.ps1`作为本地检查入口；运行统一使用 `python -m quantfolio` |
+| `configs/` | 活跃配置、注册协议、历史映射和完整性清单 |
+| `data/raw/` | 按来源、用途、日期组织的原始响应与公告 |
+| `data/processed/` | 经核验的数据快照，名称包含截止日期和处理口径 |
+| `artifacts/experiments/`、`artifacts/evaluations/` | 同名训练及评估目录 |
+| `artifacts/checks/`、`artifacts/replays/` | 独立验证和完整账本重放 |
+| `artifacts/accounts/`、`artifacts/plans/` | 纸面账户、计划和开盘核算 |
+| `reports/` | 根据评估结果生成的HTML和图表 |
+| `docs/` | 使用、方法、当前状态和专题研究记录 |
 
-测试使用普通 Python 包导入，不依赖 pytest 将平铺测试目录加入搜索路径。Ruff 的产物排除规则限定在根目录下，`tests/data` 仍参与格式和静态检查。
+文件和目录使用小写英文、下划线及ISO日期，已有来源文件保留原名。研究命名说明用途，不使用迭代编号、`final`、`new`等临时标记。策略名为 `walk_forward_momentum`；软件版本由 `src/quantfolio/__init__.py`提供，按语义版本维护。
 
-## 文档位置
+README负责安装和结果摘要，[文档索引](index.md)负责导航，[状态页](status.md)负责有效产物；方法、契约和复现步骤放在对应文档。维护规则不记录逐批进度，变更记录只保留用户和开发者需要了解的变化。
 
-| 文件 | 维护内容 |
-| --- | --- |
-| `README.md` | 项目用途、回测摘要、安装和导航 |
-| `docs/status.md` | 当前有效产物、已完成边界、暂停状态及待办摘要 |
-| `docs/remediation.md` | 尚未执行的计划和验收条件 |
-| `docs/research_history.md` | 历次修正过程与阶段性维护约束 |
-| `AGENTS.md`、`CONTRIBUTING.md` | 当前维护要求和代码约定，不追加研究流水账 |
-| 各专题文档、`artifacts/` | 方法解释与原始机器证据，彼此通过链接对应 |
+## 冻结记录
 
-当前结论发生变化时先更新状态页，再修改受影响的摘要。阶段数据须带上阶段边界，避免把历史缺项数量写成当前数量。
+完整性清单保存研究输入与输出的SHA-256。已冻结文件及已执行的检查脚本不得修改，包括失败结果；重试使用新路径。追加清单时保留原条目，不以重新计算哈希掩盖变化。
 
-## 提交与同步
+历史路径映射集中在 `configs/archive.toml`。确需迁移时保留原文件字节和哈希，验证全部消费者、模型输入顺序、预测和账户结果。文件多不等于冗余：来源、失败、父快照和复核记录承担追溯作用。
+
+`.joblib`及批量公告、行业与基金PDF使用Git LFS。克隆后运行 `git lfs pull`，再按[验证说明](validation.md)检查实际对象。`.gitattributes`保留研究证据的原始换行；不要批量格式化 `data/`、`artifacts/`或冻结报告。
+
+临时脚本、环境、缓存和重复构建文件不提交。手工报价保留来源与时刻，和输出一起存档；不得用生成时间或哈希代替历史可用性证明。
+
+## 检查与发布
+
+先检查远端及本地差异：
 
 ```powershell
-scripts/sync.ps1 -Python '.\.venv\Scripts\python' -Message 'fix: describe the concrete change'
+git fetch origin
+git status --short
+git log --oneline --left-right HEAD...origin/main
+git diff --check
+git diff --stat
+scripts/check.ps1 -Python '.\.venv\Scripts\python'
 ```
 
-脚本检查远端、格式、测试、冻结输入和LFS，提交后普通推送，并等待对应提交的`ci.yml`结果。需要开发依赖和已登录的GitHub CLI。
+核对冻结文件完整性；数值、时序或执行变化还需完成[模型与账户验证](validation.md)。按文件或明确目录暂存，检查 `git diff --cached`后提交，再普通推送。不要自动暂存全部工作区，也不要强制推送解决分歧。
 
-远端有新提交时先检查并合并，不使用强制推送处理分歧。CI验证安装包和合成数据；数值与成交修改还需[历史验证](reproducibility.md)。
+推送后按提交哈希查看 `ci.yml`的三个实际作业，全部完成通过后才记录发布成功。另从独立远端检出核对变更Git文件与LFS对象的字节，不能只以本地远端引用或上传进度作为验证。
 
-## 数据与产物
-
-`.joblib`以及批量公告、行业分类采集中的PDF使用Git LFS；来源索引、哈希与核查结论直接保存在Git中。克隆后执行 `git lfs pull`，再运行 `python -m quantfolio verify`确认实际对象和冻结文件。`.gitattributes`保留研究证据的原始换行；不要批量格式化数据及冻结实验。
-
-冻结JSON回执与已执行的审查脚本可能保留Windows换行，Git空白检查将行尾CR识别为换行的一部分，仍检查多余尾随空格、空行及制表符前的空格。不得为了消除格式提示而改写已绑定哈希的证据。
-
-冻结参考放`artifacts/reference/<date>`。新训练放 `artifacts/experiments/<name>`，对应评估放 `artifacts/evaluations/<name>`；这些输出目录由命令创建，无需空占位文件。名称说明用途，避免迭代编号、`final`、`new`等易失效标记。
-
-纸面收盘账户放`artifacts/accounts/<purpose_date>`，计划及开盘核算放`artifacts/plans/<purpose_date>`。
-手工报价另存具名目录，来源与时刻随输入保留；生成文件自动加入完整性清单，后续只能新建记录。
-
-工程校验保留在`artifacts/checks`，完整重放保留在`artifacts/replays`。可重建缓存和未登记临时产物可以清理；已冻结证据即使被新检查补充，也不能当作冗余文件删除。机器探针、回收站清单、重复流程演示和一次性清理脚本不属于发布产物。
-
-已登记数据对照的失败、原始训练身份及修复闭环属于验收证据，不能当作重复缓存清理。追加冻结目录时排除`__pycache__`、`.pytest_cache`和`.pyc`；原证据字节及哈希保持不变。
-
-软件发布使用语义版本号，在 `src/quantfolio/__init__.py`维护，构建元数据自动读取。策略按方法命名：`walk_forward_momentum`（滚动选型动量），由`configs/project.toml`标明。软件版本和研究策略是两个不同字段。
-
-历史文件按用途命名，内容保留原字节。`configs/archive.toml`集中记录路径、策略标识和特征列的兼容映射；完整性清单按新路径核对原哈希。重命名必须核对文件内容、模型输入顺序、预测和账本，不能用重新生成的哈希掩盖差异。
+本地检查不需要重新拟合。仓库发布也不恢复已暂停的研究任务。

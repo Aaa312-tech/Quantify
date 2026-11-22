@@ -2,27 +2,29 @@
 
 [![Checks](https://github.com/Aaa312-tech/Quantify/actions/workflows/ci.yml/badge.svg)](https://github.com/Aaa312-tech/Quantify/actions/workflows/ci.yml)
 
-A股模拟投资研究项目，Python包与命令名为 `quantfolio`。使用动量候选池、同行残差模型、滚动验证选型和次日开盘模拟，沿用均衡进攻、8%回撤预警及降仓后不恢复。
+A股组合研究项目。使用滚动训练和验证选择动量排序及行业残差模型，在下一交易日开盘模拟调仓，独立核对成交、现金和持仓。Python包及命令名为 `quantfolio`。
 
-**研究目标已暂停，现阶段整理已有成果。** 当前配置、验证边界与暂存待办统一见[项目状态](docs/status.md)。尚未证明策略优于同风控动量，也没有新增前向收益。
+当前策略为滚动选型动量，采用均衡进攻、8%回撤预警和降仓后不恢复。研究暂停，仓库继续维护；当前模型尚未显示优于同风控动量的收益，亦无前向收益结论。
 
-## 当前回测
+## 回测
 
-数据截止2026-11-20，回测区间为2025-11-18至2026-11-02。使用日期化行业、ETF披露敞口代理和已核验的股东权益数据。
+数据截止2026-11-20，连续账户区间为2025-11-18至2026-11-02，共231个交易日。初始资金100万元。
 
-| 每边滑点，另计交易费 | 滚动选型动量净收益 | 同风控动量净收益 | 最大回撤 |
+| 每边滑点 | 策略净收益 | 同风控动量 | 最大回撤 |
 | --- | ---: | ---: | ---: |
 | 10bp | 35.93% | 35.93% | -7.59% |
 | 20bp | 3.38% | 3.38% | -6.30% |
 | 30bp | 11.79% | 11.79% | -7.94% |
 
-各成本档重新计算订单和风险路径，收益不必随成本单调变化。8%是预警及退出目标，不保证实际回撤上限。完整账户结果见[评估摘要](artifacts/evaluations/recipient_entitlements_2026-11-22/evaluation_summary.json)及[数据接入归因](artifacts/checks/recipient_entitlements_2026-11-22/attribution.json)。
+另计佣金、过户费和印花税。各档重新计算订单与风险路径，收益不必随成本单调变化。8%是预警和退出目标，不保证实际回撤上限。股票池、历史信息可用性及基金完整经济敞口仍有数据限制。
 
-![滚动选型动量与基准的历史净值](reports/latest/equity_curve.png)
+![策略与同风控动量的连续账户净值](reports/experiments/recipient_entitlements_2026-11-22/equity_curve.png)
 
-## 运行
+[研究报告](reports/experiments/recipient_entitlements_2026-11-22/index.html) · [评估数据](artifacts/evaluations/recipient_entitlements_2026-11-22/evaluation_summary.json) · [方法与限制](docs/methodology.md)
 
-先安装Git LFS，再获取研究数据和模型。以下为Windows命令，Python支持3.11至3.13：
+## 安装与验证
+
+需要Python 3.11–3.13和Git LFS。以下命令在Windows PowerShell中执行：
 
 ```powershell
 git lfs install
@@ -32,26 +34,24 @@ git lfs pull
 python -m venv .venv
 .\.venv\Scripts\python -m pip install -e '.[dev]'
 .\.venv\Scripts\python -m quantfolio status
-.\.venv\Scripts\python -m quantfolio verify
+.\.venv\Scripts\python -m quantfolio verify --run artifacts/experiments/recipient_entitlements_2026-11-22
 ```
 
-Linux使用 `.venv/bin/python`。源码ZIP可能只含LFS指针。查看当前报告可打开 [reports/latest/index.html](reports/latest/index.html)；训练、评估及纸面流程见[复现指南](docs/reproducibility.md)。示例命令不会自动切换主策略；暂停期间不启动新的研究批次。
+Linux将Python路径替换为 `.venv/bin/python`。源码ZIP可能只含LFS指针；模型与数据须完整下载后再验证。上面的验证重载已有模型，不重新拟合。
 
-## 目录
+## 项目结构
 
 | 路径 | 内容 |
 | --- | --- |
-| `src/quantfolio/`、`tests/` | 运行代码和行为测试 |
-| `configs/` | 活跃配置、登记协议、冻结清单和历史名称兼容映射 |
-| `data/raw/`、`data/processed/` | 来源材料和经核验的数据快照 |
-| `artifacts/experiments/`、`artifacts/evaluations/` | 训练及对应回测 |
-| `artifacts/checks/`、`artifacts/replays/` | 来源、兼容性和完整账本核验，包括保留的失败 |
-| `artifacts/reference/`、`artifacts/accounts/`、`artifacts/plans/` | 冻结参考、纸面账户和有时效的计划 |
-| `reports/`、`docs/` | 阅读报告、使用说明与研究历史 |
-| `scripts/` | 本地检查和GitHub同步入口 |
+| `src/quantfolio/` | 数据处理、训练、组合、回测、纸面账户和报告 |
+| `tests/` | 数据、来源、组合和工作流测试 |
+| `configs/` | 活跃配置、研究协议和完整性清单 |
+| `data/` | 原始来源与处理后的快照 |
+| `artifacts/` | 模型、评估、账户及验证记录 |
+| `reports/` | 由评估数据生成的阅读报告 |
+| `docs/` | 使用、方法、数据契约及研究记录 |
+| `scripts/` | 本地检查入口 |
 
-## 开发与文档
+运行参数以 [project.toml](configs/project.toml) 为准。数据和实验按用途、日期归档；历史记录不参与当前配置的自动选择。
 
-本地检查：`scripts/check.ps1 -Python '.\.venv\Scripts\python'`。数值或执行修改还须验证历史模型和完整账本；文档整理不重新训练。
-
-[项目状态](docs/status.md) · [架构](docs/architecture.md) · [方法](docs/methodology.md) · [复现](docs/reproducibility.md) · [仓库维护](docs/repository.md) · [开发约定](CONTRIBUTING.md) · [变更记录](CHANGELOG.md)
+[文档](docs/index.md) · [当前状态](docs/status.md) · [开发约定](CONTRIBUTING.md) · [变更记录](CHANGELOG.md) · [使用与来源说明](NOTICE.md)
