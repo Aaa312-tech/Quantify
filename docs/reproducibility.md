@@ -2,6 +2,12 @@
 
 项目需要Python 3.11–3.13和Git LFS。先按README克隆完整仓库，在虚拟环境中安装 `.[dev]`。数据与模型属于项目目录，不打进Python安装包；从其他目录运行时使用 `--project PATH` 或 `QUANTFOLIO_ROOT`。
 
+## 纸面计划与账户整理验收
+
+`artifacts/checks/paper_refactor_2026-11-22` 记录基于 `2ebe1a54e7690ea999eec55aa3871a3645e3e30f` 的维护范围。`verify_paper_equivalence.py` 将六个修改函数中的提取调用展开后比较原语句，检查有效和无效账户、买卖记账、逐日纸面流程及三档成本的冻结、报价、收盘和父账户校验。
+
+合成对照使用相同验证时钟；旧实现从独立源码副本读取真实的旧哈希，新实现记录当前哈希。计划身份及其派生父文件哈希分别核实，其他内容逐字段比较，没有把新来源身份伪装成旧身份。完整历史重放通过后追加本次 `source_compatibility.json`，保留以前的登记及原计划文件，再使用普通入口核验模型、纸面账户与零订单计划。验收入口为同目录 `completion.json`，已执行脚本和结果不得覆盖。
+
 ## 回测、仓位与风控整理验收
 
 范围登记于 `artifacts/checks/execution_refactor_2026-11-22/scope.json`，基线为提交 `df9dc1fa9023845c4bc7af1ffcb7fdba6d8191ae`。本次只维护运行代码，原研究继续暂停。

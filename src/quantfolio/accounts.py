@@ -135,6 +135,11 @@ def restore_account(account, meta):
     previous_ids = ids | {item[0] for rights in book.entitlements.values() for item in rights}
     if book.next_id <= max(previous_ids, default=0):
         raise ValueError("Next lot identifier would reuse a holding or entitlement identifier")
+    return book, _restore_risk(account, book)
+
+
+def _restore_risk(account, book):
+    """Validate carried risk observations and the fresh-account boundary."""
     state = account["risk"]
     if set(state) != set(asdict(RiskState())) or state["mode"] != "latched":
         raise ValueError("A complete non-recovering risk state is required")
@@ -156,7 +161,7 @@ def restore_account(account, meta):
         or book.cash != book.initial
     ):
         raise ValueError("A fresh account must start with the registered cash balance")
-    return book, RiskState(**state)
+    return RiskState(**state)
 
 
 def snapshot_account(book, original, as_of, risk, sessions_completed, parent):
@@ -188,6 +193,25 @@ def snapshot_account(book, original, as_of, risk, sessions_completed, parent):
         "sessions_completed": sessions_completed,
         "parent": parent,
     }
+
+
+def _check_buy_exposure(meta, groups, values, nav, cap, information_at):
+    """Check post-fee capital and reported fund limits independently of execution."""
+    sectors = defaultdict(int)
+    for s, value in values.items():
+        if groups[s] is None:
+            raise ValueError("Paper purchase has an unknown industry")
+        sectors[groups[s]] += value
+    if (
+        any(v > 0.15 * nav + 1e-6 for v in values.values())
+        or sum(values.values()) > cap * nav + 1e-6
+        or any(v > 0.30 * nav + 1e-6 for v in sectors.values())
+    ):
+        raise ValueError("Paper purchase breaches post-fee concentration or exposure")
+    if any("fund_history" in instrument for instrument in meta.values()):
+        report = checked_fund_exposure(meta, values, nav, information_at)
+        if report["max_reported_equity_weight"] > 0.30 + 1e-7:
+            raise ValueError("Paper purchase breaches the reported equity proxy cap")
 
 
 def audit_fills(opening, result, meta, date, rate, cap):
@@ -250,21 +274,7 @@ def audit_fills(opening, result, meta, date, rate, cap):
             cash -= gross + fee + impact
             values = {s: amount(q * prices[s]) for s, q in quantities.items() if q}
             nav = cash + sum(values.values()) + receivables
-            sectors = defaultdict(int)
-            for s, value in values.items():
-                if groups[s] is None:
-                    raise ValueError("Paper purchase has an unknown industry")
-                sectors[groups[s]] += value
-            if (
-                any(v > 0.15 * nav + 1e-6 for v in values.values())
-                or sum(values.values()) > cap * nav + 1e-6
-                or any(v > 0.30 * nav + 1e-6 for v in sectors.values())
-            ):
-                raise ValueError("Paper purchase breaches post-fee concentration or exposure")
-            if any("fund_history" in instrument for instrument in meta.values()):
-                report = checked_fund_exposure(meta, values, nav, information_at)
-                if report["max_reported_equity_weight"] > 0.30 + 1e-7:
-                    raise ValueError("Paper purchase breaches the reported equity proxy cap")
+            _check_buy_exposure(meta, groups, values, nav, cap, information_at)
         else:
             raise ValueError("Unknown paper trade side")
         if cash < 0 or cash != amount(trade["cash_after"]):

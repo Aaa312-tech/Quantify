@@ -37,6 +37,8 @@ rules / allocation / risk → simulation → ledger → validation
 
 每日回测由 `_signal_decision` 读取前收盘信号并确定目标，主循环处理公司行为和先卖后买，`_closing_row` 记录收盘估值。`allocation._constraints` 按原顺序构建持仓、现金、行业及换手约束；同一标的的费用率只计算一次，求解后仍独立检查约束。`RiskState._transition` 只选择下一状态，`update` 统一维护高水位、计数和审计证据。三个阶段之间的时间顺序、浮点计算与账本字段保持。
 
+纸面计划在 `_opening_contracts` 中冻结信号日可知的报价、流动性和整手约束；`_opening_market` 校验人工开盘报价并构造执行输入，`resolve_intent` 负责公司行为、先卖后买和账户快照。账户恢复分别校验持仓权益与结转风险；买卖成交使用同一账本记录格式。纸面核账仍自行计算分币费用、现金、可卖数量和成交后敞口，不调用执行器的金额计算。
+
 历史协议与计划保留原始源码哈希。源码改变时，`dataset.source_compatible` 只接受清单中已冻结的 `source_compatibility.json`：它必须绑定原文件身份、全部当前 Python 运行源码，以及通过的差分验证和完整历史账本验证。没有登记、证据不完整或任一绑定变化均拒绝使用；模型输入、预测、日期和计划到期检查仍单独执行。
 
 训练验证、正式评估和研究对照共用 `evaluation.simulate_accounts`，按同一信号区间运行分段账户与连续账户。`evaluate_variants`负责成本和策略矩阵、独立核账与账本写入；`evaluate_accounts`保留原有策略标识入口。训练窗口按校准、内层选型、外层预测推进，`training._select_validation`集中处理内层规则和模型比较，不读取外层结果。成交计算与独立核账仍由不同模块实现。

@@ -147,20 +147,8 @@ class Ledger:
             Lot(self.next_id, quantity, date, date + pd.Timedelta(days=1), price)
         )
         self.next_id += 1
-        self.trades.append(
-            {
-                "date": str(date.date()),
-                "signal_date": str(signal_date.date()) if signal_date is not None else None,
-                "symbol": s,
-                "side": "BUY",
-                "quantity": quantity,
-                "price": price,
-                "gross": gross / 100,
-                "fee": fee / 100,
-                "slippage_rate": slippage,
-                "slippage_cost": impact / 100,
-                "cash_after": self.cash / 100,
-            }
+        self._record_trade(
+            date, s, "BUY", quantity, price, signal_date, gross, fee, slippage, impact
         )
         return True
 
@@ -192,13 +180,20 @@ class Ledger:
         if not self.lots[s]:
             self.lots.pop(s)
         self.cash += gross - fee - impact
+        self._record_trade(date, s, "SELL", q, price, signal_date, gross, fee, slippage, impact)
+        return q
+
+    def _record_trade(
+        self, date, s, side, quantity, price, signal_date, gross, fee, slippage, impact
+    ):
+        """Append the common journal schema after the position and cash have settled."""
         self.trades.append(
             {
                 "date": str(date.date()),
                 "signal_date": str(signal_date.date()) if signal_date is not None else None,
                 "symbol": s,
-                "side": "SELL",
-                "quantity": q,
+                "side": side,
+                "quantity": quantity,
                 "price": price,
                 "gross": gross / 100,
                 "fee": fee / 100,
@@ -207,7 +202,6 @@ class Ledger:
                 "cash_after": self.cash / 100,
             }
         )
-        return q
 
     def snapshot_record_dates(self, date, actions):
         for a in actions:

@@ -178,6 +178,61 @@ def latest_forecasts(paths, bundle):
     return prediction_map(bundle["table"], arrays, name)[index], result, files
 
 
+def _opening_contracts(
+    bundle, book, meta_at_signal, required, signal, execution, execute_on, information_at
+):
+    """Freeze price, liquidity and lot constraints using only the completed signal session."""
+    panels = bundle["panels"]
+    index = len(bundle["calendar"]) - 1
+    atr = {
+        (int(row.date_index), str(row.symbol)): float(row.atr_pct)
+        for row in bundle["table"].loc[bundle["table"].date_index == index].itertuples()
+    }
+    contracts = {}
+    by_symbol = defaultdict(list)
+    for action in bundle["actions"]:
+        by_symbol[action["symbol"]].append(action)
+    for symbol in required:
+        meta = meta_at_signal[symbol]
+        raw = bundle["raws"][symbol]
+        previous = float(raw.at[signal, "close"])
+        reference = previous
+        for action in by_symbol[symbol]:
+            if action["ex_date"] == execute_on:
+                reference = (
+                    reference - action.get("ex_reference_cash_per_share", action["cash_per_share"])
+                ) / action.get("ex_reference_share_multiplier", action["share_multiplier"])
+                reference = action.get("price_limit_reference", reference)
+        number(reference, "ex-date opening reference", positive=True)
+        tick = 0.001 if meta["kind"] == "etf" else 0.01
+        limit = board_limit(meta, execution, as_of=information_at)
+        ceiling = buy_ceiling(
+            raw, signal, execution, by_symbol[symbol], atr.get((index, symbol), np.nan)
+        )
+        contracts[symbol] = {
+            "meta": meta,
+            "prior_close": previous,
+            "reference_quote": nearest_tick(reference, tick),
+            "adv20": float(panels["adv20"].at[signal, symbol]),
+            "atr_pct": atr.get((index, symbol)),
+            "tick": tick,
+            "assumed_lower_limit": nearest_tick(reference * (1 - limit), tick),
+            "assumed_upper_limit": nearest_tick(reference * (1 + limit), tick),
+            "buy_ceiling": None if ceiling is None else tick_price(ceiling, tick),
+            "buy_minimum": lot_rule(meta)[0],
+            "buy_increment": lot_rule(meta)[1],
+            "held_quantity": book.quantity(symbol),
+            "sellable_quantity": book.available(symbol, execution),
+        }
+        if not np.isfinite(contracts[symbol]["adv20"]):
+            raise ValueError(f"Missing prior liquidity estimate: {symbol}")
+        if contracts[symbol]["atr_pct"] is not None and not np.isfinite(
+            contracts[symbol]["atr_pct"]
+        ):
+            contracts[symbol]["atr_pct"] = None
+    return contracts
+
+
 @pd.option_context("compute.use_numexpr", False)
 def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, turnover="legacy"):
     """Calculate the same completed-close targets as the historical strategy, before quotes."""
@@ -251,53 +306,9 @@ def make_intent(bundle, account, forecasts, config, execute_on, slippage, *, tur
             },
         )
     required = list(dict.fromkeys([*book.lots, *targets]))
-    index = len(bundle["calendar"]) - 1
-    atr = {
-        (int(row.date_index), str(row.symbol)): float(row.atr_pct)
-        for row in bundle["table"].loc[bundle["table"].date_index == index].itertuples()
-    }
-    contracts = {}
-    by_symbol = defaultdict(list)
-    for action in bundle["actions"]:
-        by_symbol[action["symbol"]].append(action)
-    for symbol in required:
-        meta = meta_at_signal[symbol]
-        raw = bundle["raws"][symbol]
-        previous = float(raw.at[signal, "close"])
-        reference = previous
-        for action in by_symbol[symbol]:
-            if action["ex_date"] == execute_on:
-                reference = (
-                    reference - action.get("ex_reference_cash_per_share", action["cash_per_share"])
-                ) / action.get("ex_reference_share_multiplier", action["share_multiplier"])
-                reference = action.get("price_limit_reference", reference)
-        number(reference, "ex-date opening reference", positive=True)
-        tick = 0.001 if meta["kind"] == "etf" else 0.01
-        limit = board_limit(meta, execution, as_of=information_at)
-        ceiling = buy_ceiling(
-            raw, signal, execution, by_symbol[symbol], atr.get((index, symbol), np.nan)
-        )
-        contracts[symbol] = {
-            "meta": meta,
-            "prior_close": previous,
-            "reference_quote": nearest_tick(reference, tick),
-            "adv20": float(panels["adv20"].at[signal, symbol]),
-            "atr_pct": atr.get((index, symbol)),
-            "tick": tick,
-            "assumed_lower_limit": nearest_tick(reference * (1 - limit), tick),
-            "assumed_upper_limit": nearest_tick(reference * (1 + limit), tick),
-            "buy_ceiling": None if ceiling is None else tick_price(ceiling, tick),
-            "buy_minimum": lot_rule(meta)[0],
-            "buy_increment": lot_rule(meta)[1],
-            "held_quantity": book.quantity(symbol),
-            "sellable_quantity": book.available(symbol, execution),
-        }
-        if not np.isfinite(contracts[symbol]["adv20"]):
-            raise ValueError(f"Missing prior liquidity estimate: {symbol}")
-        if contracts[symbol]["atr_pct"] is not None and not np.isfinite(
-            contracts[symbol]["atr_pct"]
-        ):
-            contracts[symbol]["atr_pct"] = None
+    contracts = _opening_contracts(
+        bundle, book, meta_at_signal, required, signal, execution, execute_on, information_at
+    )
     result = {
         "signal_date": account["as_of"],
         "execution_date": execute_on,
@@ -353,37 +364,9 @@ def prepared_actions(account, actions, calendar, execute_on):
     return result
 
 
-def resolve_intent(intent, account, actions, calendar, quotes, *, preview=False):
-    """Apply only the frozen intention and supplied opening quotes to a separate paper ledger."""
+def _opening_market(intent, book, meta, quotes, preview, signal, execution, opening_at):
+    """Validate auction observations and construct the execution engine's two-session input."""
     contracts = intent["contracts"]
-    meta = {s: item["meta"] for s, item in contracts.items()}
-    meta.update(intent["account_meta"])
-    # Receivables and old entitlements can refer to securities outside today's targets.
-    for action in actions:
-        if action["symbol"] not in meta and action.get("paper_meta"):
-            meta[action["symbol"]] = action["paper_meta"]
-    book, _ = restore_account(account, meta)
-    signal, execution = date_only(intent["signal_date"]), date_only(intent["execution_date"])
-    opening_at = session_time(intent["execution_date"], 9, 25)
-    by_symbol = defaultdict(list)
-    actions = prepared_actions(account, actions, calendar, intent["execution_date"])
-    for action in actions:
-        by_symbol[action["symbol"]].append(action)
-    book.snapshot_record_dates(signal, actions)
-    book.apply_actions(execution, [a for a in actions if a["ex_date"] == intent["execution_date"]])
-    for event in book.events:
-        if event["type"] == "CORPORATE_ACTION" and (
-            event["unknown_cash_pay_date"]
-            or event["unknown_cash_available_date"]
-            or event["unknown_share_list_date"]
-            or event["bonus_tax_not_modelled"]
-            or event["fractional_shares_discarded"] > 0
-        ):
-            raise ValueError("A paper account corporate action remains unresolved")
-    risk = RiskState(**intent["risk_after_observation"])
-    opening = snapshot_account(
-        book, account, account["as_of"], risk, account["sessions_completed"], None
-    )
     prices, raws, statuses = {}, {}, {}
     for symbol, contract in contracts.items():
         quote = quotes.get(symbol)
@@ -424,6 +407,43 @@ def resolve_intent(intent, account, actions, calendar, quotes, *, preview=False)
         "opening_status": {intent["execution_date"]: statuses},
         **({"fund_mode": intent["fund_mode"]} if "fund_mode" in intent else {}),
     }
+    return bundle, prices
+
+
+def resolve_intent(intent, account, actions, calendar, quotes, *, preview=False):
+    """Apply only the frozen intention and supplied opening quotes to a separate paper ledger."""
+    contracts = intent["contracts"]
+    meta = {s: item["meta"] for s, item in contracts.items()}
+    meta.update(intent["account_meta"])
+    # Receivables and old entitlements can refer to securities outside today's targets.
+    for action in actions:
+        if action["symbol"] not in meta and action.get("paper_meta"):
+            meta[action["symbol"]] = action["paper_meta"]
+    book, _ = restore_account(account, meta)
+    signal, execution = date_only(intent["signal_date"]), date_only(intent["execution_date"])
+    opening_at = session_time(intent["execution_date"], 9, 25)
+    by_symbol = defaultdict(list)
+    actions = prepared_actions(account, actions, calendar, intent["execution_date"])
+    for action in actions:
+        by_symbol[action["symbol"]].append(action)
+    book.snapshot_record_dates(signal, actions)
+    book.apply_actions(execution, [a for a in actions if a["ex_date"] == intent["execution_date"]])
+    for event in book.events:
+        if event["type"] == "CORPORATE_ACTION" and (
+            event["unknown_cash_pay_date"]
+            or event["unknown_cash_available_date"]
+            or event["unknown_share_list_date"]
+            or event["bonus_tax_not_modelled"]
+            or event["fractional_shares_discarded"] > 0
+        ):
+            raise ValueError("A paper account corporate action remains unresolved")
+    risk = RiskState(**intent["risk_after_observation"])
+    opening = snapshot_account(
+        book, account, account["as_of"], risk, account["sessions_completed"], None
+    )
+    bundle, prices = _opening_market(
+        intent, book, meta, quotes, preview, signal, execution, opening_at
+    )
     nav = book.nav(prices)
     values = book.values(prices)
     targets = (
