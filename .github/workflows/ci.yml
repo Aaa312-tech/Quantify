@@ -40,6 +40,20 @@ jobs:
         run: uv sync --locked --all-extras --no-install-project --python python
       - name: Build source distribution and wheel
         run: uv build --python python
+      - name: Check the source distribution contents
+        shell: python
+        run: |
+          from pathlib import Path
+          import tarfile
+
+          source = next(Path('dist').glob('*.tar.gz'))
+          prefix = source.name.removesuffix('.tar.gz')
+          required = ('.python-version', 'uv.lock', 'examples/offline_backtest.py', 'NOTICE.md', 'README.md')
+          with tarfile.open(source) as archive:
+              for name in required:
+                  member = archive.extractfile(f'{prefix}/{name}')
+                  if member is None or member.read() != Path(name).read_bytes():
+                      raise SystemExit(f'Source distribution is missing or changed: {name}')
       - name: Install and check the built wheel
         run: |
           uv run --no-sync python -c "import pathlib, subprocess, sys; wheel = next(pathlib.Path('dist').glob('*.whl')); subprocess.check_call(['uv', 'pip', 'install', '--python', sys.executable, '--no-deps', str(wheel)])"

@@ -134,6 +134,19 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 
 耗时不包括标准回归加载器的准备阶段；操作系统记录的进程峰值包含该公共加载器及两套已导入实现，不能解读为独立安装包的导入占用。原E0采用采样内存，本次采用操作系统峰值，因此以同批重测的E0为比较对象。超过10%的耗时或内存回退返回`REVIEW_REQUIRED`，保留原始样本并解释或修复；不改阈值，不以单次最快结果代替中位数。
 
+2026-11-23的[主测](../artifacts/checks/performance_2026-11-23/result.json)共24个样本，全部金融和输入校验通过。下表为三次测量的中位数；主测仍保留`REVIEW_REQUIRED`状态。
+
+| 工作 | E0耗时 | 当前耗时 | 耗时变化 | 进程峰值变化 |
+| --- | ---: | ---: | ---: | ---: |
+| 全库完整性 | 104.16秒 | 128.10秒 | +22.98% | -0.11% |
+| 48个模型 | 229.10秒 | 146.69秒 | -35.97% | +0.27% |
+| 历史账户 | 732.72秒 | 737.35秒 | +0.63% | -0.10% |
+| 纸面账户 | 421.89秒 | 443.54秒 | +5.13% | -0.21% |
+
+针对全库扫描，另按事先确定的四组交替顺序[复测](../artifacts/checks/performance_integrity_review_2026-11-23/result.json)。8个样本均通过完整性检查，耗时中位数为390.90秒和449.31秒，仍触发+14.94%的告警。两轮CPU时间中位数分别增加5.77%和8.62%；主要差距落在总耗时减去进程CPU时间的部分，且同一实现的耗时波动较大。
+
+[复核记录](../artifacts/checks/release_acceptance_2026-11-23/performance_review.json)确认扫描、读取及哈希函数的可执行定义相同，路径配置文件逐字节相同；输入、清单与环境锁也未变化。复测期间系统记录了一次电源状态变化，但没有单独测量存储、缓存、调度或电源的影响，不能指定它为原因。全部样本及两次告警原样保留，包括1987.91秒的样本。按计划的“解释或修复”条件完成复核，保留未改变的扫描实现；这不是性能全面通过或提速结论。
+
 ## 已登记的等价证据
 
 | 范围 | 结果 | 记录 |
@@ -143,13 +156,13 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 | 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/dependency_closure_full_2026-11-23/paper.json) |
 | 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口与同环境旧实现精确一致；无模型重训 | [计算对照](../artifacts/checks/dependency_closure_full_2026-11-23/differential.json) |
 | 报告 | 默认、指定实验和历史参考入口的HTML及PNG逐字节一致 | [渲染对照](../artifacts/checks/responsibility_checks_2026-11-22/report_render/result.json) |
-| 独立环境 | Windows 2025托管完整回归的三份财务对照文件与本地逐字节一致；Windows 2022旧Git基线失败保留 | [跨环境验收](../artifacts/checks/training_weights_2026-11-23/cloud_comparison.json) |
+| 独立环境 | E7源码在Windows 2025托管完整回归通过，三份财务对照文件及48份重算预测与本地逐字节一致；Windows 2022旧Git基线失败保留 | [跨环境验收](../artifacts/checks/release_acceptance_2026-11-23/cloud_comparison.json) |
 | 训练权重 | 本地MKL、独立OpenBLAS及托管Windows 2022/2025的24组权重均匹配修复前原哈希 | [权重验收](../artifacts/checks/training_weights_2026-11-23/completion.json) |
 | 开盘与核账 | 192组场景、2424个纸面交易日、38组拒绝路径；三档成本完整文件链路一致 | [差分对照](../artifacts/checks/paper_refactor_2026-11-22/differential.json) |
 | 仓位与风控 | 29007组状态、1024组优化器输入及完整模拟对照 | [执行验证](../artifacts/checks/execution_refactor_2026-11-22/completion.json) |
 | 训练与评估 | 12个冻结窗口以缓存重放，选型与历史结果一致 | [流程验证](../artifacts/checks/runtime_refactor_2026-11-22/completion.json) |
 
-当前代码通过908项单元测试与75项集成测试，1项因本机符号链接权限跳过；18个模块的类型检查、41个模块的覆盖率门槛与四项缺陷检测通过，详见[质量验收](../artifacts/checks/release_acceptance_2026-11-23/quality_binding.json)。41个运行模块与上述完整回归的源码逐字节一致；E7仅增加示例、性能工具及检查入口。
+当前代码通过908项单元测试与75项集成测试，1项因本机符号链接权限跳过；18个模块的类型检查、41个模块的覆盖率门槛与四项缺陷检测通过，详见[最终质量验收](../artifacts/checks/release_acceptance_2026-11-23/release_quality.json)。41个运行模块与上述完整回归的源码逐字节一致；E7增加示例、性能工具及打包检查，未修改金融运行代码。[源码包安装](../artifacts/checks/release_acceptance_2026-11-23/source_archive_install.json)实际运行版本、示例及账本命令，六份示例输出与独立wheel安装逐字节一致。
 
 此前独立OpenBLAS wheel的24组权重与原哈希一致；该环境通过48个冻结模型的精确预测检查，但完整回归因缺少Bottleneck而在历史校准处失败，不能作为完整金融验收。舍入边界初次失败及中断记录保留；修复后使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
 

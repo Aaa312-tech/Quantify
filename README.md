@@ -38,6 +38,8 @@ uv run --no-sync python examples/offline_backtest.py --output artifacts/examples
 
 示例生成虚构价格、收盘信号及下一交易日的模拟成交，分别核对账户与执行规则。查看输出中的`signals.json`、`summary.json`和`checks.json`；压缩账本的读取方式见[离线示例](docs/reproducibility.md#离线示例)。再次运行须换用未占用的输出目录。虚构工作日不是交易所日历，示例收益不参与研究结论。
 
+也可从[软件发布页](https://github.com/Aaa312-tech/Quantify/releases)下载源码包`quantfolio_research-0.30.0.tar.gz`。解压后进入包目录，执行上述`uv sync`和示例命令；包内附带Python版本、依赖锁和示例。历史研究复核仍需下面的Git及LFS流程。
+
 ### 复核历史结果
 
 复核现有冻结模型使用Windows x64、Conda及Git LFS。研究环境固定原NumPy/MKL构建；旧Git基线的完整对照使用Windows 11本机或Windows 2025托管环境，系统数学库差异见[复现指南](docs/reproducibility.md#训练权重数值一致性)。通用开发环境的Windows、Linux安装方式见[运行环境](docs/reproducibility.md#运行环境)。
