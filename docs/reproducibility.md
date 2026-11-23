@@ -39,9 +39,21 @@ uv run --no-sync python -B -m pytest -q
 
 这项修复针对已有模型的推理。它不保证重新训练在任意数学库或处理器上产生相同系数，也不恢复研究；历史研究环境锁继续保留。
 
-修复后的本地Intel和托管AMD完整历史回归均通过。两端48份预测及历史账户、纸面账户对照文件逐字节一致，全部校准和冻结窗口结果一致。额外比较发现24组重算训练权重的哈希不同，其他拟合输入字段一致。原完整回归检查的是同一环境中新旧实现的拟合输入，不是跨环境重训；这些权重未用于重新拟合。局部对照中的NumPy数组/标量及Python指数函数均重现本地权重，未重现托管哈希，剩余权重差异的原因尚未定位，见[跨环境对照](../artifacts/checks/portable_predictions_2026-11-23/cloud_comparison.json)。
+Ridge修复后的本地Intel和托管AMD完整历史回归均通过。两端48份预测及历史账户、纸面账户对照文件逐字节一致，全部校准和冻结窗口结果一致。该轮[跨环境对照](../artifacts/checks/portable_predictions_2026-11-23/cloud_comparison.json)另发现24组重算训练权重哈希不同，其他拟合输入字段一致；这些权重未用于重新拟合。权重差异的定位见下节，原失败记录保留。
 
 通用OpenBLAS开发环境中的48个模型也通过了精确预测检查，但其完整回归在历史校准处被拒绝：该环境缺少Bottleneck，Pandas标准差采用了不同的归约实现。在原环境中关闭Bottleneck可复现相同差值，见[环境诊断](../artifacts/checks/portable_predictions_2026-11-23/environment_diagnosis.json)。正式历史验收继续使用已包含Bottleneck 1.4.2的研究锁，未改动校准公式或接受该通用环境的完整结果。
+
+## 训练权重数值一致性
+
+24组拟合输入的逐步对照将首个差异定位到时间衰减中的`np.exp2`。两台托管机均为AMD EPYC 7763，Windows 2022的衰减值与本地Windows 11最多相差2个浮点末位；Windows 2025与原值一致。样本、行业计数、指数输入和基础权重均相同，差异随归一化进入全部24组权重。原始数组、运行库哈希和逐组对照见[定位记录](../artifacts/checks/training_weights_2026-11-23/root_cause.json)。
+
+NumPy 2.3.4的[`npy_exp2`映射到C运行库的`exp2`](https://github.com/numpy/numpy/blob/v2.3.4/numpy/_core/include/numpy/npy_math.h)。Windows UCRT随系统提供，其数学函数可能因操作系统版本产生末位差异，见[Microsoft说明](https://learn.microsoft.com/en-us/cpp/c-runtime-library/floating-point-support?view=msvc-170)。本次记录的三套UCRT文件哈希不同；切换本机FMA3开关没有复现云端差异。
+
+`training_targets`仍计算`2**(-age/126)`，改用`math.pow(2.0, exponent)`构造float64衰减数组。行筛选、计数、半衰期、乘法与归一化顺序保持。所有被记录的指数输入上，三个环境中的`math.pow`均复现原本地`exp2`位模式；本地研究环境及独立OpenBLAS安装包的24组实际权重也按原哈希通过。生产函数不读取冻结权重或诊断数组；不重新拟合模型。[本地完整验收](../artifacts/checks/training_weights_2026-11-23/local_acceptance.json)同时确认全部48个模型、1,425个历史账户、114份账本和75个纸面账户保持原结果。
+
+权重诊断始终与修复前已冻结的`portable_inference_full_2026-11-23/differential.json`比较，不更新参考哈希。`weights`为当前项目输出；`decay`和`native_weights`有意保留原`exp2`路径，作为环境差异对照。两者不同不会被抹去，正式通过条件仍是行号、目标和实际权重全部精确匹配。
+
+完整回归还要求当前代码与冻结Git基线在同一环境内精确相等。旧基线在Windows 2022上仍调用有差异的`exp2`，因此修复后的权重不能同时等于旧环境值与原历史值。原基线和这一检查均保留，托管完整验收明确使用`windows-2025`，`windows-2022`保留诊断和失败对照。环境标签不是数值保证，每次仍须执行全部验收；本次修复也不认证跨环境重新训练所得的模型系数。
 
 ## 配置
 

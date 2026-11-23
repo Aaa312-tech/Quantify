@@ -1,12 +1,34 @@
 """Float32 rounding cases and predictions captured with the original MKL environment."""
 
 import numpy as np
+import pandas as pd
 import pytest
 from sklearn.linear_model import Ridge
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
-from quantfolio.models import float32_fma, make_model, predict_model
+from quantfolio.models import float32_fma, make_model, predict_model, training_targets
+
+
+def test_training_weights_keep_frozen_bits_without_exp2(monkeypatch):
+    def unstable_exp2(*args, **kwargs):
+        pytest.fail("Training weights must not depend on the differing UCRT exp2 kernel")
+
+    table = pd.DataFrame(
+        {
+            "date_index": np.repeat([0, 250], 4),
+            "symbol": list("abcd") * 2,
+            "industry": "one",
+            "y5": [0.1, -0.2, 0.3, 0.02] * 2,
+            "momentum_percentile": 0.8,
+        }
+    )
+    monkeypatch.setattr(np, "exp2", unstable_exp2)
+    _, _, weights, _ = training_targets(table, np.arange(len(table)))
+    np.testing.assert_array_equal(
+        weights.view(np.uint64),
+        np.array([4600941012865106450] * 4 + [4609868670190587771] * 4, dtype=np.uint64),
+    )
 
 
 @pytest.mark.parametrize(

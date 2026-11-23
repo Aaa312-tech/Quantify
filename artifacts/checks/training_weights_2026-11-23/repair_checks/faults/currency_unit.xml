@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="2.669" timestamp="2026-11-23T10:22:06.948915+08:00" hostname="哈基浩"><testcase classname="tests.portfolio.test_opening_causality" name="test_affordable_quantity_reserves_cost_and_ledger_rejects_overspend" time="0.003"><failure message="AssertionError: assert not True&#10; +  where True = buy(Timestamp('2026-01-06 00:00:00'), 'sh600001', 100, 10, slippage=0.001)&#10; +    where buy = &lt;quantfolio.ledger.Ledger object at 0x0000023BD8E882F0&gt;.buy">def test_affordable_quantity_reserves_cost_and_ledger_rejects_overspend():
+        bundle, _ = market_bundle()
+        symbol = "sh600001"
+        date = bundle["calendar"][1]
+        quantity = buy_quantity(1005.31, 10, bundle["meta"][symbol], slippage=0.001)
+        assert quantity == 0  # 100 shares cost 1006.01 including minimum commission.
+        book = Ledger(bundle["meta"], initial=1005.31)
+&gt;       assert not book.buy(date, symbol, 100, 10, slippage=0.001)
+E       AssertionError: assert not True
+E        +  where True = buy(Timestamp('2026-01-06 00:00:00'), 'sh600001', 100, 10, slippage=0.001)
+E        +    where buy = &lt;quantfolio.ledger.Ledger object at 0x0000023BD8E882F0&gt;.buy
+
+tests\portfolio\test_opening_causality.py:93: AssertionError</failure></testcase></testsuite></testsuites>

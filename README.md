@@ -24,7 +24,7 @@ A股组合研究项目。使用滚动训练和验证选择动量排序及行业�
 
 ## 安装与验证
 
-复核现有冻结模型使用Windows x64、Conda及Git LFS。研究环境固定原NumPy/MKL构建；通用开发环境的Windows、Linux安装方式见[复现指南](docs/reproducibility.md#运行环境)。
+复核现有冻结模型使用Windows x64、Conda及Git LFS。研究环境固定原NumPy/MKL构建；旧Git基线的完整对照使用Windows 11本机或Windows 2025托管环境，系统数学库差异见[复现指南](docs/reproducibility.md#训练权重数值一致性)。通用开发环境的Windows、Linux安装方式见[运行环境](docs/reproducibility.md#运行环境)。
 
 ```powershell
 git lfs install

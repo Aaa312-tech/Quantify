@@ -36,7 +36,21 @@ def test_weight_trace_preserves_inputs_without_fitting(monkeypatch):
     table = weight_table()
     before = table.copy(deep=True)
     arrays = diagnose_weights.weight_stages(table, np.arange(len(table)))
-    assert array_sha(arrays["weights"]) == array_sha(arrays["native_weights"])
+    np.testing.assert_array_equal(
+        arrays["weights"].view(np.uint64),
+        np.repeat(
+            np.array(
+                [
+                    4607058820139863923,
+                    4607107824988434555,
+                    4607219443133970455,
+                    4607244490701932529,
+                ],
+                dtype=np.uint64,
+            ),
+            4,
+        ),
+    )
     np.testing.assert_array_equal(arrays["daily_count"], np.full(len(table), 4))
     pd.testing.assert_frame_equal(before, table)
 

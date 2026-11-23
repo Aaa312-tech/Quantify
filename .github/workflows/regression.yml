@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       runner:
-        description: 'Hosted Windows image; frozen prediction checks remain exact.'
+        description: 'Windows 2025 for the original full baseline; 2022 retains legacy-math diagnostics.'
         type: choice
-        default: windows-2022
+        default: windows-2025
         options:
+          - windows-2025
           - windows-2022
-          - windows-latest
       scope:
         description: 'Collect model and weight diagnostics, or run the complete historical regression.'
         type: choice

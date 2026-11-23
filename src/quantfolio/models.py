@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Iterable
 from typing import TypedDict, cast
 
@@ -118,9 +119,12 @@ def training_targets(table, rows):
     sector_count = (
         candidates.groupby("date_index", sort=False).industry.transform("nunique").to_numpy()
     )
-    weights = (0.5 / daily_count + 0.5 / (industry_count * sector_count)) * np.exp2(
-        -(candidates.date_index.max() - candidates.date_index.to_numpy()) / 126
+    exponent = -(candidates.date_index.max() - candidates.date_index.to_numpy()) / 126
+    # Preserve historical rounding across UCRT versions; Windows 2022 exp2 differs.
+    decay = np.fromiter(
+        (math.pow(2.0, value) for value in exponent), dtype=np.float64, count=len(exponent)
     )
+    weights = (0.5 / daily_count + 0.5 / (industry_count * sector_count)) * decay
     weights /= weights.mean()
     return (
         rows[pool],

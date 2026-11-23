@@ -1,0 +1,20 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________________ test_registered_file_hash_is_checked _____________________
+
+tmp_path = WindowsPath('C:/Users/wdong/AppData/Local/Temp/pytest-of-wdong/pytest-971/test_registered_file_hash_is_c0')
+
+    def test_registered_file_hash_is_checked(tmp_path):
+        file = tmp_path / "input.json"
+        file.write_bytes(b"original")
+        before = sha(file)
+        file.write_bytes(b"changed")
+>       with pytest.raises(ValueError, match="hash differs"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\workflows\test_regression.py:62: Failed
+- generated xml file: D:\投资组合量化\artifacts\checks\training_weights_2026-11-23\repair_checks\faults\input_hash.xml -
+=========================== short test summary info ===========================
+FAILED tests/workflows/test_regression.py::test_registered_file_hash_is_checked
+1 failed in 2.78s

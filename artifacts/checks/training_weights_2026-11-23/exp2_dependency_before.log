@@ -1,0 +1,41 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_training_weights_keep_frozen_bits_without_exp2 _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000178A1E98510>
+
+    def test_training_weights_keep_frozen_bits_without_exp2(monkeypatch):
+        def unstable_exp2(*args, **kwargs):
+            pytest.fail("Training weights must not depend on the differing UCRT exp2 kernel")
+    
+        table = pd.DataFrame(
+            {
+                "date_index": np.repeat([0, 250], 4),
+                "symbol": list("abcd") * 2,
+                "industry": "one",
+                "y5": [0.1, -0.2, 0.3, 0.02] * 2,
+                "momentum_percentile": 0.8,
+            }
+        )
+        monkeypatch.setattr(np, "exp2", unstable_exp2)
+>       _, _, weights, _ = training_targets(table, np.arange(len(table)))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\workflows\test_model_numerics.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\quantfolio\models.py:121: in training_targets
+    weights = (0.5 / daily_count + 0.5 / (industry_count * sector_count)) * np.exp2(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (array([-1.98412698, -1.98412698, -1.98412698, -1.98412698,  0.        ,
+        0.        ,  0.        ,  0.        ]),)
+kwargs = {}
+
+    def unstable_exp2(*args, **kwargs):
+>       pytest.fail("Training weights must not depend on the differing UCRT exp2 kernel")
+E       Failed: Training weights must not depend on the differing UCRT exp2 kernel
+
+tests\workflows\test_model_numerics.py:15: Failed
+=========================== short test summary info ===========================
+FAILED tests/workflows/test_model_numerics.py::test_training_weights_keep_frozen_bits_without_exp2
+1 failed in 2.52s

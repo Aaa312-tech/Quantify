@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="4.657" timestamp="2026-11-23T10:22:01.278033+08:00" hostname="哈基浩"><testcase classname="tests.portfolio.test_opening_causality" name="test_later_bar_fields_do_not_select_opening_orders[fields0-values0]" time="1.979" /><testcase classname="tests.portfolio.test_opening_causality" name="test_later_bar_fields_do_not_select_opening_orders[fields1-values1]" time="0.017" /><testcase classname="tests.portfolio.test_opening_causality" name="test_later_bar_fields_do_not_select_opening_orders[fields2-values2]" time="0.017"><failure message="AssertionError: trades&#10;assert [{'cash_after...39740.0, ...}] == [{'cash_after...39000.0, ...}]&#10;  &#10;  At index 0 diff: {'date': '2026-01-13', 'signal_date': '2026-01-12', 'symbol': 'sh600001', 'side': 'BUY', 'quantity': 13700, 'price': 10.2, 'gross': 139740.0, 'fee': 43.32, 'slippage_rate': 0.001, 'slippage_cost': 139.74, 'cash_after': 860076.94} != {'date': '2026-01-13', 'signal_date': '2026-01-12', 'symbol': 'sh600001', 'side': 'BUY', 'quantity': 13900, 'price': 10.0, 'gross': 139000.0, 'fee': 43.09, 'slippage_rate': 0.001, 'slippage_cost': 139.0, 'cash_after': 860817.91}&#10;  Use -v to get more diff">fields = ['close', 'high', 'low'], values = [10.2, 10.2, 10.0]
+
+    @pytest.mark.parametrize(
+        "fields,values",
+        [
+            (["high", "low"], [10.0, 10.0]),
+            (["volume_lots", "amount"], [0.0, 0.0]),
+            (["close", "high", "low"], [10.2, 10.2, 10.0]),
+        ],
+    )
+    def test_later_bar_fields_do_not_select_opening_orders(fields, values):
+        bundle, forecasts = market_bundle()
+        _, expected = simulate(bundle, 6, 6, forecasts)
+        changed = deepcopy(bundle)
+        date = changed["calendar"][6]
+        for raw in changed["raws"].values():
+            raw.loc[date, fields] = values
+        _, actual = simulate(changed, 6, 6, forecasts)
+        assert expected["trades"], "The test must exercise actual opening purchases"
+        for section in ("decisions", "trades", "rejections", "intermediate_weights"):
+&gt;           assert actual[section] == expected[section], section
+E           AssertionError: trades
+E           assert [{'cash_after...39740.0, ...}] == [{'cash_after...39000.0, ...}]
+E             
+E             At index 0 diff: {'date': '2026-01-13', 'signal_date': '2026-01-12', 'symbol': 'sh600001', 'side': 'BUY', 'quantity': 13700, 'price': 10.2, 'gross': 139740.0, 'fee': 43.32, 'slippage_rate': 0.001, 'slippage_cost': 139.74, 'cash_after': 860076.94} != {'date': '2026-01-13', 'signal_date': '2026-01-12', 'symbol': 'sh600001', 'side': 'BUY', 'quantity': 13900, 'price': 10.0, 'gross': 139000.0, 'fee': 43.09, 'slippage_rate': 0.001, 'slippage_cost': 139.0, 'cash_after': 860817.91}
+E             Use -v to get more diff
+
+tests\portfolio\test_opening_causality.py:34: AssertionError</failure></testcase></testsuite></testsuites>

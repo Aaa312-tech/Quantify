@@ -1,0 +1,82 @@
+{
+  "software_version": "0.29.0",
+  "strategy": "walk_forward_momentum",
+  "strategy_name": "滚动选型动量",
+  "decision": "RESEARCH_ONLY",
+  "execution_model": "opening_proxy_separate_cost",
+  "displayed_results_scope": "CAUSAL_RETRAINING",
+  "corrected_retraining_completed": true,
+  "source_evaluation": "artifacts/evaluations/recipient_entitlements_2026-11-22",
+  "data_cutoff": "2026-11-20",
+  "historical_status_review": {
+    "status": "REGISTERED_STATUS_REPAIR_VERIFIED",
+    "blocking": false,
+    "reviewed_at": "2026-11-22T04:44:51.786306+08:00",
+    "source_bundle_sha256": "c8d4fef3dfacac24c7321edc5a095716d47931096db25f80c61d5e43e0627df2",
+    "previous_review": "artifacts/checks/implemented_payments_2026-11-22/status_review.json",
+    "previous_review_sha256": "c16f5786f51761e86501e86d2a6d195ef8be8bb897301425352985ff709eaad7",
+    "source_review": "docs/references/security_status/dated_review_2026-11-21.json",
+    "source_review_sha256": "e476056e7dd2e19ec310ae9a70031fa3d9062795173f19da35434765507f1293",
+    "corrected_securities": 10,
+    "warning_sessions": 2755,
+    "remaining_reviewed_warning_training_rows": 0,
+    "remaining_reviewed_warning_buy_occurrences": 0,
+    "models_reloaded": 48,
+    "new_account_audits": 1425,
+    "fixed_forecast_account_audits": 1425,
+    "paper_accounts_exact": 75,
+    "evidence": {
+      "numeric_acceptance.json": "b81c1d1eefcaea2a29f2d0fd60aedab6d056207692a73d118c454e2539007f0f",
+      "compatibility/validation.json": "9cc4a7c3dec6b5a5b3b9cd3c505e7003f8b6221547e2b813f682fad95fc3d504",
+      "training_validation.json": "b964abb2cd298ac06b166e12497af5e31b543cc06099da54f73724a5eeda3c37",
+      "training_review.json": "3fbee2bd9cb19eb8e5cb937d90291a22f359db42b63ddf59b655aec059be983e",
+      "account_review.json": "b9f0723bbcb11e0e1b0b304607ce7773f5da3719b100b3ba4e5bc510281fffeb",
+      "exposure_review.json": "37767b2152ab60e82a359a5ea0d6f7467391c3276543a3f6560286c4a950722b",
+      "settlement_review.json": "8616bd9e7ef7a827786e697c82cf5040d5af9d0f4f74913a46c7b77be08c6fb8",
+      "implementation.json": "9841bbebff965a4c36204c0b5576414dd7a724873380ba0944c7e361188a2a75",
+      "action_scope.json": "999d5fab88f9a14ae9a946c33e1e2464ab22b35735e4c0f922d6c1559f32f108",
+      "label_scope.json": "61fa16615f0154c87a7644322cbfe0f08fba245d9df995cb0d899527061ea007",
+      "feature_expectations.json": "b1aceaea3267593720e6f9199cce7749fdbd03db7c41b884108821b3caf1a3c9",
+      "target_expectations.json": "3daaa669b536ad9f09df7f1fdbac954a095059796d467ce9a0684c63da45668e",
+      "attribution.json": "f57e4d59188bb1152a2ad3c08173a4c57ed5190f0879c58ebf21a680629e1103",
+      "forecast_effects_review.json": "20bc531476f1df78cb2921dfbbb27ec9e0c0651fc1c5fc3c324f50cfc8586aa9",
+      "fixed_forecast_summary": "498332785f0e92cec977377fc64aa0179e85f96125f1295fe058684f732ec780",
+      "baseline_integrity.json": "dd67408531e68c54f730d5bcdc609c5bd82161131142fd4ebdadc22be0a956f9"
+    },
+    "scope": "Rechecks the ten sourced warning intervals across all fitted/reference cohorts and inner/outer buys. Six prior opening-status records and all eligibility inputs remain exact. Other historical status coverage is not certified.",
+    "limitations": [
+      "387 source events remain unverified; one scoped aggregate remains inconsistent. Field support is not certification of all financial terms, taxes, fractional allocation, settlement precision, archive completeness or original publication time.",
+      "Current-universe bias, exact historical publication times, other historical status and 111 quote-gap endpoints remain open.",
+      "Reported ETF proxy constraints do not certify complete daily economic exposure; economic upper bounds remain null.",
+      "Competition fees and matching details remain unconfirmed. No forward fill or return may be invented. Follow the whitepaper, 15% strategy cap and balanced attack with the original 8% latched warning."
+    ],
+    "path": "artifacts/checks/recipient_entitlements_2026-11-22/status_review.json",
+    "sha256": "03fe7b00ab28ce7aa88fde192e1f7f5e50c1cd0a7525af1407596f6066951e02"
+  },
+  "test_start": "2025-11-18",
+  "test_end": "2026-11-02",
+  "gates": {
+    "superiority": false
+  },
+  "superiority_assessment": "NO_POSITIVE_EXCESS_TO_MATCHED_MOMENTUM",
+  "continuous": {
+    "10bps": {
+      "return": 0.35926760000000013,
+      "max_drawdown": -0.07588482489721504,
+      "trades": 244,
+      "fees": 15649.66
+    },
+    "20bps": {
+      "return": 0.033847210000000016,
+      "max_drawdown": -0.06300194048511343,
+      "trades": 96,
+      "fees": 5003.25
+    },
+    "30bps": {
+      "return": 0.11786390999999985,
+      "max_drawdown": -0.07936739272040427,
+      "trades": 144,
+      "fees": 8365.65
+    }
+  }
+}
