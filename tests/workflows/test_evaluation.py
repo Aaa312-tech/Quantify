@@ -2,6 +2,7 @@
 
 import json
 from argparse import Namespace
+from contextlib import nullcontext
 from pathlib import Path
 
 import numpy as np
@@ -128,6 +129,7 @@ def experiment(tmp_path, monkeypatch):
         },
     )
     monkeypatch.setattr(evaluation, "check_integrity", lambda paths: {"status": "PASS"})
+    monkeypatch.setattr(evaluation, "audit_run", lambda *args, **kwargs: nullcontext())
     monkeypatch.setattr(evaluation, "load_bundle", lambda paths: bundle)
     monkeypatch.setattr(evaluation, "walk_forward_folds", lambda calendar: folds)
     monkeypatch.setattr(reporting, "check_integrity", lambda paths: {"status": "PASS"})

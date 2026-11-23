@@ -1,0 +1,36 @@
+..F                                                                      [100%]
+================================== FAILURES ===================================
+_____ test_later_bar_fields_do_not_select_opening_orders[fields2-values2] _____
+
+fields = ['close', 'high', 'low'], values = [10.2, 10.2, 10.0]
+
+    @pytest.mark.parametrize(
+        "fields,values",
+        [
+            (["high", "low"], [10.0, 10.0]),
+            (["volume_lots", "amount"], [0.0, 0.0]),
+            (["close", "high", "low"], [10.2, 10.2, 10.0]),
+        ],
+    )
+    def test_later_bar_fields_do_not_select_opening_orders(fields, values):
+        bundle, forecasts = market_bundle()
+        _, expected = simulate(bundle, 6, 6, forecasts)
+        changed = deepcopy(bundle)
+        date = changed["calendar"][6]
+        for raw in changed["raws"].values():
+            raw.loc[date, fields] = values
+        _, actual = simulate(changed, 6, 6, forecasts)
+        assert expected["trades"], "The test must exercise actual opening purchases"
+        for section in ("decisions", "trades", "rejections", "intermediate_weights"):
+>           assert actual[section] == expected[section], section
+E           AssertionError: trades
+E           assert [{'cash_after...39740.0, ...}] == [{'cash_after...39000.0, ...}]
+E             
+E             At index 0 diff: {'date': '2026-01-13', 'signal_date': '2026-01-12', 'symbol': 'sh600001', 'side': 'BUY', 'quantity': 13700, 'price': 10.2, 'gross': 139740.0, 'fee': 43.32, 'slippage_rate': 0.001, 'slippage_cost': 139.74, 'cash_after': 860076.94} != {'date': '2026-01-13', 'signal_date': '2026-01-12', 'symbol': 'sh600001', 'side': 'BUY', 'quantity': 13900, 'price': 10.0, 'gross': 139000.0, 'fee': 43.09, 'slippage_rate': 0.001, 'slippage_cost': 139.0, 'cash_after': 860817.91}
+E             Use -v to get more diff
+
+tests\portfolio\test_opening_causality.py:34: AssertionError
+- generated xml file: D:\投资组合量化\artifacts\checks\dependency_integrity_2026-11-23\quality_02\faults\future_price.xml -
+=========================== short test summary info ===========================
+FAILED tests/portfolio/test_opening_causality.py::test_later_bar_fields_do_not_select_opening_orders[fields2-values2]
+1 failed, 2 passed in 3.40s

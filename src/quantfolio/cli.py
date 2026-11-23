@@ -24,6 +24,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--debug", action="store_true", help="Show traceback on research errors")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("status", help="Show the active strategy and validation status")
+    commands.add_parser("runs", help="List frozen experiments, including failed and inactive runs")
+    commands.add_parser("integrity", help="Check every registered file before publication")
     exit_study = commands.add_parser(
         "exit-study", help="Train the registered sell-budget comparison"
     )
@@ -278,6 +280,14 @@ def _project_status(paths: Paths) -> dict:
 
 
 def run(args: argparse.Namespace, paths: Paths) -> dict:
+    if args.command == "runs":
+        from .runs import run_index
+
+        return run_index(paths)
+    if args.command == "integrity":
+        from .dataset import check_integrity
+
+        return check_integrity(paths)
     if args.command == "regression":
         from .regression import run_regression
 

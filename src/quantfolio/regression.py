@@ -23,6 +23,8 @@ import pandas as pd
 
 from . import dataset, evaluation, features, models, training, verification
 from .dataset import eligible_rows, validate_features
+from .integrity import scope_counts as scope_counts
+from .integrity import write_dependency_certificate
 from .ledger import causal_price_index
 from .planning import register_output
 from .storage import array_sha, digest, load_gzip, log, now, read, save, sha
@@ -432,23 +434,6 @@ def replay_history(
     }
 
 
-def scope_counts(report):
-    try:
-        return {
-            "models": len(report["models"]),
-            "training_windows": len(report["training"]["windows"]),
-            "fit_stages": len(report["training"]["fit_inputs"]),
-            "historical_accounts": report["history"]["accounts"],
-            "ledger_files": report["history"]["ledger_files"],
-            "paper_accounts": report["paper"]["accounts"],
-            "paper_sessions": report["paper"]["sessions"],
-            "securities": report["features"]["securities"],
-            "features": report["features"]["frozen_features"]["features"],
-        }
-    except (KeyError, TypeError) as error:
-        raise ValueError("Incomplete regression result inventory") from error
-
-
 def register_compatibility(paths, output):
     """Register only completed full evidence bound to the current sources and inputs."""
     report = read(output / "result.json")
@@ -508,6 +493,7 @@ def register_compatibility(paths, output):
         },
         immutable=True,
     )
+    write_dependency_certificate(paths, output)
     register_output(paths, output)
 
 

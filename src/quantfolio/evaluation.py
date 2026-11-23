@@ -18,6 +18,7 @@ from .market import EXECUTION_MODEL
 from .metrics import episode_stats
 from .models import CANDIDATES, Forecast, prediction_map
 from .rules import CONFIGS
+from .runs import audit_run, verify_run
 from .settings import Paths
 from .simulation import episodes, simulate
 from .storage import digest, dump_gzip, load_gzip, log, now, read, save, sha
@@ -94,6 +95,12 @@ def load_predictions(
 
 def experiment_folds(paths: Paths, bundle: dict, run: Path) -> tuple[dict, list]:
     """Accept only completed, contiguous windows tied to this dataset and protocol."""
+    receipt = run / "run.json"
+    if receipt.exists() or (
+        "manifest" in paths.config
+        and receipt.relative_to(paths.root).as_posix() in read(paths.manifest)["files"]
+    ):
+        verify_run(paths, run / "run.json", current_sources=True)
     protocol = read(run / "protocol.json")
     status = read(run / "training_status.json")
     specification = protocol["specification"]
@@ -154,50 +161,58 @@ def evaluate(
     output = paths.output_path(output, "evaluations")
     if not costs or any(cost not in (10, 20, 30) for cost in costs):
         raise ValueError("Choose one or more slippage costs from 10, 20, 30 bps")
-    check_integrity(paths)
-    bundle = load_bundle(paths)
-    status, folds = experiment_folds(paths, bundle, run)
-    maps, schedule, choices, start, end = load_predictions(bundle, run, folds, status["identity"])
-    policies = POLICIES if all_policies else ["selected_strategy", "matched_momentum"]
-    turnover = paths.config.get("turnover_policy", "legacy")
-    if any(choice.get("turnover_policy", "legacy") != turnover for choice in choices):
-        raise ValueError("Training windows disagree about the turnover policy")
-    evaluated = evaluate_accounts(
-        bundle, maps, schedule, start, end, costs, policies, output, turnover=turnover
-    )
-    input_files = [run / "protocol.json", run / "training_status.json"]
-    for fold in folds:
-        input_files.extend(
-            run / "training" / f"fold_{fold['fold']:02d}" / name
-            for name in ("result.json", "outer_predictions.npz")
+    with audit_run(
+        paths,
+        "evaluate",
+        output,
+        [run / "protocol.json"],
+        {"costs": costs, "all_policies": all_policies},
+    ):
+        bundle = load_bundle(paths)
+        status, folds = experiment_folds(paths, bundle, run)
+        maps, schedule, choices, start, end = load_predictions(
+            bundle, run, folds, status["identity"]
         )
-    result = {
-        "schema_version": 1,
-        "status": status["status"],
-        "completed_at": now(),
-        "decision": "RESEARCH_ONLY",
-        "superiority_assessment": "NOT_PERFORMED",
-        "execution_model": EXECUTION_MODEL,
-        "source_run": run.relative_to(paths.root).as_posix(),
-        "identity": status["identity"],
-        "data_cutoff": paths.config["data_cutoff"],
-        "primary_policy": "selected_strategy",
-        "turnover_policy": turnover,
-        "trade_start": str(bundle["calendar"][start + 1].date()),
-        "trade_end": str(bundle["calendar"][end + 1].date()),
-        "outer_signal_sessions": end - start + 1,
-        "folds": len(folds),
-        "fold_choices": [
-            {key: choice[key] for key in ("fold", "selected_candidate", "selected_rules")}
-            for choice in choices
-        ],
-        **evaluated,
-        "input_sha256": {
-            path.relative_to(paths.root).as_posix(): sha(path) for path in input_files
-        },
-    }
-    save(output / "evaluation_summary.json", result, immutable=True)
-    return result
+        policies = POLICIES if all_policies else ["selected_strategy", "matched_momentum"]
+        turnover = paths.config.get("turnover_policy", "legacy")
+        if any(choice.get("turnover_policy", "legacy") != turnover for choice in choices):
+            raise ValueError("Training windows disagree about the turnover policy")
+        evaluated = evaluate_accounts(
+            bundle, maps, schedule, start, end, costs, policies, output, turnover=turnover
+        )
+        input_files = [run / "protocol.json", run / "training_status.json"]
+        for fold in folds:
+            input_files.extend(
+                run / "training" / f"fold_{fold['fold']:02d}" / name
+                for name in ("result.json", "outer_predictions.npz")
+            )
+        result = {
+            "schema_version": 1,
+            "status": status["status"],
+            "completed_at": now(),
+            "decision": "RESEARCH_ONLY",
+            "superiority_assessment": "NOT_PERFORMED",
+            "execution_model": EXECUTION_MODEL,
+            "source_run": run.relative_to(paths.root).as_posix(),
+            "identity": status["identity"],
+            "data_cutoff": paths.config["data_cutoff"],
+            "primary_policy": "selected_strategy",
+            "turnover_policy": turnover,
+            "trade_start": str(bundle["calendar"][start + 1].date()),
+            "trade_end": str(bundle["calendar"][end + 1].date()),
+            "outer_signal_sessions": end - start + 1,
+            "folds": len(folds),
+            "fold_choices": [
+                {key: choice[key] for key in ("fold", "selected_candidate", "selected_rules")}
+                for choice in choices
+            ],
+            **evaluated,
+            "input_sha256": {
+                path.relative_to(paths.root).as_posix(): sha(path) for path in input_files
+            },
+        }
+        save(output / "evaluation_summary.json", result, immutable=True)
+        return result
 
 
 def simulate_accounts(

@@ -1,5 +1,24 @@
 # 验证
 
+## 产物依赖
+
+新训练、评估和纸面计划同时生成`schema_version = 2`的`run.json`。运行前后均读取内容哈希；不使用路径、文件大小、修改时间或跨运行缓存代替验证。父产物递归校验，新记录缺字段、未知格式、漏登记、路径越界、循环引用或运行中输入变化均拒绝。自包含数据快照作为冻结输入；来源事实是否合格仍由独立研究核验决定。
+
+项目TOML和可编辑配置以原文、有效配置和SHA-256写入新记录；冻结数据、模型、预测及父产物必须在原完整性清单登记。失败运行如已产生文件，会保留`FAILED`记录；不能作为后续成功运行的父输入。既有记录按原格式读取，不改写旧证据。
+
+手工账户在计划入口登记，手工开盘及收盘报价在相应核算成功时登记；之后修改原文件会被拒绝。登记只绑定所提交的内容，不能证明报价真实或在当时可用。后续计划会沿账户父引用核对开盘记录和收盘报价。
+
+完整回归通过后，标准注册入口同时保留旧`source_compatibility.json`并生成`dependency_compatibility.json`。新证明核对原验收范围、具体产物身份、完整回归及其两类证据，再比较金融入口的传递源码依赖。相关规则、模型或序列化实现变化仍需精确回归，不能以新增证书绕过旧门槛。
+
+日常训练、评估和计划只扫描其依赖。发布前仍必须运行全库检查，包括已经失败或停用的历史档案：
+
+```powershell
+.research/python.exe -m quantfolio integrity
+.research/python.exe -m quantfolio runs
+```
+
+`runs`从已登记记录重建索引，列出候选、成本、父输入、配置、状态和输出，不排序选择收益。`configured`仅标识配置指向，`adopted`还要求该记录完成；索引不会改动项目配置。旧记录未保存的有效配置保留为空，不用当前配置补造历史。
+
 验证分为代码检查、冻结输入核对、模型重载和账户对照。测试通过说明实现符合已检查的行为，不代表策略有超额收益。
 
 ## 日常检查
@@ -32,7 +51,7 @@ CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13按`uv.
 
 `check_faults.py`先运行未修改代码的控制测试，再分别注入未来价格读取、元/分换算错误、漏记成交和省略输入哈希检查。只有实际断言失败才算检出，导入或收集错误不能算成功。副本放在临时目录，原源码和历史产物不改写。
 
-类型检查采用[渐进迁移](https://mypy.readthedocs.io/en/stable/existing_code.html)，当前显式检查16个模块：`settings`、`storage`、`models`、`allocation`、`ledger`、`accounts`、`risk`、`simulation`、`planning`、`validation`、`features`、`industries`、`dataset`、`status_data`、`funds`、`evaluation`。预测、报价、仓位、成交、账户和风险使用具体契约；运行器和账户调用方受检查，包内`py.typed`同时提供安装包的类型信息。测试确认六种非法金融字段赋值会被mypy拒绝。
+类型检查采用[渐进迁移](https://mypy.readthedocs.io/en/stable/existing_code.html)，当前显式检查18个模块：`settings`、`storage`、`models`、`allocation`、`ledger`、`accounts`、`risk`、`simulation`、`planning`、`validation`、`features`、`industries`、`dataset`、`status_data`、`funds`、`evaluation`、`integrity`、`runs`。预测、报价、仓位、成交、账户和风险使用具体契约；运行器和账户调用方受检查，包内`py.typed`同时提供安装包的类型信息。测试确认六种非法金融字段赋值会被mypy拒绝。
 
 这些模块中的原始快照、来源元数据、诊断结果和未迁移的函数参数仍保留动态字典；不声称已完整类型化。只有缺少类型元数据的`scipy.*`、`sklearn.*`、`joblib`、`threadpoolctl`、`baostock`设置精确的外部导入豁免，不忽略本项目模块错误。Decimal非空求和及已校验的字段使用不转换数值的`cast`；旧模型、预测和金额仍由完整回归检查。
 

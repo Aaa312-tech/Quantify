@@ -20,14 +20,17 @@ from .accounts import (
     timestamp,
 )
 from .allocation import allocate
-from .dataset import check_integrity, eligible_rows, load_bundle, source_compatible
+from .dataset import eligible_rows, load_bundle, source_compatible
 from .evaluation import experiment_folds
 from .funds import exposure_report
 from .industries import metadata_at, require_industries
+from .integrity import register_files
+from .integrity import register_output as register_output
 from .ledger import Ledger, lot_rule, nearest_tick, tick_price
 from .market import board_limit, regime, risk_warning
 from .models import Forecast, prediction_map
 from .risk import RiskState, healthy_market
+from .runs import audit_run, verify_run
 from .simulation import Execution, buy_ceiling
 from .status_data import load_status_review
 from .storage import digest, now, read, save, sha
@@ -98,20 +101,6 @@ def input_path(paths, value):
     if not path.is_relative_to(paths.root) or not path.is_file():
         raise ValueError("Paper inputs must be existing project files")
     return path
-
-
-def register_output(paths, output):
-    """Append completed paper evidence without changing an existing frozen file."""
-    manifest = read(paths.manifest)
-    for file in sorted(output.rglob("*")):
-        if not file.is_file():
-            continue
-        relative = file.relative_to(paths.root).as_posix()
-        value = sha(file)
-        if relative in manifest["files"] and manifest["files"][relative] != value:
-            raise ValueError("Paper output would alter frozen evidence")
-        manifest["files"][relative] = value
-    save(paths.manifest, manifest)
 
 
 def initialize_account(paths, output, account_id, as_of=None):
@@ -645,79 +634,82 @@ def freeze_plan(paths, account_file, output, cost=10):
     output = paths.output_path(output, "plans")
     if cost not in (10, 20, 30):
         raise ValueError("Choose 10, 20 or 30 bps per side")
-    check_integrity(paths)
     account_path = input_path(paths, account_file)
+    account_hash = sha(account_path)
     account = read(account_path)
     validate_parent(paths, account)
-    calendar = load_calendar(paths)
-    cutoff = paths.config["data_cutoff"]
-    execute_on = next_session(calendar, cutoff)
-    created = timestamp(now())
-    blockers, status_review = _plan_blockers(paths, account, cutoff, execute_on, created)
-    bundle = load_bundle(paths)
-    restore_account(account, bundle["meta"])
-    forecasts, fitted, files = latest_forecasts(paths, bundle)
-    files.extend(
-        [
-            account_path,
-            paths.bundle,
-            paths.root / paths.config["calendar"],
-            paths.root / "configs/competition.json",
-        ]
-    )
-    if status_review is not None:
-        files.append(paths.root / status_review["path"])
-    record = {
-        "schema_version": 1,
-        "created_at": created.isoformat(),
-        "status": "BLOCKED" if blockers else "FROZEN_CONDITIONAL_PLAN",
-        "decision": "RESEARCH_ONLY",
-        "blockers": blockers,
-        "signal_date": cutoff,
-        "execution_date": execute_on,
-        "expires_at": session_time(execute_on, 9, 25).isoformat(),
-        "resolve_by": session_time(execute_on, 9, 30).isoformat(),
-        "account": account,
-        "model": fitted["selected_candidate"],
-        "rule_config": fitted["selected_rules"],
-        "active_configuration": dict(paths.config),
-        "source_sha256": source_hashes(),
-        "input_sha256": {p.relative_to(paths.root).as_posix(): sha(p) for p in files},
-        "calendar": calendar,
-        "orders": [],
-        "historical_status_review": status_review,
-        "signal_horizon_sessions": 5,
-        "limitations": [
-            "Historical superiority has not passed.",
-            "Manual paper workflow; no broker or APP connection.",
-            "Fees, slippage and quote fills are research assumptions; contest matching remains unconfirmed.",
-            "Current industry classifications, survival selection and historical trading-status coverage are incomplete.",
-            "Reported ETF holdings are dated, partial proxies. Unknown economic exposure remains unbounded; capital limits do not certify full look-through risk.",
-        ],
-    }
-    upcoming = [day for day in calendar["sessions"] if session_time(day, 9, 25) > created]
-    if upcoming:
-        position = calendar["sessions"].index(upcoming[0])
-        required = calendar["sessions"][position - 1] if position else None
-        record["next_review"] = {
-            "execution_date": upcoming[0],
-            "required_data_cutoff": required,
-            "data_ready_after": session_time(required, 16).isoformat() if required else None,
+    if sha(account_path) != account_hash:
+        raise ValueError("Account evidence changed while it was loaded")
+    register_files(paths, [account_path])
+    with audit_run(paths, "plan", output, [account_file], {"cost": cost}):
+        calendar = load_calendar(paths)
+        cutoff = paths.config["data_cutoff"]
+        execute_on = next_session(calendar, cutoff)
+        created = timestamp(now())
+        blockers, status_review = _plan_blockers(paths, account, cutoff, execute_on, created)
+        bundle = load_bundle(paths)
+        restore_account(account, bundle["meta"])
+        forecasts, fitted, files = latest_forecasts(paths, bundle)
+        files.extend(
+            [
+                account_path,
+                paths.bundle,
+                paths.root / paths.config["calendar"],
+                paths.root / "configs/competition.json",
+            ]
+        )
+        if status_review is not None:
+            files.append(paths.root / status_review["path"])
+        record = {
+            "schema_version": 1,
+            "created_at": created.isoformat(),
+            "status": "BLOCKED" if blockers else "FROZEN_CONDITIONAL_PLAN",
+            "decision": "RESEARCH_ONLY",
+            "blockers": blockers,
+            "signal_date": cutoff,
+            "execution_date": execute_on,
+            "expires_at": session_time(execute_on, 9, 25).isoformat(),
+            "resolve_by": session_time(execute_on, 9, 30).isoformat(),
+            "account": account,
+            "model": fitted["selected_candidate"],
+            "rule_config": fitted["selected_rules"],
+            "active_configuration": dict(paths.config),
+            "source_sha256": source_hashes(),
+            "input_sha256": {p.relative_to(paths.root).as_posix(): sha(p) for p in files},
+            "calendar": calendar,
+            "orders": [],
+            "historical_status_review": status_review,
+            "signal_horizon_sessions": 5,
+            "limitations": [
+                "Historical superiority has not passed.",
+                "Manual paper workflow; no broker or APP connection.",
+                "Fees, slippage and quote fills are research assumptions; contest matching remains unconfirmed.",
+                "Current industry classifications, survival selection and historical trading-status coverage are incomplete.",
+                "Reported ETF holdings are dated, partial proxies. Unknown economic exposure remains unbounded; capital limits do not certify full look-through risk.",
+            ],
         }
-    if not blockers:
-        _preview_plan(record, bundle, forecasts, fitted, cost)
-    record["identity"] = digest(record)
-    save(output / "plan.json", record, immutable=True)
-    write_plan_report(record, output / "plan.md")
-    register_output(paths, output)
-    return {
-        "status": record["status"],
-        "blockers": record["blockers"],
-        "execution_date": execute_on,
-        "plan": str(output / "plan.json"),
-        "report": str(output / "plan.md"),
-        "next_review": record.get("next_review"),
-    }
+        upcoming = [day for day in calendar["sessions"] if session_time(day, 9, 25) > created]
+        if upcoming:
+            position = calendar["sessions"].index(upcoming[0])
+            required = calendar["sessions"][position - 1] if position else None
+            record["next_review"] = {
+                "execution_date": upcoming[0],
+                "required_data_cutoff": required,
+                "data_ready_after": session_time(required, 16).isoformat() if required else None,
+            }
+        if not blockers:
+            _preview_plan(record, bundle, forecasts, fitted, cost)
+        record["identity"] = digest(record)
+        save(output / "plan.json", record, immutable=True)
+        write_plan_report(record, output / "plan.md")
+        return {
+            "status": record["status"],
+            "blockers": record["blockers"],
+            "execution_date": execute_on,
+            "plan": str(output / "plan.json"),
+            "report": str(output / "plan.md"),
+            "next_review": record.get("next_review"),
+        }
 
 
 def write_plan_report(plan, path):
@@ -774,7 +766,12 @@ def write_plan_report(plan, path):
 
 def verified_plan(paths, plan_file):
     file = input_path(paths, plan_file)
-    expected = read(paths.manifest)["files"].get(file.relative_to(paths.root).as_posix())
+    manifest = read(paths.manifest)["files"]
+    if (file.parent / "run.json").exists() or (file.parent / "run.json").relative_to(
+        paths.root
+    ).as_posix() in manifest:
+        verify_run(paths, file.parent / "run.json", current_sources=True)
+    expected = manifest.get(file.relative_to(paths.root).as_posix())
     if sha(file) != expected:
         raise ValueError("Plan is not frozen or has changed")
     plan = read(file)
@@ -801,6 +798,7 @@ def resolve_plan(paths, plan_file, quotes_file, output):
     output = paths.output_path(output, "plans")
     file, plan = verified_plan(paths, plan_file)
     quote_path = input_path(paths, quotes_file)
+    quote_hash = sha(quote_path)
     quotes = read(quote_path)
     observed = timestamp(now())
     opening = timestamp(plan["expires_at"])
@@ -827,6 +825,9 @@ def resolve_plan(paths, plan_file, quotes_file, output):
         account_id=plan["account"]["account_id"],
     )
     result["identity"] = digest(result)
+    if sha(quote_path) != quote_hash:
+        raise ValueError("Opening quote evidence changed during resolution")
+    register_files(paths, [quote_path])
     save(output / "resolution.json", result, immutable=True)
     register_output(paths, output)
     return {
@@ -871,6 +872,7 @@ def close_account(paths, resolution_file, closing_file, output):
     output = paths.output_path(output, "accounts")
     file, result, plan = _verified_resolution(paths, resolution_file)
     closing_path = input_path(paths, closing_file)
+    closing_hash = sha(closing_path)
     closing = read(closing_path)
     observed = timestamp(now())
     day = result["execution_date"]
@@ -897,6 +899,9 @@ def close_account(paths, resolution_file, closing_file, output):
         "positions": book.values(prices),
         "quotes": prices,
     }
+    if sha(closing_path) != closing_hash:
+        raise ValueError("Closing quote evidence changed during accounting")
+    register_files(paths, [closing_path])
     save(output / "account.json", account, immutable=True)
     register_output(paths, output)
     return {

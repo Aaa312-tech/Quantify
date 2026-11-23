@@ -1,6 +1,7 @@
 """Growing calendars must extend default runs without relabelling partial research."""
 
 import json
+from contextlib import nullcontext
 from copy import deepcopy
 
 import pandas as pd
@@ -30,6 +31,7 @@ def calendar_run(tmp_path, monkeypatch):
         calendar = pd.bdate_range("2010-01-01", periods=sessions)
         bundle = {"calendar": calendar, "cutoff": str(calendar[-1].date())}
         monkeypatch.setattr(dataset, "load_bundle", lambda paths: bundle)
+        monkeypatch.setattr(training, "audit_run", lambda *args, **kwargs: nullcontext())
         calls = []
 
         def capture(bundle, fold, output, identity, **options):

@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 from .features import industry_features, momentum_features
+from .integrity import dependency_compatible
 from .settings import Paths
 from .storage import read, sha
 
@@ -60,6 +61,9 @@ def source_compatible(paths: Paths, subject: Path, expected: dict, current: dict
     runtime = {p.name: sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
     if current != {name: runtime.get(name) for name in expected}:
         return False
+
+    if dependency_compatible(paths, subject, expected, Path(__file__).parent):
+        return True
 
     def frozen_record(name, expected_hash):
         path = (root / name).resolve()

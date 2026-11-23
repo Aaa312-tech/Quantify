@@ -28,7 +28,7 @@ def module_totals(report: dict) -> dict[str, dict[str, int]]:
     return result
 
 
-def compare_coverage(current: dict, baseline: dict, groups: dict) -> list[str]:
+def compare_coverage(current: dict, baseline: dict, groups: dict, minimums=None) -> list[str]:
     """A moved module is compared with its named successors as one coverage scope."""
     errors = []
     members = []
@@ -54,6 +54,20 @@ def compare_coverage(current: dict, baseline: dict, groups: dict) -> list[str]:
         errors.append("Coverage groups overlap")
     if set(groups) - set(baseline):
         errors.append("Coverage group has no registered baseline")
+    for module, thresholds in (minimums or {}).items():
+        if module in members or module not in current:
+            errors.append(f"Invalid new-module coverage scope: {module}")
+            continue
+        members.append(module)
+        actual = current[module]
+        for metric, covered, total in (
+            ("lines", "covered_lines", "num_statements"),
+            ("branches", "covered_branches", "num_branches"),
+        ):
+            if not 0 <= thresholds[metric] <= 100:
+                raise ValueError("Invalid coverage minimum")
+            if actual[total] and actual[covered] * 100 < thresholds[metric] * actual[total]:
+                errors.append(f"New-module coverage below minimum: {module}/{metric}")
     if set(current) - set(members):
         errors.append(f"Coverage has unregistered modules: {sorted(set(current) - set(members))}")
     return errors
@@ -74,7 +88,9 @@ def main() -> None:
         raise ValueError("Coverage baseline hash differs")
     baseline = json.loads(raw)
     current = module_totals(json.loads(args.report.read_text(encoding="utf-8")))
-    errors = compare_coverage(current, baseline["modules"], config.get("groups", {}))
+    errors = compare_coverage(
+        current, baseline["modules"], config.get("groups", {}), config.get("minimums", {})
+    )
     print(
         json.dumps(
             {"status": "FAIL" if errors else "PASS", "modules": len(current), "errors": errors}

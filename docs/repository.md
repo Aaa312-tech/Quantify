@@ -33,6 +33,8 @@ README负责安装和结果摘要，[文档索引](index.md)负责导航，[状�
 
 临时脚本、环境、缓存和重复构建文件不提交。手工报价保留来源与时刻，和输出一起存档；不得用生成时间或哈希代替历史可用性证明。
 
+新训练、评估与纸面计划的`run.json`是依赖记录，随该目录冻结；索引由`python -m quantfolio runs`重建。原始运行目录没有新记录时按旧格式展示，未保存的历史配置不补写。全库发布检查使用`python -m quantfolio integrity`，不得仅检查索引或当前采用的实验。
+
 `uv.lock`固定通用开发依赖；`environments/research-win-64.lock`保留历史模型所用的Conda/MKL构建。安装方式和两种环境的验收边界见[复现指南](reproducibility.md#运行环境)。`.venv`和`.research`均为本地环境，不进入Git。
 
 ## 检查与发布

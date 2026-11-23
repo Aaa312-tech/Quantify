@@ -18,6 +18,7 @@ from .models import (
     neutral_scores,
 )
 from .rules import CONFIGS, TURNOVER_POLICIES
+from .runs import audit_run
 from .selection import label_clip_bounds, select_model, select_rules, validation_summary
 from .storage import dump_gzip, log, now, read, save, sha
 from .validation import execution_audit, reconcile
@@ -33,90 +34,95 @@ def run_training(paths, output, first=1, last=None, include_latest=False):
     """
     from pathlib import Path
 
-    from .dataset import check_integrity, load_bundle, walk_forward_folds
+    from .dataset import load_bundle, walk_forward_folds
     from .settings import Paths
     from .storage import digest
 
     if not isinstance(paths, Paths):
         raise TypeError("paths must be a Paths instance")
-    check_integrity(paths)
-    bundle = load_bundle(paths)
-    selection_mode = paths.config.get("selection_mode", "legacy")
-    if selection_mode not in ("legacy", "positive_score"):
-        raise ValueError("Unknown model adoption policy")
-    turnover = paths.config.get("turnover_policy", "legacy")
-    if turnover not in TURNOVER_POLICIES:
-        raise ValueError("Unknown turnover policy")
-    folds = walk_forward_folds(bundle["calendar"])
-    if last is None:
-        last = len(folds)
-    if not 1 <= first <= last <= len(folds):
-        raise ValueError(f"Require 1 <= first <= last <= {len(folds)}")
-    specification = {
-        "plan_sha256": sha(paths.protocol),
-        "data_sha256": sha(paths.bundle),
-        "source_sha256": {
-            path.name: sha(path) for path in sorted(Path(__file__).parent.glob("*.py"))
-        },
-        "folds": folds,
-        "model_candidates": CANDIDATES,
-        "rule_configs": CONFIGS,
-        "selected_folds": [first, last],
-        "include_latest": include_latest,
-        "execution_model": EXECUTION_MODEL,
-        "selection_mode": selection_mode,
-        "turnover_policy": turnover,
-    }
-    identity = digest(specification)
-    save(
-        output / "protocol.json",
-        {"registered_at": now(), "identity": identity, "specification": specification},
-        immutable=True,
-    )
-    for fold in folds:
-        if first <= fold["fold"] <= last:
+    with audit_run(
+        paths,
+        "train",
+        output,
+        parameters={"first": first, "last": last, "include_latest": include_latest},
+    ):
+        bundle = load_bundle(paths)
+        selection_mode = paths.config.get("selection_mode", "legacy")
+        if selection_mode not in ("legacy", "positive_score"):
+            raise ValueError("Unknown model adoption policy")
+        turnover = paths.config.get("turnover_policy", "legacy")
+        if turnover not in TURNOVER_POLICIES:
+            raise ValueError("Unknown turnover policy")
+        folds = walk_forward_folds(bundle["calendar"])
+        if last is None:
+            last = len(folds)
+        if not 1 <= first <= last <= len(folds):
+            raise ValueError(f"Require 1 <= first <= last <= {len(folds)}")
+        specification = {
+            "plan_sha256": sha(paths.protocol),
+            "data_sha256": sha(paths.bundle),
+            "source_sha256": {
+                path.name: sha(path) for path in sorted(Path(__file__).parent.glob("*.py"))
+            },
+            "folds": folds,
+            "model_candidates": CANDIDATES,
+            "rule_configs": CONFIGS,
+            "selected_folds": [first, last],
+            "include_latest": include_latest,
+            "execution_model": EXECUTION_MODEL,
+            "selection_mode": selection_mode,
+            "turnover_policy": turnover,
+        }
+        identity = digest(specification)
+        save(
+            output / "protocol.json",
+            {"registered_at": now(), "identity": identity, "specification": specification},
+            immutable=True,
+        )
+        for fold in folds:
+            if first <= fold["fold"] <= last:
+                run_window(
+                    bundle,
+                    fold,
+                    output / "training" / f"fold_{fold['fold']:02d}",
+                    identity,
+                    positive_score=selection_mode == "positive_score",
+                    turnover=turnover,
+                )
+        if include_latest:
+            latest = len(bundle["calendar"]) - 1
+            validation_end = latest - 7
+            validation_start = validation_end - 62
+            train_end = validation_start - 7
+            fold = {
+                "fold": "final",
+                "train_start": train_end - 251,
+                "train_end": train_end,
+                "validation_start": validation_start,
+                "validation_end": validation_end,
+                "test_start": latest,
+                "test_end": latest,
+            }
             run_window(
                 bundle,
                 fold,
-                output / "training" / f"fold_{fold['fold']:02d}",
+                output / "final_fit",
                 identity,
+                final=True,
                 positive_score=selection_mode == "positive_score",
                 turnover=turnover,
             )
-    if include_latest:
-        latest = len(bundle["calendar"]) - 1
-        validation_end = latest - 7
-        validation_start = validation_end - 62
-        train_end = validation_start - 7
-        fold = {
-            "fold": "final",
-            "train_start": train_end - 251,
-            "train_end": train_end,
-            "validation_start": validation_start,
-            "validation_end": validation_end,
-            "test_start": latest,
-            "test_end": latest,
+        result = {
+            "status": "COMPLETE" if first == 1 and last == len(folds) else "PARTIAL",
+            "completed_at": now(),
+            "identity": identity,
+            "folds_completed": last - first + 1,
+            "data_cutoff": bundle["cutoff"],
+            "latest_fit_included": include_latest,
+            "decision": "RESEARCH_ONLY",
         }
-        run_window(
-            bundle,
-            fold,
-            output / "final_fit",
-            identity,
-            final=True,
-            positive_score=selection_mode == "positive_score",
-            turnover=turnover,
-        )
-    result = {
-        "status": "COMPLETE" if first == 1 and last == len(folds) else "PARTIAL",
-        "completed_at": now(),
-        "identity": identity,
-        "folds_completed": last - first + 1,
-        "data_cutoff": bundle["cutoff"],
-        "latest_fit_included": include_latest,
-        "decision": "RESEARCH_ONLY",
-    }
-    save(output / "training_status.json", result, immutable=True)
-    return result
+        save(output / "training_status.json", result, immutable=True)
+        return result
 
 
 def trial(bundle, fold, forecasts, config, path, identity, *, mode="latched", turnover="legacy"):

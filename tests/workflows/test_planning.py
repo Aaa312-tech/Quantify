@@ -206,6 +206,14 @@ def test_corporate_rights_and_cash_dates_cannot_be_invented():
 
 
 def paper_project(tmp_path, monkeypatch):
+    from contextlib import contextmanager
+
+    @contextmanager
+    def paper_audit(paths, operation, output, *args):
+        yield
+        planning.register_output(paths, output)
+
+    monkeypatch.setattr(planning, "audit_run", paper_audit)
     bundle, forecasts = market_bundle()
     paths = Paths(tmp_path)
     (tmp_path / "configs").mkdir()
