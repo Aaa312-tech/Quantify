@@ -1,0 +1,83 @@
+{
+  "recorded_at": "2026-11-24T01:08:16.164983+08:00",
+  "execution_date": "2026-11-24",
+  "status": "BLOCKED",
+  "recommendation": "NO_NEW_ORDERS_PENDING_VERIFIED_CURRENT_INPUTS",
+  "cash_cny": 1000000,
+  "positions": [],
+  "orders": [],
+  "account_confirmation": "artifacts/accounts/confirmed_2026-11-23/confirmation.json",
+  "verified_data_cutoff": "2026-11-20",
+  "required_data_cutoff": "2026-11-23",
+  "complete_raw_instruments": 5,
+  "expected_instruments": 594,
+  "data_collection": [
+    {
+      "path": "data/raw/2026-11-23/collection.json",
+      "sha256": "1b556bdfde6815e65c2b56f4f28819fce0d400036ffb796ae81be026fa5e9cce",
+      "status": "PARTIAL",
+      "requested": 9,
+      "consistent": 5,
+      "failed": 4,
+      "errors": [
+        "RemoteDisconnected: Remote end closed connection without response"
+      ]
+    },
+    {
+      "path": "data/raw/2026-11-23-retry/collection.json",
+      "sha256": "4227082ffbedfa27310dce5c6237883f9357f084a16236dec9bb38f246dd3ffa",
+      "status": "PARTIAL",
+      "requested": 3,
+      "consistent": 0,
+      "failed": 3,
+      "errors": [
+        "RemoteDisconnected: Remote end closed connection without response"
+      ]
+    }
+  ],
+  "plan_check": "artifacts/plans/readiness_2026-11-24/plan.json",
+  "plan_blockers": [
+    "ACCOUNT_DATE_DIFFERS_FROM_DATA",
+    "NEXT_OPEN_ALREADY_OCCURRED_OR_DATA_STALE"
+  ],
+  "new_model_fits": 0,
+  "new_forecasts": false,
+  "active_configuration_changed": false,
+  "research_goal": "REMAINS_PAUSED",
+  "interpretation": "Input-readiness decision, not a new bearish forecast or an optimized cash allocation. The engine retains its stale execution_date; next_review identifies 2026-11-24. No market orders or completed paper session are asserted.",
+  "risk": {
+    "objective": "balanced_attack",
+    "drawdown_warning": 0.08,
+    "individual_nav_limit": 0.15,
+    "original_peak_cny": 1000000
+  },
+  "market_context": {
+    "source": "https://news.10jqka.com.cn/20261123/c682101377.shtml",
+    "published_at": "2026-11-23T15:30:06+08:00",
+    "session": "2026-11-23",
+    "retrieval": "Dated provider summary returned by web search; direct page open was unavailable.",
+    "index_returns_pct": {
+      "sse_composite": 0.15,
+      "szse_component": 1.93,
+      "chinext": 3.08
+    },
+    "use": "Context only; not algorithm input."
+  },
+  "baseline_commit": "210d22174076d0d4411ca61d875196f46b52707c",
+  "baseline_manifest_entries_preserved": 41521,
+  "source_sha256": {
+    "accounts": "caadd7f0bef140f6bc0a87b588b3fe1aac0e2b0cc1b938fd6230199b1b2687bc",
+    "planning": "6c4b9dbc78022989285a458f562679cdff582782826e0041f3df516326271935",
+    "allocation": "d2a624953090701820d2fbd6009e431dc0c28d0a75f931898dbd71a47dcbdff0",
+    "ledger": "8dc6fcf8d3c97c43f6913cc0d22983f916f0602cf04acc7d3cbd12bde003a45f",
+    "market": "642104f32327a23b9e40a1e80c0fe11d3c078fcf05f5535f7d099dfef201d899",
+    "risk": "3d83df2bf574dcb82f8c742147daf6093514848833459f56e5d447522867af3f",
+    "rules": "7265915a24f013a29d92d74e864f2329c9c13eeccaa2d5fedd564f9d1c445fb8",
+    "simulation": "2571b5fca0e10ee8e90cce57a0338b94ca8a1ba3232b20a02d9ef38c7e67f036",
+    "status_data": "59d48f2a0b61b0f911b6e7fc2b3fdc46fcb0d9ad26a6c2b11051d067c549d0fe",
+    "industries": "60659cdfaefd83d621f932615adb8643553e308c8935477277bcd2dbcbbde6a2",
+    "funds": "75d3012b8b6c6ae9b29bd21acf910278f8f712fe1ddca9cf9f815fe301925590",
+    "validation": "6cb8f44861ae659fe7845b7fd2555a481d4710db348183946ee1f72cad9f9d1f"
+  },
+  "archive_retry": "First manifest append for raw data failed with Windows PermissionError during atomic replace after the blocked plan had been frozen. The existing account, plan and previous manifest entries were retained; this run registers the unchanged evidence."
+}
