@@ -14,9 +14,9 @@ $env:PYTHONPATH = Join-Path $ProjectRoot "src"
 $env:PYTHONDONTWRITEBYTECODE = "1"
 Push-Location -LiteralPath $ProjectRoot
 try {
-    & $Python -B -m ruff format --no-cache --check src tests scripts
+    & $Python -B -m ruff format --no-cache --check src tests scripts examples
     if ($LASTEXITCODE -ne 0) { throw "Formatting failed" }
-    & $Python -B -m ruff check --no-cache src tests scripts
+    & $Python -B -m ruff check --no-cache src tests scripts examples
     if ($LASTEXITCODE -ne 0) { throw "Lint failed" }
     & $Python -B -m mypy --junit-xml "$Output\types.xml"
     if ($LASTEXITCODE -ne 0) { throw "Type checks failed" }

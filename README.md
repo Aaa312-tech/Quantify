@@ -24,6 +24,22 @@ A股组合研究项目。使用滚动训练和验证选择动量排序及行业�
 
 ## 安装与验证
 
+先运行合成示例，只需Python与uv，不需要行情、模型或Git LFS对象。安装过程下载软件依赖，示例本身离线运行：
+
+```powershell
+$env:GIT_LFS_SKIP_SMUDGE = '1'
+git clone https://github.com/Aaa312-tech/Quantify.git
+Remove-Item Env:GIT_LFS_SKIP_SMUDGE
+Set-Location Quantify
+python -m pip install uv==0.13.9
+uv sync --locked --all-extras
+uv run --no-sync python examples/offline_backtest.py --output artifacts/examples/offline_demo
+```
+
+示例生成虚构价格、收盘信号及下一交易日的模拟成交，分别核对账户与执行规则。查看输出中的`signals.json`、`summary.json`和`checks.json`；压缩账本的读取方式见[离线示例](docs/reproducibility.md#离线示例)。再次运行须换用未占用的输出目录。虚构工作日不是交易所日历，示例收益不参与研究结论。
+
+### 复核历史结果
+
 复核现有冻结模型使用Windows x64、Conda及Git LFS。研究环境固定原NumPy/MKL构建；旧Git基线的完整对照使用Windows 11本机或Windows 2025托管环境，系统数学库差异见[复现指南](docs/reproducibility.md#训练权重数值一致性)。通用开发环境的Windows、Linux安装方式见[运行环境](docs/reproducibility.md#运行环境)。
 
 ```powershell
@@ -55,6 +71,7 @@ uv pip install --python .research/python.exe --no-deps -e .
 | `reports/` | 由评估数据生成的阅读报告 |
 | `docs/` | 使用、方法、数据契约及研究记录 |
 | `scripts/` | 本地检查入口 |
+| `examples/` | 使用公开API的离线合成示例 |
 
 运行参数以 [project.toml](configs/project.toml) 为准。数据和实验按用途、日期归档；历史记录不参与当前配置的自动选择。
 

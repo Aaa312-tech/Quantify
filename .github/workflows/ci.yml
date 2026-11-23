@@ -49,12 +49,15 @@ jobs:
         run: |
           uv run --project "${{ github.workspace }}" --no-sync python -m quantfolio --version
           uv run --project "${{ github.workspace }}" --no-sync python -c "import os, pathlib, quantfolio; from importlib.resources import files; assert not pathlib.Path(quantfolio.__file__).is_relative_to(pathlib.Path(os.environ['GITHUB_WORKSPACE'])); assert files('quantfolio').joinpath('templates/report.html').is_file()"
+      - name: Run the offline example with the installed wheel
+        working-directory: ${{ runner.temp }}
+        run: uv run --project "${{ github.workspace }}" --no-sync python "${{ github.workspace }}/examples/offline_backtest.py" --output "${{ runner.temp }}/offline-example"
       - name: Prepare check outputs
         run: uv run --no-sync python -c "import pathlib, subprocess; pathlib.Path('quality-results').mkdir(); pathlib.Path('quality-results/commit.txt').write_bytes(subprocess.check_output(['git', 'rev-parse', 'HEAD']))"
       - name: Check formatting
-        run: uv run --no-sync ruff format --check src tests scripts
+        run: uv run --no-sync ruff format --check src tests scripts examples
       - name: Lint
-        run: uv run --no-sync ruff check src tests scripts
+        run: uv run --no-sync ruff check src tests scripts examples
       - name: Check migrated types
         run: uv run --no-sync mypy --junit-xml quality-results/types.xml
       - name: Run unit tests

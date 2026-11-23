@@ -29,6 +29,20 @@ uv run --no-sync python -B -m pytest -q
 
 依据：[uv锁定安装](https://docs.astral.sh/uv/concepts/projects/sync/)、[uv构建依赖](https://docs.astral.sh/uv/concepts/projects/build/)、[Conda显式环境](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html#building-identical-conda-environments)、[NumPy构建信息](https://numpy.org/doc/stable/reference/generated/numpy.show_config.html)。
 
+## 离线示例
+
+[offline_backtest.py](../examples/offline_backtest.py)直接调用`simulate`、`reconcile`和`execution_audit`，不读取项目配置或冻结研究输入。输入为7只虚构证券、80个虚构工作日的价格，20日动量信号在次日开盘执行，覆盖59个模拟账户日。它演示API契约，不创建新的策略候选或真实订单。
+
+按首页安装后运行：
+
+```sh
+uv run --no-sync python examples/offline_backtest.py --output artifacts/examples/offline_demo
+uv run --no-sync python -c "import json; from pathlib import Path; print(json.loads(Path('artifacts/examples/offline_demo/checks.json').read_text()))"
+uv run --no-sync python -c "from quantfolio.storage import load_gzip; x = load_gzip('artifacts/examples/offline_demo/ledger.json.gz'); print(x['trades'][:2])"
+```
+
+`bars.csv`保存虚构行情，`inputs.json`说明来源与日历，`signals.json`列出信号及执行日期，`summary.json`为该示例的绩效，`ledger.json.gz`含逐日账户和成交。`checks.json`中的账户核算与执行检查均须为`PASS`。输出目录只写一次；换目录可重跑，不覆盖历史文件。CI还使用安装的wheel在检出目录外执行同一示例。
+
 ## 预测数值一致性
 
 云端逐阶段对照确认：48个模型的输入、补值、标准化、参数及所记录的数学库文件哈希一致；24个树模型完全一致，24个Ridge模型在最后的矩阵向量乘法处出现差异。MKL日志显示本机使用AVX2分支，AMD托管机使用通用处理器分支。原始失败及[对照记录](../artifacts/checks/prediction_diagnostics_2026-11-22/cloud_comparison.json)保留；限制指令集不能代替跨处理器验证，见[Intel说明](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-windows/2025-0/get-started-with-conditional-num-reproducibility.html)。

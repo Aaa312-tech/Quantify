@@ -8,7 +8,8 @@
 | --- | --- |
 | `src/quantfolio/` | 按职责命名的Python模块；报告模板放 `templates/` |
 | `tests/` | 按数据、来源、组合、工作流分类，文件名为 `test_<behavior>.py` |
-| `scripts/` | `check.ps1`作为本地检查入口；运行统一使用 `python -m quantfolio` |
+| `scripts/` | 本地检查、诊断和性能测量；研究运行统一使用 `python -m quantfolio` |
+| `examples/` | 可直接执行的合成示例，不放冻结研究结果 |
 | `configs/` | 活跃配置、注册协议、历史映射和完整性清单 |
 | `environments/` | 固定历史研究环境的二进制包、构建和哈希；环境本身不提交 |
 | `data/raw/` | 按来源、用途、日期组织的原始响应与公告 |
@@ -16,6 +17,7 @@
 | `artifacts/experiments/`、`artifacts/evaluations/` | 同名训练及评估目录 |
 | `artifacts/checks/`、`artifacts/replays/` | 独立验证和完整账本重放 |
 | `artifacts/accounts/`、`artifacts/plans/` | 纸面账户、计划和开盘核算 |
+| `artifacts/examples/` | 使用者生成的合成输出；发布验收样本随检查证据登记 |
 | `reports/` | 根据评估结果生成的HTML和图表 |
 | `docs/` | 使用、方法、当前状态和专题研究记录 |
 

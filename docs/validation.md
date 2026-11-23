@@ -122,14 +122,26 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 
 干净克隆按[安装说明](../README.md#安装与验证)下载LFS对象即可运行。浅克隆还需 `git fetch origin 2443df760246600710c7b3f0bed3e2e9bf46e9e8`。缺少输入或LFS对象时先恢复指定文件，再使用新输出目录重试。跨平台精确复现须另有该环境的模型和完整回归证据，不能从单机通过结果推断。
 
+## 性能复核
+
+在固定研究环境中执行以下命令，输出须为新目录。运行期间不要修改源码、依赖锁或完整性清单，不要并行运行其他本地重任务。
+
+```powershell
+.research/python.exe -B scripts/benchmark.py --project . --baseline 2443df760246600710c7b3f0bed3e2e9bf46e9e8 --repeats 3 --output artifacts/checks/performance_review
+```
+
+四项工作分别为全库完整性、48个模型、1,425个历史账户及75个纸面账户；旧、新实现使用相同冻结金融输入和当前归档清单。每项各运行三次，以独立进程交替执行旧、新实现，比较耗时和峰值内存的中位数。每个样本仍须通过对应金融检查；不执行拟合。
+
+耗时不包括标准回归加载器的准备阶段；操作系统记录的进程峰值包含该公共加载器及两套已导入实现，不能解读为独立安装包的导入占用。原E0采用采样内存，本次采用操作系统峰值，因此以同批重测的E0为比较对象。超过10%的耗时或内存回退返回`REVIEW_REQUIRED`，保留原始样本并解释或修复；不改阈值，不以单次最快结果代替中位数。
+
 ## 已登记的等价证据
 
 | 范围 | 结果 | 记录 |
 | --- | --- | --- |
-| 模型 | 48个模型重载，最大预测误差0 | [全量回归](../artifacts/checks/training_weights_full_2026-11-23/result.json) |
-| 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/training_weights_full_2026-11-23/history.json) |
-| 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/training_weights_full_2026-11-23/paper.json) |
-| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口与同环境旧实现精确一致；无模型重训 | [计算对照](../artifacts/checks/training_weights_full_2026-11-23/differential.json) |
+| 模型 | 48个模型重载，最大预测误差0 | [全量回归](../artifacts/checks/dependency_closure_full_2026-11-23/result.json) |
+| 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/dependency_closure_full_2026-11-23/history.json) |
+| 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/dependency_closure_full_2026-11-23/paper.json) |
+| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口与同环境旧实现精确一致；无模型重训 | [计算对照](../artifacts/checks/dependency_closure_full_2026-11-23/differential.json) |
 | 报告 | 默认、指定实验和历史参考入口的HTML及PNG逐字节一致 | [渲染对照](../artifacts/checks/responsibility_checks_2026-11-22/report_render/result.json) |
 | 独立环境 | Windows 2025托管完整回归的三份财务对照文件与本地逐字节一致；Windows 2022旧Git基线失败保留 | [跨环境验收](../artifacts/checks/training_weights_2026-11-23/cloud_comparison.json) |
 | 训练权重 | 本地MKL、独立OpenBLAS及托管Windows 2022/2025的24组权重均匹配修复前原哈希 | [权重验收](../artifacts/checks/training_weights_2026-11-23/completion.json) |
@@ -137,7 +149,9 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 | 仓位与风控 | 29007组状态、1024组优化器输入及完整模拟对照 | [执行验证](../artifacts/checks/execution_refactor_2026-11-22/completion.json) |
 | 训练与评估 | 12个冻结窗口以缓存重放，选型与历史结果一致 | [流程验证](../artifacts/checks/runtime_refactor_2026-11-22/completion.json) |
 
-当前代码通过828项单元测试与71项集成测试，1项因本机符号链接权限跳过；16个模块的类型检查、39个模块的覆盖率门槛与四项缺陷检测通过，详见[本地验收](../artifacts/checks/training_weights_2026-11-23/local_acceptance.json)。本次独立OpenBLAS wheel的24组权重与原哈希一致，39个Python模块与完整回归源码逐字节一致。上一轮该环境通过48个冻结模型的精确预测检查，但完整回归因缺少Bottleneck而在历史校准处失败，不能作为完整金融验收。舍入边界初次失败及中断记录保留；修复后使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
+当前代码通过908项单元测试与75项集成测试，1项因本机符号链接权限跳过；18个模块的类型检查、41个模块的覆盖率门槛与四项缺陷检测通过，详见[质量验收](../artifacts/checks/release_acceptance_2026-11-23/quality_binding.json)。41个运行模块与上述完整回归的源码逐字节一致；E7仅增加示例、性能工具及检查入口。
+
+此前独立OpenBLAS wheel的24组权重与原哈希一致；该环境通过48个冻结模型的精确预测检查，但完整回归因缺少Bottleneck而在历史校准处失败，不能作为完整金融验收。舍入边界初次失败及中断记录保留；修复后使用新输出验证。各记录仅证明其绑定源码、数据与协议下的结果，新的代码改动不能直接继承旧结论。
 
 此前职责拆分源码的三个CI作业及106个发布文件核对通过，见[历史发布核验](../artifacts/checks/responsibility_checks_2026-11-22/publication.json)。新增诊断入口的三个CI作业和130个发布文件核对也通过，见[诊断发布核验](../artifacts/checks/prediction_diagnostics_2026-11-22/initial_publication.json)。这些记录绑定各自提交，不替代本次数值修复的云端验收。
 
@@ -153,6 +167,6 @@ E2锁定环境验收时，Linux安装包通过835项测试，Windows通过834项
 
 训练协议和纸面计划保留生成时的源码哈希。等价重构通过单独冻结的 `source_compatibility.json` 关联原文件身份、当前全部Python源码、差分验证和完整历史账本验证，不修改原协议。
 
-缺少登记、哈希不符、证据不完整或引用越出项目时拒绝使用。模型输入、日期、预测和计划到期仍单独检查。活跃登记见[源码兼容记录](../artifacts/checks/training_weights_full_2026-11-23/source_compatibility.json)。
+缺少登记、哈希不符、证据不完整或引用越出项目时拒绝使用。模型输入、日期、预测和计划到期仍单独检查。活跃登记见[全模块兼容记录](../artifacts/checks/dependency_closure_full_2026-11-23/source_compatibility.json)及[依赖兼容记录](../artifacts/checks/dependency_closure_full_2026-11-23/dependency_compatibility.json)。
 
 更改数值、时序、成交或持仓行为时，须重新完成对应模型和完整账户验证，并保留失败记录。验证脚本一经执行即作为证据保存；重试使用新文件，不能覆盖原结果。
