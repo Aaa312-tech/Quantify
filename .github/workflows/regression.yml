@@ -11,7 +11,7 @@ on:
           - windows-2022
           - windows-latest
       scope:
-        description: 'Collect all model diagnostics, or run the complete historical regression.'
+        description: 'Collect model and weight diagnostics, or run the complete historical regression.'
         type: choice
         default: full
         options:
@@ -68,7 +68,11 @@ jobs:
           scope = json.loads(Path(config['scope']).read_text())
           inputs = [name for name in scope['inputs_sha256'] if name.endswith('.joblib')]
           subprocess.check_call(['git', 'lfs', 'pull', '--include', ','.join(inputs), '--exclude', ''])
+      - name: Diagnose registered training weights
+        run: |
+          .research/python.exe -B -m scripts.diagnose_weights --reference artifacts/checks/portable_inference_full_2026-11-23/differential.json --output artifacts/checks/ci-weights-${{ github.run_id }}
       - name: Diagnose all frozen model predictions
+        if: ${{ !cancelled() }}
         env:
           MKL_VERBOSE: '1'
         run: |
@@ -89,4 +93,5 @@ jobs:
           path: |
             artifacts/checks/ci-regression-${{ github.run_id }}/
             artifacts/checks/ci-diagnostics-${{ github.run_id }}/
+            artifacts/checks/ci-weights-${{ github.run_id }}/
           retention-days: 14

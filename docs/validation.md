@@ -50,6 +50,14 @@ CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13按`uv.
 .research/python.exe -B scripts/diagnose_predictions.py --output artifacts/checks/prediction_review
 ```
 
+训练权重另用`scripts.diagnose_weights`检查24组冻结拟合输入，输出样本计数、指数输入、衰减因子、归一化前权重、均值及实际权重数组。参考文件必须已登记、通过完整回归且范围完整；每组行号、目标和权重按原哈希精确比较。一个浮点末位的变化也返回失败；诊断不调用估计器拟合。运行库记录包含实际加载的Windows C运行库哈希、Bottleneck和NumExpr版本。
+
+```powershell
+.research/python.exe -B -m scripts.diagnose_weights --reference artifacts/checks/portable_inference_full_2026-11-23/differential.json --output artifacts/checks/weight_review
+```
+
+手动工作流在模型检查前执行该权重诊断；发生失配仍收集模型及完整回归结果，工作流保留失败状态。各次脚本与原始数组随结果归档，旧记录不改写。
+
 三个分层CI作业已[通过](../artifacts/checks/quality_ci_2026-11-22/completion.json)。云端AMD EPYC完整回归在冻结模型预测处失败，最大误差约5.96×10⁻⁸；限定`MKL_ENABLE_INSTRUCTIONS=AVX2`后仍失败。两次原始记录分别保存在`artifacts/checks/ci_research_2026-11-22/hosted_default`及`artifacts/checks/ci_research_avx2_2026-11-22`。本机Intel环境在相同AVX2设置下，48个冻结模型的误差均为0。指令集限制不保证跨厂商选择同一内核，见[Intel说明](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-linux/2024-0/instruction-set-specific-dispatch-on-intel-archs.html)。
 
 手动工作流可选择`windows-2022`或`windows-latest`托管镜像，均保持冻结预测的严格比较；操作系统标签不承诺CPU型号。两种镜像均出现上述差异，Windows 2022记录另保存在`artifacts/checks/ci_research_windows2022_2026-11-22`。新增的[逐阶段对照](../artifacts/checks/prediction_diagnostics_2026-11-22/cloud_comparison.json)将差异定位到Ridge原生归约。固定项目推理顺序后，本地Intel及托管AMD EPYC 7763的完整回归均通过；[托管结果](../artifacts/checks/portable_predictions_2026-11-23/cloud/ci-regression-45046246783/result.json)覆盖全部原验收范围，耗时60.3分钟。原失败保留，当前没有常驻研究运行器。

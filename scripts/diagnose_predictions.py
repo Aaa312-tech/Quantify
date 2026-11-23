@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import ctypes
 import importlib.metadata
 import io
 import os
@@ -14,6 +15,7 @@ from pathlib import Path
 
 import joblib
 import numpy as np
+import pandas as pd
 from threadpoolctl import threadpool_info, threadpool_limits
 
 from quantfolio.dataset import eligible_rows, load_bundle
@@ -61,6 +63,23 @@ def environment():
     libraries = threadpool_info()
     for library in libraries:
         library["sha256"] = sha(library["filepath"])
+    optional = {}
+    for name in ("bottleneck", "numexpr"):
+        try:
+            optional[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            optional[name] = None
+    runtime = {}
+    if os.name == "nt":
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.GetModuleHandleW.argtypes = [ctypes.c_wchar_p]
+        kernel.GetModuleHandleW.restype = ctypes.c_void_p
+        kernel.GetModuleFileNameW.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_uint]
+        for name in ("ucrtbase.dll", "msvcrt.dll", "vcruntime140.dll"):
+            handle = kernel.GetModuleHandleW(name)
+            path = ctypes.create_unicode_buffer(32768)
+            if handle and kernel.GetModuleFileNameW(handle, path, len(path)):
+                runtime[name] = {"path": path.value, "sha256": sha(path.value)}
     return {
         "python": sys.version,
         "platform": platform.platform(),
@@ -70,6 +89,11 @@ def environment():
             name: importlib.metadata.version(name)
             for name in ("numpy", "pandas", "scipy", "scikit-learn", "joblib", "threadpoolctl")
         },
+        "optional_packages": optional,
+        "pandas_compute": {
+            name: pd.get_option("compute." + name) for name in ("use_bottleneck", "use_numexpr")
+        },
+        "windows_runtime": runtime,
         "variables": {
             name: os.environ.get(name)
             for name in (
