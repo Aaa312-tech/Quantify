@@ -1,0 +1,69 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+____ test_slippage_is_charged_once_without_changing_flat_market_quote[0.0] ____
+
+rate = 0.0
+
+    @pytest.mark.parametrize("rate", [0.0, 0.001, 0.002, 0.003])
+    def test_slippage_is_charged_once_without_changing_flat_market_quote(rate):
+        bundle, forecasts = market_bundle()
+        forecasts[5] = dict(list(forecasts[5].items())[:2])
+        for value in forecasts[10].values():
+            value["mu"] = -0.1
+        summary, detail = simulate(bundle, 6, 11, forecasts, slippage=rate)
+>       assert detail["trades"] and not detail["curve"][-1]["positions"]
+E       assert ([])
+
+tests\portfolio\test_opening_causality.py:74: AssertionError
+___ test_slippage_is_charged_once_without_changing_flat_market_quote[0.001] ___
+
+rate = 0.001
+
+    @pytest.mark.parametrize("rate", [0.0, 0.001, 0.002, 0.003])
+    def test_slippage_is_charged_once_without_changing_flat_market_quote(rate):
+        bundle, forecasts = market_bundle()
+        forecasts[5] = dict(list(forecasts[5].items())[:2])
+        for value in forecasts[10].values():
+            value["mu"] = -0.1
+        summary, detail = simulate(bundle, 6, 11, forecasts, slippage=rate)
+>       assert detail["trades"] and not detail["curve"][-1]["positions"]
+E       assert ([])
+
+tests\portfolio\test_opening_causality.py:74: AssertionError
+___ test_slippage_is_charged_once_without_changing_flat_market_quote[0.002] ___
+
+rate = 0.002
+
+    @pytest.mark.parametrize("rate", [0.0, 0.001, 0.002, 0.003])
+    def test_slippage_is_charged_once_without_changing_flat_market_quote(rate):
+        bundle, forecasts = market_bundle()
+        forecasts[5] = dict(list(forecasts[5].items())[:2])
+        for value in forecasts[10].values():
+            value["mu"] = -0.1
+        summary, detail = simulate(bundle, 6, 11, forecasts, slippage=rate)
+>       assert detail["trades"] and not detail["curve"][-1]["positions"]
+E       assert ([])
+
+tests\portfolio\test_opening_causality.py:74: AssertionError
+___ test_slippage_is_charged_once_without_changing_flat_market_quote[0.003] ___
+
+rate = 0.003
+
+    @pytest.mark.parametrize("rate", [0.0, 0.001, 0.002, 0.003])
+    def test_slippage_is_charged_once_without_changing_flat_market_quote(rate):
+        bundle, forecasts = market_bundle()
+        forecasts[5] = dict(list(forecasts[5].items())[:2])
+        for value in forecasts[10].values():
+            value["mu"] = -0.1
+        summary, detail = simulate(bundle, 6, 11, forecasts, slippage=rate)
+>       assert detail["trades"] and not detail["curve"][-1]["positions"]
+E       assert ([])
+
+tests\portfolio\test_opening_causality.py:74: AssertionError
+- generated xml file: D:\投资组合量化\artifacts\checks\editorial_cleanup_2026-11-23\quality\faults\missing_trade.xml -
+=========================== short test summary info ===========================
+FAILED tests/portfolio/test_opening_causality.py::test_slippage_is_charged_once_without_changing_flat_market_quote[0.0]
+FAILED tests/portfolio/test_opening_causality.py::test_slippage_is_charged_once_without_changing_flat_market_quote[0.001]
+FAILED tests/portfolio/test_opening_causality.py::test_slippage_is_charged_once_without_changing_flat_market_quote[0.002]
+FAILED tests/portfolio/test_opening_causality.py::test_slippage_is_charged_once_without_changing_flat_market_quote[0.003]
+4 failed in 2.46s

@@ -1,4 +1,4 @@
-"""Dependency receipts and a rebuildable catalogue; adoption remains in project config."""
+"""Run records, dependency checks and experiment indexing."""
 
 from __future__ import annotations
 
@@ -141,7 +141,7 @@ def dependency_inputs(paths, operation, parents, configuration=None, active=froz
 
 @contextmanager
 def audit_run(paths, operation, output, parents=(), parameters=None):
-    """Check before reading and again before publishing. Never cache file metadata."""
+    """Verify input hashes before and after a run."""
     output = local_path(paths, output)
     if operation == "plan":
         parents = [*parents, paths.config["evaluation"] + "/evaluation_summary.json"]
@@ -253,7 +253,7 @@ def verify_run(paths, file, *, active=frozenset(), current_sources=False):
 
 
 def run_index(paths):
-    """Build from frozen records, including failures; never rank or change adoption."""
+    """Index registered runs, including failed runs, without changing adoption."""
     manifest = read(paths.manifest)["files"]
     names_by_hash: dict[str, list[str]] = {}
     for name, checksum in manifest.items():

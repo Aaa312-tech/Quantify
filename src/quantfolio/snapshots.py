@@ -1,4 +1,4 @@
-"""Build immutable, source-checked repairs of registered research snapshots."""
+"""Dataset repairs from registered source reviews."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ LABEL_FIELDS = ("y", "end", "status", "delay")
 
 
 def next_opening(calendar, payment_date):
-    """Return the first observed session strictly after payment, without inventing dates."""
+    """Find the first observed session strictly after payment."""
     if not payment_date:
         return None
     index = calendar.searchsorted(pd.Timestamp(payment_date), side="right")
@@ -156,7 +156,7 @@ def label_changes(before, after):
 
 
 def repair_snapshot(paths, output, protocol="configs/protocols/action_repair.json"):
-    """Create and register a new snapshot; never activate it or overwrite old inputs."""
+    """Create and register a snapshot without changing the active configuration."""
     target = (paths.root / output).resolve()
     parent = (paths.root / "data/processed").resolve()
     if (

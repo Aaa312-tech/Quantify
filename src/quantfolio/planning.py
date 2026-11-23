@@ -59,7 +59,7 @@ class OpeningQuote(TypedDict):
 
 
 def load_calendar(paths):
-    """Use a reviewed finite exchange calendar; never assume future weekdays are sessions."""
+    """Load the registered exchange calendar and its coverage boundaries."""
     path = (paths.root / paths.config["calendar"]).resolve()
     if not path.is_relative_to(paths.root):
         raise ValueError("Trading calendar escapes the project")
@@ -116,7 +116,7 @@ def initialize_account(paths, output, account_id, as_of=None):
 
 
 def latest_forecasts(paths, bundle):
-    """Require the active completed experiment's latest fit and exact saved prediction rows."""
+    """Load predictions from the completed experiment's final fit."""
     evaluation = (
         paths.artifact_path(paths.config["evaluation"], "evaluations") / "evaluation_summary.json"
     )
@@ -242,7 +242,7 @@ def make_intent(
     *,
     turnover: str = "legacy",
 ) -> dict:
-    """Calculate the same completed-close targets as the historical strategy, before quotes."""
+    """Calculate next-session target weights from a closing account."""
     signal = date_only(account["as_of"])
     execution = date_only(execute_on)
     information_at = session_time(account["as_of"], 16, 0)
@@ -353,7 +353,7 @@ def make_intent(
 
 
 def prepared_actions(account, actions, calendar, execute_on):
-    """Require record-date rights and known corporate terms; resolve dates only from the reviewed calendar."""
+    """Check record-date rights and resolve dates against the reviewed calendar."""
     result = deepcopy(actions)
     for action in result:
         pay = action.get("cash_pay_date")
@@ -439,7 +439,7 @@ def resolve_intent(
     *,
     preview: bool = False,
 ) -> dict:
-    """Apply only the frozen intention and supplied opening quotes to a separate paper ledger."""
+    """Resolve a frozen intention using the supplied opening quotes."""
     contracts = intent["contracts"]
     meta = {s: item["meta"] for s, item in contracts.items()}
     meta.update(intent["account_meta"])
@@ -534,7 +534,7 @@ def _plan_metadata(plan):
 
 
 def validate_parent(paths, account):
-    """A carried paper account must retain the actual balances and risk of its frozen parent."""
+    """Compare carried balances and risk state with the recorded parent account."""
     parent = account["parent"]
     if parent is None:
         if account["kind"] == "paper" and account["sessions_completed"]:
@@ -625,7 +625,7 @@ def _preview_plan(record, bundle, forecasts, fitted, cost):
 
 
 def freeze_plan(paths, account_file, output, cost=10):
-    """Create a future conditional plan, or a dated blocked record with no instructions."""
+    """Freeze a conditional plan and any reasons blocking execution."""
     output = paths.output_path(output, "plans")
     if cost not in (10, 20, 30):
         raise ValueError("Choose 10, 20 or 30 bps per side")

@@ -46,7 +46,7 @@ class RiskDecision(_PreviousRisk):
 
 @dataclass
 class RiskState:
-    """Default to latched risk; recovery needs an explicit registered research mode."""
+    """Portfolio drawdown state; the default policy latches risk reductions."""
 
     mode: str = "latched"
     phase: str = "NORMAL"
@@ -57,7 +57,7 @@ class RiskState:
     observations: int = 0
 
     def update(self, nav: float, healthy: bool) -> RiskDecision:
-        """Use preceding-close NAV, preserving the frozen ledger evidence schema."""
+        """Advance risk state from preceding-close NAV."""
         if self.mode not in RISK_MODES:
             raise ValueError("Unknown risk mode")
         if self.phase not in CAPS or (self.phase == "PROBE20" and self.mode != "probe_restore"):
@@ -100,7 +100,7 @@ class RiskState:
         }
 
     def _transition(self, drawdown):
-        """Choose one transition in priority order without mutating risk state."""
+        """Select the next phase without changing the current state."""
         previous = self.phase
         if previous == "HALTED0":
             return previous, "UNCHANGED"
@@ -129,7 +129,7 @@ class RiskState:
 
 
 def healthy_market(panels: dict, date: Any) -> bool:
-    """Evaluate only the completed signal-date close, retained as diagnostic evidence."""
+    """Evaluate breadth and benchmark trend at the completed session close."""
     eligible = panels["eligible"].loc[date]
     breadth = float(((panels["trend20"].loc[date] > 0) & eligible).sum() / max(1, eligible.sum()))
     above = panels["trend20"].at[date, "sh510300"] > 0

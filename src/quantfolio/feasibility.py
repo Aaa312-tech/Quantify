@@ -1,4 +1,4 @@
-"""One registered comparison of minimal sell-budget relaxation and unchanged execution."""
+"""Minimum sell-budget relaxation under fixed portfolio constraints."""
 
 from pathlib import Path
 
@@ -230,7 +230,7 @@ def evaluate_exit_study(paths, run, output):
             raise ValueError("The frozen comparison ledger changed")
     legacy = account_differences(previous, output / "legacy", original["artifacts"], exact=True)
     save(output / "legacy_parity.json", {"status": "PASS", "accounts": len(legacy)}, immutable=True)
-    # This stage intentionally holds the old predictions and choices fixed across engines.
+    # Compare engines with fixed predictions and choices.
     bundle = load_bundle(paths)
     maps, schedule, _, start, end = load_predictions(
         bundle, baseline, identity=read(baseline / "training_status.json")["identity"]

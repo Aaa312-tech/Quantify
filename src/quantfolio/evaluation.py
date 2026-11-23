@@ -1,4 +1,4 @@
-"""Evaluate trained forecasts and compare complete ledgers against frozen evidence."""
+"""Forecast evaluation and comparison with frozen account ledgers."""
 
 from __future__ import annotations
 
@@ -236,7 +236,7 @@ def simulate_accounts(
 def evaluate_accounts(
     bundle, maps, schedule, start, end, costs, policies, output, *, turnover="legacy"
 ):
-    """Persist the same audited account matrix for retraining and execution diagnosis."""
+    """Run and save the registered policy matrix."""
     variants = []
     for policy in policies:
         forecasts, rules = policy_inputs(policy, maps, schedule)
@@ -245,7 +245,7 @@ def evaluate_accounts(
 
 
 def evaluate_variants(bundle, variants, start, end, costs, output):
-    """Run named forecast/control pairs through the same account and audit pipeline."""
+    """Evaluate forecast and control variants at each cost."""
     variants = list(variants)
     results: dict[str, dict] = {}
     continuous: dict[str, dict] = {}
@@ -431,7 +431,7 @@ def execution_bridge(
 
 
 def policy_inputs(name: str, maps: dict, schedule: dict) -> tuple:
-    """Use exactly the documented forecast and turnover-rule combinations."""
+    """Resolve a policy's forecasts and rule schedule."""
     if name.startswith("fixed_"):
         return maps["momentum"], name[6:]
     if name == "selected_strategy":
@@ -444,7 +444,7 @@ def policy_inputs(name: str, maps: dict, schedule: dict) -> tuple:
 
 
 def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) -> dict[str, Any]:
-    """Re-run frozen accounts; fail if refactoring changes any recorded economics."""
+    """Compare replayed accounts with frozen ledgers."""
     from .storage import load_gzip
 
     integrity = check_integrity(paths)

@@ -1,4 +1,4 @@
-"""Build a self-contained local research report from immutable experiment evidence."""
+"""HTML reports and charts from verified evaluation results."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Replay a registered research baseline without fitting models or adopting new results."""
+"""Exact comparison with a registered historical baseline; no model fitting."""
 
 from __future__ import annotations
 

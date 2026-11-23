@@ -23,7 +23,7 @@ CANDIDATES = ["momentum", "ridge25", "ridge50", "tree25", "tree50"]
 
 
 def make_model(name):
-    """Construct the Ridge or histogram-tree estimator fixed by the experiment protocol."""
+    """Construct the protocol's Ridge or histogram-tree estimator."""
     imputer = SimpleImputer(strategy="median", keep_empty_features=True, add_indicator=True)
     if name == "ridge":
         return make_pipeline(imputer, StandardScaler(), Ridge(alpha=1000.0))
@@ -142,7 +142,7 @@ def training_targets(table, rows):
 
 @pd.option_context("compute.use_numexpr", False)
 def fit_stage(bundle, train_rows, pred_rows, path, identity):
-    """Fit two fixed estimators or verify and reuse identical cached training artifacts."""
+    """Fit or load the protocol's Ridge and tree estimators."""
     path.mkdir(parents=True, exist_ok=True)
     table = bundle["table"]
     fit_rows, target, weights, target_details = training_targets(table, train_rows)

@@ -1,4 +1,4 @@
-"""Review registered dividend sources without consulting predictions or account returns."""
+"""Dividend terms and source-document validation."""
 
 from __future__ import annotations
 
@@ -368,7 +368,7 @@ def source_available(candidate, action):
 
 
 def checked_path(root, relative, expected):
-    """Bind original documents and inputs before opening them."""
+    """Verify document and input hashes before reading."""
     path = (root / relative).resolve()
     if not path.is_relative_to(root) or sha(path) != expected:
         raise ValueError(f"Source hash or path mismatch: {relative}")
@@ -538,7 +538,7 @@ def _manual_reviews(inputs, actions):
 
 
 def review_distributions(paths, protocol):
-    """Freeze the result for every registered action, including unsupported cases."""
+    """Record supported and unsupported terms for every registered action."""
     from importlib.metadata import version
 
     from pypdf import PdfReader

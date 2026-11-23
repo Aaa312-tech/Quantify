@@ -26,7 +26,7 @@ from .verification import verify
 
 @dataclass(frozen=True)
 class Recipe:
-    """One registered set of changes; unmentioned behavior retains the baseline contract."""
+    """Registered selection, risk and turnover settings."""
 
     components: tuple[str, ...] = ()
     positive_score: bool = False
@@ -50,7 +50,7 @@ COMBINATIONS = {
 
 
 def research_paths(paths, protocol):
-    """Use an isolated configuration until an evaluated research candidate is activated."""
+    """Resolve the isolated configuration for a study."""
     configured = Paths(paths.root)
     configured.config.update(
         protocol=protocol.relative_to(paths.root).as_posix(), selection_mode="positive_score"
@@ -415,7 +415,7 @@ def evaluate_study(paths, run, output):
     if [window["fold"] for window in windows] != folds:
         raise ValueError("Research choice windows differ from the training calendar")
     variants = _outer_inputs(bundle, fitted, windows)
-    # The standard evaluation is the preregistered positive-score primary, usable by the CLI.
+    # The CLI uses the registered positive-score primary evaluation.
     primary = evaluate(configured, fitted, output, [10, 20, 30], all_policies=True)
     variants.pop("positive_adoption")
     for controls in variants.values():

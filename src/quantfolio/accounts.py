@@ -46,14 +46,14 @@ class AccountSnapshot(TypedDict):
 
 
 def date_only(value: object) -> pd.Timestamp:
-    """Require an unambiguous ISO date, without silently discarding a time or timezone."""
+    """Parse a YYYY-MM-DD date without a time or timezone."""
     if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
         raise ValueError("Dates must use YYYY-MM-DD")
     return pd.Timestamp(value)
 
 
 def timestamp(value):
-    """Require timezone-aware evidence and compare it in the project's trading timezone."""
+    """Parse a zoned timestamp and convert it to Asia/Shanghai."""
     result = pd.Timestamp(value)
     if pd.isna(result) or result.tzinfo is None:
         raise ValueError("Evidence timestamps require an explicit timezone")
@@ -82,7 +82,7 @@ def money(value: float, name: str) -> float:
 
 
 def new_account(as_of: str, account_id: str) -> AccountSnapshot:
-    """Create a fresh virtual account, with no assertion about a real broker balance."""
+    """Create a cash-only paper account."""
     date_only(as_of)
     if not re.fullmatch(r"[a-zA-Z0-9_-]{1,64}", account_id):
         raise ValueError("Use a short account identifier containing letters, digits, _ or -")
@@ -106,7 +106,7 @@ def new_account(as_of: str, account_id: str) -> AccountSnapshot:
 
 
 def restore_account(account: AccountSnapshot, meta: dict) -> tuple[Ledger, RiskState]:
-    """Reject incomplete holdings or risk history instead of assuming cash or normal risk."""
+    """Validate a closing snapshot and restore its holdings and risk state."""
     if account["schema_version"] != 1 or account["kind"] not in ("paper", "manual"):
         raise ValueError("Unsupported account schema or kind")
     if not re.fullmatch(r"[a-zA-Z0-9_-]{1,64}", account["account_id"]):
@@ -203,7 +203,7 @@ def snapshot_account(
     sessions_completed: int,
     parent: dict[str, str] | None,
 ) -> AccountSnapshot:
-    """Store cent cash, individual availability dates and the original risk high-water mark."""
+    """Serialize holdings, cash, entitlements and carried risk state."""
     if book.initial != cents(original["initial_cash"]):
         raise ValueError("Ledger principal differs from the original account")
     return {

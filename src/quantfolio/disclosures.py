@@ -1,4 +1,4 @@
-"""Archive issuer notices for every unresolved event in the frozen stock universe."""
+"""Issuer notices for unresolved events in the registered stock universe."""
 
 from __future__ import annotations
 
@@ -331,7 +331,7 @@ def _previous_collection(paths, relative, queue):
 
 
 def collect_disclosures(paths, output, retry=None):
-    """Collect a complete, bounded source queue without changing research inputs."""
+    """Archive notices for the registered source queue."""
     target = (paths.root / output).resolve()
     parent = (paths.root / "data/raw").resolve()
     if (

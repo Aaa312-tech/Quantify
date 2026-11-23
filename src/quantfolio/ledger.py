@@ -1,7 +1,7 @@
-"""Integer-share, cent-cash research ledger. No account or order integration.
+"""Integer-share ledger with cash and receivables in cents.
 
-Corporate cash is receivable until its opening availability date. Bonus shares are restricted
-until a known listing date. Unavailable dates are never silently invented.
+Cash becomes available at the recorded opening date. Bonus shares remain
+restricted until their listing date is known.
 """
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ def nearest_tick(x: float, tick: float) -> float:
 
 
 def lot_rule(m: dict) -> tuple[int, int]:
-    """Return the minimum buy size and quantity increment for an instrument."""
+    """Minimum buy quantity and share increment for an instrument."""
     if m["kind"] == "stock" and m["code"].startswith(("688", "689")):
         return 200, 1
     if m["kind"] == "stock" and m["code"].startswith(("920", "8", "4")):
@@ -105,7 +105,7 @@ def fees_cents(
     transfer: float = 0.00001,
     stamp: float = 0.0005,
 ) -> int:
-    """Calculate the realized fee in cents for a buy or sell."""
+    """Buy or sell fees in integer cents."""
     if gross <= 0:
         return 0
     return (
@@ -258,7 +258,6 @@ class Ledger:
         slippage: float,
         impact: int,
     ) -> None:
-        """Append the common journal schema after the position and cash have settled."""
         self.trades.append(
             {
                 "date": str(date.date()),

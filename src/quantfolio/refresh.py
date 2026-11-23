@@ -1,4 +1,4 @@
-"""Turn reviewed raw collections into an immutable, historically stable snapshot."""
+"""Market snapshot updates from reviewed raw collections."""
 
 import datetime as dt
 from copy import deepcopy
@@ -350,7 +350,7 @@ def _reviewed_raws(paths, protocol, parent, collection_parent):
 
 
 def refresh_snapshot(paths, output, protocol_path):
-    """Build a new registered snapshot; activation and model fitting remain separate steps."""
+    """Build a registered snapshot without changing the active configuration."""
     target = (paths.root / output).resolve()
     directory = (paths.root / "data/processed").resolve()
     if (

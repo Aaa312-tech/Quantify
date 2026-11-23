@@ -31,7 +31,7 @@ def verify_files(paths, names):
 
 
 def register_files(paths, files):
-    """Freeze explicit files; registration records content, not financial acceptance."""
+    """Register file hashes; reject changes to existing entries."""
     manifest = read(paths.manifest)
     for path in sorted(files):
         name = local_path(paths, path).relative_to(paths.root).as_posix()
@@ -51,9 +51,8 @@ def register_output(paths, output):
 def source_closure(roots, directory=None):
     """Follow package imports, including imports inside functions.
 
-    Computed imports cannot establish a complete static closure. Reject them in
-    a financial dependency instead of assuming that its apparent imports suffice.
-    The regression runner's separately verified Git imports are outside this scope.
+    Dynamic imports are rejected because their dependency closure is unknown.
+    The Git regression loader is validated separately.
     """
     directory = Path(directory or Path(__file__).parent)
     pending = {"__init__", *roots}
@@ -155,7 +154,7 @@ def scope_counts(report):
 
 
 def write_dependency_certificate(paths, output):
-    """Extend an already accepted full regression; keep its legacy certificate intact."""
+    """Add a dependency certificate to an accepted full regression."""
     legacy = output / "source_compatibility.json"
     certificate = read(legacy)
     result = output / "result.json"

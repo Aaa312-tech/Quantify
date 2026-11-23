@@ -1,4 +1,4 @@
-"""Load the frozen, self-contained research bundle and validate portable integrity."""
+"""Frozen dataset loading, checksums and source compatibility."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from .storage import read, sha
 
 
 def check_integrity(paths: Paths) -> dict[str, Any]:
-    """Verify every frozen input and reference file before deserializing models."""
+    """Verify every file in the integrity manifest."""
     manifest = read(paths.manifest)
     errors = []
     for relative, expected in manifest["files"].items():
@@ -41,7 +41,7 @@ def _lfs_pointer(path: Path) -> bool:
 
 
 def source_compatible(paths: Paths, subject: Path, expected: dict, current: dict) -> bool:
-    """Accept exact source bytes or frozen equivalence evidence for this specific artifact."""
+    """Accept matching source hashes or registered compatibility evidence."""
     if expected == current:
         return True
     if not expected or any(not isinstance(value, str) for value in expected.values()):
@@ -109,7 +109,7 @@ def source_compatible(paths: Paths, subject: Path, expected: dict, current: dict
 
 
 def load_bundle(paths: Paths, *, reference: bool = False) -> dict[str, Any]:
-    """Load only the local, hash-verified trusted bundle; never arbitrary downloaded pickle."""
+    """Load the active or reference snapshot after hash verification."""
     path = paths.reference_bundle if reference else paths.bundle
     cutoff = (
         paths.config.get("reference_data_cutoff", paths.config["data_cutoff"])
@@ -120,7 +120,7 @@ def load_bundle(paths: Paths, *, reference: bool = False) -> dict[str, Any]:
 
 
 def fund_mode(meta):
-    """Infer one declared control from fund histories; do not silently disable audits."""
+    """Read the common control mode declared by fund histories."""
     modes = set()
     has_history = False
     for instrument in meta.values():
@@ -168,14 +168,14 @@ def load_snapshot(paths: Paths, path: Path, cutoff: str) -> dict[str, Any]:
     features = [aliases.get(name, name) for name in bundle["features"]]
     if len(set(columns)) != len(columns) or len(set(features)) != len(features):
         raise ValueError("Archived feature names collide with current columns")
-    # Rename the freshly loaded frame; preserve values, dtypes and model input order.
+    # Apply archived aliases without changing model input order.
     bundle["table"].columns = columns
     bundle["features"] = features
     return cast(dict[str, Any], bundle)
 
 
 def validate_features(bundle: dict[str, Any]) -> dict[str, Any]:
-    """Rebuild derived ranks and prove future rows do not change historical prefixes."""
+    """Rebuild derived features and compare historical prefixes."""
     table = bundle["table"]
     industry, _ = industry_features(table, bundle["meta"], bundle["calendar"])
     rebuilt = pd.concat([momentum_features(table), industry], axis=1)

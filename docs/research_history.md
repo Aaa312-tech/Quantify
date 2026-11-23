@@ -2,9 +2,9 @@
 
 本页保存整理前的阶段记录和证据保全约束。各节中的数据缺项、测试数量、活跃快照及“继续执行”描述均对应当时阶段；当前状态统一见[项目状态](status.md)。
 
-原研究目标已于2026-11-22按用户要求暂停。本页保留的待办不触发自动续跑；历史失败、来源限定和不可改写要求仍适用于相应证据。
+研究于2026-11-22暂停。本页记录各阶段的范围、结果和当时待办；失败记录、来源限定及证据保留要求继续有效。
 
-历史记录来自整理前的 `docs/remediation.md`；末尾维护约束来自整理前的 `AGENTS.md`。仅调整文档位置，未重写冻结数据或回测结果。
+历史记录由原研究待办整理而来。各节描述其所在阶段；冻结数据与回测结果保持原始记录。
 
 ## 2026-11-20执行记录
 
@@ -39,7 +39,7 @@
 73只证券有640个历史内部缺口，尚无来源证明它们全是停牌。
 1835项公司行为仅75项有现金支付日期；上市、退市、历史ST、行业生效日期和开盘状态均未认证。
 
-用户已明确本届比赛以白皮书为准：发布会11月26日，单只仓位按总资金20%上限。
+本届比赛以白皮书为准：发布会11月26日，单只仓位按总资金20%上限。
 现有15%单股买入上限继续有效。手续费、撮合细节不因这次确认而自动补全。
 
 来源登记在`configs/competition.json`。公司行为补证在
@@ -113,7 +113,7 @@
 | 20bp | 5.14% | 7.88% | -7.46% | 0.62% |
 | 30bp | 1.32% | 3.56% | -7.58% | 0.74% |
 
-本轮1425账户通过435992项独立核账与316091项执行审计；48个模型重载及首窗口
+该阶段1425账户通过435992项独立核账与316091项执行审计；48个模型重载及首窗口
 两次独立重拟合误差为零。与前次完整重训比较，1396个账户完全一致，29个账户变化，
 其中27个收益变化。全部输出保存在`artifacts/evaluations/dividend_retraining_2026-11-20`，
 归因、成对账户和独立验收见`artifacts/checks/dividend_retraining_2026-11-20/comparison.json`。
@@ -126,7 +126,7 @@
 10bp连续账户在7月14日退出，最大回撤8.054%；8%预警不能保证执行后不超限。
 该路径还首次遇到蓝思科技7月6日分红的未知支付日期，期末保留612元应收。
 原公告已核验，补证单列在`docs/references/selection_dividend_followup_2026-11-20.json`，
-尚未应用到本轮冻结快照。工程验收通过，收益、观察到的8%回撤要求、事件质量及前向验证
+尚未应用到该阶段冻结快照。工程验收通过，收益、观察到的8%回撤要求、事件质量及前向验证
 分别保留未通过状态，不能把工程检查通过当作策略通过。
 
 ## 后续行情采集结果
@@ -205,9 +205,9 @@
 纸面成交核算。48个现有模型重载预测误差为零。原训练、选股、执行、风险和独立账户
 核验的10个源文件逐字节未变，历史净收益保持31.03%/7.88%/3.56%。
 
-本轮复现普通换手预算的一项限制：持仓84%且所有收益边际转负时，清空约束与50%
+该阶段复现普通换手预算的一项限制：持仓84%且所有收益边际转负时，清空约束与50%
 卖出预算冲突；优化失败后，原后备逻辑可能继续保留这些持仓。最小输入与结果保存为
-`known_limitations.json`，8%退出控制单独核对。本轮不修改它；后续需单独登记退出和
+`known_limitations.json`，8%退出控制单独核对。该阶段不修改它；后续需单独登记退出和
 换手预算的优先关系、保留旧账本并量化影响，不能把此问题归为模型预测误差。
 
 11月20日15:30实际运行当前项目，已创建虚拟现金账户及
@@ -230,7 +230,7 @@
 
 持仓变化使修正账户更早降级，并于7月21日永久退出。最终费用反而降低，不能将收益
 下降归因于总费用增加。全部路径、门槛和复现方法见[卖出预算研究](exit_budget_repair.md)。
-本轮不扩展既有六项改动与两项组合的试验预算；后续优先完成新行情核查与前向计划。
+该阶段不扩展既有六项改动与两项组合的试验预算；后续优先完成新行情核查与前向计划。
 
 ## 后续来源补证
 
@@ -286,7 +286,7 @@
 48次拟合、1425个账户评估及前后内层审计，事实是否保留不以回测收益为依据。
 
 11月21日00:27的单次主行情源恢复探测仍断开连接，保留诊断且未再次启动整批下载。
-本轮公告核验不延长11月19日行情截止日，不增加11月23日可用订单。
+该阶段公告核验不延长11月19日行情截止日，不增加11月23日可用订单。
 
 ## 剩余事件修正验收
 
@@ -406,7 +406,7 @@
 新路径使1920个内层验证账户出现六项未核实公司行为、九次事件记录，以及高乐股份
 五个停牌交易日的40次价格延用。六项公司行为日期及差异化除息参考已用公告核实；
 停牌与复牌公告也已匹配原行情缺口。证据位于`artifacts/checks/status_followup_2026-11-21`，
-本轮只完成来源核查，未应用到数据或清除质量标记。停牌公告的日期不能证明当日开盘前
+该阶段只完成来源核查，未应用到数据或清除质量标记。停牌公告的日期不能证明当日开盘前
 已知，后续必须另行登记修正；不能把ST专项验收称为全部数据质量通过。
 
 当前配置已切换修正后的研究输入，均衡进攻、8%预警、不恢复风险和原换手政策保持不变。
@@ -450,7 +450,7 @@
 十只已核验ST区间的训练引用和买入仍为零；新数据哈希绑定了独立复核决定。
 原模型、账本与来源不改写，完整归因见`artifacts/checks/inner_event_repair_2026-11-21/attribution.json`。
 
-本轮数据修正未证明超越同风控动量，也没有新增前向样本。均衡进攻、8%预警、不恢复风险、
+该阶段数据修正未证明超越同风控动量，也没有新增前向样本。均衡进攻、8%预警、不恢复风险、
 正采用评分及原换手政策不变。`reviewed_events_readiness_2026-11-23`继续因账户日期与行情过期
 保持空订单。
 
@@ -541,9 +541,9 @@ BaoStock及北交所适配器已实现，264项测试通过，1项依赖主机�
 全部48个候选与窗口组合仍未通过采用条件。新内层试验有54次价格延用：原高乐股份40次
 保持，另有东阳光14次；另出现1次财通证券分红到账日期缺失。两个受影响的tree50与窗口
 组合未通过质量和其他采用条件，不能用主策略账户质量正常代替内层数据核验。
-后续公告事实见`docs/references/resumption_followup_2026-11-21.json`，尚未应用到本轮数据。
+后续公告事实见`docs/references/resumption_followup_2026-11-21.json`，尚未应用到该阶段数据。
 
-完整范围筛查发现73只证券、640个内部缺失交易日，其中只有本轮5日区间应用修正。
+完整范围筛查发现73只证券、640个内部缺失交易日，其中只有该阶段5日区间应用修正。
 另外111个缺口结束点已形成来源队列；其中可能存在停牌、数据遗漏及其他情况，不能自动填价。
 本次研究切换绑定新的ST专项复核和11月23日条件式计划，保留旧计划，无前向成交或收益。
 下一步先核实实际触发内层标记的事件和其余缺口，再登记成批修正；不追加候选或放宽采用条件。
@@ -623,7 +623,7 @@ BaoStock共1267组证券年度查询、4795行原始记录，覆盖全部1765项
 内层财通证券记录消除，价格延用为高乐45次、东阳光14次。
 对照与归因位于`artifacts/checks/distribution_repair_2026-11-21`；事实修正按证据保留，不依据收益方向取舍。
 
-本轮另发现39条除息日之后的接近零跳空差异，其绝对值不超过约3.33e-16，却改变1975条
+该阶段另发现39条除息日之后的接近零跳空差异，其绝对值不超过约3.33e-16，却改变1975条
 横截面名次。原指数缩放公式产生的浮点残差不代表新的经济跳空，已存入
 `feature_precision_diagnostic.json`。该阶段尚未单独隔离收益影响，后续登记与验收见下节。
 
@@ -699,7 +699,7 @@ BaoStock共1267组证券年度查询、4795行原始记录，覆盖全部1765项
 回溯覆盖诊断，不回填未来分类，也不从旧表继承新一期遗漏的证券。
 
 完整证据在`artifacts/checks/industry_cells_2026-11-21`。本地344项测试通过，1项主机符号
-链接检查跳过；23769个原冻结文件及活跃数据、交易核心源码和纸面计划保持不变。本轮
+链接检查跳过；23769个原冻结文件及活跃数据、交易核心源码和纸面计划保持不变。该阶段
 没有重新训练、回测或新增前向观察。下一步在接入前登记缺失分类处理、静态口径桥接和
 日期化三个独立影响，保持同一风险约束和候选预算，再完成模型与账户验证。
 
@@ -725,100 +725,8 @@ BaoStock共1267组证券年度查询、4795行原始记录，覆盖全部1765项
 动量基准及三档成本。日期化结果只有完成全部验收后才能成为新的回溯研究基线，且仍须
 披露目录日期约定、ETF、股票池和原有来源缺口；工程通过不等于收益优越或前向验证通过。
 
-## 历史维护约束
+## 历史维护约定
 
-以下按原文保留，修改对应研究范围前须结合登记协议和最终验收回执阅读。旧阶段的“未接入”不能覆盖后续独立接入结论；旧阶段的“完成”也不能覆盖尚未结束的整体目标。
+早期维护约定已保存在[整理前记录](https://github.com/Aaa312-tech/Quantify/blob/19e6f668af572dae4e850c0eeeca293d7d7afafe/docs/research_history.md#历史维护约束)。各阶段的输入、失败记录与验收范围仍以登记协议和对应回执为准。
 
-
-- Residual source work is in progress under `configs/protocols/distribution_residuals.json`, `distribution_layouts.json` and `residual_field_review.json`. The reader replay covers all 1839 events and preserves all 1530 prior accepted field values. Its 95 new event proposals (115 fields) are not accepted or integrated; eight extra listing proposals on previously supported events are outside scope. Keep the original 1452 accepted records exact when consolidating any later acceptance.
-- Preserve the 14 before-implementation test failures, four flattened-header failures and first incorrect date-navigation index. Table-cell closure explains only the recorded header failures; corrected date navigation is in `dated_event_navigation.json.gz` with `dated_navigation_closure.json`. The complete received archive is 1135 documents/3780 extracted pages, not a certified complete public archive. Related-notice and full residual acceptance remain pending; the active source-unverified count stays 387. Current reader checks: 772 tests passed/one host skip and 48 frozen reference models reload with zero error. Numerical modules, active inputs and paper plan are unchanged.
-- Primary field evidence is in `artifacts/checks/distribution_residuals_2026-11-22/financial_source_review.json`: 95 events, 190 current gross-cash checks, 245 grid dates and 60 narrative dates. The 136 primary/companion files were independently extracted across 498 pages; 46 complete pages were actually inspected, including repeats of earlier pages. Preserve the initial 26 cash-reader exceptions and failed footer-uniqueness check. The specific footer closure retains the legitimate table-row number; it does not permit arbitrary number removal. Exact issuer/title roles cover 95 implementation, 27 convertible-price and 14 repurchase-price notices, with catalogue differences retained. Companion body contexts still require same-event/amendment review, all 1135 received related notices remain in scope, and all 387 residuals need explicit dispositions. No new financial facts are accepted or applied by this primary-field checkpoint; aggregate/account rounding and precise publication time remain uncertified.
-- Companion full-text review is now in `companion_review.json` under the same residual-check directory: 41 notices/117 pages, 82 reader bindings, eight actual whole-page inspections. Four late notices remain retrospective; one missing adjustment-effective date and two missing stock record dates remain null. Preserve the strict-decimal failure, 14 initial reader-binding failures, three binary64 representation differences and observed wording conflicts. The unchanged 1e-12 cash rule is inherited; exact provider decimals agree. Six labelled first-page price pairs and one observed page-4/5 cash boundary close only their scoped failures.
-- Title-amendment full-text review binds ten notices/36 pages (nine old title flags plus Daqin's original adjustment), with five more observed pages. Naconor's aggregate correction, Daqin's removed rounding parenthesis and three equity-status notices stay explicit. The expanded amendment index preserves its original 1135 documents/3780 pages and 387 events; its 226 title and 811 body hits are navigation, not acceptance. Preserve the first compressed-writer API failure and its writer-only adapter. Complete body relationship review and event dispositions before accepting or integrating the 95/115 proposals; active unverified count remains 387.
-- Jinjiang's original 1221086914 is separately archived under `data/raw/disclosures_supplement_2026-11-22`; do not rewrite the original archive/index. `supplemental_relation_review.json` covers all three notices/nine pages, nine actual page observations and 236 numeric tokens per reader. Preserve the original conflicting cash/unit/policy wording and both explicit manual-note errata: original notice 2024-043 versus corrected 2024-048, and the unrelated 2025 event is August 1, not the provisional June 23. Existing 2024-09-27 A-share payment, primary known_at and all 1452 accepted records remain exact. B-share USD/date terms and the merged ex-date cell are contextual only.
-- `financial_amendment_review.json` under the residual-check directory covers ten notices/22 pages for Daqin, Rongtai and Fulai, with eleven observed pages and twenty reader checks. Six same-period candidate relationships agree; sixteen other-period relationships stay separate. Total-preserving cash changes, ratio-preserving total changes, capital-report dates, bond-conversion stops and stock record dates have distinct roles. This review does not certify per-account rounding, accept new facts or complete archive/event dispositions. All runtime inputs, risk/alpha gates, models, accounts and plans remain unchanged.
-- `candidate_amendment_relations.json` registers fourteen further notices/35 pages for six candidate issuers; `candidate_amendment_review.json` preserves fifteen separate schemes, thirty reader checks and twenty observed pages. Six same-period and sixteen other-period relations are checked; none accepts new fields. WuXi 1220173816 prints 0.98974 despite an intended-total quotient around 0.9897333 (usual five-place half-up is 0.98973); its new aggregate agrees with declared cash. Preserve the unspecified rounding convention without changing cash. Keep Deye's post-capitalization labels, gross/net base wording and omitted summary unit distinct, and V-Test's half-share aggregate discrepancy subject to final registration. No stock entitlement dates or account rounding are inferred. All 387 residual dispositions and complete archive body relations remain in scope.
-
-- `financial_notice_relations.json` binds the remaining 29 notices/79 pages in the fixed 53-document title-priority queue. `remaining_amendment_review.json` records 17 newly read notices/47 pages/25 observed pages and 12 scoped prior-review reuses; 34 financial reader checks pass. Preserve Gobijia's expected-total differences, Shengtong's added capitalization and pending approval, Espressif's reference discrepancies and share-total tails. Its 55 catalogue-period relations (16 same, 39 other) do not certify primary body roles or clear old nonacceptance. All 387 residuals and broader archive body relations remain pending; no new fields or runtime changes are accepted.
-
-- Balanced attack, the 8% warning, original high-water mark and latched/non-recovering risk remain in force. Active adoption is `positive_score`; turnover is `legacy`. Keep the registered candidate budget and thresholds unchanged.
-- Use behavioral strategy names and semantic package versions. Keep historical identifiers only for frozen evidence compatibility; never rewrite frozen results.
-- The active dataset is `data/processed/2026-11-20-recipient-entitlements/bundle.joblib`; configuration binds its training, evaluation and historical-ST review. Numerical changes require full compatibility and retraining checks.
-- The whole-inventory distribution repair supplements 1060 payment dates, corrects SF's omitted special cash, and implements Jiangbolong's explicitly declared account-cent truncation. Raw bars, calendar, universe, eligibility, ten reviewed ST intervals and six opening-status records remain exact.
-- The preceding implementation-scope review covered all 1839 events: 1421 have field-scoped evidence and 418 remain unverified. Its 34 new payment-date facts are now integrated under implemented_payments.json: 31 missing dates were applied and three already agreed. The preceding wording review's 25 missing dates are applied under declared_payments.json; its other three dates already agreed. Earlier phase boundaries below remain historical. The companion-notice review adds 77 payment-date source facts; 73 formerly missing dates are now applied under the separate payment integration and four already agree with known values. The prior integration added 154 payment dates and 16 listing dates to the ETF parent, preserving every prior field and review. Accepted dates do not certify other terms; preserve unresolved cases and failed checks.
-- The local-gap repair passed 48 old model reloads, 1425 exact old accounts, 75 old paper accounts, 48 new fits, 1425 retrained accounts, 1425 fixed-forecast accounts and 75 new paper accounts. Evidence is under `artifacts/checks/gap_precision_2026-11-21`.
-- The registered local-gap formula cancels cumulative index scale before division. All 400275 effective quote rows passed independent rational checks, and 48092 same-price non-event openings are exactly zero. Only `gap` and `rank_gap` changed; every other input and all labels remain exact. Do not reintroduce arbitrary zero tolerances or use this completed-day feature as an opening execution reference.
-- Agricultural Bank's 2026-05-13 payment date is now applied under the separately registered date integration. Do not clear flags by hand or infer complete source coverage from clean selected accounts; current outer unresolved occurrences: 0.
-- No superiority or forward-performance claim is established. All 12 choices remain momentum/baseline. The current recipient-entitlement integration changes 48 fitted model files and 12 forecast archives against its parent; model choices remain recorded in attribution. Current inner accounts retain 19 quote-quality occurrences and 0 unresolved event occurrences; repeated account exposures are not independent events. Preserve all quality and adoption audits.
-- 73 securities have 640 internal missing sessions. One five-session interval has sourced opening-status handling; 111 other gap endpoints remain unresolved. Never invent bars, suspension status, opening capacity or closing marks.
-- The announcement archive contains 625 completed queries and 2596 received documents. Collection alone does not certify financial facts. The complete 19-clause industry guideline and its codebook are archived; the prior truncated source remains preserved. All seven CAPCO stock tables (37625 rows, 891 pages) and two BSE alias tables (254 source rows, 248 unique pairs) passed full-cell and independent text/code-inventory checks. Preserve 320 original label differences and the initial failed review. The 2023/2024 codebooks agree at 120 published section/subclass/division entries, not necessarily every detailed clause. See `artifacts/checks/industry_cells_2026-11-21`.
-- The original source-review phase did not change model inputs; the subsequent registered integration is recorded below. Catalogue-date-plus-next-observed-session coverage is diagnostic, not proof of exact historical publication time or unchanged source bytes. It leaves 245 eligible stock rows across seven symbols unmatched. Code aliases establish correspondence, not historical eligibility; 22 ETFs require separate grouping. Before integration register missing-data, static-classification and dated-classification comparisons, covering features, targets, allocation and independent accounts. Keep universe bias, source/timing uncertainty and ETF limits explicit; do not add alpha candidates or infer facts from the generic CAPCO page shell.
-- `configs/protocols/industry_timing.json` registers coverage, static and dated data controls before implementation. All three controls passed and the dated configuration is active for retrospective research; coverage and static remain attribution only. The shared dated coverage mask cannot depend on later-table completeness; the static arm is retrospective attribution only. Preserve signal-close versus execution-opening classifications, explicitly reject unknown held industries, and keep original ETF labels with their limits. Each arm requires 48 fits/reloads, 1425 full accounts, 1425 fixed-forecast attribution accounts and 75 paper accounts, plus unchanged-baseline compatibility. Do not select a taxonomy or timing convention by profit.
-- `artifacts/plans/recipient_entitlements_2026-11-23` is the current frozen conditional paper plan, expiring November 23 at 09:25 Shanghai time. It has zero orders and one million yuan cash. Old plans remain unchanged. Do not fabricate fills or forward returns, or extend a frozen plan by changing its date.
-- Competition fees and matching remain unconfirmed. Follow the whitepaper for confirmed rules; retain the stricter existing position cap.
-- Do not operate a trading app, broker account or WeChat.
-
-- Industry integration evidence is under `artifacts/checks/industry_timing_2026-11-21`. Three arms completed 144 fits/reloads, 4275 retrained and 4275 fixed-forecast accounts, and 225 paper accounts. Old-input compatibility preserved 48 reloads, 1425 full accounts and 75 paper accounts; a constant-only paper-source guard addition has AST proof and a further 75-account rerun. Local checks: 375 passed, one environment skip. Preserve all 23809 files frozen at registration. Exact publication time, ETF labels and universe bias remain uncertified; no superiority or forward claim follows.
-- Final industry acceptance is in each arm's `validation.json` and `paper_quote_review`. The original static/dated `paper` checks failed because the paper adapter fabricated a row for a missing quote, changing only its rejection reason. A planning-only row-removal fix and 300 exact paper-account reruns are recorded in `paper_missing_quote/closure.json`; all training and historical execution modules remain byte-identical. Preserve original training source identities and failed checks rather than rewriting them to the final planning hash. The coverage evaluation's separate directory-collision recovery also preserved every earlier bridge file.
-
-- ETF source review is under `artifacts/checks/etf_sources_2026-11-21`; 199 valid summaries (1077 pages) cover 22 funds with pre-model anchors and agreed listing dates. The 88 yearly catalogues contain 2214 entries; preserve 25 failed paginations, 179 recovered rows, the mislabelled 107-page source, the manager PDF's inconsistent page tree and its retained fifth warning page, two explicit footer corrections and ten date-layout failures. Final acceptance is `field_closure.json`, `structural_review.json` and `completion.json`, not the initial review.
-- Seventeen structural notices corroborate the ratios and record dates of all eight existing ETF splits/mergers; no event is newly applied. The 515180 BSE-scope rules are effective 2024-12-16. Legal fund type and stated benchmark are not dated look-through sector weights. Keep active inputs, source modules and the frozen paper plan unchanged until a separately registered integration passes full compatibility/retraining/account checks. Raw ETF PDFs use LFS; verify their remote bytes after publication.
-- ETF portfolio source review is under `artifacts/checks/etf_holdings_2026-11-21`: 528 reports for 22 funds, 33433 stock rows, 16040 sector rows and 6764 asset rows passed field-scoped checks. All 141 cross-page boundaries were visually reviewed. Preserve the first failed extractions, rejected truncated PDF, eleven PDFs requiring reader index recovery, and every executed source hash. Acceptance is `cell_closure.json` and `completion.json`, not the initial table review.
-- Holdings remain source evidence only. Quarterly partial schedules are not daily complete portfolios; retain NAV versus total-asset denominators, source dashes, original sections, and 319 signed equity/sector residuals with their valuation notes. Do not allocate residuals to cash/sectors or equate report sectors to CAPCO. Register availability, identity/grouping and exposure controls before integration; keep exhausted alpha-candidate budgets, risk constraints, active inputs and frozen plans unchanged until required compatibility, retraining and account checks pass.
-
-- ETF dated source construction is under `configs/protocols/etf_exposures.json` and `artifacts/checks/etf_exposures_2026-11-21`. Final financial input is `financial_observations.json.gz`, after the preserved layout and independent inventory failures. All 528 reports passed scoped checks: 214 contract rows, 51 current nominal tables, 133 contract-P&L totals and 50 nominal/market reconciliations. Net derivative carrying value is not economic notional; six contract tables inherit their note's currency unit. Preserve original dashes, unknown types and security/gold lending limitations.
-- The dated ETF source data has 752 profiles and 15356 fund sessions across 698 sessions; 49535 holding joins and exact NAV partitions passed independent rebuilding. Future report, summary, classification and alias changes cannot alter earlier outputs under the registered availability convention. There are 11000 fund sessions with undisclosed stocks and 10030 with unmatched named stocks; this does not establish complete daily or economic exposure. Keep source A-S sectors distinct from CAPCO divisions, preserve sleeves and signed residuals, and never normalize partial schedules.
-- This source phase changes no runtime inputs, returns or frozen plans. Before runtime integration register coverage, fund-identity and reported-exposure controls and unknown-exposure treatment, then perform full compatibility, retraining, account and paper checks. Identity grouping alone cannot close economic-exposure limitations; do not choose taxonomy, freshness or missing-data rules by profit.
-
-- ETF runtime integration is registered in `configs/protocols/etf_integration.json`; evidence is under `artifacts/checks/etf_integration_2026-11-21`. Coverage and identity are attribution controls; reported is active for retrospective research, independently of return direction. All three completed 144 fits/reloads, 4275 retrained and 4275 fixed-forecast accounts, and 225 paper accounts. Preserve the 29762 files frozen at registration and the original 48-model/1425-account/75-paper compatibility evidence.
-- ETF benchmark identity is a peer group, not daily economic sector allocation. Keep reported known stocks, unmatched/undisclosed stocks, signed residuals, contract market values and uncertified fund capital distinct. Never normalize partial reports, substitute derivative net carrying values for contract amounts, or call proxy caps a complete economic bound. The bound remains null and certification false. Signal and opening clocks remain 16:00 and 09:25.
-- `fund_mode_preservation.json` closes a later metadata-only issue in generic builds and legacy label repairs. Four original failures remain; AST proof, four exact full rebuilds and 144 ordinary model reloads bind final source to the actually executed training source. Never rewrite the earlier fit/account/source receipts. All other runtime modules are byte-identical. Local checks: 404 passed, one environment skip.
-- Final ETF input still selects momentum and baseline rules in all 12 windows; no candidate passes the original adoption gates. Coverage and identity preserve all parent accounts. Reported proxy constraints change returns through execution and risk paths; 10/20bp improve but 30bp worsens. Same-input momentum matches the primary strategy. Keep all source, cost, inner/outer quality and failed-candidate evidence; no superiority or forward claim follows.
-- Earlier source-only and industry-stage notes above describe their acceptance boundaries. ETF integration has now passed its separately registered gates; complete economic exposure, source publication certification, universe bias, action/status/quote gaps and competition matching remain open. Do not mark the whole remediation goal complete from this phase.
-
-- Dividend term source closure is `artifacts/checks/distribution_terms_2026-11-21/completion.json`, `approved_wording/source_review.json` and `independent_closure.json`. The original 1119 facts are preserved; 163 payment dates and 17 share-listing dates are added to source evidence only, with 154/16 still missing in the active ETF snapshot. Preserve both production preservation failures and eleven independent-reader failures. The final independent check covers 165 events/677 fields, and 29 relevant pages across 14 layouts were visually checked. All 32628 prior frozen files, active inputs, numerical modules and paper-plan guards remain unchanged; 48 ordinary model reloads are exact. Before applying fields register a separate integration preserving fund_mode and existing facts, then complete compatibility, rebuilding, fitting, fixed-forecast attribution and independent account/paper checks. Do not clear old flags or claim return improvement from source review.
-
-- Distribution availability integration is registered in `configs/protocols/distribution_availability.json`; final evidence is `artifacts/checks/distribution_dates_2026-11-21/validation.json`, `attribution.json` and `activation.json`. The earlier date-only protocol failed its all-label assertion; preserve the failure and partial output. Exactly 106 independently reviewed labels may change (12/36/58 at 1/3/5 days), with all non-label inputs and other labels exact. All 24 pre-fit target expectations passed. Do not generalize this exception to protocols without independently bound label evidence.
-- This phase completed 48 new fits/reloads, 1425 retrained and 1425 fixed-forecast accounts, and 75 paper accounts. Preserve all 32700 pre-registration files. Old-input parity remains 48 models/1425 accounts/75 paper accounts, with AST proof of the later snapshot-only guard change and 48 additional ordinary model reloads under final source. Never rewrite earlier execution identities. Local checks: 468 passed, one host symlink skip.
-- Prior named phase notes above retain their original acceptance boundaries. The final date integration has passed its separate gates and preserves `fund_mode=reported`. At the end of that prior date integration, unknown dates stood at 480 payments and 89 share listings across 523 events missing either field; current counts are in the declared-payment acceptance below. Publication-time certification, universe bias, remaining action/status/quote gaps, full economic ETF exposure, competition matching and future observations remain open; this phase does not complete the overall remediation goal.
-
-- Companion-notice source closure is `artifacts/checks/distribution_roles_2026-11-21/completion.json`, under `configs/protocols/distribution_roles.json`. The optional selector reviews every original multiple-document case: 163 events and 329 candidate occurrences, resolving 94 sets while retaining all original metadata and exclusions. Old protocols retain their strict multiplicity behavior; financial extraction, provider agreement and timing gates are unchanged. Preserve the initial 31 reading-order and three field-layout failures, and the amendment check's failed cross-page assertion.
-- This source phase preserves all 1282 prior supported events, adds 77 payment-date facts, independently checks 308 fields, inventories 56 amendment/related notices for 51 issuers and visually reviews 72 whole pages across 11 field layouts. Original 33786 frozen files, active configuration/data, numerical modules and current paper plan remain exact; all 48 active models reload with zero error. Local checks: 482 passed, one host symlink skip. Before applying the 73 still-missing dates, register a separate integration with independent label scope, rebuilding, full fitting and fixed-forecast/account/paper checks. Do not clear flags, claim better returns, or mark overall remediation complete from source closure.
-
-- Companion payment integration is registered in `configs/protocols/companion_payments.json`, with final evidence under `artifacts/checks/companion_payments_2026-11-21`. It applies 73 accepted missing payment dates; four other additions already agree. All existing facts, economic terms, metadata, raw data, feature cells and 1/3/5-day labels remain exact. Earlier source-only notes describe their historical boundary; these 73 dates are now applied.
-- Preserve the first independent label review failure and its executed source. The accepted `input_closure.json` binds `payment_label_precision.json`: 67689 affected-security tuples checked, one ideal-decimal zero residual explained by exact binary64 operation rounding, with no tolerance or change to stored amounts/labels. All 24 pre-fit target expectations matched.
-- Old-input compatibility passed 48 models, 1425 complete accounts and 75 paper accounts under final source. New validation passed 48 fits/reloads, 1425 retrained plus 1425 fixed-forecast accounts and 75 paper accounts. Preserve all 33884 pre-registration frozen files. Only snapshot receipt binding and package version changed among runtime modules; no numerical or execution algorithm changed. Local checks: 502 passed, one host symlink skip.
-- At the companion-payment phase boundary, unknown dates were 407 payments and 89 listings across 452 events; source-unverified events were 480. At that boundary, inner accounts retained 22 quote-quality occurrences and 5 unresolved event occurrences. Complete ETF exposure, historical timing/universe/status/quote coverage, competition matching and future observations remain open; this integration does not complete the whole remediation goal.
-- `window_growth.json` records the prior fixed-default defect. Maintenance under `configs/protocols/window_range.json` now resolves omitted last bounds to every complete available window, preserving explicit partial ranges. Its 2026-12-08 boundary was calendar-only; no future observations or training were created.
-
-- Training range maintenance is accepted under `artifacts/checks/window_range_2026-11-21/completion.json`. Only orchestration, CLI bounds, registered fit inventories/counts and one verification docstring changed, plus package version 0.25.1. Exact AST scope is in `implementation.json`; all numerical fitting, calibration, selection, execution and risk statements remain unchanged. Keep all source-identity guards and original training identities.
-- Current 698-session scheduling matches the former source for all 11 historical windows and the latest fit. The `orchestration` diagnostic captures calls without fitting; its scheduling statuses are not trained models and its check-directory paths cannot be used as experiments. Ordinary model and account guards were separately exercised: 48 exact reloads, 1425 full accounts and 75 paper accounts. Local tests: 545 passed, one host symlink skip. No new fits or forward observations.
-- Fit comparison requires each run's declared range, completion state, model/forecast inventory and window identities to agree. Derive counts from registered ranges and frozen baseline summaries; never silently truncate default training to 11 windows, assume 48 models, ignore extra/missing artifacts or alter a frozen protocol to label partial training complete. All 34959 pre-maintenance frozen files and the active configuration, data, evaluation and paper plan remain exact.
-- Continue the remaining data/source, historical universe/timing, exposure and competition execution work in `docs/remediation.md`. This maintenance does not establish alpha or complete the overall remediation goal.
-
-- Dividend wording review is registered in `configs/protocols/distribution_wording.json`; acceptance is `artifacts/checks/distribution_wording_2026-11-21/completion.json` and `field_acceptance.json`. Six pattern strings changed; every provider, timing, financial, date and candidate-selection gate is AST-identical. All 1359 prior supported events and 1386 fields remain. Preserve the first raw-row failure and the subsequent seven title/summary failures; the earlier `independent_closure.json` is a failed result, not acceptance.
-- This source phase adds 28 payment-date facts, independently checks 112 fields, inventories 62 archived notices for 13 issuers and visually checks 22 whole pages across seven layouts. Preserve all 35106 baseline files and every executed reader. Local tests: 570 passed, one host symlink skip; 48 ordinary model reloads have zero error. Active data, account flags, numerical modules and paper plan are unchanged.
-- Before applying the 25 supported missing dates, register a separate integration with independent label scope, full rebuilding/fitting, fixed forecasts and account/paper checks. Three other dates already agree. Remaining source, status/quote, universe/timing, full ETF exposure, competition execution and forward-observation work remains; this phase does not establish alpha or complete the overall goal.
-
-- Declared payment integration is accepted under `configs/protocols/declared_payments.json` and `artifacts/checks/declared_payments_2026-11-21/completion.json`. It applies 25 missing dates and preserves three already matching dates. All numerical runtime modules, economic terms, prior reviews, features and labels remain exact; only source receipt binding and semantic version 0.26.0 changed. Earlier source-only notes describe their original phase boundaries.
-- Preserve `check_inputs.py`, `input_scope.log` and `input_failure.json`: the extra direct string/float comparison failed for seven old monetary fields. Final `check_input_preservation.py` and `input_scope.json` verify all 1386 source fields against accepted facts and runtime values against the parent separately; no tolerance or monetary rewrite. All 20394 independently computed label tuples and all 24 pre-fit target expectations passed.
-- Final-source old-input compatibility passed 48 models, 1425 complete accounts and 75 paper accounts. New validation passed 48 fits/reloads, 1425 retrained and 1425 fixed-forecast accounts plus 75 paper accounts. Preserve all 35158 baseline files. Local checks: 607 passed, one host symlink skip.
-- At the declared-payment integration boundary, unknown dates were 382 payments and 89 listings across 427 events, with 452 source events unverified. Active unknown dates and inner quality/unresolved occurrences of 22/0 and outer occurrences of 0/0 remain unchanged by the subsequent source-only review. No superiority or forward-performance claim is established. Continue the complete remaining plan in `docs/remediation.md`; this integration does not complete the overall goal.
-
-- Implementation-scope source acceptance is registered in `configs/protocols/payout_scope.json` with the separate pre-implementation `payout_page_order.json` addendum. Final evidence is `artifacts/checks/payout_scope_2026-11-21/completion.json` and `independent_closure.json`; preserve the initial six-event failure, all executed readers and 13 before-implementation test failures. All 1387 prior supported events and 1414 fields remain exact.
-- Current-scheme scoping and adjacent-page cash extraction changed; every financial acceptance, source selection/timing, date and numerical gate remains exact. A paired dash-delimited physical page counter may occur first or last in reading order; do not strip arbitrary numbers or skip interrupted text. Preserve both source pages and explicit gross-cash wording.
-- The 34 new payment-date facts passed 136 independent field checks. Thirty-eight complete pages cover all 21 final-reader layouts, six initial mismatches and the one cross-page financial sentence. All 55 archived documents for 12 issuers are inventoried; ten body hits in nine notices concern capital-base statements, not payment amendments. Archive completeness and exact publication time remain uncertified.
-- Source-only checks: 646 tests passed, one host symlink skip, 48 ordinary model reloads with zero error, and all 36229 baseline files preserved. Active data, historical results and paper plan remain unchanged. The 31 newly supported missing dates require separately registered integration, label scope, rebuilding, full refitting and fixed-forecast/account/paper comparisons. Do not treat this phase as new alpha, forward evidence or whole-goal completion.
-
-- Implementation payment integration is accepted under `configs/protocols/implemented_payments.json` and `artifacts/checks/implemented_payments_2026-11-22/completion.json`. Exactly 31 missing payment dates were applied; three matching dates and all 1414 prior source fields remain. Features, labels, economic terms, original reviews and numerical modules are exact. Receipt guards bind the successful independent closure and its separately registered page-order addendum.
-- Preserve before-test failure, formatting receipt and executed source copies. All 19827 independent label checks and 24 pre-fit stage expectations passed; old-input compatibility is 48 model reloads, 1425 full accounts and 75 paper accounts. New validation is 48 fits/reloads, 1425 retrained plus 1425 fixed-forecast accounts and 75 paper accounts. Local tests: 687 passed, one host symlink skip; all 36312 baseline files are preserved.
-- Active missing dates are 351 payments and 89 listings across 397 events; 418 source events remain unverified. Inner quality/unresolved occurrences are 22/0; outer occurrences are 0/0. No superiority or forward performance is established. Earlier phase notes retain their historical boundaries. Continue the complete remaining plan in `docs/remediation.md`.
-
-- Cash-entitlement source review is registered in `configs/protocols/cash_entitlement_review.json` and its production-compatible `cash_entitlements.json`; field acceptance is `artifacts/checks/cash_entitlements_2026-11-22/field_acceptance.json`. It preserves 1448 prior fields and all 1808 unscoped records, adding 82 source fields for 31 events: 31 gross cash, 31 payment dates, 19 equity ex-reference cash values and one share-listing date. Source support is now 1452 events/1530 fields, with 387 events still unverified; active missing dates remain unchanged until separate integration.
-- Three cash amounts require economic correction (CATL 2024-04-30 and Baofeng 2024-07-24/2025-05-13); preserve original binary64 cash for the other 28 events under the unchanged 1e-12 rule. Ingenic 2025-06-24's printed aggregate remains unresolved despite directly repeated gross-cash and labelled-date support. Keep all five initial primary failures, their four explanations, other-period source conflicts, the optional-key preparation failure and exact imported evidence bytes. No new account rounding is certified.
-- All 110 received notices for 20 issuers were read in full (381 pages); primary review covers 124 text pages and 107 actual whole-page inspections, with 39 related-page inspections. Archive completeness and exact publication time remain uncertified. This phase changes no runtime source, configuration, data, model, historical account or frozen plan. Separately register action/feature/rank/label effects before integration; do not reuse date-only all-label equality. Complete full compatibility, refitting and fixed-forecast/account/paper attribution before activation. Source acceptance does not complete the overall remediation or establish alpha.
-
-- Recipient-entitlement integration is accepted under `configs/protocols/recipient_entitlements.json`; final evidence is `artifacts/checks/recipient_entitlements_2026-11-22/completion.json`, `numeric_acceptance.json` and `attribution.json`. Its 82 supported fields cover 31 events; actual changes are 3 recipient cash amounts, 31 payment dates, 19 ex-reference cash values and one share-listing date. Preserve the other 28 binary64 cash amounts, 1808 unscoped actions and all prior field evidence.
-- Preserve the original 27 before-test failures and the independent-subset/full-inventory binding failure. The final binder checks both distinct hashes. All numerical, execution, selection, risk and planning modules remain byte-identical; independently accepted inputs change 18 label tuples and 14183 non-label cells across 64 columns, including cross-sectional ranks. Do not assert unscoped securities' features are unchanged or reuse date-only cohort equality.
-- All 24 pre-fit cohort/target/weight/matrix expectations passed. Old-input compatibility is 48 models/1425 full accounts/75 paper accounts; new validation is 48 fits/reloads/1425 retrained plus 1425 fixed-forecast accounts/75 paper accounts. Local tests: 736 passed, one host symlink skip; preserve all 37730 baseline files. None of the 31 scoped events was held in historical inner/outer accounts. The separately registered `recipient_settlement_scenarios.json` adds 217 synthetic cases covering cash, share quantities, restrictions and release, with expectations frozen before Ledger calls. They are not historical or forward accounts; original rounding and unconfirmed 20% tax remain.
-- Current missing dates are 320 payments and 88 listings across 366 events; 387 source events remain unverified. Inner quality/unresolved counts are 19/0, outer 0/0. Ingenic's printed aggregate conflict, publication timing, historical universe/status/quote gaps, complete ETF exposure and competition matching remain open. Earlier notes describe historical phase boundaries. Continue `docs/remediation.md`; this phase does not complete the whole goal or establish alpha or forward returns.
+当前范围见[项目状态](status.md)，维护规则见[开发约定](../CONTRIBUTING.md)和[仓库维护](repository.md)。研究暂停状态优先于历史章节中的待办。

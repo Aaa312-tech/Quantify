@@ -1,4 +1,4 @@
-"""Reproducible training windows; outputs belong to a new named experiment."""
+"""Walk-forward model fitting, validation and forecast storage."""
 
 from __future__ import annotations
 
@@ -26,11 +26,10 @@ from .validation import execution_audit, reconcile
 
 @pd.option_context("compute.use_numexpr", False)
 def run_training(paths, output, first=1, last=None, include_latest=False):
-    """Train the registered protocol in a new experiment, preserving all reference files.
+    """Run the registered training windows in a new experiment.
 
-    An omitted last window uses every complete window in the dataset calendar.
-    Model and rule selection uses only the validation segment. Partial fold runs
-    are explicitly marked PARTIAL and must not be presented as a full backtest.
+    An omitted last window includes all complete windows. Model and rule selection
+    uses the validation segment; incomplete fold ranges are recorded as PARTIAL.
     """
     from pathlib import Path
 
@@ -126,7 +125,7 @@ def run_training(paths, output, first=1, last=None, include_latest=False):
 
 
 def trial(bundle, fold, forecasts, config, path, identity, *, mode="latched", turnover="legacy"):
-    """Run and independently audit a validation candidate before allowing its adoption."""
+    """Simulate a validation candidate and independently audit its accounts."""
     summary_path = path.with_suffix(".json")
     ledger_path = path.with_suffix(".ledgers.json.gz")
     if summary_path.exists():

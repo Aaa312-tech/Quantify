@@ -1,4 +1,4 @@
-"""Portfolio optimization with separately switchable turnover controls."""
+"""Portfolio weights and turnover constraints."""
 
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ class AllocationMarket(TypedDict):
 
 
 def costs(meta, s, slippage):
-    """Return estimated buy and sell cost rates for the instrument type."""
+    """Estimated buy and sell cost rates by instrument type."""
     stock = meta[s]["kind"] == "stock"
     return 0.0003 + (0.00001 if stock else 0) + slippage, 0.0003 + (
         0.00051 if stock else 0
@@ -130,7 +130,7 @@ def select_names(meta, forecasts, previous, returns, slippage, config="baseline"
 
 
 def _constraints(meta, names, cost_rates, cap, receivable_weight, budget):
-    """Build ordered holding, cash, concentration and turnover constraints."""
+    """Build holding, cash, concentration and turnover constraint matrices."""
     n = len(names)
     eq = np.zeros((n, 3 * n))
     for i in range(n):

@@ -129,7 +129,7 @@ def _labels(frame, instrument, raw, calendar, actions, opening_status=None):
 
 @pd.option_context("compute.use_numexpr", False)
 def build_dataset(meta, raws, actions, *, quarantined=(), opening_status=None):
-    """Regenerate panels, scores, 57 model inputs and legal labels without future bars."""
+    """Build panels, scores, 57 model inputs and legal entry/exit labels."""
     from .dataset import fund_mode
 
     if set(meta) != set(raws) or "sh510300" not in raws:

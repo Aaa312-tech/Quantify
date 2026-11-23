@@ -1,4 +1,4 @@
-"""Collect retrospective daily security flags for independent source review."""
+"""Historical security-status collection and source review."""
 
 from __future__ import annotations
 
@@ -47,7 +47,7 @@ def load_status_review(paths):
 
 
 def parse_history(payload, symbol, calendar):
-    """Reject ambiguous flags and malformed prices; never invent publication times."""
+    """Parse daily flags and prices; reject ambiguous status values."""
     if (
         payload.get("error_code") != "0"
         or payload.get("adjustment") != "3"

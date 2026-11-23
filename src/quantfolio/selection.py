@@ -78,7 +78,7 @@ def assess(candidate, base, minimum=0.001, *, positive_score=False):
 
 
 def select_rules(trials, *, positive_score=False):
-    """Choose a qualifying turnover rule from past validation evidence, defaulting to baseline."""
+    """Select a qualifying turnover rule, falling back to baseline."""
     selected = "baseline"
     best_score = -np.inf
     for name in sorted((k for k in CONFIGS if k != "baseline"), key=lambda x: (complexity(x), x)):
@@ -91,7 +91,7 @@ def select_rules(trials, *, positive_score=False):
 
 
 def select_model(trials, *, positive_score=False):
-    """Choose a qualifying ranking model with an industry gate, defaulting to momentum."""
+    """Apply the industry and return gates, falling back to momentum."""
     selected = "momentum"
     best_score = -np.inf
     for name in ["ridge25", "tree25", "ridge50", "tree50"]:

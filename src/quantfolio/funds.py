@@ -1,4 +1,4 @@
-"""Dated fund identities and explicitly incomplete reported-equity risk proxies."""
+"""Dated fund identities and partial equity-exposure estimates."""
 
 from copy import deepcopy
 from fractions import Fraction
@@ -251,7 +251,7 @@ def compile_fund_histories(meta, calendar, profiles, sessions, financial, varian
 
 
 def build_fund_snapshot(paths, protocol_path, variant):
-    """Build a frozen registered data control without activating its configuration."""
+    """Build a registered fund snapshot without changing the active configuration."""
     import joblib
 
     from .dataset import check_integrity, load_snapshot, validate_features
@@ -359,7 +359,7 @@ def build_fund_snapshot(paths, protocol_path, variant):
         if variant == "coverage"
         else [c for c in original["table"] if c != "industry" and not c.startswith("industry_")]
     )
-    # This registration covers every parent ETF session. A new loss needs a new protocol.
+    # Any loss of parent ETF sessions requires a new protocol.
     pd.testing.assert_frame_equal(
         original["table"][fixed], rebuilt["table"][fixed], check_exact=True
     )

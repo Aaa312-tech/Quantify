@@ -2,6 +2,10 @@
 
 代码放在 `src/quantfolio`，按职责组织，不按迭代编号拆包。Python使用UTF-8、LF、4空格缩进和100列；格式及导入顺序交给Ruff。
 
+## 维护范围
+
+当前研究暂停，仅进行代码与仓库维护。活跃策略、数据、模型和历史结果保持不变；数据采集、新训练、候选实验及前向观察不在当前范围内。有效产物与未解决事项以[项目状态](docs/status.md)为准，证据保存及发布要求见[仓库维护](docs/repository.md)。
+
 ## 代码
 
 - 模块、函数和变量用 `snake_case`，类用 `PascalCase`，常量用 `UPPER_CASE`。
@@ -30,7 +34,7 @@
 
 README保留入口和当前结论；方法、实现、运行说明分别放在对应文档。机器结果放 `artifacts`，不要复制到文档目录。报告注明样本、区间、成本与基准，区分连续收益和重置本金的10日均值。
 
-有效产物和暂停状态统一维护在`docs/status.md`；待办放`docs/remediation.md`，历史过程放`docs/research_history.md`。不要向`AGENTS.md`或首页追加逐批实验流水账。
+待办放`docs/remediation.md`，实验过程放`docs/research_history.md`。变更记录说明功能变化及兼容性影响。
 
 提交标题说明动作与对象，例如 `fix: reject recovery in latched risk audit`。同步方式见[仓库维护](docs/repository.md)。
 

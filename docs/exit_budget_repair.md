@@ -66,7 +66,7 @@ python -m quantfolio evaluate-exits --run artifacts/experiments/exit_priority_20
 
 两组共完成96次拟合与重载校验。每组48个模型、12组完整预测数组均与原模型一致，
 11个外层窗口和最新一期的选择也未变化。原规则1425个账户完整摘要和账本精确一致；
-修正组150个账户与固定旧预测的150个账户也精确一致。本轮共评估1725个账户。
+修正组150个账户与固定旧预测的150个账户也精确一致。共评估1725个账户。
 
 | 每边滑点，另计交易费 | 原连续净收益 | 修正后连续净收益 | 修正后最大回撤 | 原10日均值 | 修正后10日均值 |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -91,4 +91,4 @@ python -m quantfolio evaluate-exits --run artifacts/experiments/exit_priority_20
 完整证据见[验收](../artifacts/checks/exit_priority_2026-11-20/acceptance.json)、
 [逐日路径归因](../artifacts/checks/exit_priority_2026-11-20/attribution.json)及
 [原始研究摘要](../artifacts/evaluations/exit_priority_2026-11-20/study_summary.json)。
-当前配置指向本轮已完整复现的原规则训练和评估，旧研究文件保持不变。
+当前配置指向已完整复现的原规则训练和评估，旧研究文件保持不变。

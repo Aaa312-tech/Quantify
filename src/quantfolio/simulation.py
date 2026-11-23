@@ -89,7 +89,7 @@ def buy_ceiling(raw, previous, date, actions, atr):
 
 @dataclass
 class Execution:
-    """Execute prior-close targets at opening proxies with separately debited costs."""
+    """Opening fills with costs charged separately."""
 
     ledger: Ledger
     bundle: dict
@@ -293,7 +293,7 @@ class Execution:
 def _signal_decision(
     bundle, ledger, last_close, risk, forecasts, index, start, slippage, rules, turnover
 ):
-    """Use the preceding close to select targets before applying execution-day events."""
+    """Calculate target weights from the preceding session's close."""
     calendar, panels = bundle["calendar"], bundle["panels"]
     date = calendar[index]
     previous = calendar[index - 1]
@@ -384,7 +384,7 @@ def _signal_decision(
 
 
 def _closing_row(bundle, ledger, date, prices, last_close, record_actions, prior, state, cap):
-    """Mark closing holdings and retain the prior-close risk evidence for this session."""
+    """Mark closing positions and record the session's risk state."""
     raws = bundle["raws"]
     day = str(date.date())
     level, drawdown = state["level"], state["drawdown"]
@@ -448,7 +448,7 @@ def simulate(
     *,
     turnover="legacy",
 ):
-    """Replay next-open executions with prior-close signals and non-recovering risk control."""
+    """Simulate next-open fills from prior-close signals."""
     if mode not in RISK_MODES:
         raise ValueError("Unknown risk mode")
     if not 1 <= start <= end < len(bundle["calendar"]):

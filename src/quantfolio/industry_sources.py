@@ -1,4 +1,4 @@
-"""Extract archived industry tables without changing research inputs or portfolio groups."""
+"""Extraction and validation of archived industry tables."""
 
 from __future__ import annotations
 
@@ -300,7 +300,7 @@ def extract_pdf(path, codebook, aliases=False, *, followup=False):
 
 
 def review_industries(paths, protocol_path):
-    """Produce isolated, hash-bound source tables; never activate a model snapshot."""
+    """Extract source tables and register their hashes."""
     root = paths.root
 
     def inside(name):

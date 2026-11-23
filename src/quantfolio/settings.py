@@ -1,4 +1,4 @@
-"""Portable project paths, independent of the original drive and working directory."""
+"""Project paths and output locations."""
 
 from __future__ import annotations
 
@@ -114,7 +114,7 @@ class Paths:
         return target
 
     def output_path(self, path: str | Path, category: str) -> Path:
-        """Validate a fresh destination without creating it on an invalid command."""
+        """Resolve an unused output directory within the selected category."""
         target = self.artifact_path(path, category)
         if target.exists():
             raise FileExistsError(f"Choose a new experiment name; output exists: {target}")

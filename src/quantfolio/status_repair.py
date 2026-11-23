@@ -171,7 +171,7 @@ def repair_status_snapshot(paths, output, protocol):
         },
     }
     save(target / "provenance.json", provenance, immutable=True)
-    # Rebuilding the untouched parent first separates builder drift from the intended repair.
+    # Rebuild the parent first to distinguish builder drift from the repair.
     rebuilt = build_dataset(
         original["meta"],
         original["raws"],

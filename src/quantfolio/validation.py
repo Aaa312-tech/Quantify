@@ -304,7 +304,7 @@ def dated_industry_audit(ledger, bundle):
 
 
 def opening_errors(trade, bundle):
-    """Check the proxy independently; deliberately do not call the quote generator."""
+    """Audit auction quotes against information available at the opening."""
     symbol = trade["symbol"]
     date = pd.Timestamp(trade["date"])
     previous = bundle["calendar"][bundle["calendar"].get_loc(date) - 1]
@@ -619,7 +619,7 @@ class _RiskHistory(TypedDict):
 
 
 def _risk_transition_evidence(mode, history: _RiskHistory, nav, drawdown, healthy, index):
-    """Rebuild transition evidence independently of RiskState and its transition method."""
+    """Rebuild risk-state transitions from account history."""
     previous_phase = history["phase"]
     state_age, healthy_streak, probe_anchor = (
         history["age"],

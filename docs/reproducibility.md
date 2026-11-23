@@ -72,7 +72,7 @@ NumPy 2.3.4的[`npy_exp2`映射到C运行库的`exp2`](https://github.com/numpy/
 | 环境 | 24组当前权重 | 完整历史验收范围 |
 | --- | --- | --- |
 | Windows 11 / MKL | 原哈希全部一致 | 通过 |
-| Windows 11 / 独立OpenBLAS wheel | 原哈希全部一致 | 本轮仅验证权重；缺少Bottleneck的完整校准限制保留 |
+| Windows 11 / 独立OpenBLAS wheel | 原哈希全部一致 | 该环境仅验证权重；缺少Bottleneck的完整校准限制保留 |
 | Windows 2022 / Intel Xeon 8370C | 原哈希全部一致 | 冻结旧Git基线的权重比较失败 |
 | Windows 2025 / AMD EPYC 7763 | 原哈希全部一致 | 通过；三份财务对照文件与本地逐字节一致 |
 

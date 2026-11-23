@@ -1,4 +1,4 @@
-"""Normalize archived daily feeds without replacing historical observations."""
+"""Daily feed parsing and comparison with archived observations."""
 
 from __future__ import annotations
 
@@ -161,7 +161,7 @@ def quote_entries(payload):
 
 
 def tencent_beijing_bar(payload, quote, instrument, start, date, existing):
-    """Require a dated Beijing close and matching unadjusted OHLCV, retaining quote checks."""
+    """Validate a dated Beijing close against unadjusted OHLCV."""
     symbol = instrument["symbol"]
     if not symbol.startswith("bj") or len(quote) <= 57 or quote[2] != instrument["code"]:
         raise ValueError("Tencent adapter accepts matching Beijing securities only")
@@ -237,7 +237,7 @@ def tencent_beijing_bar(payload, quote, instrument, start, date, existing):
 
 
 def compare_target(primary, details, provider):
-    """Compare the declared native precision to the primary display; never alter either."""
+    """Compare provider values at their declared precision."""
     mismatches = []
     for key in COLUMNS:
         left, right = _number(primary[key]), _number(details["normalized_values"][key])

@@ -1,4 +1,4 @@
-"""Collect unadjusted daily bars into a separate, auditable raw-data directory."""
+"""Collection and validation of unadjusted daily bars."""
 
 from __future__ import annotations
 
@@ -118,7 +118,7 @@ def append_bars(existing, collected, cutoff):
 
 
 def fetch_bars(paths, date, output, retry=None):
-    """Fetch sequentially; preserve responses and never activate an incomplete snapshot."""
+    """Fetch bars sequentially and archive responses before snapshot creation."""
     target_date = dt.date.fromisoformat(date)
     current = dt.datetime.fromisoformat(now())
     if target_date > current.date() or (target_date == current.date() and current.hour < 16):
