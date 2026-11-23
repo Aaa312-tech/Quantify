@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 from .dataset import check_integrity, load_snapshot, validate_features
+from .integrity import register_output
 from .market import resumption_reference
 from .preprocessing import build_dataset, compare_history
 from .snapshots import label_changes, rebuild_labels
@@ -245,8 +246,6 @@ def repair_status_snapshot(paths, output, protocol):
         "decision": "RETRAINING_REQUIRED",
     }
     save(target / "audit.json", audit, immutable=True)
-    from .planning import register_output
-
     register_output(paths, target)
     return audit
 
@@ -366,7 +365,5 @@ def repair_resumption_snapshot(paths, output, protocol):
         "limitations": specification["limitations"],
     }
     save(target / "audit.json", audit, immutable=True)
-    from .planning import register_output
-
     register_output(paths, target)
     return audit

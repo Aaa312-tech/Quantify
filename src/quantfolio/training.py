@@ -143,13 +143,12 @@ def trial(bundle, fold, forecasts, config, path, identity, *, mode="latched", tu
         mode=mode,
         turnover=turnover,
     )
-    continuous_summary, continuous_ledger = continuous["summary"], continuous["ledger"]
+    all_accounts = [*accounts, continuous]
     checks = [
-        reconcile(e["ledger"], e["summary"], bundle["meta"], bundle["actions"]) for e in accounts
-    ] + [reconcile(continuous_ledger, continuous_summary, bundle["meta"], bundle["actions"])]
-    audits = [execution_audit(e["ledger"], bundle) for e in accounts] + [
-        execution_audit(continuous_ledger, bundle)
+        reconcile(account["ledger"], account["summary"], bundle["meta"], bundle["actions"])
+        for account in all_accounts
     ]
+    audits = [execution_audit(account["ledger"], bundle) for account in all_accounts]
     failures = [check for check in checks + audits if check["status"] != "PASS"]
     if failures:
         raise ValueError(f"Validation account audit failed: {failures}")
@@ -166,7 +165,7 @@ def trial(bundle, fold, forecasts, config, path, identity, *, mode="latched", tu
         **validation_summary(accounts),
         "identity": identity,
         "config": config,
-        "continuous": continuous_summary,
+        "continuous": continuous["summary"],
         "accounting_pass": True,
         "accounting_checks": sum(c["checks"] for c in checks),
         "execution_checks": sum(c["checks"] for c in audits),
@@ -313,15 +312,14 @@ def run_window(
         fold["test_start"],
         label_clip_bounds(table, train_rows),
     )
-    refit_rows = np.flatnonzero(
-        label_mask(table, 5, fold["train_start"], fold["validation_end"], fold["test_start"])
+    refit_end, available_before = (
+        (fold["test_start"] - 1, fold["test_start"] + 1)
+        if final
+        else (fold["validation_end"], fold["test_start"])
     )
-    if final:
-        refit_rows = np.flatnonzero(
-            label_mask(
-                table, 5, fold["train_start"], fold["test_start"] - 1, fold["test_start"] + 1
-            )
-        )
+    refit_rows = np.flatnonzero(
+        label_mask(table, 5, fold["train_start"], refit_end, available_before)
+    )
     predictions = fit_stage(
         bundle,
         refit_rows,

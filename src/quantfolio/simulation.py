@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import collections
 import math
+from collections.abc import Iterable
 from dataclasses import dataclass
 
 import numpy as np
@@ -23,6 +24,29 @@ from .metrics import account_stats
 from .models import Forecast
 from .risk import RISK_MODES, RiskState, healthy_market
 from .rules import config_for, turnover_for
+
+
+def execution_targets(
+    weights: dict[str, float],
+    positions: dict[str, float],
+    nav: float,
+    stopped: Iterable[str],
+    *,
+    planned: bool,
+    halted: bool,
+) -> dict[str, float]:
+    """Convert weights to opening CNY targets, then apply position exits and risk stops."""
+    targets = (
+        {symbol: nav * weight for symbol, weight in weights.items()} if planned else dict(positions)
+    )
+    if planned:
+        for symbol in positions:
+            targets.setdefault(symbol, 0.0)
+    for symbol in stopped:
+        targets[symbol] = 0.0
+    if halted:
+        targets = {symbol: 0.0 for symbol in positions}
+    return targets
 
 
 def post_buy_limits(values, meta, symbol, purchase, after_fee_nav, cap):
@@ -499,16 +523,9 @@ def simulate(
                 quality.append({"date": day, "symbol": symbol, "problem": "STALE_MARK"})
         nav = ledger.nav(prices)
         values = ledger.values(prices)
-        targets = (
-            {symbol: nav * w for symbol, w in target_weights.items()} if planned else dict(values)
+        targets = execution_targets(
+            target_weights, values, nav, stopped, planned=planned, halted=level == 3
         )
-        if planned:
-            for symbol in values:
-                targets.setdefault(symbol, 0.0)
-        for symbol in stopped:
-            targets[symbol] = 0.0
-        if level == 3:
-            targets = {symbol: 0.0 for symbol in values}
 
         execution = Execution(
             ledger, bundle, index, prices, actions_by_symbol, slippage, cap, intermediate

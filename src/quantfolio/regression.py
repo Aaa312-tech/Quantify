@@ -23,10 +23,8 @@ import pandas as pd
 
 from . import dataset, evaluation, features, models, training, verification
 from .dataset import eligible_rows, validate_features
-from .integrity import scope_counts as scope_counts
-from .integrity import write_dependency_certificate
+from .integrity import register_output, scope_counts, write_dependency_certificate
 from .ledger import causal_price_index
-from .planning import register_output
 from .storage import array_sha, digest, load_gzip, log, now, read, save, sha
 
 

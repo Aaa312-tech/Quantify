@@ -15,6 +15,7 @@ from urllib.request import Request, urlopen
 import pandas as pd
 
 from .dataset import check_integrity, load_bundle
+from .integrity import register_output
 from .storage import digest, log, now, read, save, sha
 
 LOOKUP_URL = "https://www.cninfo.com.cn/new/data/szse_stock.json"
@@ -482,7 +483,5 @@ def collect_disclosures(paths, output, retry=None):
     if sha(paths.bundle) != protocol["bundle_sha256"]:
         raise ValueError("Active dataset changed during source acquisition")
     save(target / "collection.json", result, immutable=True)
-    from .planning import register_output
-
     register_output(paths, target)
     return {key: value for key, value in result.items() if key not in ("queries", "documents")}

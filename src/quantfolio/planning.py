@@ -24,14 +24,13 @@ from .dataset import eligible_rows, load_bundle, source_compatible
 from .evaluation import experiment_folds
 from .funds import exposure_report
 from .industries import metadata_at, require_industries
-from .integrity import register_files
-from .integrity import register_output as register_output
+from .integrity import register_files, register_output
 from .ledger import Ledger, lot_rule, nearest_tick, tick_price
 from .market import board_limit, regime, risk_warning
 from .models import Forecast, prediction_map
 from .risk import RiskState, healthy_market
 from .runs import audit_run, verify_run
-from .simulation import Execution, buy_ceiling
+from .simulation import Execution, buy_ceiling, execution_targets
 from .status_data import load_status_review
 from .storage import digest, now, read, save, sha
 
@@ -475,18 +474,14 @@ def resolve_intent(
     )
     nav = book.nav(prices)
     values = book.values(prices)
-    targets = (
-        {s: nav * w for s, w in intent["target_weights"].items()}
-        if intent["planned"]
-        else dict(values)
+    targets = execution_targets(
+        intent["target_weights"],
+        values,
+        nav,
+        intent["stopped"],
+        planned=intent["planned"],
+        halted=intent["state"]["level"] == 3,
     )
-    if intent["planned"]:
-        for symbol in values:
-            targets.setdefault(symbol, 0.0)
-    for symbol in intent["stopped"]:
-        targets[symbol] = 0.0
-    if intent["state"]["level"] == 3:
-        targets = {s: 0.0 for s in values}
     decision = deepcopy(intent["decision"])
     marks: list[dict] = []
     execution_engine = Execution(

@@ -3,11 +3,12 @@ import unittest
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from quantfolio.allocation import allocate, select_names
 from quantfolio.rules import CONFIGS, RULES, config_for
 from quantfolio.selection import assess, select_model, select_rules
-from quantfolio.simulation import simulate
+from quantfolio.simulation import execution_targets, simulate
 from quantfolio.validation import execution_audit, reconcile
 from tests.factories import market_bundle
 
@@ -18,6 +19,29 @@ def selection_fixture():
     ret = pd.DataFrame(np.random.default_rng(42).normal(0, 0.01, (60, 20)), columns=syms)
     fc = {s: {"rank": 1 - i * 0.01, "mu": 0.05, "margin": 0.0} for i, s in enumerate(syms)}
     return (syms, meta, ret, fc)
+
+
+@pytest.mark.parametrize(
+    "planned,halted,stopped,expected",
+    [
+        (True, False, [], [("held", 100_000.0), ("new", 50_000.0), ("exit", 0.0)]),
+        (False, False, [], [("exit", 150_000.0), ("held", 120_000.0)]),
+        (True, False, ["held"], [("held", 0.0), ("new", 50_000.0), ("exit", 0.0)]),
+        (False, False, ["exit"], [("exit", 0.0), ("held", 120_000.0)]),
+        (True, True, ["new"], [("exit", 0.0), ("held", 0.0)]),
+        (False, True, [], [("exit", 0.0), ("held", 0.0)]),
+    ],
+    ids=["rebalance", "hold", "stop_on_rebalance", "stop_between_rebalances", "halt", "hold_halt"],
+)
+def test_opening_targets_preserve_exits_stops_and_order(planned, halted, stopped, expected):
+    weights = {"held": 0.10, "new": 0.05}
+    positions = {"exit": 150_000.0, "held": 120_000.0}
+    targets = execution_targets(
+        weights, positions, 1_000_000.0, stopped, planned=planned, halted=halted
+    )
+    assert list(targets.items()) == expected
+    assert weights == {"held": 0.10, "new": 0.05}
+    assert positions == {"exit": 150_000.0, "held": 120_000.0}
 
 
 class RuleTests(unittest.TestCase):
