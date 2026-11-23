@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 
 from .dataset import check_integrity, load_snapshot, validate_features
+from .integrity import runtime_sources
 from .market import LABEL_STATUS, legal_label
 from .storage import array_sha, digest, dump_gzip, log, now, read, save, sha
 
@@ -201,9 +202,7 @@ def repair_snapshot(paths, output, protocol="configs/protocols/action_repair.jso
         "review_sha256": sha(review_path),
         "source_bundle": source_path.relative_to(paths.root).as_posix(),
         "source_bundle_sha256": source_hash,
-        "source_sha256": {
-            file.name: sha(file) for file in sorted(Path(__file__).parent.glob("*.py"))
-        },
+        "source_sha256": runtime_sources(Path(__file__).parent),
     }
     save(target / "provenance.json", provenance, immutable=True)
     original = load_snapshot(
@@ -308,7 +307,7 @@ def repair_gap_snapshot(paths, target, protocol_path, integrity):
         or parent["protocol_sha256"] != sha(protocol_path)
     ):
         raise ValueError("Parent reconstruction belongs to another input or protocol")
-    source = {f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))}
+    source = runtime_sources(Path(__file__).parent)
     original = load_snapshot(paths, source_path, protocol["source_data_cutoff"])
     repaired = build_dataset(
         original["meta"],
@@ -347,7 +346,7 @@ def repair_gap_snapshot(paths, target, protocol_path, integrity):
     save(target / "provenance.json", provenance, immutable=True)
     dump_gzip(target / "feature_changes.json.gz", changes)
     joblib.dump(repaired, target / "bundle.joblib", compress=3)
-    if source != {f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))}:
+    if source != runtime_sources(Path(__file__).parent):
         raise ValueError("Implementation changed during snapshot construction")
     audit = {
         "status": "PASS",
@@ -1056,7 +1055,7 @@ def repair_distribution_snapshot(paths, target, protocol_path, integrity):
         "protocol_sha256": sha(protocol_path),
         "review_sha256": sha(review_path),
         "source_bundle_sha256": sha(source_path),
-        "source_sha256": {f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))},
+        "source_sha256": runtime_sources(Path(__file__).parent),
     }
     save(target / "provenance.json", provenance, immutable=True)
     rebuild_args = {"opening_status": original.get("opening_status")}
@@ -1095,9 +1094,7 @@ def repair_distribution_snapshot(paths, target, protocol_path, integrity):
     save(target / "action_changes.json", changes, immutable=True)
     save(target / "field_changes.json", field_changes, immutable=True)
     joblib.dump(repaired, target / "bundle.joblib", compress=3)
-    if provenance["source_sha256"] != {
-        f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))
-    }:
+    if provenance["source_sha256"] != runtime_sources(Path(__file__).parent):
         raise ValueError("Implementation changed during snapshot construction")
     audit = {
         "status": "PASS",

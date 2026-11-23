@@ -151,10 +151,10 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 
 | 范围 | 结果 | 记录 |
 | --- | --- | --- |
-| 模型 | 48个模型重载，最大预测误差0 | [全量回归](../artifacts/checks/editorial_cleanup_full_2026-11-23/result.json) |
-| 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/editorial_cleanup_full_2026-11-23/history.json) |
-| 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/editorial_cleanup_full_2026-11-23/paper.json) |
-| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口与同环境旧实现精确一致；无模型重训 | [计算对照](../artifacts/checks/editorial_cleanup_full_2026-11-23/differential.json) |
+| 模型 | 48个模型重载，最大预测误差0 | [全量回归](../artifacts/checks/workflow_cleanup_full_2026-11-23/result.json) |
+| 历史账户 | 1425个完整账户及114份压缩账本精确一致 | [历史对照](../artifacts/checks/workflow_cleanup_full_2026-11-23/history.json) |
+| 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/workflow_cleanup_full_2026-11-23/paper.json) |
+| 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口与同环境旧实现精确一致；无模型重训 | [计算对照](../artifacts/checks/workflow_cleanup_full_2026-11-23/differential.json) |
 | 报告 | 默认、指定实验和历史参考入口的HTML及PNG逐字节一致 | [渲染对照](../artifacts/checks/responsibility_checks_2026-11-22/report_render/result.json) |
 | 独立环境 | E7源码在Windows 2025托管完整回归通过，三份财务对照文件及48份重算预测与本地逐字节一致；Windows 2022旧Git基线失败保留 | [跨环境验收](../artifacts/checks/release_acceptance_2026-11-23/cloud_comparison.json) |
 | 训练权重 | 本地MKL、独立OpenBLAS及托管Windows 2022/2025的24组权重均匹配修复前原哈希 | [权重验收](../artifacts/checks/training_weights_2026-11-23/completion.json) |
@@ -162,9 +162,9 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 | 仓位与风控 | 29007组状态、1024组优化器输入及完整模拟对照 | [执行验证](../artifacts/checks/execution_refactor_2026-11-22/completion.json) |
 | 训练与评估 | 12个冻结窗口以缓存重放，选型与历史结果一致 | [流程验证](../artifacts/checks/runtime_refactor_2026-11-22/completion.json) |
 
-当前源码通过914项单元测试与75项集成测试，1项因本机符号链接权限跳过；18个模块的类型检查、41个模块的覆盖率门槛与四项缺陷检测通过，详见[质量检查](../artifacts/checks/editorial_cleanup_2026-11-23/quality.json)。
+当前源码通过927项单元测试与75项集成测试，1项因本机符号链接权限跳过；18个模块的类型检查、41个模块的覆盖率门槛与四项缺陷检测通过，详见[质量检查](../artifacts/checks/workflow_cleanup_2026-11-23/quality.json)。
 
-[源码核对](../artifacts/checks/editorial_cleanup_2026-11-23/source_review.json)覆盖全部41个运行模块；31个模块的88处注释与文档字符串调整后，可执行语法树一致。完整回归绑定整理后的源码哈希，未重新拟合模型。
+[改动范围](../artifacts/checks/workflow_cleanup_2026-11-23/implementation.json)覆盖13个运行模块：18处源码哈希清单实现合并到`integrity.runtime_sources`，回放与执行诊断命令共用参数处理。34个命令帮助页面保持原文；完整回归绑定当前源码，未重新拟合模型。
 
 E7的[发布验收](../artifacts/checks/release_acceptance_2026-11-23/release_quality.json)保留当时的908项单元测试与75项集成测试记录。其[源码包安装](../artifacts/checks/release_acceptance_2026-11-23/source_archive_install.json)实际运行版本、示例及账本命令，六份示例输出与独立wheel安装逐字节一致；该记录对应原发布源码。
 
@@ -184,6 +184,6 @@ E2锁定环境验收时，Linux安装包通过835项测试，Windows通过834项
 
 训练协议和纸面计划保留生成时的源码哈希。等价重构通过单独冻结的 `source_compatibility.json` 关联原文件身份、当前全部Python源码、差分验证和完整历史账本验证，不修改原协议。
 
-缺少登记、哈希不符、证据不完整或引用越出项目时拒绝使用。模型输入、日期、预测和计划到期仍单独检查。活跃登记见[全模块兼容记录](../artifacts/checks/editorial_cleanup_full_2026-11-23/source_compatibility.json)及[依赖兼容记录](../artifacts/checks/editorial_cleanup_full_2026-11-23/dependency_compatibility.json)。
+缺少登记、哈希不符、证据不完整或引用越出项目时拒绝使用。模型输入、日期、预测和计划到期仍单独检查。活跃登记见[全模块兼容记录](../artifacts/checks/workflow_cleanup_full_2026-11-23/source_compatibility.json)及[依赖兼容记录](../artifacts/checks/workflow_cleanup_full_2026-11-23/dependency_compatibility.json)。
 
 更改数值、时序、成交或持仓行为时，须重新完成对应模型和完整账户验证，并保留失败记录。验证脚本一经执行即作为证据保存；重试使用新文件，不能覆盖原结果。

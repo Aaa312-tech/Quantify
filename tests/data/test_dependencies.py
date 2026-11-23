@@ -1,10 +1,37 @@
 """Dependency checks fail closed without turning unrelated source edits into drift."""
 
+import hashlib
+import os
+
 import pytest
 
 from quantfolio import dataset, integrity
 from quantfolio.settings import Paths
 from quantfolio.storage import read, save, sha
+
+
+def test_runtime_sources_detect_same_size_edits_and_inventory_changes(tmp_path):
+    first = tmp_path / "a.py"
+    first.write_bytes(b"VALUE = 1\n")
+    (tmp_path / "z.py").write_bytes(b"VALUE = 2\n")
+    (tmp_path / "notes.txt").write_text("not source", encoding="utf-8")
+    nested = tmp_path / "nested"
+    nested.mkdir()
+    (nested / "hidden.py").write_text("nested source", encoding="utf-8")
+
+    before = integrity.runtime_sources(tmp_path)
+    assert list(before) == ["a.py", "z.py"]
+    assert before["a.py"] == hashlib.sha256(b"VALUE = 1\n").hexdigest()
+    stamp = first.stat()
+    first.write_bytes(b"VALUE = 3\n")
+    os.utime(first, ns=(stamp.st_atime_ns, stamp.st_mtime_ns))
+    (tmp_path / "z.py").unlink()
+    (tmp_path / "b.py").write_bytes(b"VALUE = 4\n")
+
+    after = integrity.runtime_sources(tmp_path)
+    assert list(after) == ["a.py", "b.py"]
+    assert after["a.py"] == hashlib.sha256(b"VALUE = 3\n").hexdigest()
+    assert after["a.py"] != before["a.py"]
 
 
 def register(paths):

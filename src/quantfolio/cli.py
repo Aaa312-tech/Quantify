@@ -126,15 +126,13 @@ def _parser() -> argparse.ArgumentParser:
     replay = commands.add_parser(
         "replay", aliases=["backtest"], help="Compare the frozen reference accounts exactly"
     )
-    _add_output(replay, "artifacts/replays")
-    replay.add_argument("--cost", type=int, choices=[10, 20, 30], action="append")
-    replay.add_argument("--primary-only", action="store_true")
     bridge = commands.add_parser(
         "execution-bridge", help="Diagnose execution with frozen predictions"
     )
-    _add_output(bridge, "artifacts/evaluations")
-    bridge.add_argument("--cost", type=int, choices=[10, 20, 30], action="append")
-    bridge.add_argument("--primary-only", action="store_true")
+    for command, location in ((replay, "artifacts/replays"), (bridge, "artifacts/evaluations")):
+        _add_output(command, location)
+        command.add_argument("--cost", type=int, choices=[10, 20, 30], action="append")
+        command.add_argument("--primary-only", action="store_true")
     data_bridge = commands.add_parser(
         "data-bridge", help="Compare repaired data with fixed predictions"
     )
@@ -378,12 +376,19 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .refresh import refresh_snapshot
 
         return refresh_snapshot(paths, args.output, args.protocol)
-    if args.command in ("replay", "backtest"):
-        from .evaluation import POLICIES, replay
+    if args.command in ("replay", "backtest", "execution-bridge"):
+        from .evaluation import POLICIES, execution_bridge, replay
 
-        output = paths.output_path(args.output, "replays")
+        output = (
+            args.output
+            if args.command == "execution-bridge"
+            else paths.output_path(args.output, "replays")
+        )
         policies = ["selected_strategy", "matched_momentum"] if args.primary_only else POLICIES
-        return replay(paths, output, sorted(set(args.cost or [10, 20, 30])), policies)
+        costs = sorted(set(args.cost or [10, 20, 30]))
+        if args.command == "execution-bridge":
+            return execution_bridge(paths, output, costs, policies)
+        return replay(paths, output, costs, policies)
     if args.command == "train":
         from .training import run_training
 
@@ -397,13 +402,6 @@ def run(args: argparse.Namespace, paths: Paths) -> dict:
         from .study import evaluate_study
 
         return evaluate_study(paths, args.run, args.output)
-    if args.command == "execution-bridge":
-        from .evaluation import POLICIES, execution_bridge
-
-        policies = ["selected_strategy", "matched_momentum"] if args.primary_only else POLICIES
-        return execution_bridge(
-            paths, args.output, sorted(set(args.cost or [10, 20, 30])), policies
-        )
     if args.command == "data-bridge":
         from .evaluation import POLICIES, execution_bridge
 

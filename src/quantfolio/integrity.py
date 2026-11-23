@@ -10,6 +10,12 @@ from pathlib import Path
 from .storage import read, save, sha
 
 
+def runtime_sources(directory: Path | None = None) -> dict[str, str]:
+    """Read package source hashes in filename order, without caching."""
+    directory = Path(directory or Path(__file__).parent)
+    return {path.name: sha(path) for path in sorted(directory.glob("*.py"))}
+
+
 def local_path(paths, name):
     path = (paths.root / name).resolve()
     if not path.is_relative_to(paths.root.resolve()):

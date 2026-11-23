@@ -9,6 +9,7 @@ import pandas as pd
 
 from .dataset import check_integrity, eligible_rows, load_bundle
 from .evaluation import evaluate, evaluate_variants, experiment_folds, load_predictions
+from .integrity import runtime_sources
 from .models import (
     CANDIDATES,
     candidate_scores,
@@ -265,7 +266,7 @@ def run_study(paths, output, protocol_path):
         "data_sha256": sha(paths.bundle),
         "baseline": plan["baseline_training"],
         "recipes": {name: asdict(recipe) for name, recipe in {**SINGLES, **COMBINATIONS}.items()},
-        "source_sha256": {p.name: sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))},
+        "source_sha256": runtime_sources(Path(__file__).parent),
     }
     identity = digest(specification)
     save(

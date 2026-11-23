@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from .features import industry_features, momentum_features
-from .integrity import dependency_compatible
+from .integrity import dependency_compatible, runtime_sources
 from .settings import Paths
 from .storage import read, sha
 
@@ -58,7 +58,7 @@ def source_compatible(paths: Paths, subject: Path, expected: dict, current: dict
     subject_hash = sha(subject)
     if manifest.get(relative) != subject_hash:
         return False
-    runtime = {p.name: sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
+    runtime = runtime_sources(Path(__file__).parent)
     if current != {name: runtime.get(name) for name in expected}:
         return False
 

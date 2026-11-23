@@ -14,6 +14,7 @@ from .dataset import (
     source_compatible,
     walk_forward_folds,
 )
+from .integrity import runtime_sources
 from .market import EXECUTION_MODEL
 from .metrics import episode_stats
 from .models import CANDIDATES, Forecast, prediction_map
@@ -372,9 +373,7 @@ def execution_bridge(
         "data_sha256": sha(paths.reference_bundle if baseline is None else paths.bundle),
         "comparison_summary_sha256": sha(comparison / "evaluation_summary.json"),
         "reference_manifest_sha256": sha(paths.manifest),
-        "source_sha256": {
-            file.name: sha(file) for file in sorted(Path(__file__).parent.glob("*.py"))
-        },
+        "source_sha256": runtime_sources(Path(__file__).parent),
         "costs_bps": costs,
         "policies": policies,
     }
@@ -445,8 +444,6 @@ def policy_inputs(name: str, maps: dict, schedule: dict) -> tuple:
 
 def replay(paths: Paths, output: Path, costs: list[int], policies: list[str]) -> dict[str, Any]:
     """Compare replayed accounts with frozen ledgers."""
-    from .storage import load_gzip
-
     integrity = check_integrity(paths)
     reference_protocol = read(paths.reference / "protocol.json")
     if reference_protocol.get("specification", {}).get("execution_model") != EXECUTION_MODEL:

@@ -1,6 +1,6 @@
 # 项目状态
 
-截至2026-11-23。研究暂停，继续维护已有代码和成果；数据采集、新训练、策略试验及前向观察均未恢复。工程E0–E7已完成[发布验收](../artifacts/checks/release_acceptance_2026-11-23/completion.json)，全库扫描的耗时告警按原记录保留。源码说明与维护文档整理已通过本地完整历史回归和质量检查，见[整理验收](../artifacts/checks/editorial_cleanup_2026-11-23/completion.json)。
+截至2026-11-24。研究暂停，继续维护已有代码和成果；数据采集、新训练、策略试验及前向观察均未恢复。工程E0–E7已完成[发布验收](../artifacts/checks/release_acceptance_2026-11-23/completion.json)，全库扫描的耗时告警按原记录保留。源码清单与命令入口精简已通过本地完整历史回归和质量检查，见[整理验收](../artifacts/checks/workflow_cleanup_2026-11-23/completion.json)。
 
 ## 结论
 
@@ -18,9 +18,9 @@
 | 回测 | [评估摘要](../artifacts/evaluations/recipient_entitlements_2026-11-22/evaluation_summary.json) · [研究报告](../reports/experiments/recipient_entitlements_2026-11-22/index.html) |
 | 数据接入 | [验收](../artifacts/checks/recipient_entitlements_2026-11-22/completion.json) · [归因](../artifacts/checks/recipient_entitlements_2026-11-22/attribution.json) |
 | 来源核查 | [正文上下文审查](../artifacts/checks/distribution_residuals_2026-11-22/body_context_review.json) |
-| 纸面计划 | [2026-11-23](../artifacts/plans/recipient_entitlements_2026-11-23/plan.md)：0笔参考订单，100万元现金，09:25上海时间到期 |
+| 纸面计划 | [2026-11-23](../artifacts/plans/recipient_entitlements_2026-11-23/plan.md)：0笔参考订单，100万元现金，已于11月23日09:25上海时间到期 |
 | 验证 | [验证说明](validation.md) · [完整性清单](../configs/integrity_manifest.json) |
-| 工程维护 | [验收记录](engineering_plan.md#阶段和依赖) · [本地完整回归](../artifacts/checks/editorial_cleanup_full_2026-11-23/result.json) · [质量检查](../artifacts/checks/editorial_cleanup_2026-11-23/quality.json) · [0.30.0发布时的托管回归](../artifacts/checks/release_acceptance_2026-11-23/cloud_windows_2025/ci-regression-45122115960/result.json) |
+| 工程维护 | [验收记录](engineering_plan.md#阶段和依赖) · [本地完整回归](../artifacts/checks/workflow_cleanup_full_2026-11-23/result.json) · [质量检查](../artifacts/checks/workflow_cleanup_2026-11-23/quality.json) · [0.30.0发布时的托管回归](../artifacts/checks/release_acceptance_2026-11-23/cloud_windows_2025/ci-regression-45122115960/result.json) |
 | 仓库整理 | [目录与清理约定](repository.md) · [清理验收](../artifacts/checks/repository_cleanup_2026-11-23/completion.json) |
 
 旧模型、旧计划及失败记录保留。配置决定实际使用的输入与实验，历史回测不会因文档或报告重排而重新选择。

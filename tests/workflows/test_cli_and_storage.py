@@ -39,6 +39,39 @@ def test_bad_arguments_do_not_create_an_experiment(tmp_path, capsys):
     assert "--first" in capsys.readouterr().err
 
 
+@pytest.mark.parametrize("command", ["replay", "backtest", "execution-bridge"])
+@pytest.mark.parametrize("primary", [False, True])
+@pytest.mark.parametrize("costs", [[], ["--cost", "30", "--cost", "10", "--cost", "30"]])
+def test_account_commands_preserve_costs_policies_and_output(
+    tmp_path, monkeypatch, command, primary, costs
+):
+    from quantfolio import evaluation
+
+    paths = Paths(tmp_path)
+    category = "evaluations" if command == "execution-bridge" else "replays"
+    output = f"artifacts/{category}/comparison"
+    arguments = [command, "--output", output, *costs]
+    if primary:
+        arguments.append("--primary-only")
+    observed = []
+
+    def capture(received_paths, target, selected_costs, policies):
+        observed.append((received_paths, target, selected_costs, policies))
+        return {"status": "CAPTURED"}
+
+    function = "execution_bridge" if command == "execution-bridge" else "replay"
+    monkeypatch.setattr(evaluation, function, capture)
+    assert cli.run(cli._parser().parse_args(arguments), paths) == {"status": "CAPTURED"}
+    expected_output = output if command == "execution-bridge" else tmp_path / output
+    expected_policies = (
+        ["selected_strategy", "matched_momentum"] if primary else evaluation.POLICIES
+    )
+    assert observed == [
+        (paths, expected_output, [10, 30] if costs else [10, 20, 30], expected_policies)
+    ]
+    assert not (tmp_path / output).exists()
+
+
 def test_missing_project_has_actionable_error_without_traceback(tmp_path, capsys):
     with pytest.raises(SystemExit) as error:
         cli.main(["--project", str(tmp_path), "status"])

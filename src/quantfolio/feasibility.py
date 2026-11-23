@@ -6,6 +6,7 @@ import numpy as np
 
 from .dataset import check_integrity, load_bundle
 from .evaluation import evaluate, evaluate_accounts, first_difference, load_predictions
+from .integrity import runtime_sources
 from .settings import Paths
 from .storage import digest, load_gzip, now, read, save, sha
 from .training import run_training
@@ -44,7 +45,7 @@ def run_exit_study(paths, output):
     specification = {
         "plan_sha256": sha(paths.root / PROTOCOL),
         "data_sha256": sha(paths.bundle),
-        "source_sha256": {p.name: sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))},
+        "source_sha256": runtime_sources(Path(__file__).parent),
         "arms": ARMS,
     }
     identity = digest(specification)

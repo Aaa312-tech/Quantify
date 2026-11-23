@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from .integrity import runtime_sources
+
 
 @lru_cache(maxsize=4096)
 def _schedule(entries):
@@ -256,7 +258,7 @@ def build_industry_snapshot(paths, protocol_path, variant):
             raise ValueError("Conflicting industry identity links")
         aliases[old] = new
     meta = compile_histories(original["meta"], original["calendar"], releases, aliases, variant)
-    sources = {f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))}
+    sources = runtime_sources(Path(__file__).parent)
     configuration_sha = sha(paths.root / "configs/project.toml")
     provenance = {
         "started_at": now(),
@@ -319,7 +321,7 @@ def build_industry_snapshot(paths, protocol_path, variant):
     }
     save(target / "field_changes.json", differences, immutable=True)
     joblib.dump(repaired, target / "bundle.joblib", compress=3)
-    if sources != {f.name: sha(f) for f in sorted(Path(__file__).parent.glob("*.py"))}:
+    if sources != runtime_sources(Path(__file__).parent):
         raise ValueError("Implementation changed during industry construction")
     if sha(paths.root / "configs/project.toml") != configuration_sha:
         raise ValueError("Active configuration changed during industry construction")

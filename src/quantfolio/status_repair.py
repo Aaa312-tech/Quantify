@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 from .dataset import check_integrity, load_snapshot, validate_features
-from .integrity import register_output
+from .integrity import register_output, runtime_sources
 from .market import resumption_reference
 from .preprocessing import build_dataset, compare_history
 from .snapshots import label_changes, rebuild_labels
@@ -166,9 +166,7 @@ def repair_status_snapshot(paths, output, protocol):
         "protocol_sha256": sha(protocol_path),
         "review_sha256": protocol["review_sha256"],
         "source_bundle_sha256": sha(source),
-        "source_sha256": {
-            file.name: sha(file) for file in sorted(Path(__file__).parent.glob("*.py"))
-        },
+        "source_sha256": runtime_sources(Path(__file__).parent),
     }
     save(target / "provenance.json", provenance, immutable=True)
     # Rebuild the parent first to distinguish builder drift from the repair.
@@ -340,9 +338,7 @@ def repair_resumption_snapshot(paths, output, protocol):
         "source_bundle_sha256": sha(source),
         "review_sha256": sha(review_file),
         "protocol_sha256": sha(protocol_path),
-        "source_sha256": {
-            file.name: sha(file) for file in sorted(Path(__file__).parent.glob("*.py"))
-        },
+        "source_sha256": runtime_sources(Path(__file__).parent),
     }
     repaired["provenance"] = provenance
     save(target / "provenance.json", provenance, immutable=True)

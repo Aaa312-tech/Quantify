@@ -23,7 +23,7 @@ import pandas as pd
 
 from . import dataset, evaluation, features, models, training, verification
 from .dataset import eligible_rows, validate_features
-from .integrity import register_output, scope_counts, write_dependency_certificate
+from .integrity import register_output, runtime_sources, scope_counts, write_dependency_certificate
 from .ledger import causal_price_index
 from .storage import array_sha, digest, load_gzip, log, now, read, save, sha
 
@@ -53,10 +53,6 @@ def compare_values(expected, actual, path="result"):
             compare_values(before, after, f"{path}/{index}")
     else:
         np.testing.assert_equal(actual, expected, err_msg=path)
-
-
-def runtime_sources():
-    return {path.name: sha(path) for path in sorted(Path(__file__).parent.glob("*.py"))}
 
 
 def checked_file(root, relative, expected):

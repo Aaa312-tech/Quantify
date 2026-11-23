@@ -9,6 +9,7 @@ import pandas as pd
 
 from .daily_sources import baostock_bars, compare_target, quote_entries, tencent_beijing_bar
 from .dataset import check_integrity, load_snapshot
+from .integrity import runtime_sources
 from .market_data import append_bars, inspect_bars, parse_bars
 from .preprocessing import build_dataset, compare_history
 from .snapshots import label_changes, next_opening, repair_actions
@@ -390,7 +391,7 @@ def refresh_snapshot(paths, output, protocol_path):
         "registered_at": now(),
         "protocol_sha256": sha(protocol_path),
         "source_bundle_sha256": sha(parent_path),
-        "source_sha256": {p.name: sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))},
+        "source_sha256": runtime_sources(Path(__file__).parent),
     }
     save(target / "provenance.json", provenance, immutable=True)
     result = build_dataset(

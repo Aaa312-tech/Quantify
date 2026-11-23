@@ -8,6 +8,7 @@ import pandas as pd
 from .calibration import calibrate, map_calibration, rank_by_date
 from .dataset import eligible_rows, label_mask
 from .evaluation import simulate_accounts
+from .integrity import runtime_sources
 from .market import EXECUTION_MODEL
 from .models import (
     CANDIDATES,
@@ -60,9 +61,7 @@ def run_training(paths, output, first=1, last=None, include_latest=False):
         specification = {
             "plan_sha256": sha(paths.protocol),
             "data_sha256": sha(paths.bundle),
-            "source_sha256": {
-                path.name: sha(path) for path in sorted(Path(__file__).parent.glob("*.py"))
-            },
+            "source_sha256": runtime_sources(Path(__file__).parent),
             "folds": folds,
             "model_candidates": CANDIDATES,
             "rule_configs": CONFIGS,

@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from .integrity import runtime_sources
+
 
 def reported_components(profile):
     """Keep source NAV ratios, unknown stocks and signed discrepancies separate."""
@@ -318,7 +320,7 @@ def build_fund_snapshot(paths, protocol_path, variant):
         reviewed("financial_observations.json.gz"),
         variant,
     )
-    sources = {p.name: sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
+    sources = runtime_sources(Path(__file__).parent)
     active_configuration = sha(paths.root / "configs/project.toml")
     provenance = {
         "started_at": now(),
@@ -377,7 +379,7 @@ def build_fund_snapshot(paths, protocol_path, variant):
     }
     save(target / "field_changes.json", differences, immutable=True)
     joblib.dump(rebuilt, target / "bundle.joblib", compress=3)
-    if sources != {p.name: sha(p) for p in sorted(Path(__file__).parent.glob("*.py"))}:
+    if sources != runtime_sources(Path(__file__).parent):
         raise ValueError("Implementation changed during fund construction")
     if active_configuration != sha(paths.root / "configs/project.toml"):
         raise ValueError("Active configuration changed during fund construction")
