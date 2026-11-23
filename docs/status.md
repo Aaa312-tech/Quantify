@@ -20,7 +20,7 @@
 | 来源核查 | [正文上下文审查](../artifacts/checks/distribution_residuals_2026-11-22/body_context_review.json) |
 | 纸面计划 | [2026-11-23](../artifacts/plans/recipient_entitlements_2026-11-23/plan.md)：0笔参考订单，100万元现金，09:25上海时间到期 |
 | 验证 | [验证说明](validation.md) · [完整性清单](../configs/integrity_manifest.json) |
-| 工程维护 | [实施进度](engineering_plan.md#阶段和依赖) · [权重修复本地验收](../artifacts/checks/training_weights_2026-11-23/local_acceptance.json) · [本地完整回归](../artifacts/checks/training_weights_full_2026-11-23/result.json) · [差异定位](../artifacts/checks/training_weights_2026-11-23/root_cause.json) |
+| 工程维护 | [实施进度](engineering_plan.md#阶段和依赖) · [权重修复验收](../artifacts/checks/training_weights_2026-11-23/completion.json) · [本地完整回归](../artifacts/checks/training_weights_full_2026-11-23/result.json) · [托管完整回归](../artifacts/checks/training_weights_2026-11-23/cloud_windows_2025/ci-regression-45102293818/result.json) |
 
 旧模型、旧计划及失败记录保留。配置决定实际使用的输入与实验，历史回测不会因文档或报告重排而重新选择。
 
@@ -41,6 +41,6 @@
 | ETF | 使用披露股票敞口代理，完整每日经济敞口未知 |
 | 比赛 | 以白皮书为准；费用、分红税及撮合细节待确认 |
 | 收益 | 没有优于基准或新增前向成交的证据；8%预警不保证实际损失上限 |
-| 工程环境 | 24组权重差异已定位到Windows 2022系统`exp2`，同公式`pow`已在本地研究环境与独立OpenBLAS安装包复现原哈希；修复后的本地完整验收通过，云端复核待完成。冻结旧基线的完整对照使用Windows 11/2025，2022保留诊断与失败对照；不认证跨环境重训。缺少Bottleneck的通用环境校准失败，完整验收仍使用研究锁 |
+| 工程环境 | 24组当前权重已在四套环境中匹配原哈希；冻结旧Git基线在Windows 2022的完整对照仍因系统`exp2`差异失败，完整验收使用研究锁及Windows 11/2025。缺少Bottleneck的通用环境校准未通过；不认证跨环境重训 |
 
 后续工作及验收条件见[研究待办](remediation.md)。恢复研究需要明确指令；过期计划不能改日期后继续使用。

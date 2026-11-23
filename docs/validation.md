@@ -62,7 +62,7 @@ CI在Windows / Python 3.11、Windows / Python 3.13和Ubuntu / Python 3.13按`uv.
 
 早期手动工作流的`windows-2022`与`windows-latest`镜像均出现上述预测差异，Windows 2022记录另保存在`artifacts/checks/ci_research_windows2022_2026-11-22`。新增的[逐阶段对照](../artifacts/checks/prediction_diagnostics_2026-11-22/cloud_comparison.json)将差异定位到Ridge原生归约。固定项目推理顺序后，本地Intel及托管AMD EPYC 7763的完整回归均通过；[托管结果](../artifacts/checks/portable_predictions_2026-11-23/cloud/ci-regression-45046246783/result.json)覆盖全部原验收范围，耗时60.3分钟。原失败保留，当前没有常驻研究运行器。
 
-当前完整工作流默认使用明确的`windows-2025`，另保留`windows-2022`选项。权重修复保持原历史值，但冻结旧代码在Windows 2022上的`exp2`本身不同；该环境的旧、新代码完整比较应继续失败，不能跳过这一步或放宽阈值。24组当前权重另在两种系统上与同一原参考精确核对，见[权重数值一致性](reproducibility.md#训练权重数值一致性)。操作系统标签不承诺CPU或长期数值一致，每次完整验收仍检查全部原范围。
+当前完整工作流默认使用明确的`windows-2025`，另保留`windows-2022`选项。权重修复保持原历史值，但冻结旧代码在Windows 2022上的`exp2`本身不同；该环境的旧、新代码完整比较已在权重哈希处按原门槛失败，原始结果保留。24组当前权重在两种系统上均与同一原参考精确匹配，见[权重数值一致性](reproducibility.md#训练权重数值一致性)。操作系统标签不承诺CPU或长期数值一致，每次完整验收仍检查全部原范围。
 
 ## 当前结果的复核
 
@@ -112,7 +112,8 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 | 纸面账户 | 75个账户、1386个交易日精确一致 | [纸面验证](../artifacts/checks/training_weights_full_2026-11-23/paper.json) |
 | 特征与选型 | 全部594只证券特征、24组拟合输入及12个冻结窗口与同环境旧实现精确一致；无模型重训 | [计算对照](../artifacts/checks/training_weights_full_2026-11-23/differential.json) |
 | 报告 | 默认、指定实验和历史参考入口的HTML及PNG逐字节一致 | [渲染对照](../artifacts/checks/responsibility_checks_2026-11-22/report_render/result.json) |
-| 独立环境 | 锁定Windows研究环境和隔离新克隆的全量回归与原环境一致；跨平台安装及测试另行验收 | [环境验收](../artifacts/checks/environment_lock_2026-11-22/completion.json) |
+| 独立环境 | Windows 2025托管完整回归的三份财务对照文件与本地逐字节一致；Windows 2022旧Git基线失败保留 | [跨环境验收](../artifacts/checks/training_weights_2026-11-23/cloud_comparison.json) |
+| 训练权重 | 本地MKL、独立OpenBLAS及托管Windows 2022/2025的24组权重均匹配修复前原哈希 | [权重验收](../artifacts/checks/training_weights_2026-11-23/completion.json) |
 | 开盘与核账 | 192组场景、2424个纸面交易日、38组拒绝路径；三档成本完整文件链路一致 | [差分对照](../artifacts/checks/paper_refactor_2026-11-22/differential.json) |
 | 仓位与风控 | 29007组状态、1024组优化器输入及完整模拟对照 | [执行验证](../artifacts/checks/execution_refactor_2026-11-22/completion.json) |
 | 训练与评估 | 12个冻结窗口以缓存重放，选型与历史结果一致 | [流程验证](../artifacts/checks/runtime_refactor_2026-11-22/completion.json) |
@@ -121,7 +122,9 @@ python -m quantfolio regression --scope full --baseline 2443df760246600710c7b3f0
 
 此前职责拆分源码的三个CI作业及106个发布文件核对通过，见[历史发布核验](../artifacts/checks/responsibility_checks_2026-11-22/publication.json)。新增诊断入口的三个CI作业和130个发布文件核对也通过，见[诊断发布核验](../artifacts/checks/prediction_diagnostics_2026-11-22/initial_publication.json)。这些记录绑定各自提交，不替代本次数值修复的云端验收。
 
-上一轮Ridge修复的三个CI作业及695个发布文件的独立远端字节核对通过，见[源码发布核验](../artifacts/checks/portable_predictions_2026-11-23/source_publication.json)。托管完整回归使用同一提交和39个源码哈希。下载产物的SHA-256与GitHub记录一致；48份重算预测、历史账户和纸面账户对照文件与本地逐字节相同。额外跨环境比较发现24组重算训练权重哈希不同，其他拟合输入字段、冻结窗口、校准与历史结果一致；该轮[完整对照](../artifacts/checks/portable_predictions_2026-11-23/cloud_comparison.json)保留全部差异。随后已将其定位到系统`exp2`，当前本地完整回归及24组原哈希通过；云端修复复核待完成，参见[权重数值一致性](reproducibility.md#训练权重数值一致性)。
+上一轮Ridge修复的三个CI作业及695个发布文件的独立远端字节核对通过，见[源码发布核验](../artifacts/checks/portable_predictions_2026-11-23/source_publication.json)。托管完整回归使用同一提交和39个源码哈希。下载产物的SHA-256与GitHub记录一致；48份重算预测、历史账户和纸面账户对照文件与本地逐字节相同。额外跨环境比较发现24组重算训练权重哈希不同，其他拟合输入字段、冻结窗口、校准与历史结果一致；该轮[完整对照](../artifacts/checks/portable_predictions_2026-11-23/cloud_comparison.json)保留全部差异。随后已将其定位到Windows 2022系统`exp2`，修复与边界见[权重数值一致性](reproducibility.md#训练权重数值一致性)。
+
+本次权重修复的三个CI作业及546个发布文件的独立远端字节核对通过，见[源码发布核验](../artifacts/checks/training_weights_2026-11-23/source_publication.json)。Windows 2022和2025均通过24组原权重哈希及48个模型预测检查；2025的完整回归覆盖全部原范围，三份财务对照文件与本地逐字节一致。2022的旧Git基线仍在权重比较处严格失败，未修改基线或跳过检查。两份下载归档的SHA-256与GitHub记录一致，见[完整验收](../artifacts/checks/training_weights_2026-11-23/completion.json)。
 
 E2锁定环境验收时，Linux安装包通过835项测试，Windows通过834项、跳过1项本机权限检查。通用OpenBLAS环境的模型误差约4.47×10⁻⁸，未通过历史数值验收；这些失败未被放宽门槛或重训覆盖。精确复现使用[历史研究环境](reproducibility.md#运行环境)。
 

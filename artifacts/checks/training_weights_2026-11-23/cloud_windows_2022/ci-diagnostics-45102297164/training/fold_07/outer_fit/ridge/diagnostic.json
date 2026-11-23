@@ -1,0 +1,302 @@
+{
+  "stages": {
+    "input": {
+      "sha256": "e9277a97fb757a6eeb00469632ae3411e61a75f31712f439d20301e79028e873",
+      "shape": [
+        11366,
+        57
+      ],
+      "dtype": "float32",
+      "strides": [
+        228,
+        4
+      ],
+      "alignment_mod_64": 0,
+      "nonfinite": 417
+    },
+    "simpleimputer": {
+      "sha256": "5ae4a83ca5e3ca1911fb5f8b01b5d5a8c73dff6abac0ab5f9b4885b5e3bb5b9f",
+      "shape": [
+        11366,
+        61
+      ],
+      "dtype": "float32",
+      "strides": [
+        244,
+        4
+      ],
+      "alignment_mod_64": 0,
+      "nonfinite": 0
+    },
+    "standardscaler": {
+      "sha256": "d878d8f2f1f4ca05bcd5be90dc9bc7e56ed9ccc4d264b30bea470b6b13013464",
+      "shape": [
+        11366,
+        61
+      ],
+      "dtype": "float32",
+      "strides": [
+        244,
+        4
+      ],
+      "alignment_mod_64": 0,
+      "nonfinite": 0
+    }
+  },
+  "prediction": {
+    "sha256": "d02ded1f02bd6647f0a2f969ec06d16ea93e7280796d0567f1e174ea84c663de",
+    "shape": [
+      11366
+    ],
+    "dtype": "float32",
+    "strides": [
+      4
+    ],
+    "alignment_mod_64": 32,
+    "nonfinite": 0
+  },
+  "frozen_prediction": {
+    "sha256": "d02ded1f02bd6647f0a2f969ec06d16ea93e7280796d0567f1e174ea84c663de",
+    "shape": [
+      11366
+    ],
+    "dtype": "float32",
+    "strides": [
+      4
+    ],
+    "alignment_mod_64": 16,
+    "nonfinite": 0
+  },
+  "comparison": {
+    "exact": true,
+    "different": 0,
+    "above_1e_12": 0,
+    "max_absolute_error": 0.0,
+    "examples": []
+  },
+  "native_prediction": {
+    "sha256": "d02ded1f02bd6647f0a2f969ec06d16ea93e7280796d0567f1e174ea84c663de",
+    "shape": [
+      11366
+    ],
+    "dtype": "float32",
+    "strides": [
+      4
+    ],
+    "alignment_mod_64": 48,
+    "nonfinite": 0
+  },
+  "native_comparison": {
+    "exact": true,
+    "different": 0,
+    "above_1e_12": 0,
+    "max_absolute_error": 0.0,
+    "examples": []
+  },
+  "staged_comparison": {
+    "exact": true,
+    "different": 0,
+    "above_1e_12": 0,
+    "max_absolute_error": 0.0,
+    "examples": []
+  },
+  "coefficients": {
+    "sha256": "d18d55f0f334214c8f41584c19f57b2d4b30ddf332901f536de035c7ebc1c165",
+    "shape": [
+      61
+    ],
+    "dtype": "float32",
+    "strides": [
+      4
+    ],
+    "alignment_mod_64": 16,
+    "nonfinite": 0
+  },
+  "intercept": {
+    "sha256": "8bc898e67b3ab915c8a76e9e9ef14534bb24785a086b2ecdb28d7620090ed86b",
+    "shape": [],
+    "dtype": "float32",
+    "strides": [],
+    "alignment_mod_64": 32,
+    "nonfinite": 0
+  },
+  "linear_probes": {
+    "linear": {
+      "fingerprint": {
+        "sha256": "d02ded1f02bd6647f0a2f969ec06d16ea93e7280796d0567f1e174ea84c663de",
+        "shape": [
+          11366
+        ],
+        "dtype": "float32",
+        "strides": [
+          4
+        ],
+        "alignment_mod_64": 0,
+        "nonfinite": 0
+      },
+      "comparison": {
+        "exact": true,
+        "different": 0,
+        "above_1e_12": 0,
+        "max_absolute_error": 0.0,
+        "examples": []
+      }
+    },
+    "column_major": {
+      "fingerprint": {
+        "sha256": "256353baa73382799e19afd92688501deb11fa7e0954b358b57b7cbd8ff1ab23",
+        "shape": [
+          11366
+        ],
+        "dtype": "float32",
+        "strides": [
+          4
+        ],
+        "alignment_mod_64": 32,
+        "nonfinite": 0
+      },
+      "comparison": {
+        "exact": false,
+        "different": 9683,
+        "above_1e_12": 9683,
+        "max_absolute_error": 5.960464477539063e-08,
+        "examples": [
+          {
+            "row": 1,
+            "actual": -0.07024839520454407,
+            "expected": -0.07024838030338287
+          },
+          {
+            "row": 3,
+            "actual": -0.11021268367767334,
+            "expected": -0.11021266877651215
+          },
+          {
+            "row": 5,
+            "actual": -0.11323755979537964,
+            "expected": -0.11323754489421844
+          },
+          {
+            "row": 6,
+            "actual": -0.12140534818172455,
+            "expected": -0.12140536308288574
+          },
+          {
+            "row": 8,
+            "actual": -0.12880338728427887,
+            "expected": -0.1288033425807953
+          },
+          {
+            "row": 9,
+            "actual": -0.10511025786399841,
+            "expected": -0.10511022806167603
+          },
+          {
+            "row": 10,
+            "actual": -0.11036257445812225,
+            "expected": -0.11036260426044464
+          },
+          {
+            "row": 13,
+            "actual": 0.048914920538663864,
+            "expected": 0.04891491308808327
+          }
+        ]
+      }
+    },
+    "einsum": {
+      "fingerprint": {
+        "sha256": "77c860c50b945ccd61e302ba0c2f41b7bf81aa855e1037990ffa3d1ed4adfb20",
+        "shape": [
+          11366
+        ],
+        "dtype": "float32",
+        "strides": [
+          4
+        ],
+        "alignment_mod_64": 0,
+        "nonfinite": 0
+      },
+      "comparison": {
+        "exact": false,
+        "different": 8874,
+        "above_1e_12": 8874,
+        "max_absolute_error": 4.470348358154297e-08,
+        "examples": [
+          {
+            "row": 1,
+            "actual": -0.07024839520454407,
+            "expected": -0.07024838030338287
+          },
+          {
+            "row": 2,
+            "actual": -0.1486341655254364,
+            "expected": -0.1486341506242752
+          },
+          {
+            "row": 3,
+            "actual": -0.11021268367767334,
+            "expected": -0.11021266877651215
+          },
+          {
+            "row": 4,
+            "actual": -0.07639452815055847,
+            "expected": -0.07639454305171967
+          },
+          {
+            "row": 8,
+            "actual": -0.12880335748195648,
+            "expected": -0.1288033425807953
+          },
+          {
+            "row": 9,
+            "actual": -0.10511024296283722,
+            "expected": -0.10511022806167603
+          },
+          {
+            "row": 10,
+            "actual": -0.11036257445812225,
+            "expected": -0.11036260426044464
+          },
+          {
+            "row": 11,
+            "actual": 0.04472894221544266,
+            "expected": 0.044728945940732956
+          }
+        ]
+      }
+    }
+  },
+  "threads": [
+    {
+      "api": "mkl",
+      "threads": 2
+    },
+    {
+      "api": "openmp",
+      "threads": 2
+    },
+    {
+      "api": "openmp",
+      "threads": 2
+    },
+    {
+      "api": "openblas",
+      "threads": 2
+    }
+  ],
+  "path": "training/fold_07/outer_fit/ridge",
+  "model_sha256": "87d7ba10704dc7d6c8a7fbc785b872a048c6b74de372ff3865e861b1b03ef1e3",
+  "rows": {
+    "sha256": "6e04abdcdb741959dd7dd61592d742f054fe3fcbd4eabe1164f7f21d5cdb3d9c",
+    "shape": [
+      11366
+    ],
+    "dtype": "int64",
+    "strides": [
+      8
+    ],
+    "alignment_mod_64": 32,
+    "nonfinite": 0
+  }
+}

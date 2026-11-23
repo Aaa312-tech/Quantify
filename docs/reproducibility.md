@@ -47,13 +47,22 @@ Ridge修复后的本地Intel和托管AMD完整历史回归均通过。两端48�
 
 24组拟合输入的逐步对照将首个差异定位到时间衰减中的`np.exp2`。两台托管机均为AMD EPYC 7763，Windows 2022的衰减值与本地Windows 11最多相差2个浮点末位；Windows 2025与原值一致。样本、行业计数、指数输入和基础权重均相同，差异随归一化进入全部24组权重。原始数组、运行库哈希和逐组对照见[定位记录](../artifacts/checks/training_weights_2026-11-23/root_cause.json)。
 
-NumPy 2.3.4的[`npy_exp2`映射到C运行库的`exp2`](https://github.com/numpy/numpy/blob/v2.3.4/numpy/_core/include/numpy/npy_math.h)。Windows UCRT随系统提供，其数学函数可能因操作系统版本产生末位差异，见[Microsoft说明](https://learn.microsoft.com/en-us/cpp/c-runtime-library/floating-point-support?view=msvc-170)。本次记录的三套UCRT文件哈希不同；切换本机FMA3开关没有复现云端差异。
+NumPy 2.3.4的[`npy_exp2`映射到C运行库的`exp2`](https://github.com/numpy/numpy/blob/v2.3.4/numpy/_core/include/numpy/npy_math.h)。Windows UCRT随系统提供，其数学函数可能因操作系统版本产生末位差异，见[Microsoft说明](https://learn.microsoft.com/en-us/cpp/c-runtime-library/floating-point-support?view=msvc-170)。本次记录的三套UCRT文件哈希不同；切换本机FMA3开关没有复现云端差异。修复复核时Windows 2022分配到Intel Xeon 8370C，其UCRT和全部24组原生权重哈希仍与此前AMD实例一致；项目权重则全部匹配原历史值，见[复核记录](../artifacts/checks/training_weights_2026-11-23/cloud_windows_2022_receipt.json)。
 
-`training_targets`仍计算`2**(-age/126)`，改用`math.pow(2.0, exponent)`构造float64衰减数组。行筛选、计数、半衰期、乘法与归一化顺序保持。所有被记录的指数输入上，三个环境中的`math.pow`均复现原本地`exp2`位模式；本地研究环境及独立OpenBLAS安装包的24组实际权重也按原哈希通过。生产函数不读取冻结权重或诊断数组；不重新拟合模型。[本地完整验收](../artifacts/checks/training_weights_2026-11-23/local_acceptance.json)同时确认全部48个模型、1,425个历史账户、114份账本和75个纸面账户保持原结果。
+`training_targets`仍计算`2**(-age/126)`，改用`math.pow(2.0, exponent)`构造float64衰减数组。行筛选、计数、半衰期、乘法与归一化顺序保持。所有被记录的指数输入上，三个环境中的`math.pow`均复现原本地`exp2`位模式；本地研究环境、独立OpenBLAS安装包及两种托管系统的24组实际权重均按原哈希通过。生产函数不读取冻结权重或诊断数组；不重新拟合模型。[本地完整验收](../artifacts/checks/training_weights_2026-11-23/local_acceptance.json)同时确认全部48个模型、1,425个历史账户、114份账本和75个纸面账户保持原结果。
+
+[跨环境对照](../artifacts/checks/training_weights_2026-11-23/cloud_comparison.json)保存四套环境的24组原哈希和两台修复后托管机的48份预测数组。Windows 2025完整回归耗时59.5分钟；其`differential.json`、`history.json`和`paper.json`与本地逐字节一致，包括原先不同的训练权重。全部48个模型、1,425个账户、114份账本及75个纸面账户通过，新增研究拟合为0。
+
+| 环境 | 24组当前权重 | 完整历史验收范围 |
+| --- | --- | --- |
+| Windows 11 / MKL | 原哈希全部一致 | 通过 |
+| Windows 11 / 独立OpenBLAS wheel | 原哈希全部一致 | 本轮仅验证权重；缺少Bottleneck的完整校准限制保留 |
+| Windows 2022 / Intel Xeon 8370C | 原哈希全部一致 | 冻结旧Git基线的权重比较失败 |
+| Windows 2025 / AMD EPYC 7763 | 原哈希全部一致 | 通过；三份财务对照文件与本地逐字节一致 |
 
 权重诊断始终与修复前已冻结的`portable_inference_full_2026-11-23/differential.json`比较，不更新参考哈希。`weights`为当前项目输出；`decay`和`native_weights`有意保留原`exp2`路径，作为环境差异对照。两者不同不会被抹去，正式通过条件仍是行号、目标和实际权重全部精确匹配。
 
-完整回归还要求当前代码与冻结Git基线在同一环境内精确相等。旧基线在Windows 2022上仍调用有差异的`exp2`，因此修复后的权重不能同时等于旧环境值与原历史值。原基线和这一检查均保留，托管完整验收明确使用`windows-2025`，`windows-2022`保留诊断和失败对照。环境标签不是数值保证，每次仍须执行全部验收；本次修复也不认证跨环境重新训练所得的模型系数。
+完整回归还要求当前代码与冻结Git基线在同一环境内精确相等。旧基线在Windows 2022上仍调用有差异的`exp2`，因此修复后的权重不能同时等于旧环境值与原历史值。该环境的完整复核在`training_replay/fit_inputs/0/weights_sha256`按原门槛[失败](../artifacts/checks/training_weights_2026-11-23/cloud_windows_2022/ci-regression-45102297164/result.json)。原基线和这一检查均保留，托管完整验收明确使用`windows-2025`，`windows-2022`保留诊断和失败对照。环境标签不是数值保证，每次仍须执行全部验收；本次修复也不认证跨环境重新训练所得的模型系数。
 
 ## 配置
 

@@ -142,7 +142,7 @@ E0–E2已完成；2026-11-22获准继续E3–E5，E6–E7及原研究目标保�
 
 常规CI保留三个平台作业，新增类型检查、分层测试、覆盖门槛和缺陷检测，上传绑定提交的XML、JSON和日志。完整回归由`regression.yml`手动触发，安装原Conda/MKL构建、获取注册LFS输入后重放全部范围，无定时触发。类型迁移范围及命令见[验证说明](validation.md#分层工程检查)。
 
-前三次托管完整回归在Ridge预测处失败，指定AVX2或切换Windows镜像均未解决。补充逐阶段诊断后确认输入、预处理及参数一致，差异集中在原生矩阵向量归约。项目推理入口固定历史乘加及求和顺序后，本地Intel与托管AMD均通过48个模型、1,425个历史账户及75个纸面账户的完整回归；该轮本地890项测试及三组CI通过。原模型、预测和验收门槛保持，原失败全部保留，见[Ridge验收记录](../artifacts/checks/portable_predictions_2026-11-23/completion.json)。后续24组重算训练权重差异已定位到Windows 2022 UCRT的`exp2`；同公式`pow`保持原权重位模式，本地899项测试、24组原哈希及完整历史回归通过，见[本地验收](../artifacts/checks/training_weights_2026-11-23/local_acceptance.json)；修复后的云端复核待完成。冻结旧基线的操作系统边界和未认证的重训范围见[权重数值一致性](reproducibility.md#训练权重数值一致性)。
+前三次托管完整回归在Ridge预测处失败，指定AVX2或切换Windows镜像均未解决。补充逐阶段诊断后确认输入、预处理及参数一致，差异集中在原生矩阵向量归约。项目推理入口固定历史乘加及求和顺序后，本地Intel与托管AMD均通过48个模型、1,425个历史账户及75个纸面账户的完整回归；该轮本地890项测试及三组CI通过。原模型、预测和验收门槛保持，原失败全部保留，见[Ridge验收记录](../artifacts/checks/portable_predictions_2026-11-23/completion.json)。后续24组重算训练权重差异已定位到Windows 2022 UCRT的`exp2`；同公式`pow`保持原权重位模式，本地899项测试及三组CI通过，24组原哈希在四套环境中一致；本地与Windows 2025托管完整回归的三份财务对照文件逐字节一致，见[权重修复验收](../artifacts/checks/training_weights_2026-11-23/completion.json)。Windows 2022旧Git基线的失败对照保留。冻结旧基线的操作系统边界和未认证的重训范围见[权重数值一致性](reproducibility.md#训练权重数值一致性)。
 
 ## E4：核心数据契约与共享执行边界
 
