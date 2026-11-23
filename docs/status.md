@@ -1,6 +1,6 @@
 # 项目状态
 
-截至2026-11-23。研究暂停，继续维护已有代码和成果；数据采集、新训练、策略试验及前向观察均未恢复。E6依赖校验与运行索引已完成本地回归、三个CI作业及远端字节核验；E7离线示例与性能验收执行中。
+截至2026-11-23。研究暂停，继续维护已有代码和成果；数据采集、新训练、策略试验及前向观察均未恢复。工程E0–E7已完成验收，包含依赖校验、运行索引、离线示例及源码包安装。完整历史回归、三个CI作业和独立远端字节核验通过；全库扫描的耗时告警已复核并保留，见[验收记录](../artifacts/checks/release_acceptance_2026-11-23/completion.json)。
 
 ## 结论
 
@@ -20,7 +20,7 @@
 | 来源核查 | [正文上下文审查](../artifacts/checks/distribution_residuals_2026-11-22/body_context_review.json) |
 | 纸面计划 | [2026-11-23](../artifacts/plans/recipient_entitlements_2026-11-23/plan.md)：0笔参考订单，100万元现金，09:25上海时间到期 |
 | 验证 | [验证说明](validation.md) · [完整性清单](../configs/integrity_manifest.json) |
-| 工程维护 | [实施进度](engineering_plan.md#阶段和依赖) · [权重修复验收](../artifacts/checks/training_weights_2026-11-23/completion.json) · [本地完整回归](../artifacts/checks/training_weights_full_2026-11-23/result.json) · [托管完整回归](../artifacts/checks/training_weights_2026-11-23/cloud_windows_2025/ci-regression-45102293818/result.json) |
+| 工程维护 | [实施进度](engineering_plan.md#阶段和依赖) · [工程验收](../artifacts/checks/release_acceptance_2026-11-23/completion.json) · [本地完整回归](../artifacts/checks/dependency_closure_full_2026-11-23/result.json) · [托管完整回归](../artifacts/checks/release_acceptance_2026-11-23/cloud_windows_2025/ci-regression-45122115960/result.json) |
 
 旧模型、旧计划及失败记录保留。配置决定实际使用的输入与实验，历史回测不会因文档或报告重排而重新选择。
 
