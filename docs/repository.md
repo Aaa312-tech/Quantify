@@ -20,6 +20,7 @@
 | `artifacts/examples/` | 使用者生成的合成输出；发布验收样本随检查证据登记 |
 | `reports/` | 根据评估结果生成的HTML和图表 |
 | `docs/` | 使用、方法、当前状态和专题研究记录 |
+| `.local/` | 不提交的临时工作区、本地归档与独立远端副本；不存放正式研究结果 |
 
 文件和目录使用小写英文、下划线及ISO日期，已有来源文件保留原名。研究命名说明用途，不使用迭代编号、`final`、`new`等临时标记。策略名为 `walk_forward_momentum`；软件版本由 `src/quantfolio/__init__.py`提供，按语义版本维护。
 
@@ -38,6 +39,14 @@ README负责安装和结果摘要，[文档索引](index.md)负责导航，[状�
 新训练、评估与纸面计划的`run.json`是依赖记录，随该目录冻结；索引由`python -m quantfolio runs`重建。原始运行目录没有新记录时按旧格式展示，未保存的历史配置不补写。全库发布检查使用`python -m quantfolio integrity`，不得仅检查索引或当前采用的实验。
 
 `uv.lock`固定通用开发依赖；`environments/research-win-64.lock`保留历史模型所用的Conda/MKL构建。安装方式和两种环境的验收边界见[复现指南](reproducibility.md#运行环境)。`.venv`和`.research`均为本地环境，不进入Git。
+
+## 本地清理
+
+`.git`只保存Git自身的元数据，不存放诊断脚本、下载包、虚拟环境或检出副本。临时工作使用`.local/`；需保留的本地记录放入`.local/archives/`，辅助检出与远端核验副本分别放入`.local/worktrees/`和`.local/remotes/`。正式验收证据仍登记到`artifacts/checks/`。
+
+构建目录、包元数据、字节码及检查缓存可重建，确认没有运行进程使用后可清理。带有未提交改动的工作树先保留，用`git worktree move`迁移登记过的工作树；普通克隆移动后检查其远端路径。独有记录归档后核对内容哈希，可丢弃的本地文件移入回收站。保留正在使用的`.research`环境，不对研究数据、模型或冻结记录执行批量清理。
+
+软件版本更新后，已有的可编辑安装也需重新登记。使用`.research/python.exe -m pip install --no-deps -e .`只安装当前项目，再核对命令版本与安装元数据，保留研究环境依赖。
 
 ## 检查与发布
 

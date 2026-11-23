@@ -14,6 +14,7 @@
 - Never edit frozen files or executed audit scripts, including failed checks. Create new named outputs; before adding a file, verify that its path is unused. Do not regenerate hashes to hide a byte change.
 - Preserve the existing integrity-manifest entries. A requested path migration must retain original hashes, register aliases in `configs/archive.toml` and validate all consumers.
 - Before publishing, verify frozen-file integrity. Track code, configuration, research data, models, reports and evidence; exclude credentials, environments, caches and temporary scripts. Keep `.gitattributes` and Git LFS conventions.
+- Keep temporary scripts, diagnostic downloads and auxiliary checkouts in ignored `.local/` directories, never inside `.git`. Preserve uncommitted work when cleaning local workspaces; `.research` remains the active research environment.
 - Update affected docs and CHANGELOG. After pushing, inspect the actual three-job GitHub Actions outcome and independently verify changed remote Git/LFS bytes. Queued jobs are not passing checks.
 
 ## Research invariants

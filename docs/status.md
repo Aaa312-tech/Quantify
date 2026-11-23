@@ -21,6 +21,7 @@
 | 纸面计划 | [2026-11-23](../artifacts/plans/recipient_entitlements_2026-11-23/plan.md)：0笔参考订单，100万元现金，09:25上海时间到期 |
 | 验证 | [验证说明](validation.md) · [完整性清单](../configs/integrity_manifest.json) |
 | 工程维护 | [实施进度](engineering_plan.md#阶段和依赖) · [工程验收](../artifacts/checks/release_acceptance_2026-11-23/completion.json) · [本地完整回归](../artifacts/checks/dependency_closure_full_2026-11-23/result.json) · [托管完整回归](../artifacts/checks/release_acceptance_2026-11-23/cloud_windows_2025/ci-regression-45122115960/result.json) |
+| 仓库整理 | [目录与清理约定](repository.md) · [清理验收](../artifacts/checks/repository_cleanup_2026-11-23/completion.json) |
 
 旧模型、旧计划及失败记录保留。配置决定实际使用的输入与实验，历史回测不会因文档或报告重排而重新选择。
 
