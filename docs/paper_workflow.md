@@ -14,26 +14,26 @@
 日历依据[上交所2026年休市通知](https://www.sse.com.cn/disclosure/announcement/general/c/c_20251222_10802507.shtml)，
 并与深交所、北交所通知交叉核对；临时休市或2027年日期需要另外核验。
 
-当前活跃数据截止2026-11-20，已接入ETF分组、已披露股票敞口约束及补证的分红/股份可用日期，并完成对应训练与评估。基金模式在数据重建和载入时核对，不能丢失标识后跳过独立检查。11月23日条件式计划
+当前活跃数据截止2026-11-23，已完成替代行情来源核验、原流程训练与评估，并保留ETF分组、披露股票敞口及分红/股份可用日期约束。基金模式在数据重建和载入时核对，不能丢失标识后跳过独立检查。11月24日条件式计划
 已在开盘前冻结；当日09:25后不得重新生成该日的前向计划，也不能只修改日期沿用。
 
 `historical_status_review`必须指向冻结、数据哈希一致的审查；确认历史资格错误时，
 计划返回`HISTORICAL_ST_ELIGIBILITY_REPAIR_REQUIRED`并保留空订单。不同快照、
 审查文件被改写或不一致的解除决定会被拒绝。
 十只已核验证券的日期修正已完成完整重训与账户验收，相关暂停仅对当前快照解除。
-[最新纸面计划](../artifacts/plans/recipient_entitlements_2026-11-23/plan.md)的行情、账户及训练日期一致；
+[最新纸面计划](../artifacts/plans/daily_close_2026-11-24/plan.md)的行情、账户及训练日期一致；
 旧的过期记录保留。未来新快照还须另做绑定审查，不能直接复用解除决定。
 
 ## 操作流程
 
-研究暂停，以下命令仅说明恢复后的流程。以11月23日为文件组织示例，须满足上述数据和时间条件。
+策略研究暂停，本次仅执行已授权的行情更新、原流程训练及纸面计划。以下以11月24日为文件组织示例，须满足上述数据和时间条件；报价核算和收盘记账不会因生成计划自动执行。
 命令中的`python`指已安装项目的虚拟环境。输出必须是相应类别下的新目录，已有文件不会覆盖。
 
 首次建立100万元虚拟现金账户：
 
 ```powershell
-python -m quantfolio account-init --account-id research_paper --as-of 2026-11-20 --output artifacts/accounts/paper_2026-11-20
-python -m quantfolio plan --account artifacts/accounts/paper_2026-11-20/account.json --cost 10 --output artifacts/plans/paper_2026-11-23
+python -m quantfolio account-init --account-id research_paper --as-of 2026-11-23 --output artifacts/accounts/paper_2026-11-23
+python -m quantfolio plan --account artifacts/accounts/paper_2026-11-23/account.json --cost 10 --output artifacts/plans/paper_2026-11-24
 ```
 
 继续观察时使用上次`account-close`生成的账户，不能再次初始化本金、净值高水位或风险等级。
@@ -44,7 +44,7 @@ python -m quantfolio plan --account artifacts/accounts/paper_2026-11-20/account.
 09:25取得明确来源的竞价报价后，手工保存文件，再运行：
 
 ```powershell
-python -m quantfolio resolve-plan --plan artifacts/plans/paper_2026-11-23/plan.json --quotes artifacts/plans/quotes_2026-11-23/opening.json --output artifacts/plans/opening_2026-11-23
+python -m quantfolio resolve-plan --plan artifacts/plans/paper_2026-11-24/plan.json --quotes artifacts/plans/quotes_2026-11-24/opening.json --output artifacts/plans/opening_2026-11-24
 ```
 
 报价文件结构如下，证券代码和价格仅为格式示例，不能用来生成真实观察结果。
@@ -52,13 +52,13 @@ python -m quantfolio resolve-plan --plan artifacts/plans/paper_2026-11-23/plan.j
 
 ```json
 {
-  "session": "2026-11-23",
+  "session": "2026-11-24",
   "source": "填写实际报价来源",
-  "recorded_at": "2026-11-23T09:26:00+08:00",
+  "recorded_at": "2026-11-24T09:26:00+08:00",
   "quotes": {
     "sh600000": {
       "open": 10.0,
-      "market_at": "2026-11-23T09:25:00+08:00",
+      "market_at": "2026-11-24T09:25:00+08:00",
       "suspended": false
     }
   }
@@ -73,11 +73,11 @@ python -m quantfolio resolve-plan --plan artifacts/plans/paper_2026-11-23/plan.j
 当日16:00以后，用完整收盘报价结转账户：
 
 ```powershell
-python -m quantfolio account-close --resolution artifacts/plans/opening_2026-11-23/resolution.json --quotes artifacts/plans/quotes_2026-11-23/closing.json --output artifacts/accounts/paper_2026-11-23
+python -m quantfolio account-close --resolution artifacts/plans/opening_2026-11-24/resolution.json --quotes artifacts/plans/quotes_2026-11-24/closing.json --output artifacts/accounts/paper_2026-11-24
 ```
 
 收盘报价沿用`session`、`source`、`recorded_at`和`quotes`结构；每条证券记录改为
-`{"close": 10.0, "market_at": "2026-11-23T15:00:00+08:00"}`。记录时刻不得早于15:00。
+`{"close": 10.0, "market_at": "2026-11-24T15:00:00+08:00"}`。记录时刻不得早于15:00。
 新账户保存现金、逐批股数与可卖日、分红权益、应收款、风险高水位和父记录哈希；下次
 计划还会检查这些收盘价格与新核验快照一致。收盘命令本身不刷新行情或重新拟合模型。
 

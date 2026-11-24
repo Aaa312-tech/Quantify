@@ -4,11 +4,11 @@
 
 A股组合研究项目。使用滚动训练和验证选择动量排序及行业残差模型，在下一交易日开盘模拟调仓，独立核对成交、现金和持仓。Python包及命令名为 `quantfolio`。
 
-当前策略为滚动选型动量，采用均衡进攻、8%回撤预警和降仓后不恢复。研究暂停，仓库继续维护；当前模型尚未显示优于同风控动量的收益，亦无前向收益结论。
+当前策略为滚动选型动量，采用均衡进攻、8%回撤预警和降仓后不恢复。策略研究继续暂停，本次仅按原流程更新11月23日行情与次日纸面计划；当前模型尚未显示优于同风控动量的收益，亦无前向收益结论。
 
 ## 回测
 
-数据截止2026-11-20，连续账户区间为2025-11-18至2026-11-02，共231个交易日。初始资金100万元。
+数据截止2026-11-23，连续账户区间为2025-11-18至2026-11-02，共231个交易日。初始资金100万元。
 
 | 每边滑点 | 策略净收益 | 同风控动量 | 最大回撤 |
 | --- | ---: | ---: | ---: |
@@ -18,9 +18,9 @@ A股组合研究项目。使用滚动训练和验证选择动量排序及行业�
 
 另计佣金、过户费和印花税。各档重新计算订单与风险路径，收益不必随成本单调变化。8%是预警和退出目标，不保证实际回撤上限。股票池、历史信息可用性及基金完整经济敞口仍有数据限制。
 
-![策略与同风控动量的连续账户净值](reports/experiments/recipient_entitlements_2026-11-22/equity_curve.png)
+![策略与同风控动量的连续账户净值](reports/experiments/daily_close_2026-11-23/equity_curve.png)
 
-[研究报告](reports/experiments/recipient_entitlements_2026-11-22/index.html) · [评估数据](artifacts/evaluations/recipient_entitlements_2026-11-22/evaluation_summary.json) · [方法与限制](docs/methodology.md)
+[研究报告](reports/experiments/daily_close_2026-11-23/index.html) · [评估数据](artifacts/evaluations/daily_close_2026-11-23/evaluation_summary.json) · [方法与限制](docs/methodology.md)
 
 ## 安装与验证
 
@@ -55,7 +55,7 @@ uv export --locked --all-extras --no-emit-project --python .research/python.exe 
 uv pip install --python .research/python.exe --require-hashes --no-deps -r .research/requirements.txt
 uv pip install --python .research/python.exe --no-deps -e .
 .\.research\python -m quantfolio status
-.\.research\python -m quantfolio verify --run artifacts/experiments/recipient_entitlements_2026-11-22
+.\.research\python -m quantfolio verify --run artifacts/experiments/daily_close_2026-11-23
 ```
 
 源码ZIP可能只含LFS指针，模型与数据须完整下载后再验证。上述命令重载已有模型，不重新拟合。完整的特征、训练窗口和账户对照使用[标准回归命令](docs/validation.md#标准工程回归)。

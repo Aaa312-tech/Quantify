@@ -1,10 +1,10 @@
 # 项目状态
 
-截至2026-11-24。研究暂停，继续维护已有代码和成果；数据采集、新训练、策略试验及前向观察均未恢复。工程E0–E7已完成[发布验收](../artifacts/checks/release_acceptance_2026-11-23/completion.json)，全库扫描的耗时告警按原记录保留。源码清单与命令入口精简已通过本地完整历史回归和质量检查，见[整理验收](../artifacts/checks/workflow_cleanup_2026-11-23/completion.json)。
+截至2026-11-24。策略研究继续暂停。本次按明确授权补齐11月23日行情、沿用原流程训练并生成11月24日纸面计划；未修改策略、开启新候选实验或记入前向成交。工程E0–E7已完成[发布验收](../artifacts/checks/release_acceptance_2026-11-23/completion.json)，全库扫描的耗时告警按原记录保留。源码清单与命令入口精简已通过本地完整历史回归和质量检查，见[整理验收](../artifacts/checks/workflow_cleanup_2026-11-23/completion.json)。
 
 ## 结论
 
-当前数据含594只证券、698个交易日和57列模型特征。11个外层窗口与截止日拟合的12次选型均采用动量及基准换手规则。三档成本下的策略连续净收益与同风控动量相等，尚无机器学习选股优势或前向收益证据。
+当前数据含594只证券、699个交易日和57列模型特征。11个外层窗口与截止日拟合的12次选型均采用动量及基准换手规则。三档成本下的策略连续净收益与同风控动量相等，尚无机器学习选股优势或前向收益证据。
 
 采用条件为 `positive_score`，换手政策为 `legacy`，风险模式为 `latched`。均衡进攻、8%回撤预警、原始净值高水位和降仓后不恢复保持；成交后单股上限为总资金15%。已登记的六项单独改动和两项组合研究预算已用完。
 
@@ -13,12 +13,12 @@
 | 内容 | 入口 |
 | --- | --- |
 | 配置 | [project.toml](../configs/project.toml) |
-| 数据 | [2026-11-20权益快照](../data/processed/2026-11-20-recipient-entitlements/) |
-| 模型 | [完整训练记录](../artifacts/experiments/recipient_entitlements_2026-11-22/training_status.json) |
-| 回测 | [评估摘要](../artifacts/evaluations/recipient_entitlements_2026-11-22/evaluation_summary.json) · [研究报告](../reports/experiments/recipient_entitlements_2026-11-22/index.html) |
-| 数据接入 | [验收](../artifacts/checks/recipient_entitlements_2026-11-22/completion.json) · [归因](../artifacts/checks/recipient_entitlements_2026-11-22/attribution.json) |
+| 数据 | [2026-11-23收盘快照](../data/processed/2026-11-23/) |
+| 模型 | [完整训练记录](../artifacts/experiments/daily_close_2026-11-23/training_status.json) |
+| 回测 | [评估摘要](../artifacts/evaluations/daily_close_2026-11-23/evaluation_summary.json) · [研究报告](../reports/experiments/daily_close_2026-11-23/index.html) |
+| 数据接入 | [逐项验证](../artifacts/checks/daily_close_2026-11-23/validation.json) · [来源比较](../artifacts/checks/session_2026-11-23_reviewed/cross_source.json) · [换手率敏感性](../artifacts/checks/daily_close_2026-11-23/turnover_sensitivity/result.json) |
 | 来源核查 | [正文上下文审查](../artifacts/checks/distribution_residuals_2026-11-22/body_context_review.json) |
-| 纸面计划 | [2026-11-23](../artifacts/plans/recipient_entitlements_2026-11-23/plan.md)：0笔参考订单，100万元现金，已于11月23日09:25上海时间到期 |
+| 纸面计划 | [11月24日操作说明](../reports/plans/2026-11-24.md) · [冻结计划](../artifacts/plans/daily_close_2026-11-24/plan.md)：开盘前冻结，0笔参考订单，保留100万元现金；仅适用于指定交易日 |
 | 验证 | [验证说明](validation.md) · [完整性清单](../configs/integrity_manifest.json) |
 | 工程维护 | [验收记录](engineering_plan.md#阶段和依赖) · [本地完整回归](../artifacts/checks/workflow_cleanup_full_2026-11-23/result.json) · [质量检查](../artifacts/checks/workflow_cleanup_2026-11-23/quality.json) · [0.30.0发布时的托管回归](../artifacts/checks/release_acceptance_2026-11-23/cloud_windows_2025/ci-regression-45122115960/result.json) |
 | 仓库整理 | [目录与清理约定](repository.md) · [清理验收](../artifacts/checks/repository_cleanup_2026-11-23/completion.json) |
@@ -27,7 +27,11 @@
 
 ## 数据核验范围
 
-已接受1452条事件记录、1530个支持字段。最近一次权益接入涉及31项事件，更正3处现金金额、31项支付日、19项除权参考值和1项股份上市日，并完成对应训练与账户核对。
+11月23日行情覆盖原股票池594只证券：568只沪深证券采用BaoStock，并与腾讯收盘报价核验；26只北交所证券核对腾讯日线与报价，其中5只另有东方财富日线佐证，其余21只仍依赖同一提供方。58只科创板证券的股数按既定规则换算为整手；18处换手率口径差异均保留，替换这些输入后采用策略的预测与计划完全一致。新增西南证券11月24日每股0.02元分红，见[公告审查](../artifacts/checks/session_2026-11-23_reviewed/action_review.json)。
+
+当前568只证券具备选股资格，0只通过正收益边际门槛，见[完整信号](../artifacts/checks/daily_close_2026-11-23/signals.json)。市场仓位上限30%，实际目标仓位0%；有效空仓计划取代此前行情过期导致的阻断记录。
+
+截至11月22日的来源补证已接受1452条事件记录、1530个支持字段。该次权益接入涉及31项事件，更正3处现金金额、31项支付日、19项除权参考值和1项股份上市日，并完成对应训练与账户核对。
 
 最近来源检查涉及172份公告、509页、333处上下文及274组句子，实际查看14张原页。它没有覆盖全部1135份公告，也没有接受新财务事实。六处说明分类补正、六处空白范围差异、两处重复句子的页码差异及初次失败均留在原审查记录中。
 
